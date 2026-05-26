@@ -1,0 +1,7 @@
+{
+  "success": true,
+  "errors": "\u001b[2m11:58:31 AM\u001b[22m \u001b[33m\u001b[1m[vite]\u001b[22m\u001b[39m \u001b[33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by \"vite-plugin-ruby\" plugin. `rollupOptions` specified by that plugin will be ignored.\u001b[39m\n",
+  "timestamp": "2026-05-26 11:58:32",
+  "vite_ruby": "3.10.2",
+  "digest": "841a6678ad03e326a601a86da38c2d815bf023b9"
+}

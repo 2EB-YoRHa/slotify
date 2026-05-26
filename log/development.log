@@ -1,0 +1,1359 @@
+  [1m[35m (8291.5ms)[0m  [1m[35mCREATE DATABASE "slotify_development" ENCODING = 'unicode' /*application='Slotify'*/[0m
+  [1m[35m (8285.9ms)[0m  [1m[35mCREATE DATABASE "slotify_development" ENCODING = 'unicode' /*application='Slotify'*/[0m
+  [1m[35m (234.2ms)[0m  [1m[35mCREATE DATABASE "slotify_development" ENCODING = 'unicode' /*application='Slotify'*/[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mSET search_path TO public /*application='Slotify'*/[0m
+  [1m[35m (1051.0ms)[0m  [1m[35mCREATE DATABASE "slotify_development" ENCODING = 'unicode' /*application='Slotify'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO public /*application='Slotify'*/[0m
+  [1m[35m (341.0ms)[0m  [1m[35mCREATE DATABASE "slotify_test" ENCODING = 'unicode' /*application='Slotify'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO public /*application='Slotify'*/[0m
+  [1m[35m (110.4ms)[0m  [1m[35mCREATE DATABASE "slotify_development" ENCODING = 'unicode' /*application='Slotify'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO public /*application='Slotify'*/[0m
+  [1m[35m (83.4ms)[0m  [1m[35mCREATE DATABASE "slotify_test" ENCODING = 'unicode' /*application='Slotify'*/[0m
+Started GET "/" for ::1 at 2026-05-26 11:46:02 -0600
+  [1m[35m (91.8ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='Slotify'*/[0m
+  [1m[35m (4.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='Slotify'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Slotify'*/[0m
+Processing by InertiaExampleController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application
+  Rendered C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application (Duration: 1.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 37.0ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 582ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (The asset 'application.js' was not found in the load path.)
+Caused by: Propshaft::MissingAssetError (The asset 'application.js' was not found in the load path.)
+
+Information for: ActionView::Template::Error (The asset 'application.js' was not found in the load path.):
+    21:     <%# Includes all stylesheet files in app/assets/stylesheets %>
+    22:     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    23:     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    24:     <%= vite_stylesheet_tag "application" %>
+    25:     <%= vite_react_refresh_tag %>
+    26:     <%= vite_client_tag %>
+    27:     <%= vite_typescript_tag "inertia.tsx" %>
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+
+Information for cause: Propshaft::MissingAssetError (The asset 'application.js' was not found in the load path.):
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+Started GET "/favicon.ico" for ::1 at 2026-05-26 11:46:05 -0600
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started GET "/" for ::1 at 2026-05-26 11:48:08 -0600
+Processing by InertiaExampleController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application
+  Rendered C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application (Duration: 0.7ms | GC: 0.0ms)
+Building with Vite ⚡️
+vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+ [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+ [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+[38;5;246m───╯[0m
+
+vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+ [38;5;240m  │[0m                     ────────┬────────  
+ [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+[38;5;246m───╯[0m
+
+vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+ [38;5;240m  │[0m                         ─────────┬─────────  
+ [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+[38;5;246m───╯[0m
+
+[31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+[31merror during build:
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817691660-0426b1fed2303.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:858:18)
+    at defaultResolve (node:internal/modules/esm/resolve:990:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+    at #resolve (node:internal/modules/esm/loader:700:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}[39m
+
+#<Process::Status: pid 14996 exit 1>
+Build with Vite failed! ❌
+  Rendered layout layouts/application.html.erb (Duration: 3004.3ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 3065ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+   [38;5;240m  │[0m                     ────────┬────────  
+   [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+   [38;5;240m  │[0m                         ─────────┬─────────  
+   [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  [31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+  [31merror during build:
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817691660-0426b1fed2303.mjs
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:858:18)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+      at #resolve (node:internal/modules/esm/loader:700:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+Caused by: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+   [38;5;240m  │[0m                     ────────┬────────  
+   [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+   [38;5;240m  │[0m                         ─────────┬─────────  
+   [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  [31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+  [31merror during build:
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817691660-0426b1fed2303.mjs
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:858:18)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+      at #resolve (node:internal/modules/esm/loader:700:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+
+Information for: ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+   [38;5;240m  │[0m                     ────────┬────────  
+   [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+   [38;5;240m  │[0m                         ─────────┬─────────  
+   [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  [31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+  [31merror during build:
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817691660-0426b1fed2303.mjs
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:858:18)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+      at #resolve (node:internal/modules/esm/loader:700:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+    21:     <%# Includes all stylesheet files in app/assets/stylesheets %>
+    22:     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    23:     <%= vite_stylesheet_tag "application" %>
+    24:     <%= vite_react_refresh_tag %>
+    25:     <%= vite_client_tag %>
+    26:     <%= vite_typescript_tag "inertia.tsx" %>
+    27:     <%= inertia_ssr_head %>
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+
+Information for cause: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+   [38;5;240m  │[0m                     ────────┬────────  
+   [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+   [38;5;240m  │[0m                         ─────────┬─────────  
+   [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  [31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+  [31merror during build:
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817691660-0426b1fed2303.mjs
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:858:18)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+      at #resolve (node:internal/modules/esm/loader:700:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+Started GET "/" for ::1 at 2026-05-26 11:49:07 -0600
+  [1m[36mActiveRecord::SchemaMigration Load (1.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Slotify'*/[0m
+Processing by InertiaExampleController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application
+  Rendered C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application (Duration: 0.7ms | GC: 0.0ms)
+Building with Vite ⚡️
+vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+ [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+ [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+[38;5;246m───╯[0m
+
+vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+ [38;5;240m  │[0m                     ────────┬────────  
+ [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+[38;5;246m───╯[0m
+
+vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+ [38;5;240m  │[0m                         ─────────┬─────────  
+ [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+[38;5;246m───╯[0m
+
+[31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+[31merror during build:
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817749426-6c468ede8f494.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:858:18)
+    at defaultResolve (node:internal/modules/esm/resolve:990:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+    at #resolve (node:internal/modules/esm/loader:700:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}[39m
+
+#<Process::Status: pid 1600 exit 1>
+Build with Vite failed! ❌
+  Rendered layout layouts/application.html.erb (Duration: 1191.6ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 1282ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+   [38;5;240m  │[0m                     ────────┬────────  
+   [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+   [38;5;240m  │[0m                         ─────────┬─────────  
+   [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  [31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+  [31merror during build:
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817749426-6c468ede8f494.mjs
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:858:18)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+      at #resolve (node:internal/modules/esm/loader:700:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+Caused by: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+   [38;5;240m  │[0m                     ────────┬────────  
+   [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+   [38;5;240m  │[0m                         ─────────┬─────────  
+   [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  [31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+  [31merror during build:
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817749426-6c468ede8f494.mjs
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:858:18)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+      at #resolve (node:internal/modules/esm/loader:700:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+
+Information for: ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+   [38;5;240m  │[0m                     ────────┬────────  
+   [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+   [38;5;240m  │[0m                         ─────────┬─────────  
+   [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  [31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+  [31merror during build:
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817749426-6c468ede8f494.mjs
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:858:18)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+      at #resolve (node:internal/modules/esm/loader:700:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+    21:     <%# Includes all stylesheet files in app/assets/stylesheets %>
+    22:     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    23:     <%= vite_stylesheet_tag "application" %>
+    24:     <%= vite_react_refresh_tag %>
+    25:     <%= vite_client_tag %>
+    26:     <%= vite_typescript_tag "inertia.tsx" %>
+    27:     <%= inertia_ssr_head %>
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+
+Information for cause: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  vite.config.mts (1:375) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@vitejs/plugin-react' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:1:376 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m1 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m\[0m[38;5;249m\[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249m_[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m_[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m_[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249m/[0m[38;5;249mC[0m[38;5;249m:[0m[38;5;249m/[0m[38;5;249mU[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249mJ[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249ml[0m[38;5;249mS[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249m/[0m[38;5;249mD[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m-[0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mj[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m/[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mf[0m[38;5;249my[0m[38;5;249m/[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249m.[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mf[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249m.[0m[38;5;249mm[0m[38;5;249mt[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react'
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                        ───────────┬──────────  
+   [38;5;240m  │[0m                                                                                                                                                                                                                                                                                                                                                                                                   ╰──────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (2:20) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@inertiajs/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:2:21 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m2 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@inertiajs/vite'
+   [38;5;240m  │[0m                     ────────┬────────  
+   [38;5;240m  │[0m                             ╰────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  vite.config.mts (3:24) [33m[UNRESOLVED_IMPORT] Warning:[0m Could not resolve '@tailwindcss/vite' in vite.config.mts
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vite.config.mts:3:25 [38;5;246m][0m
+     [38;5;246m│[0m
+   [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mc[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@tailwindcss/vite'
+   [38;5;240m  │[0m                         ─────────┬─────────  
+   [38;5;240m  │[0m                                  ╰─────────── Module not found, treating it as an external dependency
+  [38;5;246m───╯[0m
+
+  [31mfailed to load config from C:\Users\JillSandwich\Documents\slotify-project\slotify\vite.config.mts[39m
+  [31merror during build:
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\.vite-temp\vite.config.mts.timestamp-1779817749426-6c468ede8f494.mjs
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:858:18)
+      at defaultResolve (node:internal/modules/esm/resolve:990:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:718:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:735:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:764:52)
+      at #resolve (node:internal/modules/esm/loader:700:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:620:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:143:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+Started GET "/" for ::1 at 2026-05-26 11:54:06 -0600
+  [1m[36mActiveRecord::SchemaMigration Load (1.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Slotify'*/[0m
+Processing by InertiaExampleController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application
+  Rendered C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application (Duration: 0.8ms | GC: 0.0ms)
+Building with Vite ⚡️
+[36mvite v8.0.0 [32mbuilding client environment for development...[36m[39m
+
+[2K
+
+transforming...✓ 9 modules transformed.
+
+[2m11:54:08 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+[31m✗[39m Build failed in 138ms
+[31merror during build:
+[31mBuild failed with 1 error:
+
+[plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+Error: Can't resolve '@tailwindcss/forms' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+    at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+    at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+    at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+    at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+    at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+    at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+    at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+    at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+    at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+    at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+    at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+  errors: [Getter/Setter]
+}[39m
+
+#<Process::Status: pid 11632 exit 1>
+Build with Vite failed! ❌
+  Rendered layout layouts/application.html.erb (Duration: 1837.7ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 2017ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:54:08 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 138ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  [plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+  Error: Can't resolve '@tailwindcss/forms' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+      at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+Caused by: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:54:08 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 138ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  [plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+  Error: Can't resolve '@tailwindcss/forms' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+      at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+
+Information for: ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:54:08 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 138ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  [plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+  Error: Can't resolve '@tailwindcss/forms' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+      at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+    21:     <%# Includes all stylesheet files in app/assets/stylesheets %>
+    22:     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    23:     <%= vite_stylesheet_tag "application" %>
+    24:     <%= vite_react_refresh_tag %>
+    25:     <%= vite_client_tag %>
+    26:     <%= vite_typescript_tag "inertia.tsx" %>
+    27:     <%= inertia_ssr_head %>
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+
+Information for cause: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:54:08 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 138ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  [plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+  Error: Can't resolve '@tailwindcss/forms' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+      at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+Started GET "/" for ::1 at 2026-05-26 11:55:47 -0600
+  [1m[36mActiveRecord::SchemaMigration Load (1.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Slotify'*/[0m
+Processing by InertiaExampleController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application
+  Rendered C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application (Duration: 0.7ms | GC: 0.0ms)
+Building with Vite ⚡️
+[36mvite v8.0.0 [32mbuilding client environment for development...[36m[39m
+
+[2K
+
+transforming...✓ 9 modules transformed.
+
+[2m11:55:48 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+[31m✗[39m Build failed in 114ms
+[31merror during build:
+[31mBuild failed with 1 error:
+
+[plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+Error: Can't resolve '@tailwindcss/typography' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+    at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+    at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+    at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+    at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+    at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+    at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+    at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+    at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+    at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+    at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+    at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+  errors: [Getter/Setter]
+}[39m
+
+#<Process::Status: pid 15604 exit 1>
+Build with Vite failed! ❌
+  Rendered layout layouts/application.html.erb (Duration: 1452.4ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 1527ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:55:48 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 114ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  [plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+  Error: Can't resolve '@tailwindcss/typography' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+      at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+Caused by: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:55:48 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 114ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  [plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+  Error: Can't resolve '@tailwindcss/typography' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+      at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+
+Information for: ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:55:48 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 114ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  [plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+  Error: Can't resolve '@tailwindcss/typography' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+      at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+    21:     <%# Includes all stylesheet files in app/assets/stylesheets %>
+    22:     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    23:     <%= vite_stylesheet_tag "application" %>
+    24:     <%= vite_react_refresh_tag %>
+    25:     <%= vite_client_tag %>
+    26:     <%= vite_typescript_tag "inertia.tsx" %>
+    27:     <%= inertia_ssr_head %>
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+
+Information for cause: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:55:48 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 114ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  [plugin @tailwindcss/vite:generate:build] C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/application.css
+  Error: Can't resolve '@tailwindcss/typography' in 'C:\Users\JillSandwich\Documents\slotify-project\slotify\app\javascript\entrypoints'
+      at finishWithoutResolve (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:942:18)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1034:14
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:94:43
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5
+      at eval (eval at create (C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+      at C:\Users\JillSandwich\Documents\slotify-project\slotify\node_modules\enhanced-resolve\lib\Resolver.js:1111:5[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+Started GET "/" for ::1 at 2026-05-26 11:56:39 -0600
+  [1m[36mActiveRecord::SchemaMigration Load (1.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Slotify'*/[0m
+Processing by InertiaExampleController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application
+  Rendered C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+Building with Vite ⚡️
+[36mvite v8.0.0 [32mbuilding client environment for development...[36m[39m
+
+[2K
+
+transforming...✓ 10 modules transformed.
+
+rendering chunks...
+
+computing gzip size...
+
+public/vite-dev/assets/react-D1O1WqmP.svg             0.41 kB │ gzip: 0.26 kB
+
+public/vite-dev/.vite/manifest-assets.json            0.42 kB │ gzip: 0.17 kB
+
+public/vite-dev/assets/inertia-BBwuM70o.svg           0.59 kB │ gzip: 0.35 kB
+
+public/vite-dev/.vite/manifest.json                   1.44 kB │ gzip: 0.38 kB
+
+public/vite-dev/assets/vite_ruby-BkLf4vgQ.svg         1.62 kB │ gzip: 0.71 kB
+
+public/vite-dev/assets/rails-CaIcUWwI.svg             8.83 kB │ gzip: 3.85 kB
+
+public/vite-dev/assets/inertia_example-CAxN9LE_.css   2.23 kB │ gzip: 0.96 kB
+
+public/vite-dev/assets/application-CRCjPGbb.css      11.58 kB │ gzip: 2.92 kB
+
+public/vite-dev/assets/application-DQXq7vvp.js        0.13 kB │ gzip: 0.13 kB
+
+public/vite-dev/assets/inertia-B8fv86Vg.js            2.09 kB │ gzip: 1.15 kB
+
+public/vite-dev/assets/inertia_example-0tpwWBlp.js    3.04 kB │ gzip: 1.26 kB
+
+
+
+[2m11:56:41 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+[31m✗[39m Build failed in 310ms
+[31merror during build:
+[31mBuild failed with 1 error:
+
+Error: [vite]: Rolldown failed to resolve import "@inertiajs/react" from "C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/inertia.tsx".
+This is most likely unintended because it can break your application at runtime.
+If you do want to externalize this module explicitly add it to
+`build.rollupOptions.external`
+    at viteLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32887:57)
+    at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:71
+    at onwarn (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/@vitejs/plugin-react/dist/index.js:40:7)
+    at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:28
+    at onRollupLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32918:63)
+    at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32688:4)
+    at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:49:26
+    at logger (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:40:3)
+    at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/bindingify-input-options-Cu7pt6SZ.mjs:1945:32)[31m
+    at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+    at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+    at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+    at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+    at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+    at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+    at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+  errors: [Getter/Setter]
+}[39m
+
+#<Process::Status: pid 15400 exit 1>
+Build with Vite failed! ❌
+  Rendered layout layouts/application.html.erb (Duration: 2478.4ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 2560ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:56:41 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 310ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  Error: [vite]: Rolldown failed to resolve import "@inertiajs/react" from "C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/inertia.tsx".
+  This is most likely unintended because it can break your application at runtime.
+  If you do want to externalize this module explicitly add it to
+  `build.rollupOptions.external`
+      at viteLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32887:57)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:71
+      at onwarn (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/@vitejs/plugin-react/dist/index.js:40:7)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:28
+      at onRollupLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32918:63)
+      at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32688:4)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:49:26
+      at logger (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:40:3)
+      at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/bindingify-input-options-Cu7pt6SZ.mjs:1945:32)[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+Caused by: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:56:41 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 310ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  Error: [vite]: Rolldown failed to resolve import "@inertiajs/react" from "C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/inertia.tsx".
+  This is most likely unintended because it can break your application at runtime.
+  If you do want to externalize this module explicitly add it to
+  `build.rollupOptions.external`
+      at viteLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32887:57)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:71
+      at onwarn (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/@vitejs/plugin-react/dist/index.js:40:7)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:28
+      at onRollupLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32918:63)
+      at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32688:4)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:49:26
+      at logger (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:40:3)
+      at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/bindingify-input-options-Cu7pt6SZ.mjs:1945:32)[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+)
+
+Information for: ActionView::Template::Error (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:56:41 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 310ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  Error: [vite]: Rolldown failed to resolve import "@inertiajs/react" from "C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/inertia.tsx".
+  This is most likely unintended because it can break your application at runtime.
+  If you do want to externalize this module explicitly add it to
+  `build.rollupOptions.external`
+      at viteLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32887:57)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:71
+      at onwarn (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/@vitejs/plugin-react/dist/index.js:40:7)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:28
+      at onRollupLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32918:63)
+      at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32688:4)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:49:26
+      at logger (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:40:3)
+      at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/bindingify-input-options-Cu7pt6SZ.mjs:1945:32)[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+    21:     <%# Includes all stylesheet files in app/assets/stylesheets %>
+    22:     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    23:     <%= vite_stylesheet_tag "application" %>
+    24:     <%= vite_react_refresh_tag %>
+    25:     <%= vite_client_tag %>
+    26:     <%= vite_typescript_tag "inertia.tsx" %>
+    27:     <%= inertia_ssr_head %>
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+
+Information for cause: ViteRuby::MissingEntrypointError (Vite Ruby can't find entrypoints/application.css in the manifests.
+
+Possible causes:
+  - The last build failed. Try running `bin/vite build --clear --mode=development` manually and check for errors.
+
+Errors:
+  [2m11:56:41 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+  [31m✗[39m Build failed in 310ms
+  [31merror during build:
+  [31mBuild failed with 1 error:
+
+  Error: [vite]: Rolldown failed to resolve import "@inertiajs/react" from "C:/Users/JillSandwich/Documents/slotify-project/slotify/app/javascript/entrypoints/inertia.tsx".
+  This is most likely unintended because it can break your application at runtime.
+  If you do want to externalize this module explicitly add it to
+  `build.rollupOptions.external`
+      at viteLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32887:57)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:71
+      at onwarn (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/@vitejs/plugin-react/dist/index.js:40:7)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32923:28
+      at onRollupLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32918:63)
+      at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32688:4)
+      at file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:49:26
+      at logger (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:40:3)
+      at onLog (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/bindingify-input-options-Cu7pt6SZ.mjs:1945:32)[31m
+      at aggregateBindingErrorsIntoJsError (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:48:18)
+      at unwrapBindingResult (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/error-CP8smW_P.mjs:18:128)
+      at #build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/rolldown/dist/shared/rolldown-build-4YnQkA76.mjs:3311:34)
+      at async buildEnvironment (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:32794:64)
+      at async Object.build (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33216:19)
+      at async Object.buildApp (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/chunks/node.js:33213:153)
+      at async CAC.<anonymous> (file:///C:/Users/JillSandwich/Documents/slotify-project/slotify/node_modules/vite/dist/node/cli.js:778:3) {
+    errors: [Getter/Setter]
+  }[39m
+
+
+Visit the Troubleshooting guide for more information:
+  https://vite-ruby.netlify.app/guide/troubleshooting.html#troubleshooting
+
+
+
+):
+  
+app/views/layouts/application.html.erb:24
+app/controllers/inertia_example_controller.rb:5:in 'InertiaExampleController#index'
+Started GET "/" for ::1 at 2026-05-26 11:58:30 -0600
+  [1m[36mActiveRecord::SchemaMigration Load (1.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Slotify'*/[0m
+Processing by InertiaExampleController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application
+  Rendered C:/Ruby40-x64/lib/ruby/gems/4.0.0/gems/inertia_rails-3.21.1/app/views/inertia.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+Building with Vite ⚡️
+[36mvite v8.0.0 [32mbuilding client environment for development...[36m[39m
+
+[2K
+
+transforming...✓ 553 modules transformed.
+
+rendering chunks...
+
+computing gzip size...
+
+public/vite-dev/assets/react-D1O1WqmP.svg              0.41 kB │ gzip:  0.26 kB
+
+public/vite-dev/.vite/manifest-assets.json             0.42 kB │ gzip:  0.17 kB
+
+public/vite-dev/assets/inertia-BBwuM70o.svg            0.59 kB │ gzip:  0.35 kB
+
+public/vite-dev/.vite/manifest.json                    1.50 kB │ gzip:  0.39 kB
+
+public/vite-dev/assets/vite_ruby-BkLf4vgQ.svg          1.62 kB │ gzip:  0.71 kB
+
+public/vite-dev/assets/rails-CaIcUWwI.svg              8.83 kB │ gzip:  3.85 kB
+
+public/vite-dev/assets/inertia_example-CAxN9LE_.css    2.23 kB │ gzip:  0.96 kB
+
+public/vite-dev/assets/application-CRCjPGbb.css       11.58 kB │ gzip:  2.92 kB
+
+public/vite-dev/assets/application-DQXq7vvp.js         0.13 kB │ gzip:  0.13 kB
+
+public/vite-dev/assets/inertia_example-BOpcKxEJ.js     3.56 kB │ gzip:  1.46 kB
+
+public/vite-dev/assets/inertia-DVLoiHC7.js           312.81 kB │ gzip: 98.58 kB
+
+
+
+[32m✓ built in 343ms[39m
+
+Build with Vite complete: C:/Users/JillSandwich/Documents/slotify-project/slotify/public/vite-dev
+[2m11:58:31 AM[22m [33m[1m[vite][22m[39m [33mwarning: Both `rollupOptions` and `rolldownOptions` were specified by "vite-plugin-ruby" plugin. `rollupOptions` specified by that plugin will be ignored.[39m
+
+Skipping vite build. Watched files have not changed since the last build at 2026-05-26 11:58:32
+Skipping vite build. Watched files have not changed since the last build at 2026-05-26 11:58:32
+  Rendered layout layouts/application.html.erb (Duration: 1965.3ms | GC: 0.0ms)
+Completed 200 OK in 2038ms (Views: 1998.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
