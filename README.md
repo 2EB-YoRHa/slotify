@@ -98,4 +98,5 @@ Los usuarios finales utilizarán el sistema dentro de la organización a la que 
 ## Estado del proyecto
 
 Semana 1 - Definición inicial del proyecto
+
 Semana 2 - Sketches del proyecto
