@@ -1,17 +1,7 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
-
-# Roles
 admin_role = Role.find_or_create_by!(name: "admin")
+manager_role = Role.find_or_create_by!(name: "manager")
+member_role = Role.find_or_create_by!(name: "member")
 
-# Organization
 organization = Organization.find_or_create_by!(slug: "slotify-demo") do |org|
   org.name = "Slotify Demo"
   org.email = "admin@slotify.com"
@@ -19,12 +9,29 @@ organization = Organization.find_or_create_by!(slug: "slotify-demo") do |org|
   org.address = "San José, Costa Rica"
 end
 
-# Admin user
 User.find_or_create_by!(email: "admin@slotify.com") do |user|
-  user.name = "Administrador"
+  user.name = "Admin Slotify"
   user.password = "password123"
   user.password_confirmation = "password123"
   user.role = admin_role
+  user.organization = organization
+  user.active = true
+end
+
+User.find_or_create_by!(email: "manager@slotify.com") do |user|
+  user.name = "Manager Slotify"
+  user.password = "password123"
+  user.password_confirmation = "password123"
+  user.role = manager_role
+  user.organization = organization
+  user.active = true
+end
+
+User.find_or_create_by!(email: "member@slotify.com") do |user|
+  user.name = "Member Slotify"
+  user.password = "password123"
+  user.password_confirmation = "password123"
+  user.role = member_role
   user.organization = organization
   user.active = true
 end

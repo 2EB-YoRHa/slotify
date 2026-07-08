@@ -1,27 +1,56 @@
 class OrganizationsController < InertiaController
-  def show
-    organization = current_user.organization
+  before_action :require_manager_or_admin!, only: %i[edit update]
 
-    render inertia: "organizations/show", props: {
-      organization: organization
-    }
+  def show
+    organization = current_organization
+
+    respond_to do |format|
+      format.html do
+        render inertia: "organizations/show", props: {
+          organization: organization
+        }
+      end
+
+      format.json do
+        render json: organization
+      end
+    end
   end
 
   def edit
-    organization = current_user.organization
-
     render inertia: "organizations/edit", props: {
-      organization: organization
+      organization: current_organization
     }
   end
 
   def update
-    organization = current_user.organization
+    organization = current_organization
 
-    if organization.update(organization_params)
-      redirect_to organization_path, notice: "Organization updated successfully"
-    else
-      redirect_to edit_organization_path, inertia: { errors: organization.errors }
+    respond_to do |format|
+      if organization.update(organization_params)
+        format.html do
+          redirect_to organization_path,
+                      notice: "Organization updated successfully"
+        end
+
+        format.json do
+          render json: organization
+        end
+      else
+        format.html do
+          render inertia: "organizations/edit",
+                 props: {
+                   organization: organization,
+                   errors: organization.errors.to_hash
+                 },
+                 status: :unprocessable_entity
+        end
+
+        format.json do
+          render json: { errors: organization.errors.full_messages },
+                 status: :unprocessable_entity
+        end
+      end
     end
   end
 

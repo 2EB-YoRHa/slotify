@@ -1,4 +1,5 @@
 class ReservationsController < InertiaController
+  before_action :require_manager_or_admin!, only: %i[edit update]
   before_action :set_reservation, only: %i[show edit update destroy]
 
   def index
