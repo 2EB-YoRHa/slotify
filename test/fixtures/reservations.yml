@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  organization: one
+  user: one
+  workspace: one
+  start_time: 2026-06-09 19:15:16
+  end_time: 2026-06-09 19:15:16
+  status: MyString
+  attendees_count: 1
+  notes: MyText
+
+two:
+  organization: two
+  user: two
+  workspace: two
+  start_time: 2026-06-09 19:15:16
+  end_time: 2026-06-09 19:15:16
+  status: MyString
+  attendees_count: 1
+  notes: MyText

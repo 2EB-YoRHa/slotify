@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  organization: one
+  max_hours_per_reservation: 1
+  min_notice_minutes: 1
+  cancellation_limit_hours: 1
+  allow_weekend_bookings: false
+
+two:
+  organization: two
+  max_hours_per_reservation: 1
+  min_notice_minutes: 1
+  cancellation_limit_hours: 1
+  allow_weekend_bookings: false
