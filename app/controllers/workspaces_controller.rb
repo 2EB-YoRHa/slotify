@@ -21,7 +21,14 @@ class WorkspacesController < InertiaController
 
   def show
     serialized_workspace = @workspace.as_json(
-      include: [:amenities, :reservations]
+      include: {
+        amenities: {},
+        reservations: {
+          include: {
+            user: { only: [:id, :name, :email] }
+          }
+        }
+      }
     )
 
     respond_to do |format|
@@ -76,7 +83,7 @@ class WorkspacesController < InertiaController
   def edit
     render inertia: "workspaces/edit", props: {
       workspace: @workspace.as_json(include: :amenities),
-      amenities: Amenity.all
+      amenities: Amenity.order(:name)
     }
   end
 

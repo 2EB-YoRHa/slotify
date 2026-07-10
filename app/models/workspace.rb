@@ -1,9 +1,10 @@
 class Workspace < ApplicationRecord
   belongs_to :organization
 
-  has_many :reservations, dependent: :destroy
   has_many :workspace_amenities, dependent: :destroy
   has_many :amenities, through: :workspace_amenities
+
+  has_many :reservations, dependent: :destroy
 
   validates :name, presence: true
   validates :workspace_type, presence: true

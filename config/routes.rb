@@ -8,8 +8,12 @@ Rails.application.routes.draw do
   root "dashboard#index"
 
   resource :organization, only: [:show, :edit, :update]
+
   resources :workspaces
   resources :reservations
+
+  resources :amenities, only: [:index, :create, :destroy]
+  resource :booking_rule, only: [:show, :edit, :update]
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

@@ -4,15 +4,25 @@ class OrganizationsController < InertiaController
   def show
     organization = current_organization
 
+    organization_data = organization.as_json(
+      include: {
+        users: {
+          only: [:id, :name, :email, :active, :role_id]
+        },
+        booking_rule: {},
+        subscriptions: {}
+      }
+    )
+
     respond_to do |format|
       format.html do
         render inertia: "organizations/show", props: {
-          organization: organization
+          organization: organization_data
         }
       end
 
       format.json do
-        render json: organization
+        render json: organization_data
       end
     end
   end
