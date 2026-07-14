@@ -4,32 +4,54 @@ class OrganizationsController < InertiaController
   def show
     organization = current_organization
 
-    organization_data = organization.as_json(
-      include: {
-        users: {
-          only: [:id, :name, :email, :active, :role_id]
-        },
-        booking_rule: {},
-        subscriptions: {}
-      }
-    )
+    users = organization.users
+                        .includes(:role)
+                        .order(:name)
+
+    subscription = organization.subscriptions
+                               .order(created_at: :desc)
+                               .first
 
     respond_to do |format|
       format.html do
         render inertia: "organizations/show", props: {
-          organization: organization_data
+          organization: organization.as_json(
+            only: [:id, :name, :slug, :email, :phone, :address]
+          ),
+          users: users.as_json(
+            only: [:id, :name, :email, :active],
+            include: {
+              role: { only: [:id, :name] }
+            }
+          ),
+          booking_rule: organization.booking_rule,
+          subscription: subscription
         }
       end
 
       format.json do
-        render json: organization_data
+        render json: {
+          organization: organization.as_json(
+            only: [:id, :name, :slug, :email, :phone, :address]
+          ),
+          users: users.as_json(
+            only: [:id, :name, :email, :active],
+            include: {
+              role: { only: [:id, :name] }
+            }
+          ),
+          booking_rule: organization.booking_rule,
+          subscription: subscription
+        }
       end
     end
   end
 
   def edit
     render inertia: "organizations/edit", props: {
-      organization: current_organization
+      organization: current_organization.as_json(
+        only: [:id, :name, :slug, :email, :phone, :address]
+      )
     }
   end
 
@@ -50,7 +72,9 @@ class OrganizationsController < InertiaController
         format.html do
           render inertia: "organizations/edit",
                  props: {
-                   organization: organization,
+                   organization: organization.as_json(
+                     only: [:id, :name, :slug, :email, :phone, :address]
+                   ),
                    errors: organization.errors.to_hash
                  },
                  status: :unprocessable_entity

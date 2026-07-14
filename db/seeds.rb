@@ -35,3 +35,9 @@ User.find_or_create_by!(email: "member@slotify.com") do |user|
   user.organization = organization
   user.active = true
 end
+
+organization.subscriptions.find_or_create_by!(plan_name: "pro") do |subscription|
+  subscription.status = "active"
+  subscription.starts_at = Time.current
+  subscription.ends_at = 1.month.from_now
+end

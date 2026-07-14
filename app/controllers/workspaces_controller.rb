@@ -1,6 +1,6 @@
 class WorkspacesController < InertiaController
   before_action :require_manager_or_admin!, except: %i[index show]
-  before_action :set_workspace, only: %i[show edit update destroy]
+  before_action :set_workspace, only: %i[show edit update destroy delete_confirmation]
 
   def index
     workspaces = current_organization.workspaces.includes(:amenities)
@@ -114,6 +114,14 @@ class WorkspacesController < InertiaController
         end
       end
     end
+  end
+
+  def delete_confirmation
+    render inertia: "workspaces/delete", props: {
+      workspace: @workspace.as_json(
+        include: :amenities
+      )
+    }
   end
 
   def destroy
