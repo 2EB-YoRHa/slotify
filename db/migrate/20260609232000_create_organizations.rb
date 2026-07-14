@@ -1,0 +1,13 @@
+class CreateOrganizations < ActiveRecord::Migration[8.1]
+  def change
+    create_table :organizations do |t|
+      t.string :name
+      t.string :slug
+      t.string :email
+      t.string :phone
+      t.string :address
+
+      t.timestamps
+    end
+  end
+end

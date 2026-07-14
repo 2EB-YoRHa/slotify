@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  subscription: one
+  amount: 9.99
+  currency: MyString
+  status: MyString
+  payment_provider: MyString
+  provider_payment_id: MyString
+  paid_at: 2026-06-09 19:18:31
+
+two:
+  subscription: two
+  amount: 9.99
+  currency: MyString
+  status: MyString
+  payment_provider: MyString
+  provider_payment_id: MyString
+  paid_at: 2026-06-09 19:18:31
