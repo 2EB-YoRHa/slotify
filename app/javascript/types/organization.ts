@@ -47,3 +47,18 @@ export type OrganizationFormData = {
 export type OrganizationErrors = Partial<
   Record<keyof OrganizationFormData, string | string[]>
 >;
+
+export type OrganizationInvitation = {
+  id: number;
+  email: string;
+  status: string;
+  token: string;
+  expires_at?: string | null;
+  created_at?: string | null;
+  role?: Role | null;
+  invited_by?: {
+    id: number;
+    name: string;
+    email: string;
+  } | null;
+};

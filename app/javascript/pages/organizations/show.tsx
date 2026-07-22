@@ -1,16 +1,23 @@
 import { Link } from "@inertiajs/react";
 import AppLayout from "../../components/AppLayout";
 import OrganizationMembersTable from "../../components/organizations/OrganizationMembersTable";
+import { useState } from "react";
+import InviteMemberModal from "../../components/organizations/InviteMemberModal";
+import OrganizationInvitationsList from "../../components/organizations/OrganizationInvitationsList";
 import type {
   BookingRule,
   Organization,
+  OrganizationInvitation,
   OrganizationUser,
+  Role,
   Subscription,
 } from "../../types/organization";
 
 type OrganizationShowProps = {
   organization: Organization;
   users?: OrganizationUser[];
+  invitations?: OrganizationInvitation[];
+  roles?: Role[];
   booking_rule?: BookingRule | null;
   subscription?: Subscription | null;
 };
@@ -18,11 +25,14 @@ type OrganizationShowProps = {
 export default function OrganizationShow({
   organization,
   users = [],
+  invitations = [],
+  roles = [],
   booking_rule = null,
   subscription = null,
 }: OrganizationShowProps) {
   const activeUsers = users.filter((user) => user.active).length;
   const inactiveUsers = users.length - activeUsers;
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
 
   return (
     <AppLayout>
@@ -47,6 +57,7 @@ export default function OrganizationShow({
 
           <button
             type="button"
+            onClick={() => setInviteModalOpen(true)}
             className="rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
           >
             + Invite Member
@@ -175,16 +186,14 @@ export default function OrganizationShow({
             </Link>
           </div>
 
-          <div className="rounded-xl border border-orange-100 bg-orange-50 p-6">
-            <h2 className="font-bold text-orange-700">Pending feature</h2>
-
-            <p className="mt-2 text-sm leading-6 text-orange-600">
-              Invite Member is shown visually, but the invitation flow is not
-              implemented yet.
-            </p>
-          </div>
+          <OrganizationInvitationsList invitations={invitations} />
         </aside>
       </div>
+      <InviteMemberModal
+        open={inviteModalOpen}
+        roles={roles}
+        onClose={() => setInviteModalOpen(false)}
+      />
     </AppLayout>
   );
 }

@@ -7,9 +7,9 @@ Rails.application.routes.draw do
 
   root "dashboard#index"
 
-  resource :organization, only: [:show, :edit, :update]
-  resource :booking_rule, only: [:show, :edit, :update]
-  resource :subscription, only: [:show]
+  resource :organization, only: [ :show, :edit, :update ]
+  resource :booking_rule, only: [ :show, :edit, :update ]
+  resource :subscription, only: [ :show ]
 
   get "workspaces/:id/delete",
       to: "workspaces#delete_confirmation",
@@ -30,7 +30,9 @@ Rails.application.routes.draw do
 
   resources :reservations
 
-  resources :amenities, only: [:index, :create, :destroy]
+  resources :amenities, only: [ :index, :create, :destroy ]
+
+  resources :organization_invitations, only: [ :create, :destroy ]
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

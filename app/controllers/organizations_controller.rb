@@ -1,56 +1,78 @@
 class OrganizationsController < InertiaController
   before_action :require_manager_or_admin!, only: %i[edit update]
 
-  def show
-    organization = current_organization
+def show
+  organization = current_organization
 
-    users = organization.users
-                        .includes(:role)
-                        .order(:name)
+  users = organization.users
+                      .includes(:role)
+                      .order(:name)
 
-    subscription = organization.subscriptions
-                               .order(created_at: :desc)
-                               .first
+  invitations = organization.organization_invitations
+                            .includes(:role, :invited_by)
+                            .order(created_at: :desc)
 
-    respond_to do |format|
-      format.html do
-        render inertia: "organizations/show", props: {
-          organization: organization.as_json(
-            only: [:id, :name, :slug, :email, :phone, :address]
-          ),
-          users: users.as_json(
-            only: [:id, :name, :email, :active],
-            include: {
-              role: { only: [:id, :name] }
-            }
-          ),
-          booking_rule: organization.booking_rule,
-          subscription: subscription
-        }
-      end
+  subscription = organization.subscriptions
+                             .order(created_at: :desc)
+                             .first
 
-      format.json do
-        render json: {
-          organization: organization.as_json(
-            only: [:id, :name, :slug, :email, :phone, :address]
-          ),
-          users: users.as_json(
-            only: [:id, :name, :email, :active],
-            include: {
-              role: { only: [:id, :name] }
-            }
-          ),
-          booking_rule: organization.booking_rule,
-          subscription: subscription
-        }
-      end
+  roles = Role.where(name: [ "member", "manager" ]).order(:name)
+
+  respond_to do |format|
+    format.html do
+      render inertia: "organizations/show", props: {
+        organization: organization.as_json(
+          only: [ :id, :name, :slug, :email, :phone, :address ]
+        ),
+        users: users.as_json(
+          only: [ :id, :name, :email, :active ],
+          include: {
+            role: { only: [ :id, :name ] }
+          }
+        ),
+        invitations: invitations.as_json(
+          only: [ :id, :email, :status, :token, :expires_at, :created_at ],
+          include: {
+            role: { only: [ :id, :name ] },
+            invited_by: { only: [ :id, :name, :email ] }
+          }
+        ),
+        roles: roles.as_json(only: [ :id, :name ]),
+        booking_rule: organization.booking_rule,
+        subscription: subscription
+      }
+    end
+
+    format.json do
+      render json: {
+        organization: organization.as_json(
+          only: [ :id, :name, :slug, :email, :phone, :address ]
+        ),
+        users: users.as_json(
+          only: [ :id, :name, :email, :active ],
+          include: {
+            role: { only: [ :id, :name ] }
+          }
+        ),
+        invitations: invitations.as_json(
+          only: [ :id, :email, :status, :token, :expires_at, :created_at ],
+          include: {
+            role: { only: [ :id, :name ] },
+            invited_by: { only: [ :id, :name, :email ] }
+          }
+        ),
+        roles: roles.as_json(only: [ :id, :name ]),
+        booking_rule: organization.booking_rule,
+        subscription: subscription
+      }
     end
   end
+end
 
   def edit
     render inertia: "organizations/edit", props: {
       organization: current_organization.as_json(
-        only: [:id, :name, :slug, :email, :phone, :address]
+        only: [ :id, :name, :slug, :email, :phone, :address ]
       )
     }
   end
@@ -73,7 +95,7 @@ class OrganizationsController < InertiaController
           render inertia: "organizations/edit",
                  props: {
                    organization: organization.as_json(
-                     only: [:id, :name, :slug, :email, :phone, :address]
+                     only: [ :id, :name, :slug, :email, :phone, :address ]
                    ),
                    errors: organization.errors.to_hash
                  },
