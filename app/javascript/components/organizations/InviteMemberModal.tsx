@@ -9,8 +9,10 @@ type InviteMemberModalProps = {
 };
 
 type InvitationFormData = {
-  email: string;
-  role_id: number | string;
+  organization_invitation: {
+    email: string;
+    role_id: number | string;
+  };
 };
 
 export default function InviteMemberModal({
@@ -22,8 +24,10 @@ export default function InviteMemberModal({
 
   const { data, setData, post, processing, reset } =
     useForm<InvitationFormData>({
-      email: "",
-      role_id: defaultRole?.id || "",
+      organization_invitation: {
+        email: "",
+        role_id: defaultRole?.id || "",
+      },
     });
 
   if (!open) return null;
@@ -32,16 +36,24 @@ export default function InviteMemberModal({
     event.preventDefault();
 
     post("/organization_invitations", {
-      data: {
-        organization_invitation: {
-          email: data.email,
-          role_id: data.role_id,
-        },
-      },
       onSuccess: () => {
         reset();
         onClose();
       },
+    });
+  }
+
+  function updateEmail(email: string) {
+    setData("organization_invitation", {
+      ...data.organization_invitation,
+      email,
+    });
+  }
+
+  function updateRole(roleId: string) {
+    setData("organization_invitation", {
+      ...data.organization_invitation,
+      role_id: roleId,
     });
   }
 
@@ -109,8 +121,8 @@ export default function InviteMemberModal({
 
               <input
                 type="email"
-                value={data.email}
-                onChange={(event) => setData("email", event.target.value)}
+                value={data.organization_invitation.email}
+                onChange={(event) => updateEmail(event.target.value)}
                 className="input"
                 placeholder="name@company.com"
                 required
@@ -123,8 +135,8 @@ export default function InviteMemberModal({
               </span>
 
               <select
-                value={data.role_id}
-                onChange={(event) => setData("role_id", event.target.value)}
+                value={data.organization_invitation.role_id}
+                onChange={(event) => updateRole(event.target.value)}
                 className="input"
                 required
               >
