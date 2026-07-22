@@ -32,7 +32,12 @@ Rails.application.routes.draw do
 
   resources :amenities, only: [ :index, :create, :destroy ]
 
-  resources :organization_invitations, only: [ :create, :destroy ]
+  resources :organization_invitations, only: [ :create, :destroy ] do
+        collection do
+            get "accept/:token", to: "organization_invitations#accept", as: :accept
+            patch "accept/:token", to: "organization_invitations#confirm_accept", as: :confirm_accept
+        end
+    end
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

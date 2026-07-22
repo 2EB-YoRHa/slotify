@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <body style="font-family: Arial, sans-serif; background: #f8fafc; padding: 32px;">
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px;">
+      <h1 style="margin: 0; color: #0f172a;">
+        You have been invited to Slotify
+      </h1>
+
+      <p style="color: #475569; line-height: 1.6;">
+        <strong><%= @invited_by.name %></strong> invited you to join
+        <strong><%= @organization.name %></strong> as
+        <strong><%= @role.name %></strong>.
+      </p>
+
+      <p style="color: #475569; line-height: 1.6;">
+        Click the button below to accept the invitation and start using Slotify.
+      </p>
+
+      <p style="margin: 32px 0;">
+        <a
+          href="<%= @accept_url %>"
+          style="background: #22d3ee; color: white; text-decoration: none; padding: 14px 22px; border-radius: 10px; font-weight: bold; display: inline-block;"
+        >
+          Accept Invitation
+        </a>
+      </p>
+
+      <p style="color: #64748b; font-size: 14px;">
+        This invitation expires on:
+        <strong><%= @invitation.expires_at.strftime("%B %d, %Y") %></strong>
+      </p>
+
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
+
+      <p style="color: #94a3b8; font-size: 12px;">
+        If you were not expecting this invitation, you can ignore this email.
+      </p>
+    </div>
+  </body>
+</html>

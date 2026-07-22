@@ -39,7 +39,10 @@ def show
         ),
         roles: roles.as_json(only: [ :id, :name ]),
         booking_rule: organization.booking_rule,
-        subscription: subscription
+        subscription: subscription,
+        current_user_role: current_user.role&.name,
+        current_user_email: current_user.email,
+        can_manage_organization: admin? || manager?
       }
     end
 
@@ -63,7 +66,10 @@ def show
         ),
         roles: roles.as_json(only: [ :id, :name ]),
         booking_rule: organization.booking_rule,
-        subscription: subscription
+        subscription: subscription,
+        current_user_role: current_user.role&.name,
+        current_user_email: current_user.email,
+        can_manage_organization: admin? || manager?
       }
     end
   end

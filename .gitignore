@@ -4,6 +4,7 @@
 /.bundle
 
 # Ignore all environment files.
+/.env
 /.env*
 *.local
 

@@ -20,6 +20,9 @@ type OrganizationShowProps = {
   roles?: Role[];
   booking_rule?: BookingRule | null;
   subscription?: Subscription | null;
+  current_user_role?: string | null;
+  current_user_email?: string | null;
+  can_manage_organization?: boolean;
 };
 
 export default function OrganizationShow({
@@ -29,6 +32,9 @@ export default function OrganizationShow({
   roles = [],
   booking_rule = null,
   subscription = null,
+  current_user_role = null,
+  current_user_email = null,
+  can_manage_organization = false,
 }: OrganizationShowProps) {
   const activeUsers = users.filter((user) => user.active).length;
   const inactiveUsers = users.length - activeUsers;
@@ -37,6 +43,15 @@ export default function OrganizationShow({
   return (
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
+        <div className="mb-6 rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
+          <p className="font-bold">Debug temporal</p>
+          <p>Email actual: {current_user_email || "-"}</p>
+          <p>Rol detectado por Rails: {current_user_role || "-"}</p>
+          <p>
+            Puede administrar organización:{" "}
+            {can_manage_organization ? "Sí" : "No"}
+          </p>
+        </div>
         <div>
           <h1 className="text-3xl font-bold text-slate-900">
             Organization Management
@@ -47,22 +62,24 @@ export default function OrganizationShow({
           </p>
         </div>
 
-        <div className="flex gap-3">
-          <Link
-            href="/organization/edit"
-            className="rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
-          >
-            Edit Organization
-          </Link>
+        {can_manage_organization && (
+          <div className="flex gap-3">
+            <Link
+              href="/organization/edit"
+              className="rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+            >
+              Edit Organization
+            </Link>
 
-          <button
-            type="button"
-            onClick={() => setInviteModalOpen(true)}
-            className="rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
-          >
-            + Invite Member
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={() => setInviteModalOpen(true)}
+              className="rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
+            >
+              + Invite Member
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="mb-8 grid grid-cols-4 gap-6">
@@ -186,14 +203,19 @@ export default function OrganizationShow({
             </Link>
           </div>
 
-          <OrganizationInvitationsList invitations={invitations} />
+          <OrganizationInvitationsList
+            invitations={invitations}
+            canManage={can_manage_organization}
+          />
         </aside>
       </div>
-      <InviteMemberModal
-        open={inviteModalOpen}
-        roles={roles}
-        onClose={() => setInviteModalOpen(false)}
-      />
+      {can_manage_organization && (
+        <InviteMemberModal
+          open={inviteModalOpen}
+          roles={roles}
+          onClose={() => setInviteModalOpen(false)}
+        />
+      )}
     </AppLayout>
   );
 }
