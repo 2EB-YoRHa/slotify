@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: {
-    sessions: "users/sessions",
-    registrations: "users/registrations"
-  }
+    devise_for :users, controllers: {
+        sessions: "users/sessions",
+        registrations: "users/registrations",
+        passwords: "users/passwords"
+    }
 
   constraints(host: "127.0.0.1") do
     get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
