@@ -1,5 +1,7 @@
 import { Link, useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import FlashMessages from "../../components/ui/FlashMessages";
+import LoadingButton from "../../components/ui/LoadingButton";
 
 type ResetPasswordProps = {
   reset_password_token?: string | null;
@@ -50,6 +52,8 @@ export default function ResetPassword({
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">
+      <FlashMessages />
+
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
         <header className="mb-10 flex justify-center">
           <Logo />
@@ -91,6 +95,7 @@ export default function ResetPassword({
                   className="input"
                   placeholder="••••••••"
                   autoComplete="new-password"
+                  disabled={processing}
                   required
                 />
 
@@ -111,6 +116,7 @@ export default function ResetPassword({
                   className="input"
                   placeholder="••••••••"
                   autoComplete="new-password"
+                  disabled={processing}
                   required
                 />
 
@@ -127,6 +133,7 @@ export default function ResetPassword({
 
                 <div className="grid grid-cols-2 gap-3 text-xs text-slate-500">
                   <CheckItem checked={passwordLengthOk} label="6+ characters" />
+
                   <CheckItem
                     checked={passwordsMatch}
                     label="Passwords match"
@@ -140,13 +147,14 @@ export default function ResetPassword({
                 </div>
               )}
 
-              <button
+              <LoadingButton
                 type="submit"
-                disabled={processing}
-                className="w-full rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500 disabled:opacity-60"
+                loading={processing}
+                loadingText="Updating..."
+                className="w-full"
               >
-                {processing ? "Updating..." : "Update Password"}
-              </button>
+                Update Password
+              </LoadingButton>
             </form>
 
             <div className="mt-8 text-center">

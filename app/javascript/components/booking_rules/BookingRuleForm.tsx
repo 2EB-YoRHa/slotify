@@ -1,250 +1,250 @@
-import { Link, useForm } from "@inertiajs/react";
-import type { FormEvent, ReactNode } from "react";
-import type {
-  BookingRule,
-  BookingRuleErrors,
-  BookingRuleFormData,
-} from "../../types/bookingRule";
+import { useForm } from "@inertiajs/react";
+import type { FormEvent } from "react";
+import LoadingButton from "../ui/LoadingButton";
+import type { BookingRule } from "../../types/bookingRule";
 
 type BookingRuleFormProps = {
   bookingRule: BookingRule;
-  errors?: BookingRuleErrors;
+  errors?: Partial<Record<string, string | string[]>>;
+};
+
+type BookingRuleFormData = {
+  max_hours_per_reservation: number | string;
+  min_notice_minutes: number | string;
+  cancellation_limit_hours: number | string;
+  allow_weekend_bookings: boolean;
+  active: boolean;
 };
 
 export default function BookingRuleForm({
   bookingRule,
-  errors = {},
+  errors: initialErrors = {},
 }: BookingRuleFormProps) {
-  const { data, setData, patch, processing, transform } =
-    useForm<BookingRuleFormData>({
-      max_hours_per_reservation:
-        bookingRule.max_hours_per_reservation || "",
-      min_notice_minutes: bookingRule.min_notice_minutes || "",
-      cancellation_limit_hours:
-        bookingRule.cancellation_limit_hours || "",
-      allow_weekend_bookings:
-        bookingRule.allow_weekend_bookings || false,
-    });
+  const {
+    data,
+    setData,
+    patch,
+    processing,
+    errors: formErrors,
+    transform,
+  } = useForm<BookingRuleFormData>({
+    max_hours_per_reservation: bookingRule.max_hours_per_reservation || 2,
+    min_notice_minutes: bookingRule.min_notice_minutes || 60,
+    cancellation_limit_hours: bookingRule.cancellation_limit_hours || 2,
+    allow_weekend_bookings: bookingRule.allow_weekend_bookings ?? false,
+    active: bookingRule.active ?? true,
+  });
+
+  const errors: Record<string, string | string[] | undefined> = {
+    ...initialErrors,
+    ...formErrors,
+  };
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     transform((formData) => ({
       booking_rule: {
-        max_hours_per_reservation: numberOrBlank(
+        ...formData,
+        max_hours_per_reservation: Number(
           formData.max_hours_per_reservation
         ),
-        min_notice_minutes: numberOrBlank(formData.min_notice_minutes),
-        cancellation_limit_hours: numberOrBlank(
-          formData.cancellation_limit_hours
-        ),
-        allow_weekend_bookings: formData.allow_weekend_bookings,
+        min_notice_minutes: Number(formData.min_notice_minutes),
+        cancellation_limit_hours: Number(formData.cancellation_limit_hours),
       },
     }));
 
     patch("/booking_rule");
   }
 
+  function updateField(
+    field: keyof BookingRuleFormData,
+    value: string | number | boolean
+  ) {
+    setData(field, value as never);
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
-      <section className="col-span-2 space-y-6">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-5 text-xl font-bold text-slate-900">
-            Reservation Limits
-          </h2>
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
+    >
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-slate-950">Booking Rules</h2>
 
-          <div className="grid grid-cols-2 gap-5">
-            <Field
-              label="Max Hours per Reservation"
-              error={errors.max_hours_per_reservation}
-            >
-              <input
-                type="number"
-                min="1"
-                value={data.max_hours_per_reservation}
-                onChange={(event) =>
-                  setData("max_hours_per_reservation", event.target.value)
-                }
-                className="input"
-                placeholder="Example: 4"
-              />
-            </Field>
+        <p className="mt-2 text-sm text-slate-500">
+          Configure the rules that control how members create and cancel
+          reservations.
+        </p>
+      </div>
 
-            <Field
-              label="Minimum Notice in Minutes"
-              error={errors.min_notice_minutes}
-            >
-              <input
-                type="number"
-                min="0"
-                value={data.min_notice_minutes}
-                onChange={(event) =>
-                  setData("min_notice_minutes", event.target.value)
-                }
-                className="input"
-                placeholder="Example: 30"
-              />
-            </Field>
+      <div className="grid grid-cols-2 gap-6">
+        <label className="block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Max Hours Per Reservation
+          </span>
 
-            <Field
-              label="Cancellation Limit in Hours"
-              error={errors.cancellation_limit_hours}
-            >
-              <input
-                type="number"
-                min="0"
-                value={data.cancellation_limit_hours}
-                onChange={(event) =>
-                  setData("cancellation_limit_hours", event.target.value)
-                }
-                className="input"
-                placeholder="Example: 24"
-              />
-            </Field>
-
-            <div className="rounded-xl border border-slate-200 p-5">
-              <label className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={data.allow_weekend_bookings}
-                  onChange={(event) =>
-                    setData("allow_weekend_bookings", event.target.checked)
-                  }
-                  className="mt-1 h-4 w-4 rounded border-slate-300"
-                />
-
-                <div>
-                  <p className="font-bold text-slate-900">
-                    Allow Weekend Bookings
-                  </p>
-
-                  <p className="mt-1 text-sm leading-6 text-slate-500">
-                    Members will be able to reserve workspaces on Saturdays and
-                    Sundays.
-                  </p>
-                </div>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-cyan-100 bg-cyan-50 p-6">
-          <h3 className="font-bold text-slate-800">Example</h3>
-
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            If the max duration is 4 hours and a user tries to reserve a
-            workspace for 6 hours, the backend will reject the reservation.
-          </p>
-        </div>
-      </section>
-
-      <aside className="space-y-6">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-slate-900">Preview</h2>
-
-          <div className="mt-5 space-y-4 text-sm">
-            <SummaryItem
-              label="Max duration"
-              value={
-                data.max_hours_per_reservation
-                  ? `${data.max_hours_per_reservation} hours`
-                  : "-"
-              }
-            />
-
-            <SummaryItem
-              label="Minimum notice"
-              value={
-                data.min_notice_minutes
-                  ? `${data.min_notice_minutes} minutes`
-                  : "-"
-              }
-            />
-
-            <SummaryItem
-              label="Cancel limit"
-              value={
-                data.cancellation_limit_hours
-                  ? `${data.cancellation_limit_hours} hours`
-                  : "-"
-              }
-            />
-
-            <SummaryItem
-              label="Weekends"
-              value={data.allow_weekend_bookings ? "Allowed" : "Blocked"}
-            />
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-orange-100 bg-orange-50 p-6">
-          <h2 className="font-bold text-orange-700">Policy Warning</h2>
-
-          <p className="mt-2 text-sm leading-6 text-orange-600">
-            These rules will affect future reservation attempts. Use values that
-            make sense for the organization's operating schedule.
-          </p>
-        </div>
-
-        <div className="flex gap-3">
-          <Link
-            href="/booking_rule"
-            className="flex-1 rounded-lg border border-slate-200 bg-white px-5 py-3 text-center text-sm font-bold text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
-
-          <button
-            type="submit"
+          <input
+            type="number"
+            min="1"
+            value={data.max_hours_per_reservation}
+            onChange={(event) =>
+              updateField("max_hours_per_reservation", event.target.value)
+            }
+            className="input"
             disabled={processing}
-            className="flex-1 rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white hover:bg-cyan-500 disabled:opacity-60"
-          >
-            {processing ? "Saving..." : "Save Rules"}
-          </button>
+            required
+          />
+
+          <FormError error={errors.max_hours_per_reservation} />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Minimum Notice Minutes
+          </span>
+
+          <input
+            type="number"
+            min="0"
+            value={data.min_notice_minutes}
+            onChange={(event) =>
+              updateField("min_notice_minutes", event.target.value)
+            }
+            className="input"
+            disabled={processing}
+            required
+          />
+
+          <FormError error={errors.min_notice_minutes} />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Cancellation Limit Hours
+          </span>
+
+          <input
+            type="number"
+            min="0"
+            value={data.cancellation_limit_hours}
+            onChange={(event) =>
+              updateField("cancellation_limit_hours", event.target.value)
+            }
+            className="input"
+            disabled={processing}
+            required
+          />
+
+          <FormError error={errors.cancellation_limit_hours} />
+        </label>
+
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+          <p className="font-bold text-slate-950">Rule Status</p>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Active rules are applied when creating or cancelling reservations.
+          </p>
+
+          <label className="mt-5 flex items-center gap-3 text-sm font-bold text-slate-700">
+            <input
+              type="checkbox"
+              checked={data.active}
+              onChange={(event) =>
+                updateField("active", event.target.checked)
+              }
+              disabled={processing}
+              className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+            />
+
+            Active
+          </label>
         </div>
-      </aside>
+
+        <div className="col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-5">
+          <div className="flex items-start justify-between gap-6">
+            <div>
+              <p className="font-bold text-slate-950">
+                Allow Weekend Bookings
+              </p>
+
+              <p className="mt-1 text-sm leading-6 text-slate-500">
+                When enabled, members can create reservations on Saturday and
+                Sunday.
+              </p>
+            </div>
+
+            <label className="flex items-center gap-3 text-sm font-bold text-slate-700">
+              <input
+                type="checkbox"
+                checked={data.allow_weekend_bookings}
+                onChange={(event) =>
+                  updateField("allow_weekend_bookings", event.target.checked)
+                }
+                disabled={processing}
+                className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+              />
+
+              Enabled
+            </label>
+          </div>
+
+          <FormError error={errors.allow_weekend_bookings} />
+        </div>
+      </div>
+
+      {getBaseError(errors) && (
+        <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+          {getBaseError(errors)}
+        </div>
+      )}
+
+      <div className="mt-8 rounded-xl bg-cyan-50 p-5 text-sm leading-6 text-cyan-700">
+        <p className="font-bold">Example</p>
+        <p className="mt-1">
+          If max hours is 2 and minimum notice is 60 minutes, members can only
+          reserve up to 2 hours and must book at least 1 hour in advance.
+        </p>
+      </div>
+
+      <div className="mt-8 flex justify-end gap-4">
+        <a
+          href="/booking_rule"
+          className="rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+        >
+          Cancel
+        </a>
+
+        <LoadingButton
+          type="submit"
+          loading={processing}
+          loadingText="Saving..."
+        >
+          Save Rules
+        </LoadingButton>
+      </div>
     </form>
   );
 }
 
-type FieldProps = {
-  label: string;
+type FormErrorProps = {
   error?: string | string[];
-  children: ReactNode;
 };
 
-function Field({ label, error, children }: FieldProps) {
-  const message = Array.isArray(error) ? error[0] : error;
+function FormError({ error }: FormErrorProps) {
+  if (!error) return null;
 
-  return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-semibold text-slate-700">
-        {label}
-      </span>
+  const message = Array.isArray(error) ? error.join(", ") : error;
 
-      {children}
-
-      {message && <p className="mt-2 text-sm text-red-500">{message}</p>}
-    </label>
-  );
+  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
 }
 
-type SummaryItemProps = {
-  label: string;
-  value: string | number;
-};
+function getBaseError(
+  errors: Record<string, string | string[] | undefined>
+): string | null {
+  const error = errors.base;
 
-function SummaryItem({ label, value }: SummaryItemProps) {
-  return (
-    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-      <span className="text-slate-500">{label}</span>
-      <span className="font-bold text-slate-900">{value}</span>
-    </div>
-  );
-}
+  if (!error) return null;
 
-function numberOrBlank(value: string | number): string | number {
-  if (value === "" || value === null || value === undefined) return "";
-
-  return Number(value);
+  return Array.isArray(error) ? error.join(", ") : error;
 }

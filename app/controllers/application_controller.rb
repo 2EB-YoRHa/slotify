@@ -10,6 +10,13 @@ class ApplicationController < ActionController::Base
 
   stale_when_importmap_changes
 
+  inertia_share flash: -> {
+  {
+    notice: flash.notice,
+    alert: flash.alert
+  }
+}
+
   def after_sign_in_path_for(resource)
     invitation_token = session[:pending_invitation_token]
 

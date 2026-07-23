@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Header from "./layout/Header";
 import Sidebar from "./layout/Sidebar";
+import FlashMessages from "./ui/FlashMessages";
 
 type AppLayoutProps = {
   children: ReactNode;
@@ -8,7 +9,9 @@ type AppLayoutProps = {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-slate-50">
+      <FlashMessages />
+
       <Sidebar />
 
       <div className="ml-64">

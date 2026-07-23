@@ -1,6 +1,8 @@
-import { Link, useForm } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
+import type { FormEvent } from "react";
+import LoadingButton from "../ui/LoadingButton";
+import type { Amenity } from "../../types/amenity";
 import type {
-  Amenity,
   Workspace,
   WorkspaceErrors,
   WorkspaceFormData,
@@ -8,232 +10,274 @@ import type {
 
 type WorkspaceFormProps = {
   mode: "create" | "edit";
-  workspace?: Workspace;
-  amenities: Amenity[];
+  workspace?: Workspace | null;
+  amenities?: Amenity[];
   errors?: WorkspaceErrors;
-};
-
-const defaultFormData: WorkspaceFormData = {
-  name: "",
-  workspace_type: "",
-  capacity: "",
-  floor: "",
-  zone: "",
-  location: "",
-  description: "",
-  hourly_rate: "",
-  active: true,
-  amenity_ids: [],
 };
 
 export default function WorkspaceForm({
   mode,
-  workspace,
-  amenities,
-  errors = {},
+  workspace = null,
+  amenities = [],
+  errors: initialErrors = {},
 }: WorkspaceFormProps) {
-  const initialAmenityIds =
-    workspace?.amenities?.map((amenity) => Number(amenity.id)) || [];
+  const { data, setData, post, patch, processing, errors: formErrors, transform } =
+    useForm<WorkspaceFormData>({
+      name: workspace?.name || "",
+      workspace_type: workspace?.workspace_type || "meeting_room",
+      capacity: workspace?.capacity || "",
+      floor: workspace?.floor || "",
+      zone: workspace?.zone || "",
+      location: workspace?.location || "",
+      description: workspace?.description || "",
+      hourly_rate: workspace?.hourly_rate || "",
+      active: workspace?.active ?? true,
+      amenity_ids: workspace?.amenities?.map((amenity) => amenity.id) || [],
+    });
 
-  const initialData: WorkspaceFormData =
-    mode === "edit" && workspace
-      ? {
-          name: workspace.name || "",
-          workspace_type: workspace.workspace_type || "",
-          capacity: workspace.capacity || "",
-          floor: workspace.floor || "",
-          zone: workspace.zone || "",
-          location: workspace.location || "",
-          description: workspace.description || "",
-          hourly_rate: workspace.hourly_rate || "",
-          active: workspace.active ?? true,
-          amenity_ids: initialAmenityIds,
-        }
-      : defaultFormData;
+  const errors = {
+    ...initialErrors,
+    ...formErrors,
+  };
 
-  const { data, setData, post, patch, processing, transform } =
-    useForm(initialData);
-
-  const isEditing = mode === "edit";
-
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     transform((formData) => ({
       workspace: {
         ...formData,
-        amenity_ids: formData.amenity_ids,
+        capacity: Number(formData.capacity),
+        hourly_rate:
+          formData.hourly_rate === "" ? null : Number(formData.hourly_rate),
       },
     }));
 
-    if (isEditing && workspace) {
+    if (mode === "edit" && workspace) {
       patch(`/workspaces/${workspace.id}`);
     } else {
       post("/workspaces");
     }
   }
 
-  function toggleAmenity(id: number) {
-    const amenityId = Number(id);
-    const exists = data.amenity_ids.includes(amenityId);
+  function updateField(
+    field: keyof WorkspaceFormData,
+    value: string | number | boolean | number[]
+  ) {
+    setData(field, value as never);
+  }
 
-    if (exists) {
-      setData(
-        "amenity_ids",
-        data.amenity_ids.filter((currentId) => currentId !== amenityId)
-      );
-    } else {
-      setData("amenity_ids", [...data.amenity_ids, amenityId]);
+  function toggleAmenity(amenityId: number, checked: boolean) {
+    if (checked) {
+      updateField("amenity_ids", [...data.amenity_ids, amenityId]);
+      return;
     }
+
+    updateField(
+      "amenity_ids",
+      data.amenity_ids.filter((id) => id !== amenityId)
+    );
   }
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
     >
-      <div className="border-b border-slate-200 p-8">
-        <h2 className="mb-6 text-sm font-bold uppercase tracking-wide text-slate-500">
-          1. General Information
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-slate-950">
+          {mode === "edit" ? "Edit Workspace" : "Create Workspace"}
         </h2>
 
-        <div className="grid grid-cols-2 gap-6">
-          <Field label="Workspace Name" error={errors.name}>
-            <input
-              type="text"
-              value={data.name}
-              onChange={(event) => setData("name", event.target.value)}
-              placeholder="e.g. Skyline Conference Room"
-              className="input"
-            />
-          </Field>
-
-          <Field label="Type" error={errors.workspace_type}>
-            <select
-              value={data.workspace_type}
-              onChange={(event) =>
-                setData("workspace_type", event.target.value)
-              }
-              className="input"
-            >
-              <option value="">Select type</option>
-              <option value="desk">Desk</option>
-              <option value="meeting_room">Meeting Room</option>
-              <option value="private_office">Private Office</option>
-              <option value="studio">Studio</option>
-            </select>
-          </Field>
-
-          <Field label="Capacity" error={errors.capacity}>
-            <input
-              type="number"
-              value={data.capacity}
-              onChange={(event) => setData("capacity", event.target.value)}
-              placeholder="Max people"
-              className="input"
-            />
-          </Field>
-
-          <Field label="Hourly Rate" error={errors.hourly_rate}>
-            <input
-              type="number"
-              value={data.hourly_rate}
-              onChange={(event) => setData("hourly_rate", event.target.value)}
-              placeholder="Price per hour"
-              className="input"
-            />
-          </Field>
-
-          <Field label="Status">
-            <select
-              value={data.active ? "active" : "inactive"}
-              onChange={(event) =>
-                setData("active", event.target.value === "active")
-              }
-              className="input"
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </Field>
-        </div>
+        <p className="mt-2 text-sm text-slate-500">
+          Complete the workspace information used for reservations and
+          availability.
+        </p>
       </div>
 
-      <div className="border-b border-slate-200 p-8">
-        <h2 className="mb-6 text-sm font-bold uppercase tracking-wide text-slate-500">
-          2. Location Details
-        </h2>
+      <div className="grid grid-cols-2 gap-6">
+        <label className="block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Workspace Name
+          </span>
 
-        <div className="grid grid-cols-2 gap-6">
-          <Field label="Floor">
-            <input
-              type="text"
-              value={data.floor}
-              onChange={(event) => setData("floor", event.target.value)}
-              placeholder="e.g. 4"
-              className="input"
-            />
-          </Field>
+          <input
+            type="text"
+            value={data.name}
+            onChange={(event) => updateField("name", event.target.value)}
+            className="input"
+            placeholder="Conference Room A"
+            disabled={processing}
+            required
+          />
 
-          <Field label="Zone / Wing">
-            <input
-              type="text"
-              value={data.zone}
-              onChange={(event) => setData("zone", event.target.value)}
-              placeholder="e.g. East Wing"
-              className="input"
-            />
-          </Field>
+          <FormError error={errors.name} />
+        </label>
 
-          <div className="col-span-2">
-            <Field label="Location">
-              <input
-                type="text"
-                value={data.location}
-                onChange={(event) => setData("location", event.target.value)}
-                placeholder="e.g. Main Campus, Building A"
-                className="input"
-              />
-            </Field>
-          </div>
+        <label className="block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Workspace Type
+          </span>
 
-          <div className="col-span-2">
-            <Field label="Description">
-              <textarea
-                value={data.description}
-                onChange={(event) =>
-                  setData("description", event.target.value)
-                }
-                placeholder="Describe this workspace..."
-                rows={4}
-                className="input"
-              />
-            </Field>
-          </div>
-        </div>
+          <select
+            value={data.workspace_type}
+            onChange={(event) =>
+              updateField("workspace_type", event.target.value)
+            }
+            className="input"
+            disabled={processing}
+            required
+          >
+            <option value="meeting_room">Meeting Room</option>
+            <option value="private_office">Private Office</option>
+            <option value="hot_desk">Hot Desk</option>
+            <option value="event_space">Event Space</option>
+            <option value="training_room">Training Room</option>
+          </select>
+
+          <FormError error={errors.workspace_type} />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Capacity
+          </span>
+
+          <input
+            type="number"
+            min="1"
+            value={data.capacity}
+            onChange={(event) => updateField("capacity", event.target.value)}
+            className="input"
+            placeholder="8"
+            disabled={processing}
+            required
+          />
+
+          <FormError error={errors.capacity} />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Hourly Rate
+          </span>
+
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value={data.hourly_rate}
+            onChange={(event) =>
+              updateField("hourly_rate", event.target.value)
+            }
+            className="input"
+            placeholder="25.00"
+            disabled={processing}
+          />
+
+          <FormError error={errors.hourly_rate} />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Floor
+          </span>
+
+          <input
+            type="text"
+            value={data.floor}
+            onChange={(event) => updateField("floor", event.target.value)}
+            className="input"
+            placeholder="2nd Floor"
+            disabled={processing}
+          />
+
+          <FormError error={errors.floor} />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Zone
+          </span>
+
+          <input
+            type="text"
+            value={data.zone}
+            onChange={(event) => updateField("zone", event.target.value)}
+            className="input"
+            placeholder="North Wing"
+            disabled={processing}
+          />
+
+          <FormError error={errors.zone} />
+        </label>
+
+        <label className="col-span-2 block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Location
+          </span>
+
+          <input
+            type="text"
+            value={data.location}
+            onChange={(event) => updateField("location", event.target.value)}
+            className="input"
+            placeholder="Building A, San José"
+            disabled={processing}
+          />
+
+          <FormError error={errors.location} />
+        </label>
+
+        <label className="col-span-2 block">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Description
+          </span>
+
+          <textarea
+            value={data.description}
+            onChange={(event) => updateField("description", event.target.value)}
+            className="input min-h-32"
+            placeholder="Describe the workspace, equipment, and ideal use."
+            disabled={processing}
+          />
+
+          <FormError error={errors.description} />
+        </label>
       </div>
 
-      <div className="border-b border-slate-200 p-8">
-        <h2 className="mb-6 text-sm font-bold uppercase tracking-wide text-slate-500">
-          3. Available Amenities
-        </h2>
+      <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h3 className="font-bold text-slate-950">Amenities</h3>
+            <p className="text-sm text-slate-500">
+              Select the amenities available in this workspace.
+            </p>
+          </div>
+
+          <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-500">
+            {data.amenity_ids.length} selected
+          </span>
+        </div>
 
         {amenities.length === 0 ? (
-          <p className="text-sm text-slate-400">
-            No amenities have been created yet.
+          <p className="rounded-lg bg-white p-4 text-sm text-slate-400">
+            No amenities available yet.
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {amenities.map((amenity) => (
               <label
                 key={amenity.id}
-                className="flex items-center gap-3 text-sm font-medium text-slate-700"
+                className="flex items-center gap-3 rounded-lg bg-white p-3 text-sm font-medium text-slate-600"
               >
                 <input
                   type="checkbox"
-                  checked={data.amenity_ids.includes(Number(amenity.id))}
-                  onChange={() => toggleAmenity(amenity.id)}
-                  className="h-4 w-4 rounded border-slate-300"
+                  checked={data.amenity_ids.includes(amenity.id)}
+                  onChange={(event) =>
+                    toggleAmenity(amenity.id, event.target.checked)
+                  }
+                  disabled={processing}
+                  className="h-4 w-4 rounded border-slate-300 text-cyan-400"
                 />
 
                 {amenity.name}
@@ -241,50 +285,59 @@ export default function WorkspaceForm({
             ))}
           </div>
         )}
+
+        <FormError error={errors.amenity_ids} />
       </div>
 
-      <div className="flex justify-end gap-3 p-6">
-        <Link
-          href={isEditing && workspace ? `/workspaces/${workspace.id}` : "/workspaces"}
-          className="rounded-lg border border-slate-200 px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+      <div className="mt-8 flex items-center justify-between rounded-xl border border-slate-200 p-5">
+        <div>
+          <p className="font-bold text-slate-950">Workspace Status</p>
+          <p className="text-sm text-slate-500">
+            Inactive workspaces will not be available for reservations.
+          </p>
+        </div>
+
+        <label className="flex items-center gap-3 text-sm font-bold text-slate-700">
+          <input
+            type="checkbox"
+            checked={data.active}
+            onChange={(event) => updateField("active", event.target.checked)}
+            disabled={processing}
+            className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+          />
+
+          Active
+        </label>
+      </div>
+
+      <div className="mt-8 flex justify-end gap-4">
+        <a
+          href="/workspaces"
+          className="rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
         >
           Cancel
-        </Link>
+        </a>
 
-        <button
+        <LoadingButton
           type="submit"
-          disabled={processing}
-          className="rounded-lg bg-cyan-400 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500 disabled:opacity-60"
+          loading={processing}
+          loadingText={mode === "edit" ? "Saving..." : "Creating..."}
         >
-          {processing
-            ? "Saving..."
-            : isEditing
-              ? "Save Changes"
-              : "Save Workspace"}
-        </button>
+          {mode === "edit" ? "Save Changes" : "Create Workspace"}
+        </LoadingButton>
       </div>
     </form>
   );
 }
 
-type FieldProps = {
-  label: string;
+type FormErrorProps = {
   error?: string | string[];
-  children: React.ReactNode;
 };
 
-function Field({ label, error, children }: FieldProps) {
-  const message = Array.isArray(error) ? error[0] : error;
+function FormError({ error }: FormErrorProps) {
+  if (!error) return null;
 
-  return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-semibold text-slate-700">
-        {label}
-      </span>
+  const message = Array.isArray(error) ? error.join(", ") : error;
 
-      {children}
-
-      {message && <p className="mt-2 text-sm text-red-500">{message}</p>}
-    </label>
-  );
+  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
 }

@@ -1,5 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import LoadingButton from "../ui/LoadingButton";
 import type { Role } from "../../types/organization";
 
 type InviteMemberModalProps = {
@@ -108,7 +109,8 @@ export default function InviteMemberModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="text-xl text-slate-400 hover:text-slate-700"
+                disabled={processing}
+                className="text-xl text-slate-400 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 ×
               </button>
@@ -125,6 +127,7 @@ export default function InviteMemberModal({
                 onChange={(event) => updateEmail(event.target.value)}
                 className="input"
                 placeholder="name@company.com"
+                disabled={processing}
                 required
               />
             </label>
@@ -138,6 +141,7 @@ export default function InviteMemberModal({
                 value={data.organization_invitation.role_id}
                 onChange={(event) => updateRole(event.target.value)}
                 className="input"
+                disabled={processing}
                 required
               >
                 {roles.map((role) => (
@@ -149,21 +153,25 @@ export default function InviteMemberModal({
             </label>
 
             <div className="mt-8 flex gap-3">
-              <button
+              <LoadingButton
                 type="button"
+                variant="secondary"
+                loading={false}
+                disabled={processing}
                 onClick={onClose}
-                className="flex-1 rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                className="flex-1"
               >
                 Cancel
-              </button>
+              </LoadingButton>
 
-              <button
+              <LoadingButton
                 type="submit"
-                disabled={processing}
-                className="flex-1 rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white hover:bg-cyan-500 disabled:opacity-60"
+                loading={processing}
+                loadingText="Sending..."
+                className="flex-1"
               >
-                {processing ? "Sending..." : "Send Invitation"}
-              </button>
+                Send Invitation
+              </LoadingButton>
             </div>
           </form>
         </div>

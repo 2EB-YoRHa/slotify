@@ -1,5 +1,6 @@
 import { router } from "@inertiajs/react";
 import type { OrganizationInvitation } from "../../types/organization";
+import FlashMessages from "../../components/ui/FlashMessages";
 
 type CurrentUser = {
   id: number;
@@ -30,6 +31,7 @@ export default function AcceptInvitation({
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">
+      <FlashMessages />
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
         <header className="mb-12 flex justify-center">
           <div className="flex items-center gap-3">
@@ -95,7 +97,10 @@ export default function AcceptInvitation({
 
               <InfoItem label="Invited Email" value={invitation.email} />
 
-              <InfoItem label="Role" value={formatRole(invitation.role?.name)} />
+              <InfoItem
+                label="Role"
+                value={formatRole(invitation.role?.name)}
+              />
 
               <InfoItem
                 label="Invited By"
@@ -118,7 +123,7 @@ export default function AcceptInvitation({
                     type="button"
                     onClick={() =>
                       router.visit(
-                        `/users/sign_up?invitation_token=${invitation.token}`
+                        `/users/sign_up?invitation_token=${invitation.token}`,
                       )
                     }
                     className="rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"

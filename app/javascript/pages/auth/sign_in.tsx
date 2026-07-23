@@ -1,5 +1,6 @@
 import { Link, useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import LoadingButton from "../../components/ui/LoadingButton";
 
 type SignInProps = {
   invitation_token?: string | null;
@@ -86,6 +87,7 @@ export default function SignIn({
                     className="input"
                     placeholder="name@company.com"
                     autoComplete="email"
+                    disabled={processing}
                     required
                   />
 
@@ -115,6 +117,7 @@ export default function SignIn({
                     className="input"
                     placeholder="••••••••"
                     autoComplete="current-password"
+                    disabled={processing}
                     required
                   />
 
@@ -131,6 +134,7 @@ export default function SignIn({
                         event.target.checked ? "1" : "0"
                       )
                     }
+                    disabled={processing}
                     className="h-4 w-4 rounded border-slate-300 text-cyan-400"
                   />
 
@@ -143,13 +147,14 @@ export default function SignIn({
                   readOnly
                 />
 
-                <button
+                <LoadingButton
                   type="submit"
-                  disabled={processing}
-                  className="w-full rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500 disabled:opacity-60"
+                  loading={processing}
+                  loadingText="Signing in..."
+                  className="w-full"
                 >
-                  {processing ? "Signing in..." : "Sign In"}
-                </button>
+                  Sign In
+                </LoadingButton>
               </form>
 
               <div className="mt-8 text-center text-sm text-slate-500">

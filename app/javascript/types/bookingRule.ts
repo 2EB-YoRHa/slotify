@@ -1,9 +1,10 @@
 export type BookingRule = {
   id: number;
-  max_hours_per_reservation?: number | null;
-  min_notice_minutes?: number | null;
-  cancellation_limit_hours?: number | null;
-  allow_weekend_bookings?: boolean | null;
+  max_hours_per_reservation: number;
+  min_notice_minutes: number;
+  cancellation_limit_hours: number;
+  allow_weekend_bookings: boolean;
+  active: boolean;
 };
 
 export type BookingRuleFormData = {

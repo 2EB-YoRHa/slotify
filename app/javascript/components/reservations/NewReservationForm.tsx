@@ -1,391 +1,469 @@
 import { useForm } from "@inertiajs/react";
+import type { FormEvent } from "react";
 import { useState } from "react";
-import ReservationWorkspaceCard from "./ReservationWorkspaceCard";
+import LoadingButton from "../ui/LoadingButton";
 import type { Workspace } from "../../types/workspace";
-
-type TimeSlot = {
-  label: string;
-  start: string;
-  end: string;
-};
 
 type NewReservationFormProps = {
   workspaces: Workspace[];
-  selectedWorkspaceId?: number | string | null;
-  errors?: string[];
 };
 
-const timeSlots: TimeSlot[] = [
+type ReservationFormData = {
+  reservation: {
+    workspace_id: number | string;
+    start_time: string;
+    end_time: string;
+    attendees_count: number | string;
+    notes: string;
+  };
+};
+
+const timeSlots = [
   { label: "09:00 AM - 10:00 AM", start: "09:00", end: "10:00" },
   { label: "10:00 AM - 11:00 AM", start: "10:00", end: "11:00" },
   { label: "11:00 AM - 12:00 PM", start: "11:00", end: "12:00" },
-  { label: "10:00 AM - 12:00 PM", start: "10:00", end: "12:00" },
   { label: "01:00 PM - 02:00 PM", start: "13:00", end: "14:00" },
-  { label: "02:00 PM - 04:00 PM", start: "14:00", end: "16:00" },
-  { label: "04:00 PM - 05:00 PM", start: "16:00", end: "17:00" },
-  { label: "05:00 PM - 06:00 PM", start: "17:00", end: "18:00" },
+  { label: "02:00 PM - 03:00 PM", start: "14:00", end: "15:00" },
+  { label: "03:00 PM - 04:00 PM", start: "15:00", end: "16:00" },
 ];
 
 export default function NewReservationForm({
   workspaces,
-  selectedWorkspaceId = null,
-  errors = [],
 }: NewReservationFormProps) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toISOString().split("T")[0];
+  const firstSlot = timeSlots[0];
 
-  const initialWorkspaceId = selectedWorkspaceId
-    ? Number(selectedWorkspaceId)
-    : "";
-
-  const [selectedDate, setSelectedDate] = useState<string>(today);
-  const [selectedSlot, setSelectedSlot] = useState<TimeSlot>(timeSlots[0]);
-  const [search, setSearch] = useState<string>("");
-  const [clientError, setClientError] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [selectedSlot, setSelectedSlot] = useState(firstSlot);
+  const [search, setSearch] = useState("");
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
+  const [availabilityChecked, setAvailabilityChecked] = useState(false);
   const [unavailableWorkspaceIds, setUnavailableWorkspaceIds] = useState<
     number[]
   >([]);
-  const [availabilityChecked, setAvailabilityChecked] =
-    useState<boolean>(false);
-  const [checkingAvailability, setCheckingAvailability] =
-    useState<boolean>(false);
+  const [availabilityError, setAvailabilityError] = useState<string | null>(
+    null
+  );
 
-  const { data, setData, post, processing, transform } = useForm({
-    workspace_id: initialWorkspaceId,
-    start_time: buildDateTime(today, timeSlots[0].start),
-    end_time: buildDateTime(today, timeSlots[0].end),
-    attendees_count: 1,
-    notes: "",
-  });
+  const { data, setData, post, processing, errors } =
+    useForm<ReservationFormData>({
+      reservation: {
+        workspace_id: "",
+        start_time: buildDateTime(today, firstSlot.start),
+        end_time: buildDateTime(today, firstSlot.end),
+        attendees_count: 1,
+        notes: "",
+      },
+    });
 
   const filteredWorkspaces = workspaces.filter((workspace) => {
     const query = search.toLowerCase();
 
     return (
-      workspace.name?.toLowerCase().includes(query) ||
-      workspace.location?.toLowerCase().includes(query) ||
-      workspace.workspace_type?.toLowerCase().includes(query)
+      workspace.name.toLowerCase().includes(query) ||
+      workspace.workspace_type.toLowerCase().includes(query) ||
+      workspace.location?.toLowerCase().includes(query)
     );
   });
 
-  function chooseDate(date: string) {
+  const selectedWorkspace = workspaces.find(
+    (workspace) => workspace.id === Number(data.reservation.workspace_id)
+  );
+
+  const selectedWorkspaceUnavailable =
+    selectedWorkspace &&
+    unavailableWorkspaceIds.includes(selectedWorkspace.id);
+
+  const attendeesExceedCapacity =
+    selectedWorkspace &&
+    Number(data.reservation.attendees_count) > selectedWorkspace.capacity;
+
+  const canSubmit =
+    Boolean(data.reservation.workspace_id) &&
+    availabilityChecked &&
+    !selectedWorkspaceUnavailable &&
+    !attendeesExceedCapacity;
+
+  function handleDateChange(date: string) {
     setSelectedDate(date);
     setAvailabilityChecked(false);
     setUnavailableWorkspaceIds([]);
+    setAvailabilityError(null);
 
-    setData({
-      ...data,
+    updateReservation({
       start_time: buildDateTime(date, selectedSlot.start),
       end_time: buildDateTime(date, selectedSlot.end),
     });
   }
 
-  function chooseSlot(slot: TimeSlot) {
+  function handleSlotChange(slotLabel: string) {
+    const slot = timeSlots.find((item) => item.label === slotLabel);
+
+    if (!slot) return;
+
     setSelectedSlot(slot);
     setAvailabilityChecked(false);
     setUnavailableWorkspaceIds([]);
+    setAvailabilityError(null);
 
-    setData({
-      ...data,
+    updateReservation({
       start_time: buildDateTime(selectedDate, slot.start),
       end_time: buildDateTime(selectedDate, slot.end),
     });
   }
 
+  function selectWorkspace(workspaceId: number) {
+    updateReservation({
+      workspace_id: workspaceId,
+    });
+  }
+
+  function updateReservation(
+    values: Partial<ReservationFormData["reservation"]>
+  ) {
+    setData("reservation", {
+      ...data.reservation,
+      ...values,
+    });
+  }
+
   async function checkAvailability() {
     setCheckingAvailability(true);
-    setClientError(null);
-
-    const startTime = buildDateTime(selectedDate, selectedSlot.start);
-    const endTime = buildDateTime(selectedDate, selectedSlot.end);
+    setAvailabilityError(null);
 
     try {
-      const response = await fetch(
-        `/reservations/availability?start_time=${encodeURIComponent(
-          startTime
-        )}&end_time=${encodeURIComponent(endTime)}`,
-        {
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
+      const params = new URLSearchParams({
+        start_time: data.reservation.start_time,
+        end_time: data.reservation.end_time,
+      });
 
-      const result = await response.json();
+      const response = await fetch(`/reservations/availability?${params}`);
 
       if (!response.ok) {
-        setClientError(result.error || "Could not check availability.");
-        return;
+        throw new Error("Availability could not be checked.");
       }
+
+      const result = await response.json();
 
       setUnavailableWorkspaceIds(result.unavailable_workspace_ids || []);
       setAvailabilityChecked(true);
     } catch {
-      setClientError("Could not check availability. Please try again.");
+      setAvailabilityError(
+        "Could not check availability. Please try again."
+      );
+      setAvailabilityChecked(false);
     } finally {
       setCheckingAvailability(false);
     }
   }
 
-  function submitReservation(workspaceId: number) {
-    const selectedWorkspaceId = Number(workspaceId);
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-    const selectedWorkspace = workspaces.find(
-      (workspace) => Number(workspace.id) === selectedWorkspaceId
-    );
-
-    const attendeesCount = Number(data.attendees_count);
-
-    if (!availabilityChecked) {
-      setClientError("Please check availability before booking.");
-      return;
-    }
-
-    if (unavailableWorkspaceIds.includes(selectedWorkspaceId)) {
-      setClientError("This workspace is not available for the selected time.");
-      return;
-    }
-
-    if (!attendeesCount || attendeesCount < 1) {
-      setClientError("You must enter at least 1 attendee.");
-      return;
-    }
-
-    if (selectedWorkspace && attendeesCount > Number(selectedWorkspace.capacity)) {
-      setClientError(
-        `This workspace only allows up to ${selectedWorkspace.capacity} people.`
-      );
-      return;
-    }
-
-    setClientError(null);
-
-    transform((formData) => ({
-      reservation: {
-        ...formData,
-        workspace_id: selectedWorkspaceId,
-        attendees_count: attendeesCount,
-        start_time: buildDateTime(selectedDate, selectedSlot.start),
-        end_time: buildDateTime(selectedDate, selectedSlot.end),
-      },
-    }));
+    if (!canSubmit) return;
 
     post("/reservations");
   }
 
   return (
-    <>
-      {clientError && (
-        <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-600">
-          {clientError}
+    <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-6">
+      <section className="col-span-2 rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-slate-950">
+            New Reservation
+          </h2>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Choose a date, time slot and available workspace.
+          </p>
         </div>
-      )}
 
-      {errors.length > 0 && (
-        <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-          {errors.map((error, index) => (
-            <div key={index}>{error}</div>
-          ))}
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 gap-8">
-        <section className="space-y-8">
-          <StepTitle number="1" title="Choose Date" />
-
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-bold text-slate-900">Reservation Date</h2>
-              <span className="text-sm text-slate-400">Select a day</span>
-            </div>
+        <div className="mb-8 grid grid-cols-2 gap-5">
+          <label className="block">
+            <span className="mb-2 block text-sm font-bold text-slate-700">
+              Reservation Date
+            </span>
 
             <input
               type="date"
               value={selectedDate}
-              min={today}
-              onChange={(event) => chooseDate(event.target.value)}
+              onChange={(event) => handleDateChange(event.target.value)}
               className="input"
+              disabled={processing || checkingAvailability}
+              required
             />
-          </div>
+          </label>
 
-          <StepTitle number="2" title="Select Time Slot" />
+          <label className="block">
+            <span className="mb-2 block text-sm font-bold text-slate-700">
+              Time Slot
+            </span>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="mb-5 text-sm text-slate-500">Duration: Flexible</p>
-
-            <div className="grid grid-cols-2 gap-3">
-              {timeSlots.map((slot) => {
-                const active = selectedSlot.label === slot.label;
-
-                return (
-                  <button
-                    key={slot.label}
-                    type="button"
-                    onClick={() => chooseSlot(slot)}
-                    className={`rounded-lg border px-4 py-3 text-sm font-semibold ${
-                      active
-                        ? "border-cyan-400 bg-cyan-400 text-white"
-                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                    }`}
-                  >
-                    {slot.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between rounded-xl border border-cyan-100 bg-cyan-50 p-5">
-            <div>
-              <p className="text-sm font-bold text-slate-700">
-                Selected Window
-              </p>
-
-              <p className="mt-1 text-sm text-slate-500">
-                {formatSelectedDate(selectedDate)} · {selectedSlot.label}
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={checkAvailability}
-                disabled={checkingAvailability}
-                className="rounded-lg bg-cyan-400 px-4 py-2 text-sm font-bold text-white hover:bg-cyan-500 disabled:opacity-60"
-              >
-                {checkingAvailability ? "Checking..." : "Check Availability"}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => chooseSlot(timeSlots[0])}
-                className="text-sm font-bold text-cyan-500"
-              >
-                Reset
-              </button>
-            </div>
-          </div>
-
-          <StepTitle number="3" title="Attendees" />
-
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-2 text-lg font-bold text-slate-900">
-              Number of Attendees
-            </h2>
-
-            <p className="mb-5 text-sm text-slate-500">
-              Enter how many people will use the workspace. The system will
-              validate this against the selected workspace capacity.
-            </p>
-
-            <input
-              type="number"
-              min="1"
-              value={data.attendees_count}
-              onChange={(event) =>
-                setData("attendees_count", Number(event.target.value))
-              }
+            <select
+              value={selectedSlot.label}
+              onChange={(event) => handleSlotChange(event.target.value)}
               className="input"
-            />
+              disabled={processing || checkingAvailability}
+              required
+            >
+              {timeSlots.map((slot) => (
+                <option key={slot.label} value={slot.label}>
+                  {slot.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
 
-            <p className="mt-3 text-sm text-slate-400">
-              You will not be able to book a workspace if the attendee count
-              exceeds its capacity.
-            </p>
-          </div>
-        </section>
+        <div className="mb-8 flex items-end gap-4">
+          <label className="flex-1">
+            <span className="mb-2 block text-sm font-bold text-slate-700">
+              Search Workspace
+            </span>
 
-        <section>
-          <div className="mb-5 flex items-center justify-between">
-            <StepTitle number="4" title="Available Spaces" />
-
-            <p className="text-sm text-slate-500">
-              {filteredWorkspaces.length} options found
-            </p>
-          </div>
-
-          <div className="mb-5">
             <input
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search by room name or keyword..."
               className="input"
+              placeholder="Search by name, type or location"
+              disabled={processing}
             />
-          </div>
+          </label>
 
+          <LoadingButton
+            type="button"
+            loading={checkingAvailability}
+            loadingText="Checking..."
+            onClick={checkAvailability}
+          >
+            Check Availability
+          </LoadingButton>
+        </div>
+
+        {availabilityError && (
+          <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+            {availabilityError}
+          </div>
+        )}
+
+        {availabilityChecked && (
+          <div className="mb-6 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
+            Availability checked. Unavailable spaces are disabled.
+          </div>
+        )}
+
+        {errors.reservation && (
+          <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+            {String(errors.reservation)}
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-4">
           {filteredWorkspaces.length === 0 ? (
-            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500">
-              No active workspaces available.
+            <div className="col-span-2 rounded-xl bg-slate-50 p-8 text-center text-sm text-slate-400">
+              No workspaces found.
             </div>
           ) : (
-            <div className="space-y-4">
-              {filteredWorkspaces.map((workspace) => (
-                <ReservationWorkspaceCard
+            filteredWorkspaces.map((workspace) => {
+              const unavailable = unavailableWorkspaceIds.includes(
+                workspace.id
+              );
+              const selected =
+                Number(data.reservation.workspace_id) === workspace.id;
+
+              return (
+                <button
                   key={workspace.id}
-                  workspace={workspace}
-                  selected={Number(data.workspace_id) === Number(workspace.id)}
-                  processing={processing}
-                  attendeesCount={Number(data.attendees_count)}
-                  unavailable={unavailableWorkspaceIds.includes(
-                    Number(workspace.id)
+                  type="button"
+                  onClick={() => selectWorkspace(workspace.id)}
+                  disabled={processing || unavailable}
+                  className={`rounded-xl border p-5 text-left transition ${
+                    selected
+                      ? "border-cyan-300 bg-cyan-50"
+                      : "border-slate-200 bg-white hover:border-cyan-200"
+                  } ${
+                    unavailable
+                      ? "cursor-not-allowed opacity-50"
+                      : "cursor-pointer"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="font-bold text-slate-950">
+                        {workspace.name}
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        {formatText(workspace.workspace_type)}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-bold ${
+                        unavailable
+                          ? "bg-red-50 text-red-500"
+                          : "bg-green-50 text-green-600"
+                      }`}
+                    >
+                      {unavailable ? "Unavailable" : "Available"}
+                    </span>
+                  </div>
+
+                  <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+                    <Info label="Capacity" value={workspace.capacity} />
+                    <Info label="Rate" value={`$${workspace.hourly_rate || 0}`} />
+                    <Info label="Floor" value={workspace.floor || "-"} />
+                    <Info label="Zone" value={workspace.zone || "-"} />
+                  </div>
+
+                  {workspace.location && (
+                    <p className="mt-4 text-sm text-slate-400">
+                      {workspace.location}
+                    </p>
                   )}
-                  availabilityChecked={availabilityChecked}
-                  onBook={() => submitReservation(workspace.id)}
-                />
-              ))}
-            </div>
+                </button>
+              );
+            })
           )}
+        </div>
+      </section>
 
-          <div className="mt-6 rounded-xl border border-orange-100 bg-orange-50 p-5">
-            <h3 className="font-bold text-orange-700">
-              Planning a large event?
-            </h3>
+      <aside className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <h2 className="text-xl font-bold text-slate-950">
+          Reservation Details
+        </h2>
 
-            <p className="mt-2 text-sm leading-6 text-orange-600">
-              Our team can help organize larger sessions or special workspace
-              needs.
-            </p>
+        <p className="mt-2 text-sm text-slate-500">
+          Confirm attendees and optional notes before creating the reservation.
+        </p>
 
-            <button
-              type="button"
-              className="mt-4 w-full rounded-lg bg-white px-4 py-3 text-sm font-bold text-orange-500"
-            >
-              Contact Events Team
-            </button>
+        <div className="mt-8 space-y-5">
+          <label className="block">
+            <span className="mb-2 block text-sm font-bold text-slate-700">
+              Attendees
+            </span>
+
+            <input
+              type="number"
+              min="1"
+              value={data.reservation.attendees_count}
+              onChange={(event) =>
+                updateReservation({
+                  attendees_count: event.target.value,
+                })
+              }
+              className="input"
+              disabled={processing}
+              required
+            />
+
+            {attendeesExceedCapacity && (
+              <p className="mt-2 text-xs font-semibold text-red-500">
+                Attendees exceed workspace capacity.
+              </p>
+            )}
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-bold text-slate-700">
+              Notes
+            </span>
+
+            <textarea
+              value={data.reservation.notes}
+              onChange={(event) =>
+                updateReservation({
+                  notes: event.target.value,
+                })
+              }
+              className="input min-h-32"
+              placeholder="Optional notes for this reservation"
+              disabled={processing}
+            />
+          </label>
+        </div>
+
+        <div className="mt-8 rounded-xl bg-slate-50 p-5">
+          <SummaryRow
+            label="Workspace"
+            value={selectedWorkspace?.name || "Not selected"}
+          />
+
+          <SummaryRow label="Date" value={selectedDate} />
+
+          <SummaryRow label="Time" value={selectedSlot.label} />
+
+          <SummaryRow
+            label="Availability"
+            value={availabilityChecked ? "Checked" : "Pending"}
+          />
+        </div>
+
+        {!availabilityChecked && (
+          <div className="mt-5 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700">
+            Please check availability before creating the reservation.
           </div>
-        </section>
-      </div>
-    </>
+        )}
+
+        {selectedWorkspaceUnavailable && (
+          <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+            The selected workspace is not available for this time slot.
+          </div>
+        )}
+
+        <LoadingButton
+          type="submit"
+          loading={processing}
+          loadingText="Creating..."
+          disabled={!canSubmit}
+          className="mt-8 w-full"
+        >
+          Create Reservation
+        </LoadingButton>
+      </aside>
+    </form>
   );
 }
 
-type StepTitleProps = {
-  number: string;
-  title: string;
+type InfoProps = {
+  label: string;
+  value: string | number;
 };
 
-function StepTitle({ number, title }: StepTitleProps) {
+function Info({ label, value }: InfoProps) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cyan-50 text-sm font-bold text-cyan-500">
-        {number}
-      </span>
+    <div>
+      <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
+      <p className="mt-1 font-bold text-slate-800">{value}</p>
+    </div>
+  );
+}
 
-      <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+type SummaryRowProps = {
+  label: string;
+  value: string | number;
+};
+
+function SummaryRow({ label, value }: SummaryRowProps) {
+  return (
+    <div className="flex justify-between border-b border-slate-200 py-3 last:border-0">
+      <span className="text-sm text-slate-500">{label}</span>
+      <span className="text-sm font-bold text-slate-950">{value}</span>
     </div>
   );
 }
 
 function buildDateTime(date: string, time: string): string {
-  return `${date}T${time}:00`;
+  return `${date}T${time}`;
 }
 
-function formatSelectedDate(value: string): string {
+function formatText(value?: string | null): string {
   if (!value) return "-";
 
-  return new Date(`${value}T00:00:00`).toLocaleDateString([], {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  return value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }

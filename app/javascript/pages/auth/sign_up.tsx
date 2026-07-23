@@ -1,5 +1,6 @@
 import { Link, useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import LoadingButton from "../../components/ui/LoadingButton";
 import type { OrganizationInvitation } from "../../types/organization";
 
 type SignUpProps = {
@@ -61,7 +62,9 @@ export default function SignUp({
           <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
             <div className="text-center">
               <span className="rounded-full bg-cyan-50 px-4 py-1 text-xs font-extrabold uppercase tracking-wide text-cyan-500">
-                {isInvitationSignup ? "Invitation Signup" : "Create Workspace Organization"}
+                {isInvitationSignup
+                  ? "Invitation Signup"
+                  : "Create Workspace Organization"}
               </span>
 
               <h1 className="mt-5 text-3xl font-extrabold text-slate-950">
@@ -105,6 +108,7 @@ export default function SignUp({
                     }
                     className="input"
                     placeholder="Acme Coworking"
+                    disabled={processing}
                     required
                   />
 
@@ -123,6 +127,7 @@ export default function SignUp({
                   onChange={(event) => updateField("name", event.target.value)}
                   className="input"
                   placeholder="John Doe"
+                  disabled={processing}
                   required
                 />
 
@@ -143,6 +148,7 @@ export default function SignUp({
                   }`}
                   placeholder="name@company.com"
                   readOnly={isInvitationSignup}
+                  disabled={processing}
                   required
                 />
 
@@ -163,6 +169,7 @@ export default function SignUp({
                     }
                     className="input"
                     placeholder="••••••••"
+                    disabled={processing}
                     required
                   />
 
@@ -182,6 +189,7 @@ export default function SignUp({
                     }
                     className="input"
                     placeholder="••••••••"
+                    disabled={processing}
                     required
                   />
 
@@ -195,13 +203,14 @@ export default function SignUp({
                 readOnly
               />
 
-              <button
+              <LoadingButton
                 type="submit"
-                disabled={processing}
-                className="w-full rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500 disabled:opacity-60"
+                loading={processing}
+                loadingText="Creating account..."
+                className="w-full"
               >
-                {processing ? "Creating account..." : "Create Account"}
-              </button>
+                Create Account
+              </LoadingButton>
             </form>
 
             <div className="mt-8 text-center text-sm text-slate-500">

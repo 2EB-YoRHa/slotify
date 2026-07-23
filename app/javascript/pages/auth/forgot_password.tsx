@@ -1,5 +1,7 @@
 import { Link, useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import FlashMessages from "../../components/ui/FlashMessages";
+import LoadingButton from "../../components/ui/LoadingButton";
 
 type ForgotPasswordProps = {
   errors?: Partial<Record<string, string | string[]>>;
@@ -30,6 +32,8 @@ export default function ForgotPassword({
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">
+      <FlashMessages />
+
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
         <header className="mb-10 flex justify-center">
           <Logo />
@@ -70,19 +74,21 @@ export default function ForgotPassword({
                   className="input"
                   placeholder="name@company.com"
                   autoComplete="email"
+                  disabled={processing}
                   required
                 />
 
                 <FormError errors={errors} field="email" />
               </label>
 
-              <button
+              <LoadingButton
                 type="submit"
-                disabled={processing}
-                className="mt-7 w-full rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500 disabled:opacity-60"
+                loading={processing}
+                loadingText="Sending..."
+                className="mt-7 w-full"
               >
-                {processing ? "Sending..." : "Send Reset Link"}
-              </button>
+                Send Reset Link
+              </LoadingButton>
             </form>
 
             <div className="my-8 flex items-center gap-4">

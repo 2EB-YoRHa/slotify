@@ -1,65 +1,99 @@
 import { useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
-
-type AmenityFormData = {
-  name: string;
-};
+import LoadingButton from "../ui/LoadingButton";
 
 type AmenityFormProps = {
-  errors?: {
-    name?: string | string[];
+  errors?: Partial<Record<string, string | string[]>>;
+};
+
+type AmenityFormData = {
+  amenity: {
+    name: string;
   };
 };
 
-export default function AmenityForm({ errors = {} }: AmenityFormProps) {
-  const { data, setData, post, processing, reset } = useForm<AmenityFormData>({
-    name: "",
-  });
+export default function AmenityForm({ errors: initialErrors = {} }: AmenityFormProps) {
+  const { data, setData, post, processing, reset, errors: formErrors } =
+    useForm<AmenityFormData>({
+      amenity: {
+        name: "",
+      },
+    });
+
+  const errors: Record<string, string | string[] | undefined> = {
+    ...initialErrors,
+    ...formErrors,
+  };
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     post("/amenities", {
-      onSuccess: () => reset("name"),
+      onSuccess: () => {
+        reset();
+      },
     });
   }
-
-  const nameError = Array.isArray(errors.name) ? errors.name[0] : errors.name;
 
   return (
     <form
       onSubmit={handleSubmit}
       className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
     >
-      <h2 className="text-xl font-bold text-slate-900">Add Amenity</h2>
+      <div className="mb-5">
+        <h2 className="text-xl font-bold text-slate-950">Create Amenity</h2>
 
-      <p className="mt-1 text-sm leading-6 text-slate-500">
-        Create amenities that managers can assign to each workspace.
-      </p>
+        <p className="mt-1 text-sm text-slate-500">
+          Add amenities that can be assigned to workspaces.
+        </p>
+      </div>
 
-      <label className="mt-5 block">
-        <span className="mb-2 block text-sm font-semibold text-slate-700">
-          Amenity Name
-        </span>
+      <div className="flex items-start gap-4">
+        <label className="flex-1">
+          <span className="mb-2 block text-sm font-bold text-slate-700">
+            Amenity Name
+          </span>
 
-        <input
-          type="text"
-          value={data.name}
-          onChange={(event) => setData("name", event.target.value)}
-          className="input"
-          placeholder="Example: Projector"
-        />
+          <input
+            type="text"
+            value={data.amenity.name}
+            onChange={(event) =>
+              setData("amenity", {
+                ...data.amenity,
+                name: event.target.value,
+              })
+            }
+            className="input"
+            placeholder="Projector, Wi-Fi, Whiteboard..."
+            disabled={processing}
+            required
+          />
 
-        {nameError && <p className="mt-2 text-sm text-red-500">{nameError}</p>}
-      </label>
+          <FormError error={errors.name || errors["amenity.name"]} />
+        </label>
 
-      <button
-        type="submit"
-        disabled={processing}
-        className="mt-5 w-full rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white hover:bg-cyan-500 disabled:opacity-60"
-      >
-        {processing ? "Saving..." : "Create Amenity"}
-      </button>
+        <div className="pt-7">
+          <LoadingButton
+            type="submit"
+            loading={processing}
+            loadingText="Creating..."
+          >
+            Create Amenity
+          </LoadingButton>
+        </div>
+      </div>
     </form>
   );
+}
+
+type FormErrorProps = {
+  error?: string | string[];
+};
+
+function FormError({ error }: FormErrorProps) {
+  if (!error) return null;
+
+  const message = Array.isArray(error) ? error.join(", ") : error;
+
+  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
 }
