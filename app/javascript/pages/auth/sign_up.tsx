@@ -1,4 +1,4 @@
-import { useForm } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
 import type { OrganizationInvitation } from "../../types/organization";
 
@@ -15,6 +15,7 @@ type SignUpFormData = {
     password: string;
     password_confirmation: string;
     invitation_token: string;
+    organization_name: string;
   };
 };
 
@@ -23,6 +24,8 @@ export default function SignUp({
   invitation_token = null,
   errors = {},
 }: SignUpProps) {
+  const isInvitationSignup = Boolean(invitation);
+
   const { data, setData, post, processing } = useForm<SignUpFormData>({
     user: {
       name: "",
@@ -30,6 +33,7 @@ export default function SignUp({
       password: "",
       password_confirmation: "",
       invitation_token: invitation_token || invitation?.token || "",
+      organization_name: "",
     },
   });
 
@@ -39,40 +43,11 @@ export default function SignUp({
     post("/users");
   }
 
-  function updateField(
-    field: keyof SignUpFormData["user"],
-    value: string
-  ) {
+  function updateField(field: keyof SignUpFormData["user"], value: string) {
     setData("user", {
       ...data.user,
       [field]: value,
     });
-  }
-
-  if (!invitation) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
-        <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-          <Logo />
-
-          <h1 className="mt-8 text-3xl font-extrabold text-slate-950">
-            Invitation required
-          </h1>
-
-          <p className="mt-4 leading-7 text-slate-500">
-            To create a Slotify account, you need a valid organization
-            invitation.
-          </p>
-
-          <a
-            href="/users/sign_in"
-            className="mt-8 inline-flex rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white hover:bg-cyan-500"
-          >
-            Back to Sign In
-          </a>
-        </div>
-      </main>
-    );
   }
 
   return (
@@ -86,28 +61,56 @@ export default function SignUp({
           <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
             <div className="text-center">
               <span className="rounded-full bg-cyan-50 px-4 py-1 text-xs font-extrabold uppercase tracking-wide text-cyan-500">
-                Invitation Signup
+                {isInvitationSignup ? "Invitation Signup" : "Create Workspace Organization"}
               </span>
 
               <h1 className="mt-5 text-3xl font-extrabold text-slate-950">
                 Create your account
               </h1>
 
-              <p className="mt-3 leading-7 text-slate-500">
-                You have been invited to join{" "}
-                <span className="font-bold text-slate-950">
-                  {invitation.organization?.name}
-                </span>{" "}
-                as{" "}
-                <span className="font-bold text-slate-950">
-                  {formatRole(invitation.role?.name)}
-                </span>
-                .
-              </p>
+              {isInvitationSignup ? (
+                <p className="mt-3 leading-7 text-slate-500">
+                  You have been invited to join{" "}
+                  <span className="font-bold text-slate-950">
+                    {invitation?.organization?.name}
+                  </span>{" "}
+                  as{" "}
+                  <span className="font-bold text-slate-950">
+                    {formatRole(invitation?.role?.name)}
+                  </span>
+                  .
+                </p>
+              ) : (
+                <p className="mt-3 leading-7 text-slate-500">
+                  Create your manager account and register your coworking
+                  organization in Slotify.
+                </p>
+              )}
             </div>
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-5">
               <FormError errors={errors} field="invitation_token" />
+
+              {!isInvitationSignup && (
+                <label className="block">
+                  <span className="mb-2 block text-sm font-bold text-slate-700">
+                    Organization Name
+                  </span>
+
+                  <input
+                    type="text"
+                    value={data.user.organization_name}
+                    onChange={(event) =>
+                      updateField("organization_name", event.target.value)
+                    }
+                    className="input"
+                    placeholder="Acme Coworking"
+                    required
+                  />
+
+                  <FormError errors={errors} field="organization_name" />
+                </label>
+              )}
 
               <label className="block">
                 <span className="mb-2 block text-sm font-bold text-slate-700">
@@ -134,8 +137,13 @@ export default function SignUp({
                 <input
                   type="email"
                   value={data.user.email}
-                  className="input bg-slate-50 text-slate-500"
-                  readOnly
+                  onChange={(event) => updateField("email", event.target.value)}
+                  className={`input ${
+                    isInvitationSignup ? "bg-slate-50 text-slate-500" : ""
+                  }`}
+                  placeholder="name@company.com"
+                  readOnly={isInvitationSignup}
+                  required
                 />
 
                 <FormError errors={errors} field="email" />
@@ -170,10 +178,7 @@ export default function SignUp({
                     type="password"
                     value={data.user.password_confirmation}
                     onChange={(event) =>
-                      updateField(
-                        "password_confirmation",
-                        event.target.value
-                      )
+                      updateField("password_confirmation", event.target.value)
                     }
                     className="input"
                     placeholder="••••••••"
@@ -201,12 +206,12 @@ export default function SignUp({
 
             <div className="mt-8 text-center text-sm text-slate-500">
               Already have an account?{" "}
-              <a
+              <Link
                 href="/users/sign_in"
                 className="font-bold text-cyan-500 hover:text-cyan-600"
               >
                 Sign in
-              </a>
+              </Link>
             </div>
           </div>
         </section>
@@ -232,9 +237,7 @@ function Logo() {
         ◇
       </div>
 
-      <span className="text-3xl font-extrabold text-cyan-400">
-        Slotify
-      </span>
+      <span className="text-3xl font-extrabold text-cyan-400">Slotify</span>
     </div>
   );
 }

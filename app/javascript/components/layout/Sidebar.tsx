@@ -1,4 +1,4 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 
 type NavItem = {
   label: string;
@@ -59,14 +59,13 @@ export default function Sidebar() {
       </nav>
 
       <div className="absolute bottom-0 w-full border-t border-slate-200 p-4">
-        <Link
-          href="/users/sign_out"
-          method="delete"
-          as="button"
-          className="text-sm font-medium text-red-500"
+        <button
+          type="button"
+          onClick={() => router.delete("/users/sign_out")}
+          className="text-sm font-medium text-red-500 hover:text-red-600"
         >
           Sign Out
-        </Link>
+        </button>
       </div>
     </aside>
   );
