@@ -11,8 +11,8 @@ class OrganizationInvitation < ApplicationRecord
   validates :status, presence: true
   validates :expires_at, presence: true
 
-  validate :email_is_not_already_member
-  validate :email_does_not_have_pending_invitation
+  validate :email_is_not_already_member, on: :create
+  validate :email_does_not_have_pending_invitation, on: :create
 
   private
 

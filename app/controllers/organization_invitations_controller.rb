@@ -67,6 +67,12 @@ class OrganizationInvitationsController < InertiaController
       return
     end
 
+    if current_user.email.downcase != @invitation.email.downcase
+      redirect_to accept_organization_invitations_path(token: @invitation.token),
+                  alert: "This invitation belongs to another email address"
+      return
+    end
+
     if @invitation.status != "pending"
       redirect_to root_path,
                   alert: "This invitation has already been used"
