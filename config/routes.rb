@@ -12,6 +12,15 @@ Rails.application.routes.draw do
   root "dashboard#index"
 
   resource :organization, only: [ :show, :edit, :update ]
+
+  get "organization/members/:id",
+    to: "organization_members#show",
+    as: :organization_member
+
+  patch "organization/members/:id/toggle_active",
+    to: "organization_members#toggle_active",
+    as: :toggle_active_organization_member
+
   resource :booking_rule, only: [ :show, :edit, :update ]
   resource :subscription, only: [ :show ]
 

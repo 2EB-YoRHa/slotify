@@ -1,6 +1,7 @@
 import AppLayout from "../../components/AppLayout";
 import WorkspaceForm from "../../components/workspaces/WorkspaceForm";
-import type { Amenity, Workspace, WorkspaceErrors } from "../../types/workspace";
+import type { Amenity } from "../../types/amenity";
+import type { Workspace, WorkspaceErrors } from "../../types/workspace";
 
 type EditWorkspaceProps = {
   workspace: Workspace;

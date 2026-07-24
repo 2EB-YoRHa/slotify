@@ -20,8 +20,6 @@ type OrganizationShowProps = {
   roles?: Role[];
   booking_rule?: BookingRule | null;
   subscription?: Subscription | null;
-  current_user_role?: string | null;
-  current_user_email?: string | null;
   can_manage_organization?: boolean;
 };
 
@@ -32,8 +30,6 @@ export default function OrganizationShow({
   roles = [],
   booking_rule = null,
   subscription = null,
-  current_user_role = null,
-  current_user_email = null,
   can_manage_organization = false,
 }: OrganizationShowProps) {
   const activeUsers = users.filter((user) => user.active).length;
@@ -43,15 +39,6 @@ export default function OrganizationShow({
   return (
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
-        <div className="mb-6 rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
-          <p className="font-bold">Debug temporal</p>
-          <p>Email actual: {current_user_email || "-"}</p>
-          <p>Rol detectado por Rails: {current_user_role || "-"}</p>
-          <p>
-            Puede administrar organización:{" "}
-            {can_manage_organization ? "Sí" : "No"}
-          </p>
-        </div>
         <div>
           <h1 className="text-3xl font-bold text-slate-900">
             Organization Management
@@ -119,7 +106,10 @@ export default function OrganizationShow({
             </div>
           </div>
 
-          <OrganizationMembersTable users={users} />
+          <OrganizationMembersTable
+            users={users}
+            canManage={can_manage_organization}
+          />
         </section>
 
         <aside className="space-y-8">

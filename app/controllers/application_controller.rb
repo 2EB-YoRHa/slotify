@@ -11,11 +11,22 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
   inertia_share flash: -> {
-  {
-    notice: flash.notice,
-    alert: flash.alert
+    {
+      notice: flash.notice,
+      alert: flash.alert
+    }
   }
-}
+
+  inertia_share current_user: -> {
+    next nil unless user_signed_in?
+
+    {
+      id: current_user.id,
+      name: current_user.name,
+      email: current_user.email,
+      role: current_user.role&.name
+    }
+  }
 
   def after_sign_in_path_for(resource)
     invitation_token = session[:pending_invitation_token]

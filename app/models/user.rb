@@ -9,4 +9,12 @@ class User < ApplicationRecord
   has_many :sent_invitations, class_name: "OrganizationInvitation", foreign_key: :invited_by_id
 
   validates :name, presence: true
+
+  def active_for_authentication?
+    super && active?
+  end
+
+  def inactive_message
+    active? ? super : :inactive
+  end
 end
