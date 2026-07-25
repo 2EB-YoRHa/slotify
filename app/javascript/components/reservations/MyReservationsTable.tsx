@@ -8,45 +8,58 @@ import {
   CalendarDays,
   Clock3,
   Eye,
+  MapPin,
   Pencil,
   Search,
   SlidersHorizontal,
-  UserRound,
+  UsersRound,
 } from "lucide-react";
 import { duration, formatDate, formatTime } from "../../utils/dateTime";
 import type { Reservation } from "../../types/reservation";
 import ReservationStatusBadge from "./ReservationStatusBadge";
 
-type ReservationsTableProps = {
+type MyReservationsTableProps = {
   reservations: Reservation[];
 };
 
-export default function ReservationsTable({
+export default function MyReservationsTable({
   reservations,
-}: ReservationsTableProps) {
+}: MyReservationsTableProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
 
   const filteredReservations = reservations.filter((reservation) => {
     const query = search.toLowerCase();
-
     const workspaceName = reservation.workspace?.name || "";
     const workspaceType = reservation.workspace?.workspace_type || "";
-    const userName = reservation.user?.name || "";
-    const userEmail = reservation.user?.email || "";
+    const location = reservation.workspace?.location || "";
+    const now = Date.now();
+    const startTime = new Date(reservation.start_time).getTime();
+    const endTime = new Date(reservation.end_time).getTime();
 
     const matchesSearch =
       query.length === 0 ||
       workspaceName.toLowerCase().includes(query) ||
       workspaceType.toLowerCase().includes(query) ||
-      userName.toLowerCase().includes(query) ||
-      userEmail.toLowerCase().includes(query) ||
+      location.toLowerCase().includes(query) ||
       reservation.status.toLowerCase().includes(query);
 
     const matchesStatus =
       statusFilter === "all" || reservation.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
+    const matchesDate =
+      dateFilter === "all" ||
+      (dateFilter === "upcoming" &&
+        reservation.status !== "cancelled" &&
+        startTime >= now) ||
+      (dateFilter === "past" && endTime < now) ||
+      (dateFilter === "active" &&
+        reservation.status !== "cancelled" &&
+        startTime <= now &&
+        endTime >= now);
+
+    return matchesSearch && matchesStatus && matchesDate;
   });
 
   return (
@@ -67,7 +80,7 @@ export default function ReservationsTable({
             type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by user, workspace or status..."
+            placeholder="Search by workspace, type or location..."
             className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
           />
         </div>
@@ -77,6 +90,17 @@ export default function ReservationsTable({
             <SlidersHorizontal size={16} />
             Filters
           </div>
+
+          <select
+            value={dateFilter}
+            onChange={(event) => setDateFilter(event.target.value)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-600 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+          >
+            <option value="all">All Dates</option>
+            <option value="active">Active Now</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="past">Past</option>
+          </select>
 
           <select
             value={statusFilter}
@@ -92,8 +116,7 @@ export default function ReservationsTable({
       </div>
 
       <div className="border-b border-slate-100 bg-slate-50 px-6 py-3 text-xs font-bold uppercase tracking-wide text-slate-400">
-        Showing {filteredReservations.length} of {reservations.length}{" "}
-        reservations
+        Showing {filteredReservations.length} of {reservations.length} bookings
       </div>
 
       {filteredReservations.length === 0 ? (
@@ -103,32 +126,32 @@ export default function ReservationsTable({
           </div>
 
           <h3 className="mt-4 text-lg font-bold text-slate-900">
-            No reservations found
+            No bookings found
           </h3>
 
           <p className="mt-2 text-sm text-slate-500">
-            Try changing the search text or selected status.
+            Try changing the search text or selected filters.
           </p>
         </div>
       ) : (
         <table className="w-full table-fixed text-sm">
           <colgroup>
-            <col className="w-[19%]" />
-            <col className="w-[22%]" />
-            <col className="w-[13%]" />
+            <col className="w-[28%]" />
             <col className="w-[16%]" />
+            <col className="w-[16%]" />
+            <col className="w-[14%]" />
             <col className="w-[11%]" />
-            <col className="w-[10%]" />
-            <col className="w-[9%]" />
+            <col className="w-[8%]" />
+            <col className="w-[7%]" />
           </colgroup>
 
           <thead className="bg-white text-slate-500">
             <tr>
-              <th className="px-6 py-4 text-left font-bold">User</th>
               <th className="px-6 py-4 text-left font-bold">Workspace</th>
+              <th className="px-6 py-4 text-center font-bold">Location</th>
               <th className="px-6 py-4 text-center font-bold">Date</th>
               <th className="px-6 py-4 text-center font-bold">Time</th>
-              <th className="px-6 py-4 text-center font-bold">Duration</th>
+              <th className="px-6 py-4 text-center font-bold">Attendees</th>
               <th className="px-6 py-4 text-center font-bold">Status</th>
               <th className="px-6 py-4 text-center font-bold">Actions</th>
             </tr>
@@ -136,7 +159,7 @@ export default function ReservationsTable({
 
           <tbody>
             {filteredReservations.map((reservation, index) => {
-              const isCancelled = reservation.status === "cancelled";
+              const canModify = canModifyReservation(reservation);
 
               return (
                 <motion.tr
@@ -148,26 +171,8 @@ export default function ReservationsTable({
                 >
                   <td className="px-6 py-5 align-middle">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-cyan-500">
-                        <UserRound size={18} strokeWidth={2.4} />
-                      </div>
-
-                      <div className="min-w-0">
-                        <div className="truncate font-bold text-slate-950">
-                          {reservation.user?.name || "Unknown user"}
-                        </div>
-
-                        <div className="truncate text-xs text-slate-400">
-                          {reservation.user?.email || "-"}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-5 align-middle">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-400">
-                        <Building2 size={18} strokeWidth={2.4} />
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+                        <Building2 size={20} strokeWidth={2.4} />
                       </div>
 
                       <div className="min-w-0">
@@ -183,6 +188,16 @@ export default function ReservationsTable({
                   </td>
 
                   <td className="px-6 py-5 text-center align-middle text-slate-600">
+                    <div className="inline-flex max-w-full items-center justify-center gap-2">
+                      <MapPin size={15} className="shrink-0 text-slate-400" />
+
+                      <span className="truncate">
+                        {reservation.workspace?.location || "-"}
+                      </span>
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-5 text-center align-middle text-slate-600">
                     {formatDate(reservation.start_time)}
                   </td>
 
@@ -192,10 +207,17 @@ export default function ReservationsTable({
                       {formatTime(reservation.start_time)} -{" "}
                       {formatTime(reservation.end_time)}
                     </div>
+
+                    <div className="mt-1 text-xs text-slate-400">
+                      {duration(reservation.start_time, reservation.end_time)}
+                    </div>
                   </td>
 
-                  <td className="px-6 py-5 text-center align-middle text-slate-600">
-                    {duration(reservation.start_time, reservation.end_time)}
+                  <td className="px-6 py-5 text-center align-middle">
+                    <div className="inline-flex items-center gap-2 font-bold text-slate-700">
+                      <UsersRound size={16} className="text-slate-400" />
+                      {reservation.attendees_count || 1}
+                    </div>
                   </td>
 
                   <td className="px-6 py-5 text-center align-middle">
@@ -210,7 +232,7 @@ export default function ReservationsTable({
                         icon={<Eye size={16} />}
                       />
 
-                      {!isCancelled && (
+                      {canModify && (
                         <>
                           <ActionLink
                             href={`/reservations/${reservation.id}/edit`}
@@ -259,6 +281,12 @@ function ActionLink({ href, title, icon, danger = false }: ActionLinkProps) {
       {icon}
     </Link>
   );
+}
+
+function canModifyReservation(reservation: Reservation): boolean {
+  if (reservation.status === "cancelled") return false;
+
+  return new Date(reservation.end_time).getTime() >= Date.now();
 }
 
 function formatText(value?: string | null): string {

@@ -1,4 +1,19 @@
 import { Link } from "@inertiajs/react";
+import { motion } from "motion/react";
+import {
+  ArrowLeft,
+  Ban,
+  Building2,
+  CalendarCheck,
+  CalendarDays,
+  Clock3,
+  Edit3,
+  MapPin,
+  StickyNote,
+  UserRound,
+  UsersRound,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import ReservationStatusBadge from "../../components/reservations/ReservationStatusBadge";
 import { duration, formatDate, formatTime } from "../../utils/dateTime";
@@ -9,214 +24,396 @@ type ReservationShowProps = {
 };
 
 export default function ReservationShow({ reservation }: ReservationShowProps) {
-  const isCancelled = reservation.status === "cancelled";
+  const canModify = canModifyReservation(reservation);
 
   return (
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <div className="mb-2 text-sm text-slate-400">
-            <Link href="/reservations" className="hover:text-cyan-500">
-              Reservations
-            </Link>{" "}
-            / Details
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Link
+              href="/reservations"
+              className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
+            >
+              <ArrowLeft size={16} />
+              Back to Reservations
+            </Link>
+          </motion.div>
 
-          <h1 className="text-3xl font-bold text-slate-900">
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.04 }}
+            className="mt-6 text-sm font-bold uppercase tracking-wide text-cyan-500"
+          >
             Reservation Details
-          </h1>
+          </motion.p>
 
-          <p className="mt-1 text-slate-500">
-            Review the full information for this workspace booking.
-          </p>
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="mt-2 text-3xl font-bold text-slate-950"
+          >
+            {reservation.workspace?.name || "Workspace Reservation"}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="mt-1 text-slate-500"
+          >
+            Review reservation information, schedule, status and workspace
+            details.
+          </motion.p>
         </div>
 
-        <div className="flex gap-3">
-          <Link
-            href="/reservations"
-            className="rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+        {canModify && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex gap-3"
           >
-            Back
-          </Link>
-
-          {!isCancelled && (
             <Link
               href={`/reservations/${reservation.id}/edit`}
-              className="rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 hover:shadow-md"
             >
-              Edit Reservation
+              <Edit3 size={18} />
+              Edit
             </Link>
-          )}
-        </div>
+
+            <Link
+              href={`/reservations/${reservation.id}/cancel`}
+              className="inline-flex items-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-red-600 hover:shadow-md"
+            >
+              <Ban size={18} />
+              Cancel
+            </Link>
+          </motion.div>
+        )}
       </div>
 
-      <div className="grid grid-cols-3 gap-8">
-        <section className="col-span-2 space-y-6">
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-start justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  {reservation.workspace?.name || "Workspace removed"}
-                </h2>
+      <section className="mb-8 grid grid-cols-4 gap-6">
+        <SummaryCard
+          index={0}
+          icon={CalendarDays}
+          label="Date"
+          value={formatDate(reservation.start_time)}
+          helper="Reservation day"
+        />
 
-                <p className="mt-1 text-sm text-slate-500">
-                  {formatType(reservation.workspace?.workspace_type)}
-                </p>
+        <SummaryCard
+          index={1}
+          icon={Clock3}
+          label="Time"
+          value={`${formatTime(reservation.start_time)} - ${formatTime(
+            reservation.end_time
+          )}`}
+          helper={duration(reservation.start_time, reservation.end_time)}
+        />
+
+        <SummaryCard
+          index={2}
+          icon={UsersRound}
+          label="Attendees"
+          value={reservation.attendees_count || 1}
+          helper="People expected"
+        />
+
+        <SummaryCard
+          index={3}
+          icon={CalendarCheck}
+          label="Status"
+          value={formatText(reservation.status)}
+          helper="Current booking state"
+        />
+      </section>
+
+      <section className="grid grid-cols-3 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="col-span-2 space-y-8"
+        >
+          <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="mb-8 flex items-start justify-between">
+              <div className="flex items-start gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+                  <Building2 size={26} strokeWidth={2.4} />
+                </div>
+
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-950">
+                    Workspace Information
+                  </h2>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    Details about the space assigned to this reservation.
+                  </p>
+                </div>
               </div>
 
               <ReservationStatusBadge status={reservation.status} />
             </div>
 
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 gap-5">
               <InfoCard
+                icon={Building2}
+                label="Workspace"
+                value={reservation.workspace?.name || "Workspace removed"}
+              />
+
+              <InfoCard
+                icon={CalendarCheck}
+                label="Type"
+                value={formatText(reservation.workspace?.workspace_type)}
+              />
+
+              <InfoCard
+                icon={UsersRound}
+                label="Capacity"
+                value={reservation.workspace?.capacity || "-"}
+              />
+
+              <InfoCard
+                icon={MapPin}
+                label="Location"
+                value={reservation.workspace?.location || "-"}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="mb-8 flex items-start gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+                <UserRound size={26} strokeWidth={2.4} />
+              </div>
+
+              <div>
+                <h2 className="text-2xl font-bold text-slate-950">
+                  Reserved By
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  User assigned to this reservation.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 rounded-xl bg-slate-50 p-5">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-lg font-extrabold text-cyan-500">
+                {initials(reservation.user?.name)}
+              </div>
+
+              <div>
+                <p className="text-lg font-bold text-slate-950">
+                  {reservation.user?.name || "Unknown user"}
+                </p>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  {reservation.user?.email || "-"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="mb-6 flex items-start gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+                <StickyNote size={26} strokeWidth={2.4} />
+              </div>
+
+              <div>
+                <h2 className="text-2xl font-bold text-slate-950">Notes</h2>
+
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  Additional information added to this reservation.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-slate-50 p-5 text-sm leading-6 text-slate-600">
+              {reservation.notes || "No notes were added to this reservation."}
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.aside
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16 }}
+          className="space-y-6"
+        >
+          <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="mb-8">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+                <CalendarCheck size={26} strokeWidth={2.4} />
+              </div>
+
+              <h2 className="text-2xl font-bold text-slate-950">
+                Booking Summary
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Quick overview of this reservation.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-slate-50 p-5">
+              <SummaryRow
+                label="Workspace"
+                value={reservation.workspace?.name || "Workspace removed"}
+              />
+
+              <SummaryRow
                 label="Date"
                 value={formatDate(reservation.start_time)}
               />
 
-              <InfoCard
+              <SummaryRow
                 label="Time"
                 value={`${formatTime(reservation.start_time)} - ${formatTime(
                   reservation.end_time
                 )}`}
               />
 
-              <InfoCard
+              <SummaryRow
                 label="Duration"
                 value={duration(reservation.start_time, reservation.end_time)}
               />
 
-              <InfoCard
-                label="Attendees"
-                value={`${reservation.attendees_count || 1} people`}
-              />
-
-              <InfoCard
-                label="Total Price"
-                value={`$${reservation.total_price || 0}`}
-              />
-
-              <InfoCard
+              <SummaryRow
                 label="Status"
-                value={capitalize(reservation.status)}
+                value={formatText(reservation.status)}
               />
             </div>
+
+            {canModify ? (
+              <div className="mt-8 flex flex-col gap-3">
+                <Link
+                  href={`/reservations/${reservation.id}/edit`}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-500"
+                >
+                  <Edit3 size={16} />
+                  Edit Reservation
+                </Link>
+
+                <Link
+                  href={`/reservations/${reservation.id}/cancel`}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-6 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50"
+                >
+                  <Ban size={16} />
+                  Cancel Reservation
+                </Link>
+              </div>
+            ) : (
+              <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">
+                This reservation can no longer be modified.
+              </div>
+            )}
           </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900">Notes</h2>
-
-            <p className="mt-3 text-sm leading-7 text-slate-500">
-              {reservation.notes || "No notes were added to this reservation."}
-            </p>
-          </div>
-        </section>
-
-        <aside className="space-y-6">
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900">Reserved By</h2>
-
-            <div className="mt-5 space-y-4 text-sm">
-              <SummaryItem
-                label="Name"
-                value={reservation.user?.name || "Unknown user"}
-              />
-
-              <SummaryItem
-                label="Email"
-                value={reservation.user?.email || "-"}
-              />
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900">Workspace</h2>
-
-            <div className="mt-5 space-y-4 text-sm">
-              <SummaryItem
-                label="Name"
-                value={reservation.workspace?.name || "Workspace removed"}
-              />
-
-              <SummaryItem
-                label="Type"
-                value={formatType(reservation.workspace?.workspace_type)}
-              />
-
-              <SummaryItem
-                label="Capacity"
-                value={
-                  reservation.workspace?.capacity
-                    ? `${reservation.workspace.capacity} people`
-                    : "-"
-                }
-              />
-            </div>
-          </div>
-
-          {!isCancelled && (
-            <div className="rounded-xl border border-red-100 bg-red-50 p-6">
-              <h2 className="font-bold text-red-700">Danger Zone</h2>
-
-              <p className="mt-2 text-sm leading-6 text-red-600">
-                Cancelling this reservation will keep the record in the system
-                but mark it as cancelled.
-              </p>
-
-              <Link
-                href={`/reservations/${reservation.id}/cancel`}
-                className="mt-5 block w-full rounded-lg bg-red-500 px-5 py-3 text-center text-sm font-bold text-white hover:bg-red-600"
-              >
-                Cancel Reservation
-              </Link>
-            </div>
-          )}
-        </aside>
-      </div>
+        </motion.aside>
+      </section>
     </AppLayout>
   );
 }
 
+type SummaryCardProps = {
+  index: number;
+  icon: LucideIcon;
+  label: string;
+  value: string | number;
+  helper: string;
+};
+
+function SummaryCard({ index, icon: Icon, label, value, helper }: SummaryCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06 }}
+      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-medium text-slate-500">{label}</p>
+
+          <h2 className="mt-2 text-xl font-bold text-slate-950">{value}</h2>
+        </div>
+
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+          <Icon size={19} strokeWidth={2.4} />
+        </div>
+      </div>
+
+      <p className="mt-3 text-xs text-slate-500">{helper}</p>
+    </motion.div>
+  );
+}
+
 type InfoCardProps = {
+  icon: LucideIcon;
   label: string;
   value: string | number;
 };
 
-function InfoCard({ label, value }: InfoCardProps) {
+function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
   return (
-    <div className="rounded-xl bg-slate-50 p-5">
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-        {label}
-      </p>
+    <div className="rounded-xl border border-slate-100 bg-slate-50 p-5">
+      <div className="mb-3 flex items-center gap-2 text-slate-400">
+        <Icon size={16} />
+        <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
+      </div>
 
-      <p className="mt-2 font-bold text-slate-900">{value}</p>
+      <p className="break-words text-sm font-bold text-slate-900">{value}</p>
     </div>
   );
 }
 
-type SummaryItemProps = {
+type SummaryRowProps = {
   label: string;
   value: string | number;
 };
 
-function SummaryItem({ label, value }: SummaryItemProps) {
+function SummaryRow({ label, value }: SummaryRowProps) {
   return (
-    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-      <span className="text-slate-500">{label}</span>
-      <span className="font-bold text-slate-900">{value}</span>
+    <div className="flex justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
+      <span className="text-sm text-slate-500">{label}</span>
+
+      <span className="text-right text-sm font-bold text-slate-950">
+        {value}
+      </span>
     </div>
   );
 }
 
-function formatType(type?: string | null): string {
-  if (!type) return "-";
+function canModifyReservation(reservation: Reservation): boolean {
+  if (reservation.status === "cancelled") return false;
 
-  return type
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
+  return new Date(reservation.end_time).getTime() >= Date.now();
 }
 
-function capitalize(value?: string | null): string {
+function initials(name?: string | null): string {
+  if (!name) return "?";
+
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function formatText(value?: string | null): string {
   if (!value) return "-";
 
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  return value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }

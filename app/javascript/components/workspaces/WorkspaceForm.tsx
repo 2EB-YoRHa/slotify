@@ -1,41 +1,85 @@
 import { useForm } from "@inertiajs/react";
+import { motion } from "motion/react";
 import type { FormEvent } from "react";
+import {
+  Building2,
+  CheckCircle2,
+  DollarSign,
+  Layers3,
+  MapPin,
+  Power,
+  Save,
+  Sparkles,
+  StickyNote,
+  UsersRound,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
 import type { Amenity } from "../../types/amenity";
-import type {
-  Workspace,
-  WorkspaceErrors,
-  WorkspaceFormData,
-} from "../../types/workspace";
+import type { Workspace } from "../../types/workspace";
 
 type WorkspaceFormProps = {
-  mode: "create" | "edit";
   workspace?: Workspace | null;
   amenities?: Amenity[];
-  errors?: WorkspaceErrors;
+  selectedAmenityIds?: number[];
+  selected_amenity_ids?: number[];
+  errors?: Partial<Record<string, string | string[]>>;
 };
 
+type WorkspaceFormData = {
+  name: string;
+  workspace_type: string;
+  capacity: number | string;
+  floor: string;
+  zone: string;
+  location: string;
+  description: string;
+  hourly_rate: number | string;
+  active: boolean;
+  amenity_ids: number[];
+};
+
+const workspaceTypes = [
+  { value: "meeting_room", label: "Meeting Room" },
+  { value: "private_office", label: "Private Office" },
+  { value: "open_desk", label: "Open Desk" },
+  { value: "training_room", label: "Training Room" },
+  { value: "phone_booth", label: "Phone Booth" },
+];
+
 export default function WorkspaceForm({
-  mode,
   workspace = null,
   amenities = [],
+  selectedAmenityIds = [],
+  selected_amenity_ids = [],
   errors: initialErrors = {},
 }: WorkspaceFormProps) {
-  const { data, setData, post, patch, processing, errors: formErrors, transform } =
-    useForm<WorkspaceFormData>({
-      name: workspace?.name || "",
-      workspace_type: workspace?.workspace_type || "meeting_room",
-      capacity: workspace?.capacity || "",
-      floor: workspace?.floor || "",
-      zone: workspace?.zone || "",
-      location: workspace?.location || "",
-      description: workspace?.description || "",
-      hourly_rate: workspace?.hourly_rate || "",
-      active: workspace?.active ?? true,
-      amenity_ids: workspace?.amenities?.map((amenity) => amenity.id) || [],
-    });
+  const isEditing = Boolean(workspace?.id);
+  const initialAmenityIds =
+    selectedAmenityIds.length > 0 ? selectedAmenityIds : selected_amenity_ids;
 
-  const errors = {
+  const {
+    data,
+    setData,
+    post,
+    patch,
+    processing,
+    errors: formErrors,
+    transform,
+  } = useForm<WorkspaceFormData>({
+    name: workspace?.name || "",
+    workspace_type: workspace?.workspace_type || "meeting_room",
+    capacity: workspace?.capacity || 1,
+    floor: workspace?.floor || "",
+    zone: workspace?.zone || "",
+    location: workspace?.location || "",
+    description: workspace?.description || "",
+    hourly_rate: workspace?.hourly_rate || 0,
+    active: workspace?.active ?? true,
+    amenity_ids: initialAmenityIds,
+  });
+
+  const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
   };
@@ -47,286 +91,549 @@ export default function WorkspaceForm({
       workspace: {
         ...formData,
         capacity: Number(formData.capacity),
-        hourly_rate:
-          formData.hourly_rate === "" ? null : Number(formData.hourly_rate),
+        hourly_rate: Number(formData.hourly_rate),
+        amenity_ids: formData.amenity_ids,
       },
     }));
 
-    if (mode === "edit" && workspace) {
+    if (isEditing && workspace?.id) {
       patch(`/workspaces/${workspace.id}`);
     } else {
       post("/workspaces");
     }
   }
 
-  function updateField(
-    field: keyof WorkspaceFormData,
-    value: string | number | boolean | number[]
-  ) {
-    setData(field, value as never);
-  }
+  function toggleAmenity(amenityId: number) {
+    const alreadySelected = data.amenity_ids.includes(amenityId);
 
-  function toggleAmenity(amenityId: number, checked: boolean) {
-    if (checked) {
-      updateField("amenity_ids", [...data.amenity_ids, amenityId]);
-      return;
-    }
+    const nextAmenityIds = alreadySelected
+      ? data.amenity_ids.filter((id) => id !== amenityId)
+      : [...data.amenity_ids, amenityId];
 
-    updateField(
-      "amenity_ids",
-      data.amenity_ids.filter((id) => id !== amenityId)
-    );
+    setData("amenity_ids", nextAmenityIds);
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
-    >
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-950">
-          {mode === "edit" ? "Edit Workspace" : "Create Workspace"}
-        </h2>
+    <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
+      <motion.section
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.12 }}
+        className="col-span-2 space-y-8"
+      >
+        <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mb-8 flex items-start gap-4">
+            <IconBox icon={Building2} large />
 
-        <p className="mt-2 text-sm text-slate-500">
-          Complete the workspace information used for reservations and
-          availability.
-        </p>
-      </div>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-950">
+                Workspace Information
+              </h2>
 
-      <div className="grid grid-cols-2 gap-6">
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Workspace Name
-          </span>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Define the workspace name, category, capacity and physical
+                location.
+              </p>
+            </div>
+          </div>
 
-          <input
-            type="text"
-            value={data.name}
-            onChange={(event) => updateField("name", event.target.value)}
-            className="input"
-            placeholder="Conference Room A"
-            disabled={processing}
-            required
-          />
+          <div className="grid grid-cols-2 gap-5">
+            <TextInput
+              icon={Building2}
+              label="Workspace Name"
+              value={data.name}
+              placeholder="Executive Meeting Room"
+              disabled={processing}
+              error={fieldError(errors, "name")}
+              onChange={(value) => setData("name", value)}
+            />
 
-          <FormError error={errors.name} />
-        </label>
+            <SelectInput
+              icon={Layers3}
+              label="Workspace Type"
+              value={data.workspace_type}
+              disabled={processing}
+              error={fieldError(errors, "workspace_type")}
+              options={workspaceTypes}
+              onChange={(value) => setData("workspace_type", value)}
+            />
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Workspace Type
-          </span>
+            <NumberInput
+              icon={UsersRound}
+              label="Capacity"
+              value={data.capacity}
+              min="1"
+              disabled={processing}
+              error={fieldError(errors, "capacity")}
+              onChange={(value) => setData("capacity", value)}
+            />
 
-          <select
-            value={data.workspace_type}
-            onChange={(event) =>
-              updateField("workspace_type", event.target.value)
-            }
-            className="input"
-            disabled={processing}
-            required
-          >
-            <option value="meeting_room">Meeting Room</option>
-            <option value="private_office">Private Office</option>
-            <option value="hot_desk">Hot Desk</option>
-            <option value="event_space">Event Space</option>
-            <option value="training_room">Training Room</option>
-          </select>
+            <NumberInput
+              icon={DollarSign}
+              label="Hourly Rate"
+              value={data.hourly_rate}
+              min="0"
+              step="0.01"
+              disabled={processing}
+              error={fieldError(errors, "hourly_rate")}
+              onChange={(value) => setData("hourly_rate", value)}
+            />
 
-          <FormError error={errors.workspace_type} />
-        </label>
+            <TextInput
+              icon={Building2}
+              label="Floor"
+              value={data.floor}
+              placeholder="2"
+              disabled={processing}
+              error={fieldError(errors, "floor")}
+              onChange={(value) => setData("floor", value)}
+            />
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Capacity
-          </span>
+            <TextInput
+              icon={MapPin}
+              label="Zone"
+              value={data.zone}
+              placeholder="North Wing"
+              disabled={processing}
+              error={fieldError(errors, "zone")}
+              onChange={(value) => setData("zone", value)}
+            />
 
-          <input
-            type="number"
-            min="1"
-            value={data.capacity}
-            onChange={(event) => updateField("capacity", event.target.value)}
-            className="input"
-            placeholder="8"
-            disabled={processing}
-            required
-          />
+            <div className="col-span-2">
+              <TextInput
+                icon={MapPin}
+                label="Location"
+                value={data.location}
+                placeholder="Building A, second floor"
+                disabled={processing}
+                error={fieldError(errors, "location")}
+                onChange={(value) => setData("location", value)}
+              />
+            </div>
 
-          <FormError error={errors.capacity} />
-        </label>
+            <label className="col-span-2 block">
+              <span className="mb-2 block text-sm font-bold text-slate-700">
+                Description
+              </span>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Hourly Rate
-          </span>
+              <div className="relative">
+                <StickyNote
+                  size={17}
+                  className="pointer-events-none absolute left-4 top-4 text-slate-400"
+                />
 
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={data.hourly_rate}
-            onChange={(event) =>
-              updateField("hourly_rate", event.target.value)
-            }
-            className="input"
-            placeholder="25.00"
-            disabled={processing}
-          />
+                <textarea
+                  value={data.description}
+                  onChange={(event) =>
+                    setData("description", event.target.value)
+                  }
+                  className="min-h-32 w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+                  placeholder="Describe this workspace..."
+                  disabled={processing}
+                />
+              </div>
 
-          <FormError error={errors.hourly_rate} />
-        </label>
+              <FormError error={fieldError(errors, "description")} />
+            </label>
+          </div>
+        </div>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Floor
-          </span>
+        <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mb-8 flex items-start justify-between">
+            <div className="flex items-start gap-4">
+              <IconBox icon={Sparkles} large />
 
-          <input
-            type="text"
-            value={data.floor}
-            onChange={(event) => updateField("floor", event.target.value)}
-            className="input"
-            placeholder="2nd Floor"
-            disabled={processing}
-          />
+              <div>
+                <h2 className="text-2xl font-bold text-slate-950">
+                  Amenities
+                </h2>
 
-          <FormError error={errors.floor} />
-        </label>
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  Select the features available in this workspace.
+                </p>
+              </div>
+            </div>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Zone
-          </span>
+            <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-600">
+              {data.amenity_ids.length} selected
+            </span>
+          </div>
 
-          <input
-            type="text"
-            value={data.zone}
-            onChange={(event) => updateField("zone", event.target.value)}
-            className="input"
-            placeholder="North Wing"
-            disabled={processing}
-          />
+          {amenities.length === 0 ? (
+            <div className="rounded-xl bg-slate-50 p-10 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                <Sparkles size={24} />
+              </div>
 
-          <FormError error={errors.zone} />
-        </label>
+              <h3 className="mt-4 text-lg font-bold text-slate-900">
+                No amenities available
+              </h3>
 
-        <label className="col-span-2 block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Location
-          </span>
+              <p className="mt-2 text-sm text-slate-500">
+                Create amenities first before assigning them to workspaces.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-4">
+              {amenities.map((amenity, index) => {
+                const selected = data.amenity_ids.includes(amenity.id);
 
-          <input
-            type="text"
-            value={data.location}
-            onChange={(event) => updateField("location", event.target.value)}
-            className="input"
-            placeholder="Building A, San José"
-            disabled={processing}
-          />
+                return (
+                  <motion.button
+                    key={amenity.id}
+                    type="button"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.035 }}
+                    onClick={() => toggleAmenity(amenity.id)}
+                    disabled={processing}
+                    className={`flex items-center gap-3 rounded-xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${
+                      selected
+                        ? "border-cyan-300 bg-cyan-50 ring-4 ring-cyan-50"
+                        : "border-slate-200 bg-white hover:border-cyan-100"
+                    }`}
+                  >
+                    <div
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                        selected
+                          ? "bg-cyan-400 text-white"
+                          : "bg-cyan-50 text-cyan-500"
+                      }`}
+                    >
+                      {selected ? (
+                        <CheckCircle2 size={18} strokeWidth={2.4} />
+                      ) : (
+                        <Sparkles size={18} strokeWidth={2.4} />
+                      )}
+                    </div>
 
-          <FormError error={errors.location} />
-        </label>
+                    <span className="font-bold text-slate-900">
+                      {amenity.name}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          )}
 
-        <label className="col-span-2 block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Description
-          </span>
+          <FormError error={fieldError(errors, "amenity_ids")} />
+        </div>
+      </motion.section>
 
-          <textarea
-            value={data.description}
-            onChange={(event) => updateField("description", event.target.value)}
-            className="input min-h-32"
-            placeholder="Describe the workspace, equipment, and ideal use."
-            disabled={processing}
-          />
+      <motion.aside
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.16 }}
+        className="space-y-6"
+      >
+        <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mb-8">
+            <IconBox icon={Save} large />
 
-          <FormError error={errors.description} />
-        </label>
-      </div>
+            <h2 className="mt-4 text-2xl font-bold text-slate-950">
+              {isEditing ? "Update Workspace" : "Create Workspace"}
+            </h2>
 
-      <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h3 className="font-bold text-slate-950">Amenities</h3>
-            <p className="text-sm text-slate-500">
-              Select the amenities available in this workspace.
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Review the workspace configuration before saving.
             </p>
           </div>
 
-          <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-500">
-            {data.amenity_ids.length} selected
-          </span>
-        </div>
+          <div className="rounded-xl bg-slate-50 p-5">
+            <SummaryRow label="Name" value={data.name || "Not set"} />
 
-        {amenities.length === 0 ? (
-          <p className="rounded-lg bg-white p-4 text-sm text-slate-400">
-            No amenities available yet.
-          </p>
-        ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {amenities.map((amenity) => (
-              <label
-                key={amenity.id}
-                className="flex items-center gap-3 rounded-lg bg-white p-3 text-sm font-medium text-slate-600"
-              >
-                <input
-                  type="checkbox"
-                  checked={data.amenity_ids.includes(amenity.id)}
-                  onChange={(event) =>
-                    toggleAmenity(amenity.id, event.target.checked)
-                  }
-                  disabled={processing}
-                  className="h-4 w-4 rounded border-slate-300 text-cyan-400"
-                />
+            <SummaryRow
+              label="Type"
+              value={formatText(data.workspace_type)}
+            />
 
-                {amenity.name}
-              </label>
-            ))}
+            <SummaryRow label="Capacity" value={data.capacity || "-"} />
+
+            <SummaryRow
+              label="Rate"
+              value={`$${Number(data.hourly_rate || 0).toFixed(2)}`}
+            />
+
+            <SummaryRow
+              label="Amenities"
+              value={data.amenity_ids.length}
+            />
+
+            <SummaryRow
+              label="Status"
+              value={data.active ? "Active" : "Inactive"}
+            />
           </div>
-        )}
 
-        <FormError error={errors.amenity_ids} />
-      </div>
-
-      <div className="mt-8 flex items-center justify-between rounded-xl border border-slate-200 p-5">
-        <div>
-          <p className="font-bold text-slate-950">Workspace Status</p>
-          <p className="text-sm text-slate-500">
-            Inactive workspaces will not be available for reservations.
-          </p>
-        </div>
-
-        <label className="flex items-center gap-3 text-sm font-bold text-slate-700">
-          <input
-            type="checkbox"
+          <ToggleStatus
             checked={data.active}
-            onChange={(event) => updateField("active", event.target.checked)}
             disabled={processing}
-            className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+            onChange={(checked) => setData("active", checked)}
           />
 
-          Active
+          {getBaseError(errors) && (
+            <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+              {getBaseError(errors)}
+            </div>
+          )}
+
+          <div className="mt-8 flex flex-col gap-3">
+            <LoadingButton
+              type="submit"
+              loading={processing}
+              loadingText={isEditing ? "Saving..." : "Creating..."}
+              className="w-full"
+            >
+              {isEditing ? "Save Changes" : "Create Workspace"}
+            </LoadingButton>
+
+            <a
+              href={isEditing && workspace?.id ? `/workspaces/${workspace.id}` : "/workspaces"}
+              className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+            >
+              Cancel
+            </a>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-cyan-100 bg-cyan-50 p-6">
+          <h2 className="text-lg font-bold text-cyan-700">Demo Tip</h2>
+
+          <p className="mt-3 text-sm leading-6 text-cyan-700">
+            Workspaces are the core resource of Slotify. Each one can have its
+            own type, capacity, price and amenities.
+          </p>
+        </div>
+      </motion.aside>
+    </form>
+  );
+}
+
+type IconBoxProps = {
+  icon: LucideIcon;
+  large?: boolean;
+};
+
+function IconBox({ icon: Icon, large = false }: IconBoxProps) {
+  return (
+    <div
+      className={`flex shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 ${
+        large ? "h-14 w-14" : "h-10 w-10"
+      }`}
+    >
+      <Icon size={large ? 26 : 19} strokeWidth={2.4} />
+    </div>
+  );
+}
+
+type TextInputProps = {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  placeholder?: string;
+  disabled: boolean;
+  error?: string | string[];
+  onChange: (value: string) => void;
+};
+
+function TextInput({
+  icon: Icon,
+  label,
+  value,
+  placeholder,
+  disabled,
+  error,
+  onChange,
+}: TextInputProps) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-bold text-slate-700">
+        {label}
+      </span>
+
+      <div className="relative">
+        <Icon
+          size={17}
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+        />
+
+        <input
+          type="text"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+          placeholder={placeholder}
+          disabled={disabled}
+        />
+      </div>
+
+      <FormError error={error} />
+    </label>
+  );
+}
+
+type NumberInputProps = {
+  icon: LucideIcon;
+  label: string;
+  value: string | number;
+  min: string;
+  step?: string;
+  disabled: boolean;
+  error?: string | string[];
+  onChange: (value: string) => void;
+};
+
+function NumberInput({
+  icon: Icon,
+  label,
+  value,
+  min,
+  step,
+  disabled,
+  error,
+  onChange,
+}: NumberInputProps) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-bold text-slate-700">
+        {label}
+      </span>
+
+      <div className="relative">
+        <Icon
+          size={17}
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+        />
+
+        <input
+          type="number"
+          min={min}
+          step={step}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+          disabled={disabled}
+          required
+        />
+      </div>
+
+      <FormError error={error} />
+    </label>
+  );
+}
+
+type SelectInputProps = {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  disabled: boolean;
+  error?: string | string[];
+  options: {
+    value: string;
+    label: string;
+  }[];
+  onChange: (value: string) => void;
+};
+
+function SelectInput({
+  icon: Icon,
+  label,
+  value,
+  disabled,
+  error,
+  options,
+  onChange,
+}: SelectInputProps) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-bold text-slate-700">
+        {label}
+      </span>
+
+      <div className="relative">
+        <Icon
+          size={17}
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+        />
+
+        <select
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+          disabled={disabled}
+          required
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <FormError error={error} />
+    </label>
+  );
+}
+
+type ToggleStatusProps = {
+  checked: boolean;
+  disabled: boolean;
+  onChange: (checked: boolean) => void;
+};
+
+function ToggleStatus({ checked, disabled, onChange }: ToggleStatusProps) {
+  return (
+    <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-5">
+      <div className="flex items-start justify-between gap-5">
+        <div className="flex items-start gap-3">
+          <IconBox icon={Power} />
+
+          <div>
+            <p className="font-bold text-slate-950">Workspace Active</p>
+
+            <p className="mt-1 text-sm leading-6 text-slate-500">
+              Active workspaces can be selected when creating reservations.
+            </p>
+          </div>
+        </div>
+
+        <label className="flex cursor-pointer items-center gap-3">
+          <span
+            className={`text-sm font-bold ${
+              checked ? "text-cyan-600" : "text-slate-400"
+            }`}
+          >
+            {checked ? "Active" : "Inactive"}
+          </span>
+
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={(event) => onChange(event.target.checked)}
+            disabled={disabled}
+            className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+          />
         </label>
       </div>
+    </div>
+  );
+}
 
-      <div className="mt-8 flex justify-end gap-4">
-        <a
-          href="/workspaces"
-          className="rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
-        >
-          Cancel
-        </a>
+type SummaryRowProps = {
+  label: string;
+  value: string | number;
+};
 
-        <LoadingButton
-          type="submit"
-          loading={processing}
-          loadingText={mode === "edit" ? "Saving..." : "Creating..."}
-        >
-          {mode === "edit" ? "Save Changes" : "Create Workspace"}
-        </LoadingButton>
-      </div>
-    </form>
+function SummaryRow({ label, value }: SummaryRowProps) {
+  return (
+    <div className="flex justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
+      <span className="text-sm text-slate-500">{label}</span>
+
+      <span className="text-right text-sm font-bold text-slate-950">
+        {value}
+      </span>
+    </div>
   );
 }
 
@@ -340,4 +647,29 @@ function FormError({ error }: FormErrorProps) {
   const message = Array.isArray(error) ? error.join(", ") : error;
 
   return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
+}
+
+function fieldError(
+  errors: Record<string, string | string[] | undefined>,
+  field: string
+): string | string[] | undefined {
+  return errors[field] || errors[`workspace.${field}`];
+}
+
+function getBaseError(
+  errors: Record<string, string | string[] | undefined>
+): string | null {
+  const error = errors.base;
+
+  if (!error) return null;
+
+  return Array.isArray(error) ? error.join(", ") : error;
+}
+
+function formatText(value?: string | null): string {
+  if (!value) return "-";
+
+  return value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }

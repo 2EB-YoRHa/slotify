@@ -1,5 +1,14 @@
 import { useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import {
+  CalendarClock,
+  CalendarDays,
+  Clock3,
+  Power,
+  ShieldCheck,
+  TimerReset,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
 import type { BookingRule } from "../../types/bookingRule";
 
@@ -69,128 +78,84 @@ export default function BookingRuleForm({
       onSubmit={handleSubmit}
       className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
     >
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-950">Booking Rules</h2>
+      <div className="mb-8 flex items-start gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+          <ShieldCheck size={26} strokeWidth={2.4} />
+        </div>
 
-        <p className="mt-2 text-sm text-slate-500">
-          Configure the rules that control how members create and cancel
-          reservations.
-        </p>
+        <div>
+          <h2 className="text-2xl font-bold text-slate-950">
+            Edit Booking Rules
+          </h2>
+
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            Configure the reservation limits that apply to members when they
+            create or cancel bookings.
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Max Hours Per Reservation
-          </span>
+      <div className="grid grid-cols-3 gap-5">
+        <RuleInput
+          icon={Clock3}
+          label="Max Hours Per Reservation"
+          helper="Maximum duration allowed per booking."
+          value={data.max_hours_per_reservation}
+          min="1"
+          disabled={processing}
+          error={errors.max_hours_per_reservation}
+          onChange={(value) =>
+            updateField("max_hours_per_reservation", value)
+          }
+        />
 
-          <input
-            type="number"
-            min="1"
-            value={data.max_hours_per_reservation}
-            onChange={(event) =>
-              updateField("max_hours_per_reservation", event.target.value)
-            }
-            className="input"
-            disabled={processing}
-            required
-          />
+        <RuleInput
+          icon={CalendarClock}
+          label="Minimum Notice Minutes"
+          helper="How early a member must book."
+          value={data.min_notice_minutes}
+          min="0"
+          disabled={processing}
+          error={errors.min_notice_minutes}
+          onChange={(value) => updateField("min_notice_minutes", value)}
+        />
 
-          <FormError error={errors.max_hours_per_reservation} />
-        </label>
+        <RuleInput
+          icon={TimerReset}
+          label="Cancellation Limit Hours"
+          helper="Latest allowed cancellation window."
+          value={data.cancellation_limit_hours}
+          min="0"
+          disabled={processing}
+          error={errors.cancellation_limit_hours}
+          onChange={(value) =>
+            updateField("cancellation_limit_hours", value)
+          }
+        />
+      </div>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Minimum Notice Minutes
-          </span>
+      <div className="mt-6 grid grid-cols-2 gap-5">
+        <ToggleCard
+          icon={CalendarDays}
+          title="Allow Weekend Bookings"
+          description="When enabled, members can create reservations on Saturday and Sunday."
+          checked={data.allow_weekend_bookings}
+          disabled={processing}
+          label={data.allow_weekend_bookings ? "Enabled" : "Disabled"}
+          onChange={(checked) =>
+            updateField("allow_weekend_bookings", checked)
+          }
+        />
 
-          <input
-            type="number"
-            min="0"
-            value={data.min_notice_minutes}
-            onChange={(event) =>
-              updateField("min_notice_minutes", event.target.value)
-            }
-            className="input"
-            disabled={processing}
-            required
-          />
-
-          <FormError error={errors.min_notice_minutes} />
-        </label>
-
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Cancellation Limit Hours
-          </span>
-
-          <input
-            type="number"
-            min="0"
-            value={data.cancellation_limit_hours}
-            onChange={(event) =>
-              updateField("cancellation_limit_hours", event.target.value)
-            }
-            className="input"
-            disabled={processing}
-            required
-          />
-
-          <FormError error={errors.cancellation_limit_hours} />
-        </label>
-
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-          <p className="font-bold text-slate-950">Rule Status</p>
-
-          <p className="mt-1 text-sm text-slate-500">
-            Active rules are applied when creating or cancelling reservations.
-          </p>
-
-          <label className="mt-5 flex items-center gap-3 text-sm font-bold text-slate-700">
-            <input
-              type="checkbox"
-              checked={data.active}
-              onChange={(event) =>
-                updateField("active", event.target.checked)
-              }
-              disabled={processing}
-              className="h-4 w-4 rounded border-slate-300 text-cyan-400"
-            />
-
-            Active
-          </label>
-        </div>
-
-        <div className="col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-5">
-          <div className="flex items-start justify-between gap-6">
-            <div>
-              <p className="font-bold text-slate-950">
-                Allow Weekend Bookings
-              </p>
-
-              <p className="mt-1 text-sm leading-6 text-slate-500">
-                When enabled, members can create reservations on Saturday and
-                Sunday.
-              </p>
-            </div>
-
-            <label className="flex items-center gap-3 text-sm font-bold text-slate-700">
-              <input
-                type="checkbox"
-                checked={data.allow_weekend_bookings}
-                onChange={(event) =>
-                  updateField("allow_weekend_bookings", event.target.checked)
-                }
-                disabled={processing}
-                className="h-4 w-4 rounded border-slate-300 text-cyan-400"
-              />
-
-              Enabled
-            </label>
-          </div>
-
-          <FormError error={errors.allow_weekend_bookings} />
-        </div>
+        <ToggleCard
+          icon={Power}
+          title="Activate Booking Rules"
+          description="When active, these limits are enforced when members create or cancel reservations."
+          checked={data.active}
+          disabled={processing}
+          label={data.active ? "Active" : "Inactive"}
+          onChange={(checked) => updateField("active", checked)}
+        />
       </div>
 
       {getBaseError(errors) && (
@@ -199,7 +164,7 @@ export default function BookingRuleForm({
         </div>
       )}
 
-      <div className="mt-8 rounded-xl bg-cyan-50 p-5 text-sm leading-6 text-cyan-700">
+      <div className="mt-8 rounded-xl border border-cyan-100 bg-cyan-50 p-5 text-sm leading-6 text-cyan-700">
         <p className="font-bold">Example</p>
         <p className="mt-1">
           If max hours is 2 and minimum notice is 60 minutes, members can only
@@ -210,7 +175,7 @@ export default function BookingRuleForm({
       <div className="mt-8 flex justify-end gap-4">
         <a
           href="/booking_rule"
-          className="rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+          className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
         >
           Cancel
         </a>
@@ -224,6 +189,113 @@ export default function BookingRuleForm({
         </LoadingButton>
       </div>
     </form>
+  );
+}
+
+type RuleInputProps = {
+  icon: LucideIcon;
+  label: string;
+  helper: string;
+  value: string | number;
+  min: string;
+  disabled: boolean;
+  error?: string | string[];
+  onChange: (value: string) => void;
+};
+
+function RuleInput({
+  icon: Icon,
+  label,
+  helper,
+  value,
+  min,
+  disabled,
+  error,
+  onChange,
+}: RuleInputProps) {
+  return (
+    <label className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+          <Icon size={19} strokeWidth={2.4} />
+        </div>
+
+        <div>
+          <p className="font-bold text-slate-950">{label}</p>
+          <p className="text-xs text-slate-500">{helper}</p>
+        </div>
+      </div>
+
+      <input
+        type="number"
+        min={min}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+        disabled={disabled}
+        required
+      />
+
+      <FormError error={error} />
+    </label>
+  );
+}
+
+type ToggleCardProps = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  checked: boolean;
+  disabled: boolean;
+  label: string;
+  onChange: (checked: boolean) => void;
+};
+
+function ToggleCard({
+  icon: Icon,
+  title,
+  description,
+  checked,
+  disabled,
+  label,
+  onChange,
+}: ToggleCardProps) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+      <div className="flex items-start justify-between gap-6">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+            <Icon size={19} strokeWidth={2.4} />
+          </div>
+
+          <div>
+            <p className="font-bold text-slate-950">{title}</p>
+
+            <p className="mt-1 text-sm leading-6 text-slate-500">
+              {description}
+            </p>
+          </div>
+        </div>
+
+        <label className="flex cursor-pointer items-center gap-3">
+          <span
+            className={`text-sm font-bold ${
+              checked ? "text-cyan-600" : "text-slate-400"
+            }`}
+          >
+            {label}
+          </span>
+
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={(event) => onChange(event.target.checked)}
+            disabled={disabled}
+            className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+          />
+        </label>
+      </div>
+    </div>
   );
 }
 

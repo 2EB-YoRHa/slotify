@@ -1,7 +1,20 @@
 import { Link, router } from "@inertiajs/react";
+import { motion } from "motion/react";
 import { useState } from "react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Ban,
+  Building2,
+  CalendarX,
+  CheckCircle2,
+  Clock3,
+  ShieldAlert,
+  UsersRound,
+} from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import LoadingButton from "../../components/ui/LoadingButton";
 import { formatDate, formatTime, duration } from "../../utils/dateTime";
 import type { Reservation } from "../../types/reservation";
 
@@ -30,106 +43,238 @@ export default function CancelReservation({
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-3xl">
-        <div className="mb-8">
-          <Link
-            href={`/reservations/${reservation.id}`}
-            className="text-sm font-bold text-cyan-500 hover:text-cyan-600"
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            ← Back to Reservation
-          </Link>
-
-          <h1 className="mt-4 text-3xl font-bold text-slate-950">
-            Cancel Reservation
-          </h1>
-
-          <p className="mt-2 text-slate-500">
-            Review the reservation details before cancelling this booking.
-          </p>
-        </div>
-
-        {cancel_error && (
-          <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-5 text-sm leading-6 text-red-600">
-            <p className="font-bold">Cancellation blocked</p>
-            <p className="mt-1">{cancel_error}</p>
-          </div>
-        )}
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <div className="mb-6 flex items-start justify-between gap-6">
-            <div>
-              <p className="mb-2 text-sm font-bold uppercase tracking-wide text-red-500">
-                Dangerous Action
-              </p>
-
-              <h2 className="text-2xl font-bold text-slate-950">
-                Are you sure you want to cancel this reservation?
-              </h2>
-
-              <p className="mt-3 leading-7 text-slate-500">
-                This action will mark the reservation as cancelled. The
-                workspace will become available again if the booking rules allow
-                the cancellation.
-              </p>
-            </div>
-
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-50 text-2xl font-bold text-red-500">
-              !
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-slate-50 p-6">
-            <InfoRow
-              label="Workspace"
-              value={reservation.workspace?.name || "Workspace removed"}
-            />
-
-            <InfoRow
-              label="Date"
-              value={formatDate(reservation.start_time)}
-            />
-
-            <InfoRow
-              label="Time"
-              value={`${formatTime(reservation.start_time)} - ${formatTime(
-                reservation.end_time
-              )}`}
-            />
-
-            <InfoRow
-              label="Duration"
-              value={duration(reservation.start_time, reservation.end_time)}
-            />
-
-            <InfoRow
-              label="Status"
-              value={formatText(reservation.status)}
-            />
-
-            <InfoRow
-              label="Attendees"
-              value={reservation.attendees_count || 1}
-            />
-          </div>
-
-          <div className="mt-8 flex justify-end gap-4">
             <Link
               href={`/reservations/${reservation.id}`}
-              className="rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+              className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
             >
-              Keep Reservation
+              <ArrowLeft size={16} />
+              Back to Reservation
             </Link>
+          </motion.div>
 
-            <button
-              type="button"
-              onClick={() => setConfirmOpen(true)}
-              disabled={Boolean(cancel_error)}
-              className="rounded-lg bg-red-500 px-6 py-3 text-sm font-bold text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Cancel Reservation
-            </button>
-          </div>
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.04 }}
+            className="mt-6 text-sm font-bold uppercase tracking-wide text-red-500"
+          >
+            Dangerous Action
+          </motion.p>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="mt-2 text-3xl font-bold text-slate-950"
+          >
+            Cancel Reservation
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="mt-1 text-slate-500"
+          >
+            Review the booking details before cancelling this reservation.
+          </motion.p>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500"
+        >
+          <CalendarX size={24} strokeWidth={2.4} />
+        </motion.div>
+      </div>
+
+      {cancel_error && (
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-5 text-sm text-red-600"
+        >
+          <ShieldAlert size={20} className="mt-0.5 shrink-0" />
+
+          <div>
+            <p className="font-bold">Cancellation blocked</p>
+            <p className="mt-1 leading-6">{cancel_error}</p>
+          </div>
+        </motion.div>
+      )}
+
+      <div className="grid grid-cols-3 gap-8">
+        <motion.section
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="col-span-2 space-y-8"
+        >
+          <div className="rounded-xl border border-red-100 bg-white p-8 shadow-sm">
+            <div className="mb-8 flex items-start gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+                <Ban size={26} strokeWidth={2.4} />
+              </div>
+
+              <div>
+                <h2 className="text-2xl font-bold text-slate-950">
+                  Are you sure you want to cancel this reservation?
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  This action will mark the reservation as cancelled. The
+                  workspace may become available again depending on your booking
+                  rules.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-5">
+              <InfoCard
+                icon={Building2}
+                label="Workspace"
+                value={reservation.workspace?.name || "Workspace removed"}
+              />
+
+              <InfoCard
+                icon={CalendarX}
+                label="Date"
+                value={formatDate(reservation.start_time)}
+              />
+
+              <InfoCard
+                icon={Clock3}
+                label="Time"
+                value={`${formatTime(reservation.start_time)} - ${formatTime(
+                  reservation.end_time
+                )}`}
+              />
+
+              <InfoCard
+                icon={Clock3}
+                label="Duration"
+                value={duration(reservation.start_time, reservation.end_time)}
+              />
+
+              <InfoCard
+                icon={UsersRound}
+                label="Attendees"
+                value={reservation.attendees_count || 1}
+              />
+
+              <InfoCard
+                icon={CheckCircle2}
+                label="Current Status"
+                value={formatText(reservation.status)}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-yellow-100 bg-yellow-50 p-6">
+            <div className="flex items-start gap-3">
+              <AlertTriangle
+                size={22}
+                className="mt-0.5 shrink-0 text-yellow-600"
+              />
+
+              <div>
+                <h3 className="font-bold text-yellow-800">
+                  Important cancellation notice
+                </h3>
+
+                <p className="mt-2 text-sm leading-6 text-yellow-700">
+                  Cancelled reservations remain in the system for historical
+                  records. This helps preserve audit history and reporting data.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.aside
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16 }}
+          className="space-y-6"
+        >
+          <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="mb-8">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+                <ShieldAlert size={26} strokeWidth={2.4} />
+              </div>
+
+              <h2 className="text-2xl font-bold text-slate-950">
+                Cancellation Summary
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Confirm the reservation information before continuing.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-slate-50 p-5">
+              <SummaryRow
+                label="Workspace"
+                value={reservation.workspace?.name || "Workspace removed"}
+              />
+
+              <SummaryRow
+                label="Date"
+                value={formatDate(reservation.start_time)}
+              />
+
+              <SummaryRow
+                label="Time"
+                value={`${formatTime(reservation.start_time)} - ${formatTime(
+                  reservation.end_time
+                )}`}
+              />
+
+              <SummaryRow
+                label="Status"
+                value={formatText(reservation.status)}
+              />
+            </div>
+
+            {cancel_error ? (
+              <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+                This reservation cannot be cancelled right now.
+              </div>
+            ) : (
+              <div className="mt-5 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
+                This reservation is eligible for cancellation.
+              </div>
+            )}
+
+            <div className="mt-8 flex flex-col gap-3">
+              <LoadingButton
+                type="button"
+                variant="danger"
+                loading={processing}
+                loadingText="Cancelling..."
+                disabled={Boolean(cancel_error)}
+                onClick={() => setConfirmOpen(true)}
+                className="w-full"
+              >
+                Cancel Reservation
+              </LoadingButton>
+
+              <Link
+                href={`/reservations/${reservation.id}`}
+                className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+              >
+                Keep Reservation
+              </Link>
+            </div>
+          </div>
+        </motion.aside>
       </div>
 
       <ConfirmDialog
@@ -151,16 +296,38 @@ export default function CancelReservation({
   );
 }
 
-type InfoRowProps = {
+type InfoCardProps = {
+  icon: typeof Building2;
   label: string;
   value: string | number;
 };
 
-function InfoRow({ label, value }: InfoRowProps) {
+function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
   return (
-    <div className="flex items-center justify-between border-b border-slate-200 py-4 last:border-0">
+    <div className="rounded-xl border border-slate-100 bg-slate-50 p-5">
+      <div className="mb-3 flex items-center gap-2 text-slate-400">
+        <Icon size={16} />
+        <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
+      </div>
+
+      <p className="break-words text-sm font-bold text-slate-900">{value}</p>
+    </div>
+  );
+}
+
+type SummaryRowProps = {
+  label: string;
+  value: string | number;
+};
+
+function SummaryRow({ label, value }: SummaryRowProps) {
+  return (
+    <div className="flex justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
       <span className="text-sm text-slate-500">{label}</span>
-      <span className="text-sm font-bold text-slate-950">{value}</span>
+
+      <span className="text-right text-sm font-bold text-slate-950">
+        {value}
+      </span>
     </div>
   );
 }

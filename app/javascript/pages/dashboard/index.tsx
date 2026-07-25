@@ -1,4 +1,18 @@
 import { Link } from "@inertiajs/react";
+import { motion } from "motion/react";
+import {
+  Activity,
+  ArrowRight,
+  Building2,
+  CalendarCheck,
+  CalendarPlus,
+  Clock3,
+  DoorOpen,
+  Sparkles,
+  UsersRound,
+  Zap,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import { formatDate, formatTime } from "../../utils/dateTime";
 
@@ -79,23 +93,42 @@ export default function DashboardIndex({
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <p className="mb-2 text-sm font-bold uppercase tracking-wide text-cyan-500">
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-2 text-sm font-bold uppercase tracking-wide text-cyan-500"
+          >
             {organization_name || "Slotify"}
-          </p>
+          </motion.p>
 
-          <h1 className="text-3xl font-bold text-slate-950">
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="text-3xl font-bold text-slate-950"
+          >
             Manager Dashboard
-          </h1>
+          </motion.h1>
 
-          <p className="mt-1 text-slate-500">
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mt-1 text-slate-500"
+          >
             Welcome back{current_user?.name ? `, ${current_user.name}` : ""}.
             Here's what's happening today.
-          </p>
+          </motion.p>
         </div>
 
-        <div className="rounded-full border border-cyan-100 bg-cyan-50 px-4 py-2 text-sm font-bold text-cyan-500">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex items-center gap-2 rounded-full border border-cyan-100 bg-cyan-50 px-4 py-2 text-sm font-bold text-cyan-500"
+        >
+          <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-400" />
           Live data
-        </div>
+        </motion.div>
       </div>
 
       <section className="mb-8 grid grid-cols-4 gap-6">
@@ -104,30 +137,40 @@ export default function DashboardIndex({
             No organization data available yet.
           </div>
         ) : (
-          stats.map((stat) => (
-            <StatCard key={stat.label} stat={stat} />
+          stats.map((stat, index) => (
+            <StatCard key={stat.label} stat={stat} index={index} />
           ))
         )}
       </section>
 
       <section className="grid grid-cols-3 gap-6">
-        <div className="col-span-2 rounded-xl border border-slate-200 bg-white shadow-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="col-span-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+        >
           <div className="flex items-center justify-between border-b border-slate-200 p-6">
-            <div>
-              <h2 className="text-lg font-bold text-slate-950">
-                Upcoming Reservations
-              </h2>
+            <div className="flex items-center gap-3">
+              <IconBox icon={CalendarCheck} />
 
-              <p className="text-sm text-slate-500">
-                Next confirmed or pending bookings.
-              </p>
+              <div>
+                <h2 className="text-lg font-bold text-slate-950">
+                  Upcoming Reservations
+                </h2>
+
+                <p className="text-sm text-slate-500">
+                  Next confirmed or pending bookings.
+                </p>
+              </div>
             </div>
 
             <Link
               href="/reservations"
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600"
             >
               View All
+              <ArrowRight size={16} />
             </Link>
           </div>
 
@@ -154,7 +197,10 @@ export default function DashboardIndex({
                 </tr>
               ) : (
                 upcoming_reservations.map((reservation) => (
-                  <tr key={reservation.id} className="border-t border-slate-100">
+                  <tr
+                    key={reservation.id}
+                    className="border-t border-slate-100 transition hover:bg-slate-50"
+                  >
                     <td className="px-6 py-4">
                       <div className="font-bold text-slate-900">
                         {reservation.user?.name || "Unknown user"}
@@ -171,9 +217,7 @@ export default function DashboardIndex({
                       </div>
 
                       <div className="text-xs uppercase text-slate-400">
-                        {formatWorkspaceType(
-                          reservation.workspace?.workspace_type
-                        )}
+                        {formatText(reservation.workspace?.workspace_type)}
                       </div>
                     </td>
 
@@ -194,36 +238,51 @@ export default function DashboardIndex({
               )}
             </tbody>
           </table>
-        </div>
+        </motion.div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-bold text-slate-950">
-              Quick Actions
-            </h2>
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.16 }}
+            className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+          >
+            <div className="mb-4 flex items-center gap-3">
+              <IconBox icon={Zap} />
+              <h2 className="text-lg font-bold text-slate-950">
+                Quick Actions
+              </h2>
+            </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <Link
+              <QuickAction
                 href="/reservations/new"
-                className="rounded-lg bg-cyan-400 px-4 py-6 text-center text-sm font-bold text-white hover:bg-cyan-500"
-              >
-                Add Booking
-              </Link>
+                icon={CalendarPlus}
+                label="Add Booking"
+                primary
+              />
 
-              <Link
+              <QuickAction
                 href="/workspaces/new"
-                className="rounded-lg border border-slate-200 px-4 py-6 text-center text-sm font-bold text-slate-700 hover:bg-slate-50"
-              >
-                New Space
-              </Link>
+                icon={DoorOpen}
+                label="New Space"
+              />
             </div>
-          </div>
+          </motion.div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+          >
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-950">
-                Recent Activity
-              </h2>
+              <div className="flex items-center gap-3">
+                <IconBox icon={Activity} />
+                <h2 className="text-lg font-bold text-slate-950">
+                  Recent Activity
+                </h2>
+              </div>
 
               <span className="rounded-full border border-slate-200 px-2 py-1 text-xs text-slate-500">
                 Real data
@@ -237,7 +296,7 @@ export default function DashboardIndex({
             ) : (
               <div className="space-y-4 text-sm">
                 {recent_activities.map((activity) => (
-                  <Activity
+                  <ActivityItem
                     key={activity.id}
                     text={activity.text}
                     time={formatRelativeTime(activity.occurred_at)}
@@ -245,19 +304,30 @@ export default function DashboardIndex({
                 ))}
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="mt-8 grid grid-cols-2 gap-6">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-950">
-            Weekly Reservations
-          </h2>
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.24 }}
+          className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        >
+          <div className="mb-6 flex items-center gap-3">
+            <IconBox icon={CalendarCheck} />
 
-          <p className="mb-6 text-sm text-slate-500">
-            Reservations created for each day of the current week.
-          </p>
+            <div>
+              <h2 className="text-lg font-bold text-slate-950">
+                Weekly Reservations
+              </h2>
+
+              <p className="text-sm text-slate-500">
+                Reservations created for each day of the current week.
+              </p>
+            </div>
+          </div>
 
           {weekly_occupancy.length === 0 ? (
             <EmptyChartMessage />
@@ -268,31 +338,49 @@ export default function DashboardIndex({
                   key={day.label}
                   className="flex flex-1 flex-col items-center gap-2"
                 >
-                  <div className="flex h-full w-full items-end rounded bg-slate-50">
-                    <div
-                      className="w-full rounded-t-md bg-cyan-300"
-                      style={{
-                        height: `${Math.max(day.percentage, day.count > 0 ? 8 : 0)}%`,
+                  <div className="flex h-full w-full items-end rounded-lg bg-slate-50">
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{
+                        height: `${Math.max(
+                          day.percentage,
+                          day.count > 0 ? 8 : 0
+                        )}%`,
                       }}
+                      transition={{ duration: 0.45, ease: "easeOut" }}
+                      className="w-full rounded-t-lg bg-cyan-300"
                       title={`${day.count} reservations`}
                     />
                   </div>
 
-                  <span className="text-xs text-slate-400">{day.label}</span>
+                  <span className="text-xs font-semibold text-slate-400">
+                    {day.label}
+                  </span>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-950">
-            Space Distribution
-          </h2>
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.28 }}
+          className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        >
+          <div className="mb-6 flex items-center gap-3">
+            <IconBox icon={Building2} />
 
-          <p className="mb-6 text-sm text-slate-500">
-            Workspace categories registered in this organization.
-          </p>
+            <div>
+              <h2 className="text-lg font-bold text-slate-950">
+                Space Distribution
+              </h2>
+
+              <p className="text-sm text-slate-500">
+                Workspace categories registered in this organization.
+              </p>
+            </div>
+          </div>
 
           {workspace_distribution.length === 0 ? (
             <EmptyChartMessage />
@@ -307,7 +395,7 @@ export default function DashboardIndex({
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       </section>
     </AppLayout>
   );
@@ -315,11 +403,19 @@ export default function DashboardIndex({
 
 type StatCardProps = {
   stat: DashboardStat;
+  index: number;
 };
 
-function StatCard({ stat }: StatCardProps) {
+function StatCard({ stat, index }: StatCardProps) {
+  const Icon = iconForStat(stat.label);
+
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06 }}
+      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+    >
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">{stat.label}</p>
@@ -329,13 +425,54 @@ function StatCard({ stat }: StatCardProps) {
           </h2>
         </div>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-50 text-cyan-500">
-          ◇
-        </div>
+        <IconBox icon={Icon} />
       </div>
 
       <p className="mt-3 text-xs text-slate-500">{stat.helper}</p>
+    </motion.div>
+  );
+}
+
+type IconBoxProps = {
+  icon: LucideIcon;
+};
+
+function IconBox({ icon: Icon }: IconBoxProps) {
+  return (
+    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+      <Icon size={19} strokeWidth={2.4} />
     </div>
+  );
+}
+
+type QuickActionProps = {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+  primary?: boolean;
+};
+
+function QuickAction({
+  href,
+  icon: Icon,
+  label,
+  primary = false,
+}: QuickActionProps) {
+  return (
+    <Link
+      href={href}
+      className={`group rounded-xl px-4 py-6 text-center text-sm font-bold transition hover:-translate-y-1 hover:shadow-md ${
+        primary
+          ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:bg-cyan-500"
+          : "border border-slate-200 text-slate-700 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600"
+      }`}
+    >
+      <div className="mb-3 flex justify-center">
+        <Icon size={22} strokeWidth={2.4} />
+      </div>
+
+      {label}
+    </Link>
   );
 }
 
@@ -344,11 +481,17 @@ type ActivityProps = {
   time: string;
 };
 
-function Activity({ text, time }: ActivityProps) {
+function ActivityItem({ text, time }: ActivityProps) {
   return (
-    <div className="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
-      <p className="font-medium text-slate-800">{text}</p>
-      <p className="text-xs text-slate-400">{time}</p>
+    <div className="flex gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+      <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-cyan-500">
+        <Clock3 size={14} />
+      </div>
+
+      <div>
+        <p className="font-medium text-slate-800">{text}</p>
+        <p className="text-xs text-slate-400">{time}</p>
+      </div>
     </div>
   );
 }
@@ -366,8 +509,13 @@ function Bar({ label, width }: BarProps) {
         <span>{width}</span>
       </div>
 
-      <div className="h-6 rounded bg-slate-100">
-        <div className="h-6 rounded bg-cyan-400" style={{ width }} />
+      <div className="h-6 overflow-hidden rounded-full bg-slate-100">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="h-6 rounded-full bg-cyan-400"
+        />
       </div>
     </div>
   );
@@ -387,7 +535,7 @@ function StatusBadge({ status }: StatusBadgeProps) {
 
   return (
     <span className={`rounded-full px-3 py-1 text-xs font-bold ${className}`}>
-      {formatWorkspaceType(status)}
+      {formatText(status)}
     </span>
   );
 }
@@ -400,7 +548,19 @@ function EmptyChartMessage() {
   );
 }
 
-function formatWorkspaceType(value?: string | null): string {
+function iconForStat(label: string): LucideIcon {
+  const normalized = label.toLowerCase();
+
+  if (normalized.includes("workspace")) return Building2;
+  if (normalized.includes("reservation")) return CalendarCheck;
+  if (normalized.includes("available")) return DoorOpen;
+  if (normalized.includes("user")) return UsersRound;
+  if (normalized.includes("occupancy")) return Activity;
+
+  return Sparkles;
+}
+
+function formatText(value?: string | null): string {
   if (!value) return "-";
 
   return value

@@ -1,5 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import { PlusCircle, Sparkles } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
 
 type AmenityFormProps = {
@@ -12,7 +13,9 @@ type AmenityFormData = {
   };
 };
 
-export default function AmenityForm({ errors: initialErrors = {} }: AmenityFormProps) {
+export default function AmenityForm({
+  errors: initialErrors = {},
+}: AmenityFormProps) {
   const { data, setData, post, processing, reset, errors: formErrors } =
     useForm<AmenityFormData>({
       amenity: {
@@ -40,19 +43,29 @@ export default function AmenityForm({ errors: initialErrors = {} }: AmenityFormP
       onSubmit={handleSubmit}
       className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
     >
-      <div className="mb-5">
+      <div className="mb-6">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+          <PlusCircle size={22} strokeWidth={2.4} />
+        </div>
+
         <h2 className="text-xl font-bold text-slate-950">Create Amenity</h2>
 
-        <p className="mt-1 text-sm text-slate-500">
-          Add amenities that can be assigned to workspaces.
+        <p className="mt-2 text-sm leading-6 text-slate-500">
+          Add reusable workspace features such as Wi-Fi, whiteboard, projector
+          or parking.
         </p>
       </div>
 
-      <div className="flex items-start gap-4">
-        <label className="flex-1">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Amenity Name
-          </span>
+      <label className="block">
+        <span className="mb-2 block text-sm font-bold text-slate-700">
+          Amenity Name
+        </span>
+
+        <div className="relative">
+          <Sparkles
+            size={17}
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          />
 
           <input
             type="text"
@@ -63,25 +76,24 @@ export default function AmenityForm({ errors: initialErrors = {} }: AmenityFormP
                 name: event.target.value,
               })
             }
-            className="input"
+            className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
             placeholder="Projector, Wi-Fi, Whiteboard..."
             disabled={processing}
             required
           />
-
-          <FormError error={errors.name || errors["amenity.name"]} />
-        </label>
-
-        <div className="pt-7">
-          <LoadingButton
-            type="submit"
-            loading={processing}
-            loadingText="Creating..."
-          >
-            Create Amenity
-          </LoadingButton>
         </div>
-      </div>
+
+        <FormError error={errors.name || errors["amenity.name"]} />
+      </label>
+
+      <LoadingButton
+        type="submit"
+        loading={processing}
+        loadingText="Creating..."
+        className="mt-6 w-full"
+      >
+        Create Amenity
+      </LoadingButton>
     </form>
   );
 }
