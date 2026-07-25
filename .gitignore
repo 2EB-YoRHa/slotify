@@ -6,6 +6,7 @@
 # Ignore all environment files.
 /.env
 /.env*
+!/.env.example
 *.local
 
 # Ignore all logfiles and tempfiles.
@@ -42,3 +43,6 @@
 # OS files.
 .DS_Store
 Thumbs.db
+
+# Local archives
+*.zip

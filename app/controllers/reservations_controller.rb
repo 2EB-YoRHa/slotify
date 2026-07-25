@@ -73,20 +73,22 @@ class ReservationsController < InertiaController
           ), status: :created
         end
       else
-      format.html do
-        workspaces = current_organization.workspaces
-                                        .where(active: true)
-                                        .includes(:amenities)
-                                        .order(:name)
+        format.html do
+          workspaces = current_organization.workspaces
+                                          .where(active: true)
+                                          .includes(:amenities)
+                                          .order(:name)
 
-        render inertia: "reservations/new",
-              props: {
-                workspaces: workspaces.as_json(include: :amenities),
-                selected_workspace_id: reservation_params[:workspace_id],
-                errors: result.errors
-              },
-              status: :unprocessable_entity
-      end
+          render inertia: "reservations/new",
+                 props: {
+                   workspaces: workspaces.as_json(include: :amenities),
+                   selected_workspace_id: reservation_params[:workspace_id],
+                   errors: {
+                     base: result.errors
+                   }
+                 },
+                 status: :unprocessable_entity
+        end
 
         format.json do
           render json: { errors: result.errors },
@@ -98,7 +100,7 @@ class ReservationsController < InertiaController
 
   def edit
     workspaces = current_organization.workspaces
-                                    .where(active: true)
+                                    .where("active = ? OR id = ?", true, @reservation.workspace_id)
                                     .includes(:amenities)
                                     .order(:name)
 
@@ -119,7 +121,10 @@ class ReservationsController < InertiaController
       )
 
       @reservation.workspace = workspace
-      @reservation.errors.add(:workspace, "is invalid") if workspace.blank?
+
+      if workspace.blank?
+        @reservation.errors.add(:workspace_id, "is invalid")
+      end
     end
 
     @reservation.assign_attributes(attrs)
@@ -137,17 +142,17 @@ class ReservationsController < InertiaController
       else
         format.html do
           workspaces = current_organization.workspaces
-                                          .where(active: true)
+                                          .where("active = ? OR id = ?", true, @reservation.workspace_id)
                                           .includes(:amenities)
                                           .order(:name)
 
           render inertia: "reservations/edit",
-                props: {
-                  reservation: @reservation.as_json(include: reservation_includes),
-                  workspaces: workspaces.as_json(include: :amenities),
-                  errors: @reservation.errors.full_messages
-                },
-                status: :unprocessable_entity
+                 props: {
+                   reservation: @reservation.as_json(include: reservation_includes),
+                   workspaces: workspaces.as_json(include: :amenities),
+                   errors: @reservation.errors.to_hash
+                 },
+                 status: :unprocessable_entity
         end
 
         format.json do
@@ -169,34 +174,34 @@ class ReservationsController < InertiaController
   def destroy
     booking_rule = current_organization.booking_rule
 
-      if booking_rule&.cancellation_limit_hours.present?
-        cancellation_deadline = booking_rule.cancellation_limit_hours.hours.from_now
+    if booking_rule&.cancellation_limit_hours.present?
+      cancellation_deadline = booking_rule.cancellation_limit_hours.hours.from_now
 
       if @reservation.start_time < cancellation_deadline
-          respond_to do |format|
-            format.html do
-              render inertia: "reservations/cancel",
-                    props: {
-                      reservation: @reservation.as_json(
-                        include: reservation_includes
-                      ),
-                      cancel_error: "This reservation cannot be cancelled because it starts too soon according to the organization's cancellation policy."
-                    },
-                    status: :unprocessable_entity
-            end
-
-            format.json do
-              render json: {
-                errors: [
-                  "This reservation cannot be cancelled because it starts too soon according to the organization's cancellation policy."
-                ]
-              }, status: :unprocessable_entity
-            end
+        respond_to do |format|
+          format.html do
+            render inertia: "reservations/cancel",
+                   props: {
+                     reservation: @reservation.as_json(
+                       include: reservation_includes
+                     ),
+                     cancel_error: "This reservation cannot be cancelled because it starts too soon according to the organization's cancellation policy."
+                   },
+                   status: :unprocessable_entity
           end
 
-          return
+          format.json do
+            render json: {
+              errors: [
+                "This reservation cannot be cancelled because it starts too soon according to the organization's cancellation policy."
+              ]
+            }, status: :unprocessable_entity
+          end
+        end
+
+        return
       end
-      end
+    end
 
     @reservation.status = "cancelled"
 
@@ -228,66 +233,83 @@ class ReservationsController < InertiaController
   end
 
   def my_reservations
-  reservations = current_user.reservations
-                             .where(organization: current_organization)
-                             .includes(:workspace, :user)
-                             .order(start_time: :desc)
+    reservations = current_user.reservations
+                               .where(organization: current_organization)
+                               .includes(:workspace, :user)
+                               .order(start_time: :desc)
 
-  render inertia: "reservations/my_reservations", props: {
-    reservations: reservations.as_json(
-      include: reservation_includes
-    )
-  }
+    render inertia: "reservations/my_reservations", props: {
+      reservations: reservations.as_json(
+        include: reservation_includes
+      )
+    }
   end
 
-    def availability
-      start_time = Time.zone.parse(params[:start_time])
-      end_time = Time.zone.parse(params[:end_time])
+  def availability
+    start_time = Time.zone.parse(params[:start_time])
+    end_time = Time.zone.parse(params[:end_time])
 
-      unavailable_workspace_ids = current_organization.reservations
-                                                      .where.not(status: "cancelled")
-                                                      .where("start_time < ? AND end_time > ?", end_time, start_time)
-                                                      .pluck(:workspace_id)
-                                                      .uniq
+    unavailable_workspace_ids = current_organization.reservations
+                                                    .where.not(status: "cancelled")
+                                                    .where("start_time < ? AND end_time > ?", end_time, start_time)
+                                                    .pluck(:workspace_id)
+                                                    .uniq
 
-      render json: {
-        unavailable_workspace_ids: unavailable_workspace_ids
-      }
-      rescue ArgumentError, TypeError
-        render json: {
-          error: "Invalid date or time"
-        }, status: :unprocessable_entity
-    end
+    render json: {
+      unavailable_workspace_ids: unavailable_workspace_ids
+    }
+  rescue ArgumentError, TypeError
+    render json: {
+      error: "Invalid date or time"
+    }, status: :unprocessable_entity
+  end
 
   private
 
-    def reservation_scope
-      if member?
-        current_user.reservations.where(organization: current_organization)
-      else
-        current_organization.reservations
-      end
+  def reservation_scope
+    if member?
+      current_user.reservations.where(organization: current_organization)
+    else
+      current_organization.reservations
     end
+  end
 
-    def set_reservation
-      @reservation = reservation_scope.find(params[:id])
-    end
+  def set_reservation
+    @reservation = reservation_scope.find(params[:id])
+  end
 
-    def reservation_params
-      params.require(:reservation).permit(
-        :workspace_id,
-        :start_time,
-        :end_time,
-        :status,
-        :attendees_count,
-        :notes
-      )
-    end
+  def reservation_params
+    params.require(:reservation).permit(
+      :workspace_id,
+      :start_time,
+      :end_time,
+      :status,
+      :attendees_count,
+      :notes
+    )
+  end
 
-    def reservation_includes
-      {
-        workspace: { only: [:id, :name, :workspace_type] },
-        user: { only: [:id, :name, :email] }
+  def reservation_includes
+    {
+      workspace: {
+        only: [
+          :id,
+          :name,
+          :workspace_type,
+          :capacity,
+          :location,
+          :floor,
+          :zone,
+          :hourly_rate
+        ]
+      },
+      user: {
+        only: [
+          :id,
+          :name,
+          :email
+        ]
       }
-    end
+    }
+  end
 end

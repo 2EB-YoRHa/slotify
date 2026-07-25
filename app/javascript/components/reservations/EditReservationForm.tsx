@@ -11,7 +11,6 @@ import {
   StickyNote,
   UsersRound,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
 import type { Reservation } from "../../types/reservation";
 import type { Workspace } from "../../types/workspace";

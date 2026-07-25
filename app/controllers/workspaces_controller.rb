@@ -20,33 +20,42 @@ class WorkspacesController < InertiaController
   end
 
   def show
-    serialized_workspace = @workspace.as_json(
+    serialized_workspace = @workspace.as_json(include: :amenities)
+
+    reservations = @workspace.reservations
+                             .includes(:user)
+                             .order(start_time: :desc)
+                             .limit(10)
+
+    serialized_reservations = reservations.as_json(
+      only: [ :id, :start_time, :end_time, :status ],
       include: {
-        amenities: {},
-        reservations: {
-          include: {
-            user: { only: [:id, :name, :email] }
-          }
-        }
+        user: { only: [ :id, :name, :email ] }
       }
     )
 
     respond_to do |format|
       format.html do
         render inertia: "workspaces/show", props: {
-          workspace: serialized_workspace
+          workspace: serialized_workspace,
+          reservations: serialized_reservations,
+          reservation_count: @workspace.reservations.count
         }
       end
 
       format.json do
-        render json: serialized_workspace
+        render json: {
+          workspace: serialized_workspace,
+          reservations: serialized_reservations,
+          reservation_count: @workspace.reservations.count
+        }
       end
     end
   end
 
   def new
     render inertia: "workspaces/new", props: {
-      amenities: Amenity.all
+      amenities: Amenity.order(:name)
     }
   end
 
@@ -66,7 +75,7 @@ class WorkspacesController < InertiaController
         format.html do
           render inertia: "workspaces/new",
                  props: {
-                   amenities: Amenity.all,
+                   amenities: Amenity.order(:name),
                    errors: workspace.errors.to_hash
                  },
                  status: :unprocessable_entity
@@ -83,7 +92,8 @@ class WorkspacesController < InertiaController
   def edit
     render inertia: "workspaces/edit", props: {
       workspace: @workspace.as_json(include: :amenities),
-      amenities: Amenity.order(:name)
+      amenities: Amenity.order(:name),
+      selected_amenity_ids: @workspace.amenity_ids
     }
   end
 
@@ -102,7 +112,8 @@ class WorkspacesController < InertiaController
           render inertia: "workspaces/edit",
                  props: {
                    workspace: @workspace.as_json(include: :amenities),
-                   amenities: Amenity.all,
+                   amenities: Amenity.order(:name),
+                   selected_amenity_ids: @workspace.amenity_ids,
                    errors: @workspace.errors.to_hash
                  },
                  status: :unprocessable_entity
@@ -117,14 +128,40 @@ class WorkspacesController < InertiaController
   end
 
   def delete_confirmation
+    reservation_count = @workspace.reservations.count
+    can_delete = reservation_count.zero?
+
     render inertia: "workspaces/delete", props: {
-      workspace: @workspace.as_json(
-        include: :amenities
-      )
+      workspace: @workspace.as_json(include: :amenities),
+      reservation_count: reservation_count,
+      can_delete: can_delete,
+      delete_error: can_delete ? nil : "This workspace has reservation history. Mark it as inactive instead of deleting it."
     }
   end
 
   def destroy
+    if @workspace.reservations.exists?
+      respond_to do |format|
+        format.html do
+          render inertia: "workspaces/delete",
+                 props: {
+                   workspace: @workspace.as_json(include: :amenities),
+                   reservation_count: @workspace.reservations.count,
+                   can_delete: false,
+                   delete_error: "This workspace has reservation history. Mark it as inactive instead of deleting it."
+                 },
+                 status: :unprocessable_entity
+        end
+
+        format.json do
+          render json: { errors: [ "Workspace has reservation history" ] },
+                 status: :unprocessable_entity
+        end
+      end
+
+      return
+    end
+
     @workspace.destroy
 
     respond_to do |format|

@@ -39,10 +39,6 @@ export default function MyReservations({
     );
   });
 
-  const confirmedReservations = reservations.filter(
-    (reservation) => reservation.status === "confirmed"
-  );
-
   const cancelledReservations = reservations.filter(
     (reservation) => reservation.status === "cancelled"
   );

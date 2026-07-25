@@ -1,6 +1,5 @@
 import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
-import type { ReactNode } from "react";
 import {
   Building2,
   DollarSign,

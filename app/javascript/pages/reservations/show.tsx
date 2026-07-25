@@ -7,7 +7,9 @@ import {
   CalendarCheck,
   CalendarDays,
   Clock3,
+  DollarSign,
   Edit3,
+  Layers3,
   MapPin,
   StickyNote,
   UserRound,
@@ -111,7 +113,7 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
           icon={Clock3}
           label="Time"
           value={`${formatTime(reservation.start_time)} - ${formatTime(
-            reservation.end_time
+            reservation.end_time,
           )}`}
           helper={duration(reservation.start_time, reservation.end_time)}
         />
@@ -161,7 +163,7 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
               <ReservationStatusBadge status={reservation.status} />
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-3 gap-5">
               <InfoCard
                 icon={Building2}
                 label="Workspace"
@@ -169,7 +171,7 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
               />
 
               <InfoCard
-                icon={CalendarCheck}
+                icon={Layers3}
                 label="Type"
                 value={formatText(reservation.workspace?.workspace_type)}
               />
@@ -181,10 +183,30 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
               />
 
               <InfoCard
-                icon={MapPin}
-                label="Location"
-                value={reservation.workspace?.location || "-"}
+                icon={DollarSign}
+                label="Hourly Rate"
+                value={formatRate(reservation.workspace?.hourly_rate)}
               />
+
+              <InfoCard
+                icon={Building2}
+                label="Floor"
+                value={reservation.workspace?.floor || "-"}
+              />
+
+              <InfoCard
+                icon={MapPin}
+                label="Zone"
+                value={reservation.workspace?.zone || "-"}
+              />
+
+              <div className="col-span-3">
+                <InfoCard
+                  icon={MapPin}
+                  label="Location"
+                  value={reservation.workspace?.location || "-"}
+                />
+              </div>
             </div>
           </div>
 
@@ -278,13 +300,28 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
               <SummaryRow
                 label="Time"
                 value={`${formatTime(reservation.start_time)} - ${formatTime(
-                  reservation.end_time
+                  reservation.end_time,
                 )}`}
               />
 
               <SummaryRow
                 label="Duration"
                 value={duration(reservation.start_time, reservation.end_time)}
+              />
+
+              <SummaryRow
+                label="Hourly Rate"
+                value={formatRate(reservation.workspace?.hourly_rate)}
+              />
+
+              <SummaryRow
+                label="Floor"
+                value={reservation.workspace?.floor || "-"}
+              />
+
+              <SummaryRow
+                label="Zone"
+                value={reservation.workspace?.zone || "-"}
               />
 
               <SummaryRow
@@ -331,7 +368,13 @@ type SummaryCardProps = {
   helper: string;
 };
 
-function SummaryCard({ index, icon: Icon, label, value, helper }: SummaryCardProps) {
+function SummaryCard({
+  index,
+  icon: Icon,
+  label,
+  value,
+  helper,
+}: SummaryCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
@@ -370,7 +413,7 @@ function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
         <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
       </div>
 
-      <p className="break-words text-sm font-bold text-slate-900">{value}</p>
+      <p className="wrap-break-word text-sm font-bold text-slate-900">{value}</p>
     </div>
   );
 }
@@ -408,6 +451,12 @@ function initials(name?: string | null): string {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+}
+
+function formatRate(value?: string | number | null): string {
+  const amount = Number(value || 0);
+
+  return `$${amount.toFixed(2)}/h`;
 }
 
 function formatText(value?: string | null): string {

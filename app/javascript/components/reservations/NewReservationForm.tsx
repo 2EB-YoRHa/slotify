@@ -20,6 +20,8 @@ import type { Workspace } from "../../types/workspace";
 
 type NewReservationFormProps = {
   workspaces: Workspace[];
+  selectedWorkspaceId?: number | string | null;
+  initialErrors?: Record<string, string | string[]>;
 };
 
 type ReservationFormData = {
@@ -43,6 +45,8 @@ const timeSlots = [
 
 export default function NewReservationForm({
   workspaces,
+  selectedWorkspaceId = null,
+  initialErrors = {},
 }: NewReservationFormProps) {
   const today = new Date().toISOString().split("T")[0];
   const firstSlot = timeSlots[0];
@@ -56,19 +60,36 @@ export default function NewReservationForm({
     number[]
   >([]);
   const [availabilityError, setAvailabilityError] = useState<string | null>(
-    null
+    null,
   );
+
+  const validSelectedWorkspaceId = workspaces.some(
+    (workspace) => workspace.id === Number(selectedWorkspaceId),
+  )
+    ? selectedWorkspaceId || ""
+    : "";
 
   const { data, setData, post, processing, errors } =
     useForm<ReservationFormData>({
       reservation: {
-        workspace_id: "",
+        workspace_id: validSelectedWorkspaceId,
         start_time: buildDateTime(today, firstSlot.start),
         end_time: buildDateTime(today, firstSlot.end),
         attendees_count: 1,
         notes: "",
       },
     });
+
+  const allErrors: Record<string, string | string[] | undefined> = {
+    ...initialErrors,
+    ...(errors as Record<string, string | string[] | undefined>),
+  };
+
+  const baseErrors = [
+    ...normalizeError(allErrors.base),
+    ...normalizeError(allErrors.reservation),
+    ...normalizeError(allErrors["reservation.base"]),
+  ];
 
   const filteredWorkspaces = workspaces.filter((workspace) => {
     const query = search.toLowerCase();
@@ -81,12 +102,11 @@ export default function NewReservationForm({
   });
 
   const selectedWorkspace = workspaces.find(
-    (workspace) => workspace.id === Number(data.reservation.workspace_id)
+    (workspace) => workspace.id === Number(data.reservation.workspace_id),
   );
 
   const selectedWorkspaceUnavailable =
-    selectedWorkspace &&
-    unavailableWorkspaceIds.includes(selectedWorkspace.id);
+    selectedWorkspace && unavailableWorkspaceIds.includes(selectedWorkspace.id);
 
   const attendeesExceedCapacity =
     selectedWorkspace &&
@@ -102,7 +122,7 @@ export default function NewReservationForm({
     ? calculateEstimatedTotal(
         Number(selectedWorkspace.hourly_rate || 0),
         data.reservation.start_time,
-        data.reservation.end_time
+        data.reservation.end_time,
       )
     : 0;
 
@@ -137,7 +157,7 @@ export default function NewReservationForm({
   }
 
   function updateReservation(
-    values: Partial<ReservationFormData["reservation"]>
+    values: Partial<ReservationFormData["reservation"]>,
   ) {
     setData("reservation", {
       ...data.reservation,
@@ -202,9 +222,7 @@ export default function NewReservationForm({
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold text-slate-950">
-                Date & Time
-              </h2>
+              <h2 className="text-2xl font-bold text-slate-950">Date & Time</h2>
 
               <p className="mt-2 text-sm leading-6 text-slate-500">
                 Choose when the workspace will be reserved. Availability must be
@@ -303,9 +321,9 @@ export default function NewReservationForm({
             unavailableCount={unavailableWorkspaceIds.length}
           />
 
-          {errors.reservation && (
+          {baseErrors.length > 0 && (
             <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-              {String(errors.reservation)}
+              {baseErrors.join(", ")}
             </div>
           )}
         </div>
@@ -352,7 +370,7 @@ export default function NewReservationForm({
             <div className="grid grid-cols-2 gap-4">
               {filteredWorkspaces.map((workspace, index) => {
                 const unavailable = unavailableWorkspaceIds.includes(
-                  workspace.id
+                  workspace.id,
                 );
                 const selected =
                   Number(data.reservation.workspace_id) === workspace.id;
@@ -587,9 +605,7 @@ function Info({ icon: Icon, label, value }: InfoProps) {
     <div className="rounded-lg bg-slate-50 p-3">
       <div className="mb-1 flex items-center gap-2 text-slate-400">
         <Icon size={14} />
-        <p className="text-[10px] font-bold uppercase tracking-wide">
-          {label}
-        </p>
+        <p className="text-[10px] font-bold uppercase tracking-wide">{label}</p>
       </div>
 
       <p className="font-bold text-slate-800">{value}</p>
@@ -732,13 +748,19 @@ function buildDateTime(date: string, time: string): string {
 function calculateEstimatedTotal(
   hourlyRate: number,
   startTime: string,
-  endTime: string
+  endTime: string,
 ): number {
   const start = new Date(startTime).getTime();
   const end = new Date(endTime).getTime();
   const hours = Math.max(0, (end - start) / 3600000);
 
   return hourlyRate * hours;
+}
+
+function normalizeError(error?: string | string[]): string[] {
+  if (!error) return [];
+
+  return Array.isArray(error) ? error : [error];
 }
 
 function formatText(value?: string | null): string {

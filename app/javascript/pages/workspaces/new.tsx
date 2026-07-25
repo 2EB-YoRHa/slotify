@@ -1,6 +1,6 @@
 import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
-import { ArrowLeft, Building2, PlusCircle } from "lucide-react";
+import { ArrowLeft, PlusCircle } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import WorkspaceForm from "../../components/workspaces/WorkspaceForm";
 import type { Amenity } from "../../types/amenity";

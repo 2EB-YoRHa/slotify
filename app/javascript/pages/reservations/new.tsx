@@ -7,11 +7,13 @@ import type { Workspace } from "../../types/workspace";
 type NewReservationProps = {
   workspaces?: Workspace[];
   selected_workspace_id?: number | string | null;
-  errors?: string[];
+  errors?: Record<string, string | string[]>;
 };
 
 export default function NewReservation({
   workspaces = [],
+  selected_workspace_id = null,
+  errors = {},
 }: NewReservationProps) {
   return (
     <AppLayout>
@@ -40,7 +42,8 @@ export default function NewReservation({
             transition={{ delay: 0.1 }}
             className="mt-1 text-slate-500"
           >
-            Select a date, check availability and reserve an available workspace.
+            Select a date, check availability and reserve an available
+            workspace.
           </motion.p>
         </div>
 
@@ -53,7 +56,11 @@ export default function NewReservation({
         </motion.div>
       </div>
 
-      <NewReservationForm workspaces={workspaces} />
+      <NewReservationForm
+        workspaces={workspaces}
+        selectedWorkspaceId={selected_workspace_id}
+        initialErrors={errors}
+      />
     </AppLayout>
   );
 }

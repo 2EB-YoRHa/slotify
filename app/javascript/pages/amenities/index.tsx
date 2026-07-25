@@ -1,6 +1,5 @@
 import { motion } from "motion/react";
 import {
-  PlusCircle,
   Sparkles,
   Tags,
   Wrench,

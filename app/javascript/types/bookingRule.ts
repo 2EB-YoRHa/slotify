@@ -4,7 +4,6 @@ export type BookingRule = {
   min_notice_minutes: number;
   cancellation_limit_hours: number;
   allow_weekend_bookings: boolean;
-  active: boolean;
 };
 
 export type BookingRuleFormData = {

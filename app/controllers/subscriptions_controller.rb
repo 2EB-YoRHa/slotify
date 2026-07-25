@@ -8,7 +8,7 @@ class SubscriptionsController < InertiaController
 
     render inertia: "subscriptions/show", props: {
       organization: current_organization.as_json(
-        only: [:id, :name, :slug, :email, :phone, :address]
+        only: [ :id, :name, :slug, :email, :phone, :address ]
       ),
       subscription: subscription
     }

@@ -5,7 +5,6 @@ import {
   CalendarDays,
   Clock3,
   Pencil,
-  Power,
   ShieldCheck,
   TimerReset,
   ToggleLeft,
@@ -22,7 +21,7 @@ type BookingRuleShowProps = {
 export default function BookingRuleShow({
   booking_rule = null,
 }: BookingRuleShowProps) {
-  const rulesActive = booking_rule?.active ?? false;
+  const rulesActive = Boolean(booking_rule);
   const weekendsAllowed = booking_rule?.allow_weekend_bookings ?? false;
 
   const stats = [
@@ -173,7 +172,7 @@ export default function BookingRuleShow({
         >
           <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-5 flex items-center gap-3">
-              <IconBox icon={rulesActive ? Power : ToggleLeft} />
+              <IconBox icon={rulesActive ? ToggleRight : ToggleLeft} />
 
               <h2 className="text-lg font-bold text-slate-950">
                 Policy Status

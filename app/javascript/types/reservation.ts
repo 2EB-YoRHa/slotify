@@ -4,6 +4,9 @@ export type ReservationWorkspace = {
   workspace_type?: string | null;
   capacity?: number | null;
   location?: string | null;
+  floor?: string | null;
+  zone?: string | null;
+  hourly_rate?: string | number | null;
 };
 
 export type ReservationUser = {

@@ -4,7 +4,6 @@ import {
   CalendarClock,
   CalendarDays,
   Clock3,
-  Power,
   ShieldCheck,
   TimerReset,
 } from "lucide-react";
@@ -22,7 +21,6 @@ type BookingRuleFormData = {
   min_notice_minutes: number | string;
   cancellation_limit_hours: number | string;
   allow_weekend_bookings: boolean;
-  active: boolean;
 };
 
 export default function BookingRuleForm({
@@ -41,7 +39,6 @@ export default function BookingRuleForm({
     min_notice_minutes: bookingRule.min_notice_minutes || 60,
     cancellation_limit_hours: bookingRule.cancellation_limit_hours || 2,
     allow_weekend_bookings: bookingRule.allow_weekend_bookings ?? false,
-    active: bookingRule.active ?? true,
   });
 
   const errors: Record<string, string | string[] | undefined> = {
@@ -55,9 +52,7 @@ export default function BookingRuleForm({
     transform((formData) => ({
       booking_rule: {
         ...formData,
-        max_hours_per_reservation: Number(
-          formData.max_hours_per_reservation
-        ),
+        max_hours_per_reservation: Number(formData.max_hours_per_reservation),
         min_notice_minutes: Number(formData.min_notice_minutes),
         cancellation_limit_hours: Number(formData.cancellation_limit_hours),
       },
@@ -68,7 +63,7 @@ export default function BookingRuleForm({
 
   function updateField(
     field: keyof BookingRuleFormData,
-    value: string | number | boolean
+    value: string | number | boolean,
   ) {
     setData(field, value as never);
   }
@@ -104,9 +99,7 @@ export default function BookingRuleForm({
           min="1"
           disabled={processing}
           error={errors.max_hours_per_reservation}
-          onChange={(value) =>
-            updateField("max_hours_per_reservation", value)
-          }
+          onChange={(value) => updateField("max_hours_per_reservation", value)}
         />
 
         <RuleInput
@@ -128,13 +121,11 @@ export default function BookingRuleForm({
           min="0"
           disabled={processing}
           error={errors.cancellation_limit_hours}
-          onChange={(value) =>
-            updateField("cancellation_limit_hours", value)
-          }
+          onChange={(value) => updateField("cancellation_limit_hours", value)}
         />
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-5">
+      <div className="mt-6 grid grid-cols-1 gap-5">
         <ToggleCard
           icon={CalendarDays}
           title="Allow Weekend Bookings"
@@ -142,20 +133,9 @@ export default function BookingRuleForm({
           checked={data.allow_weekend_bookings}
           disabled={processing}
           label={data.allow_weekend_bookings ? "Enabled" : "Disabled"}
-          onChange={(checked) =>
-            updateField("allow_weekend_bookings", checked)
-          }
+          onChange={(checked) => updateField("allow_weekend_bookings", checked)}
         />
 
-        <ToggleCard
-          icon={Power}
-          title="Activate Booking Rules"
-          description="When active, these limits are enforced when members create or cancel reservations."
-          checked={data.active}
-          disabled={processing}
-          label={data.active ? "Active" : "Inactive"}
-          onChange={(checked) => updateField("active", checked)}
-        />
       </div>
 
       {getBaseError(errors) && (
@@ -312,7 +292,7 @@ function FormError({ error }: FormErrorProps) {
 }
 
 function getBaseError(
-  errors: Record<string, string | string[] | undefined>
+  errors: Record<string, string | string[] | undefined>,
 ): string | null {
   const error = errors.base;
 
