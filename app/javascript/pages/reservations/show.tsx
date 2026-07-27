@@ -11,6 +11,7 @@ import {
   Edit3,
   Layers3,
   MapPin,
+  Sparkles,
   StickyNote,
   UserRound,
   UsersRound,
@@ -27,6 +28,7 @@ type ReservationShowProps = {
 
 export default function ReservationShow({ reservation }: ReservationShowProps) {
   const canModify = canModifyReservation(reservation);
+  const workspaceAmenities = reservation.workspace?.amenities || [];
 
   return (
     <AppLayout>
@@ -197,6 +199,31 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
                   label="Location"
                   value={reservation.workspace?.location || "-"}
                 />
+              </div>
+              <div className="col-span-3 border-t border-slate-100 pt-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+                      <Sparkles size={18} strokeWidth={2.4} />
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold text-slate-950">
+                        Amenities Included
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        Features available with this workspace reservation.
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-400">
+                    {workspaceAmenities.length} assigned
+                  </span>
+                </div>
+
+                <AmenityChips amenities={workspaceAmenities} />
               </div>
             </div>
           </div>
@@ -406,6 +433,39 @@ function SummaryRow({ label, value }: SummaryRowProps) {
       <span className="text-right text-sm font-bold text-slate-950">
         {value}
       </span>
+    </div>
+  );
+}
+
+type AmenityChip = {
+  id: number;
+  name: string;
+};
+
+type AmenityChipsProps = {
+  amenities: AmenityChip[];
+};
+
+function AmenityChips({ amenities }: AmenityChipsProps) {
+  if (amenities.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-sm font-semibold text-slate-400">
+        No amenities assigned to this workspace.
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {amenities.map((amenity) => (
+        <span
+          key={amenity.id}
+          className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-slate-600 ring-1 ring-slate-200"
+        >
+          <Sparkles size={13} className="text-cyan-500" />
+          {amenity.name}
+        </span>
+      ))}
     </div>
   );
 }

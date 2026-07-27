@@ -4,7 +4,6 @@ import {
   CalendarClock,
   CalendarDays,
   Clock3,
-  ShieldCheck,
   TimerReset,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";

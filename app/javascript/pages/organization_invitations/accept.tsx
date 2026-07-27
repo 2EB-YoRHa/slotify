@@ -1,6 +1,10 @@
 import { router } from "@inertiajs/react";
-import type { OrganizationInvitation } from "../../types/organization";
+import { motion } from "motion/react";
+import { Mail, ShieldCheck, UserRound, UsersRound } from "lucide-react";
+import AuthBrand from "../../components/auth/AuthBrand";
+import AuthFooter from "../../components/auth/AuthFooter";
 import FlashMessages from "../../components/ui/FlashMessages";
+import type { OrganizationInvitation } from "../../types/organization";
 
 type CurrentUser = {
   id: number;
@@ -32,34 +36,28 @@ export default function AcceptInvitation({
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">
       <FlashMessages />
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
-        <header className="mb-12 flex justify-center">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400 text-xl font-bold text-white">
-              ◇
-            </div>
 
-            <span className="text-3xl font-extrabold text-cyan-400">
-              Slotify
-            </span>
-          </div>
+      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
+        <header className="mb-10 flex justify-center">
+          <AuthBrand />
         </header>
 
         <section className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-cyan-50 text-4xl font-light text-cyan-500">
-              +
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.22 }}
+            className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm"
+          >
+            <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+              <UsersRound size={26} strokeWidth={2.4} />
             </div>
 
-            <p className="mb-3 text-sm font-extrabold uppercase tracking-wide text-cyan-500">
-              Organization Invitation
-            </p>
-
             <h1 className="text-3xl font-extrabold text-slate-950">
-              Join {invitation.organization?.name || "Organization"}
+              Organization Invitation
             </h1>
 
-            <p className="mt-4 text-base leading-7 text-slate-500">
+            <p className="mt-3 leading-7 text-slate-500">
               You have been invited to join{" "}
               <span className="font-bold text-slate-950">
                 {invitation.organization?.name || "this organization"}
@@ -91,18 +89,21 @@ export default function AcceptInvitation({
 
             <div className="mt-8 rounded-2xl bg-slate-50 p-6 text-left">
               <InfoItem
+                icon={UsersRound}
                 label="Organization"
                 value={invitation.organization?.name || "-"}
               />
 
-              <InfoItem label="Invited Email" value={invitation.email} />
+              <InfoItem icon={Mail} label="Invited Email" value={invitation.email} />
 
               <InfoItem
+                icon={ShieldCheck}
                 label="Role"
                 value={formatRole(invitation.role?.name)}
               />
 
               <InfoItem
+                icon={UserRound}
                 label="Invited By"
                 value={invitation.invited_by?.email || "-"}
               />
@@ -113,8 +114,12 @@ export default function AcceptInvitation({
                 <>
                   <button
                     type="button"
-                    onClick={() => router.visit("/users/sign_in")}
-                    className="rounded-lg border border-slate-200 bg-white px-7 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                    onClick={() =>
+                      router.visit(
+                        `/users/sign_in?invitation_token=${invitation.token}`
+                      )
+                    }
+                    className="rounded-xl border border-slate-200 bg-white px-7 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
                   >
                     Sign In
                   </button>
@@ -123,10 +128,10 @@ export default function AcceptInvitation({
                     type="button"
                     onClick={() =>
                       router.visit(
-                        `/users/sign_up?invitation_token=${invitation.token}`,
+                        `/users/sign_up?invitation_token=${invitation.token}`
                       )
                     }
-                    className="rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
+                    className="rounded-xl bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-500"
                   >
                     Create Account
                   </button>
@@ -138,7 +143,7 @@ export default function AcceptInvitation({
                   <button
                     type="button"
                     onClick={() => router.visit("/")}
-                    className="rounded-lg border border-slate-200 bg-white px-7 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                    className="rounded-xl border border-slate-200 bg-white px-7 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
                   >
                     Cancel
                   </button>
@@ -146,7 +151,7 @@ export default function AcceptInvitation({
                   <button
                     type="button"
                     onClick={acceptInvitation}
-                    className="rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
+                    className="rounded-xl bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-500"
                   >
                     Accept Invitation
                   </button>
@@ -158,7 +163,7 @@ export default function AcceptInvitation({
                   <button
                     type="button"
                     onClick={() => router.visit("/")}
-                    className="rounded-lg border border-slate-200 bg-white px-7 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                    className="rounded-xl border border-slate-200 bg-white px-7 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
                   >
                     Cancel
                   </button>
@@ -166,40 +171,39 @@ export default function AcceptInvitation({
                   <button
                     type="button"
                     onClick={signOut}
-                    className="rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
+                    className="rounded-xl bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-500"
                   >
                     Sign Out
                   </button>
                 </>
               )}
             </div>
-          </div>
+          </motion.div>
         </section>
 
-        <footer className="mt-12 flex justify-between text-xs text-slate-400">
-          <span>© 2024 Slotify Inc. All rights reserved.</span>
-
-          <div className="flex gap-6">
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
-            <span>Support</span>
-          </div>
-        </footer>
+        <AuthFooter />
       </div>
     </main>
   );
 }
 
 type InfoItemProps = {
+  icon: typeof UsersRound;
   label: string;
   value: string | number;
 };
 
-function InfoItem({ label, value }: InfoItemProps) {
+function InfoItem({ icon: Icon, label, value }: InfoItemProps) {
   return (
-    <div className="flex items-center justify-between border-b border-slate-200 py-4 last:border-0">
-      <span className="text-sm text-slate-500">{label}</span>
-      <span className="text-sm font-bold text-slate-950">{value}</span>
+    <div className="flex items-center justify-between gap-6 border-b border-slate-200 py-4 last:border-0">
+      <div className="flex items-center gap-3">
+        <Icon size={17} className="text-slate-400" />
+        <span className="text-sm text-slate-500">{label}</span>
+      </div>
+
+      <span className="text-right text-sm font-bold text-slate-950">
+        {value}
+      </span>
     </div>
   );
 }

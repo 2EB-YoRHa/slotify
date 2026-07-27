@@ -8,7 +8,6 @@ import {
   Layers3,
   MapPin,
   Power,
-  Save,
   Sparkles,
   StickyNote,
   UsersRound,

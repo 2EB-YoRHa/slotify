@@ -72,7 +72,7 @@ class ReservationsController < InertiaController
     respond_to do |format|
       if result.success?
         format.html do
-          redirect_to reservations_path,
+          redirect_to my_reservations_path,
                       notice: "Reservation created successfully"
         end
 
@@ -320,7 +320,15 @@ class ReservationsController < InertiaController
           :floor,
           :zone,
           :hourly_rate
-        ]
+        ],
+        include: {
+          amenities: {
+            only: [
+              :id,
+              :name
+            ]
+          }
+        }
       },
       user: {
         only: [

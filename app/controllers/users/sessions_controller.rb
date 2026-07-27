@@ -10,12 +10,24 @@ class Users::SessionsController < Devise::SessionsController
 
   def create
     invitation_token = params.dig(:user, :invitation_token)
-
     session[:pending_invitation_token] = invitation_token if invitation_token.present?
 
-    user = warden.authenticate(auth_options)
+    email = params.dig(:user, :email).to_s.strip.downcase
+    password = params.dig(:user, :password).to_s
 
-    if user
+    user = User.find_for_database_authentication(email: email)
+
+    if user&.valid_password?(password)
+      unless user.active?
+        render inertia: "auth/inactive_account", props: {
+          name: user.name,
+          email: user.email,
+          organization_name: user.organization&.name
+        }, status: :forbidden
+
+        return
+      end
+
       sign_in(resource_name, user)
 
       redirect_to after_sign_in_path_for(user),

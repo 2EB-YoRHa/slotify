@@ -2,13 +2,14 @@ import { useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
 import type { FormEvent } from "react";
 import { useState } from "react";
+import DatePickerField from "../ui/DatePickerField";
+import TimeSlotPicker from "../ui/TimeSlotPicker";
 import {
   AlertTriangle,
   Building2,
   CalendarDays,
   CalendarSearch,
   CheckCircle2,
-  Clock3,
   DollarSign,
   MapPin,
   Search,
@@ -199,12 +200,6 @@ export default function NewReservationForm({
     });
   }
 
-  function resetAvailability() {
-    setAvailabilityChecked(false);
-    setUnavailableWorkspaceIds([]);
-    setAvailabilityError(null);
-  }
-
   async function checkAvailability() {
     await checkAvailabilityFor(
       data.reservation.start_time,
@@ -273,55 +268,23 @@ export default function NewReservationForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
-            <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700">
-                Reservation Date
-              </span>
+          <div className="space-y-6">
+            <div className="max-w-xl">
+              <DatePickerField
+                label="Reservation Date"
+                value={selectedDate}
+                disabled={processing || checkingAvailability}
+                onChange={handleDateChange}
+              />
+            </div>
 
-              <div className="relative">
-                <CalendarDays
-                  size={17}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(event) => handleDateChange(event.target.value)}
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
-                  disabled={processing || checkingAvailability}
-                  required
-                />
-              </div>
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700">
-                Time Slot
-              </span>
-
-              <div className="relative">
-                <Clock3
-                  size={17}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-
-                <select
-                  value={selectedSlot.label}
-                  onChange={(event) => handleSlotChange(event.target.value)}
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
-                  disabled={processing || checkingAvailability}
-                  required
-                >
-                  {timeSlots.map((slot) => (
-                    <option key={slot.label} value={slot.label}>
-                      {slot.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </label>
+            <TimeSlotPicker
+              label="Time Slot"
+              value={selectedSlot.label}
+              options={timeSlots}
+              disabled={processing || checkingAvailability}
+              onChange={handleSlotChange}
+            />
           </div>
 
           <div className="mt-8 flex items-end gap-4">
@@ -444,7 +407,6 @@ export default function NewReservationForm({
       >
         <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-8">
-
             <h2 className="text-2xl font-bold text-slate-950">
               Reservation Summary
             </h2>

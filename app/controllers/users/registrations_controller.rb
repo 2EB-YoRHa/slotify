@@ -83,6 +83,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def create_manager_account
     organization_name = sign_up_params[:organization_name].to_s.strip
+    organization_slug = normalized_slug(
+      sign_up_params[:organization_slug].presence || organization_name
+    )
 
     if organization_name.blank?
       render_sign_up(
@@ -94,12 +97,24 @@ class Users::RegistrationsController < Devise::RegistrationsController
       return
     end
 
+    if organization_slug.blank?
+      render_sign_up(
+        invitation: nil,
+        invitation_token: nil,
+        errors: { organization_slug: "Organization slug is required." },
+        status: :unprocessable_entity
+      )
+      return
+    end
+
     manager_role = Role.find_or_create_by!(name: "manager")
 
     organization = Organization.new(
       name: organization_name,
-      slug: unique_organization_slug(organization_name),
-      email: sign_up_params[:email]
+      slug: unique_organization_slug(organization_slug),
+      email: sign_up_params[:email],
+      phone: sign_up_params[:organization_phone],
+      address: sign_up_params[:organization_address]
     )
 
     user = User.new(
@@ -124,13 +139,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
     else
       errors = user.errors.to_hash
 
-      if organization.errors[:name].present?
-        errors[:organization_name] = organization.errors[:name]
-      end
-
-      if organization.errors[:slug].present?
-        errors[:organization_name] = organization.errors[:slug]
-      end
+      errors[:organization_name] = organization.errors[:name] if organization.errors[:name].present?
+      errors[:organization_slug] = organization.errors[:slug] if organization.errors[:slug].present?
+      errors[:organization_phone] = organization.errors[:phone] if organization.errors[:phone].present?
+      errors[:organization_address] = organization.errors[:address] if organization.errors[:address].present?
 
       render_sign_up(
         invitation: nil,
@@ -148,7 +160,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
       :password,
       :password_confirmation,
       :invitation_token,
-      :organization_name
+      :organization_name,
+      :organization_slug,
+      :organization_phone,
+      :organization_address
     )
   end
 
@@ -184,10 +199,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
     )
   end
 
-  def unique_organization_slug(name)
-    base_slug = name.to_s.parameterize
-    base_slug = "organization" if base_slug.blank?
+  def normalized_slug(value)
+    value.to_s.parameterize
+  end
 
+  def unique_organization_slug(base_slug)
     slug = base_slug
     counter = 2
 

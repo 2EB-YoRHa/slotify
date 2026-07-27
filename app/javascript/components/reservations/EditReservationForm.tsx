@@ -6,7 +6,6 @@ import {
   CalendarDays,
   CheckCircle2,
   Clock3,
-  Save,
   ShieldCheck,
   StickyNote,
   UsersRound,
@@ -360,9 +359,6 @@ export default function EditReservationForm({
       >
         <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-8">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-              <Save size={26} strokeWidth={2.4} />
-            </div>
 
             <h2 className="text-2xl font-bold text-slate-950">
               Update Summary

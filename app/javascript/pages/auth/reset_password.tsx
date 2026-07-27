@@ -1,5 +1,9 @@
 import { Link, useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import { LockKeyhole } from "lucide-react";
+import AuthBrand from "../../components/auth/AuthBrand";
+import AuthFooter from "../../components/auth/AuthFooter";
+import PasswordChecklist from "../../components/auth/PasswordChecklist";
 import FlashMessages from "../../components/ui/FlashMessages";
 import LoadingButton from "../../components/ui/LoadingButton";
 
@@ -16,6 +20,9 @@ type ResetPasswordFormData = {
   };
 };
 
+const inputClass =
+  "h-12 w-full rounded-xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
+
 export default function ResetPassword({
   reset_password_token = null,
   errors = {},
@@ -28,8 +35,14 @@ export default function ResetPassword({
     },
   });
 
+  const passwordReady =
+    data.user.password.length >= 6 &&
+    data.user.password === data.user.password_confirmation;
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!passwordReady) return;
 
     patch("/users/password");
   }
@@ -44,19 +57,13 @@ export default function ResetPassword({
     });
   }
 
-  const passwordsMatch =
-    data.user.password.length > 0 &&
-    data.user.password === data.user.password_confirmation;
-
-  const passwordLengthOk = data.user.password.length >= 6;
-
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">
       <FlashMessages />
 
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
         <header className="mb-10 flex justify-center">
-          <Logo />
+          <AuthBrand />
         </header>
 
         <section className="flex flex-1 items-center justify-center">
@@ -67,8 +74,7 @@ export default function ResetPassword({
               </h1>
 
               <p className="mt-3 leading-7 text-slate-500">
-                Enter your new password below to regain access to your
-                workspace.
+                Create a new password to restore access to your Slotify account.
               </p>
             </div>
 
@@ -86,18 +92,25 @@ export default function ResetPassword({
                   New Password
                 </span>
 
-                <input
-                  type="password"
-                  value={data.user.password}
-                  onChange={(event) =>
-                    updateField("password", event.target.value)
-                  }
-                  className="input"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  disabled={processing}
-                  required
-                />
+                <div className="relative">
+                  <LockKeyhole
+                    size={18}
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+
+                  <input
+                    type="password"
+                    value={data.user.password}
+                    onChange={(event) =>
+                      updateField("password", event.target.value)
+                    }
+                    className={inputClass}
+                    placeholder="Create a password"
+                    autoComplete="new-password"
+                    disabled={processing}
+                    required
+                  />
+                </div>
 
                 <FormError errors={errors} field="password" />
               </label>
@@ -107,50 +120,39 @@ export default function ResetPassword({
                   Confirm Password
                 </span>
 
-                <input
-                  type="password"
-                  value={data.user.password_confirmation}
-                  onChange={(event) =>
-                    updateField("password_confirmation", event.target.value)
-                  }
-                  className="input"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  disabled={processing}
-                  required
-                />
+                <div className="relative">
+                  <LockKeyhole
+                    size={18}
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+
+                  <input
+                    type="password"
+                    value={data.user.password_confirmation}
+                    onChange={(event) =>
+                      updateField("password_confirmation", event.target.value)
+                    }
+                    className={inputClass}
+                    placeholder="Repeat password"
+                    autoComplete="new-password"
+                    disabled={processing}
+                    required
+                  />
+                </div>
 
                 <FormError errors={errors} field="password_confirmation" />
               </label>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="font-bold text-slate-700">Strength</span>
-                  <span className="font-bold text-slate-500">
-                    {passwordLengthOk ? "Medium" : "Weak"}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 text-xs text-slate-500">
-                  <CheckItem checked={passwordLengthOk} label="6+ characters" />
-
-                  <CheckItem
-                    checked={passwordsMatch}
-                    label="Passwords match"
-                  />
-                </div>
-              </div>
-
-              {passwordsMatch && passwordLengthOk && (
-                <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-sm font-semibold text-green-700">
-                  Passwords match and meet the minimum criteria.
-                </div>
-              )}
+              <PasswordChecklist
+                password={data.user.password}
+                passwordConfirmation={data.user.password_confirmation}
+              />
 
               <LoadingButton
                 type="submit"
                 loading={processing}
                 loadingText="Updating..."
+                disabled={!passwordReady}
                 className="w-full"
               >
                 Update Password
@@ -160,60 +162,17 @@ export default function ResetPassword({
             <div className="mt-8 text-center">
               <Link
                 href="/users/sign_in"
-                className="text-sm font-bold text-slate-600 hover:text-cyan-500"
+                className="text-sm font-bold text-cyan-500 hover:text-cyan-600"
               >
-                ← Back to Login
+                Back to Login
               </Link>
             </div>
           </div>
         </section>
 
-        <footer className="mt-10 flex justify-between text-xs text-slate-400">
-          <span>© 2024 Slotify Inc. All rights reserved.</span>
-
-          <div className="flex gap-6">
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
-            <span>Support</span>
-          </div>
-        </footer>
+        <AuthFooter />
       </div>
     </main>
-  );
-}
-
-function Logo() {
-  return (
-    <div className="flex items-center justify-center gap-3">
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400 text-xl font-bold text-white">
-        ◇
-      </div>
-
-      <span className="text-3xl font-extrabold text-cyan-400">Slotify</span>
-    </div>
-  );
-}
-
-type CheckItemProps = {
-  checked: boolean;
-  label: string;
-};
-
-function CheckItem({ checked, label }: CheckItemProps) {
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] ${
-          checked
-            ? "bg-green-100 text-green-600"
-            : "bg-slate-200 text-slate-400"
-        }`}
-      >
-        {checked ? "✓" : "×"}
-      </span>
-
-      <span>{label}</span>
-    </div>
   );
 }
 

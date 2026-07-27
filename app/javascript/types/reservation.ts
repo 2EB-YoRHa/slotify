@@ -1,3 +1,5 @@
+import type { Amenity } from "./amenity";
+
 export type ReservationWorkspace = {
   id: number;
   name?: string | null;
@@ -7,6 +9,7 @@ export type ReservationWorkspace = {
   floor?: string | null;
   zone?: string | null;
   hourly_rate?: string | number | null;
+  amenities?: Amenity[];
 };
 
 export type ReservationUser = {

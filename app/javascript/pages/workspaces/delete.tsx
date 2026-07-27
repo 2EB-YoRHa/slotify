@@ -101,6 +101,31 @@ export default function DeleteWorkspace({
         </motion.p>
       </div>
 
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8 rounded-xl border border-yellow-100 bg-yellow-50 p-6"
+      >
+        <div className="flex items-start gap-3">
+          <AlertTriangle
+            size={22}
+            className="mt-0.5 shrink-0 text-yellow-600"
+          />
+
+          <div>
+            <h3 className="font-bold text-yellow-800">
+              Important deletion notice
+            </h3>
+
+            <p className="mt-2 text-sm leading-6 text-yellow-700">
+              If this workspace has reservation history, the system may prevent
+              deletion to protect reports and audit records. In that case, it is
+              better to edit the workspace and mark it as inactive.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
       {delete_error && (
         <motion.div
           initial={{ opacity: 0, y: 14 }}
@@ -188,28 +213,6 @@ export default function DeleteWorkspace({
             </div>
           </div>
 
-          <div className="rounded-xl border border-yellow-100 bg-yellow-50 p-6">
-            <div className="flex items-start gap-3">
-              <AlertTriangle
-                size={22}
-                className="mt-0.5 shrink-0 text-yellow-600"
-              />
-
-              <div>
-                <h3 className="font-bold text-yellow-800">
-                  Important deletion notice
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-yellow-700">
-                  If this workspace has reservation history, the system may
-                  prevent deletion to protect reports and audit records. In that
-                  case, it is better to edit the workspace and mark it as
-                  inactive.
-                </p>
-              </div>
-            </div>
-          </div>
-
           {amenities.length > 0 && (
             <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
               <div className="mb-6 flex items-start gap-4">
@@ -257,7 +260,6 @@ export default function DeleteWorkspace({
         >
           <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
             <div className="mb-8">
-
               <h2 className="text-2xl font-bold text-slate-950">
                 Delete Summary
               </h2>

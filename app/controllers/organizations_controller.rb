@@ -8,9 +8,10 @@ def show
                       .includes(:role)
                       .order(:name)
 
-  invitations = organization.organization_invitations
-                            .includes(:role, :invited_by)
-                            .order(created_at: :desc)
+invitations = organization.organization_invitations
+                          .where(status: "pending")
+                          .includes(:role, :invited_by)
+                          .order(created_at: :desc)
 
   subscription = organization.subscriptions
                              .order(created_at: :desc)
