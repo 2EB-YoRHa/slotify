@@ -45,32 +45,23 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
             </Link>
           </motion.div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.04 }}
-            className="mt-6 text-sm font-bold uppercase tracking-wide text-cyan-500"
-          >
-            Reservation Details
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-            className="mt-2 text-3xl font-bold text-slate-950"
+            transition={{ delay: 0.04 }}
+            className="mt-6 text-3xl font-bold text-slate-950"
           >
-            {reservation.workspace?.name || "Workspace Reservation"}
+            Reservation for {reservation.workspace?.name || "Workspace"}
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 }}
-            className="mt-1 text-slate-500"
+            transition={{ delay: 0.08 }}
+            className="mt-2 max-w-2xl text-slate-500"
           >
-            Review reservation information, schedule, status and workspace
-            details.
+            Review the booking schedule, workspace details, attendees, and
+            notes.
           </motion.p>
         </div>
 
@@ -330,25 +321,7 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
               />
             </div>
 
-            {canModify ? (
-              <div className="mt-8 flex flex-col gap-3">
-                <Link
-                  href={`/reservations/${reservation.id}/edit`}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-500"
-                >
-                  <Edit3 size={16} />
-                  Edit Reservation
-                </Link>
-
-                <Link
-                  href={`/reservations/${reservation.id}/cancel`}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-6 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50"
-                >
-                  <Ban size={16} />
-                  Cancel Reservation
-                </Link>
-              </div>
-            ) : (
+            {!canModify && (
               <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">
                 This reservation can no longer be modified.
               </div>
@@ -413,7 +386,9 @@ function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
         <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
       </div>
 
-      <p className="wrap-break-word text-sm font-bold text-slate-900">{value}</p>
+      <p className="wrap-break-word text-sm font-bold text-slate-900">
+        {value}
+      </p>
     </div>
   );
 }

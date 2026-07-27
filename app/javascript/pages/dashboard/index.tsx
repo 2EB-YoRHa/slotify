@@ -82,32 +82,22 @@ type DashboardIndexProps = {
 
 export default function DashboardIndex({
   current_user = null,
-  organization_name = null,
   stats = [],
   upcoming_reservations = [],
   recent_activities = [],
-  weekly_occupancy = [],
   workspace_distribution = [],
 }: DashboardIndexProps) {
   return (
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-2 text-sm font-bold uppercase tracking-wide text-cyan-500"
-          >
-            {organization_name || "Slotify"}
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
             className="text-3xl font-bold text-slate-950"
           >
-            Manager Dashboard
+            Dashboard
           </motion.h1>
 
           <motion.p
@@ -120,15 +110,6 @@ export default function DashboardIndex({
             Here's what's happening today.
           </motion.p>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex items-center gap-2 rounded-full border border-cyan-100 bg-cyan-50 px-4 py-2 text-sm font-bold text-cyan-500"
-        >
-          <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-400" />
-          Live data
-        </motion.div>
       </div>
 
       <section className="mb-8 grid grid-cols-4 gap-6">
@@ -181,7 +162,9 @@ export default function DashboardIndex({
                 <th className="px-6 py-4 font-bold">Workspace</th>
                 <th className="px-6 py-4 font-bold">Date</th>
                 <th className="px-6 py-4 font-bold">Time Range</th>
-                <th className="px-6 py-4 font-bold">Status</th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-slate-500">
+                  Status
+                </th>
               </tr>
             </thead>
 
@@ -230,8 +213,10 @@ export default function DashboardIndex({
                       {formatTime(reservation.end_time)}
                     </td>
 
-                    <td className="px-6 py-4">
-                      <StatusBadge status={reservation.status} />
+                    <td className="px-6 py-4 text-center align-middle">
+                      <div className="flex justify-center">
+                        <StatusBadge status={reservation.status} />
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -283,10 +268,6 @@ export default function DashboardIndex({
                   Recent Activity
                 </h2>
               </div>
-
-              <span className="rounded-full border border-slate-200 px-2 py-1 text-xs text-slate-500">
-                Real data
-              </span>
             </div>
 
             {recent_activities.length === 0 ? (
@@ -308,60 +289,7 @@ export default function DashboardIndex({
         </div>
       </section>
 
-      <section className="mt-8 grid grid-cols-2 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.24 }}
-          className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
-        >
-          <div className="mb-6 flex items-center gap-3">
-            <IconBox icon={CalendarCheck} />
-
-            <div>
-              <h2 className="text-lg font-bold text-slate-950">
-                Weekly Reservations
-              </h2>
-
-              <p className="text-sm text-slate-500">
-                Reservations created for each day of the current week.
-              </p>
-            </div>
-          </div>
-
-          {weekly_occupancy.length === 0 ? (
-            <EmptyChartMessage />
-          ) : (
-            <div className="flex h-56 items-end gap-4">
-              {weekly_occupancy.map((day) => (
-                <div
-                  key={day.label}
-                  className="flex flex-1 flex-col items-center gap-2"
-                >
-                  <div className="flex h-full w-full items-end rounded-lg bg-slate-50">
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{
-                        height: `${Math.max(
-                          day.percentage,
-                          day.count > 0 ? 8 : 0
-                        )}%`,
-                      }}
-                      transition={{ duration: 0.45, ease: "easeOut" }}
-                      className="w-full rounded-t-lg bg-cyan-300"
-                      title={`${day.count} reservations`}
-                    />
-                  </div>
-
-                  <span className="text-xs font-semibold text-slate-400">
-                    {day.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
+      <section className="mt-8 grid grid-cols-1 gap-6">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}

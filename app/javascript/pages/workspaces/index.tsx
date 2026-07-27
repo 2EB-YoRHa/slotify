@@ -2,10 +2,10 @@ import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
 import {
   Building2,
-  DoorOpen,
-  Plus,
+  DollarSign,
+  PlusCircle,
   UsersRound,
-  WalletCards,
+  CheckCircle2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
@@ -20,18 +20,19 @@ export default function WorkspacesIndex({
   workspaces = [],
 }: WorkspacesIndexProps) {
   const activeWorkspaces = workspaces.filter((workspace) => workspace.active);
+
   const totalCapacity = workspaces.reduce(
     (sum, workspace) => sum + Number(workspace.capacity || 0),
     0
   );
 
   const averageRate =
-    workspaces.length === 0
-      ? 0
-      : workspaces.reduce(
+    workspaces.length > 0
+      ? workspaces.reduce(
           (sum, workspace) => sum + Number(workspace.hourly_rate || 0),
           0
-        ) / workspaces.length;
+        ) / workspaces.length
+      : 0;
 
   const stats = [
     {
@@ -43,20 +44,20 @@ export default function WorkspacesIndex({
     {
       label: "Active Spaces",
       value: activeWorkspaces.length,
-      helper: "Available for booking",
-      icon: DoorOpen,
+      helper: "Available for reservations",
+      icon: CheckCircle2,
     },
     {
       label: "Total Capacity",
       value: totalCapacity,
-      helper: "People capacity",
+      helper: "Maximum people supported",
       icon: UsersRound,
     },
     {
-      label: "Avg. Rate",
+      label: "Average Rate",
       value: `$${averageRate.toFixed(2)}`,
-      helper: "Per hour",
-      icon: WalletCards,
+      helper: "Average hourly price",
+      icon: DollarSign,
     },
   ];
 
@@ -64,18 +65,9 @@ export default function WorkspacesIndex({
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-2 text-sm font-bold uppercase tracking-wide text-cyan-500"
-          >
-            Workspace Management
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
             className="text-3xl font-bold text-slate-950"
           >
             Workspaces
@@ -84,10 +76,11 @@ export default function WorkspacesIndex({
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mt-1 text-slate-500"
+            transition={{ delay: 0.05 }}
+            className="mt-2 max-w-2xl text-slate-500"
           >
-            Manage rooms, offices, desks and spaces available for reservations.
+            Browse and manage desks, rooms, offices, amenities, pricing, and
+            availability for your organization.
           </motion.p>
         </div>
 
@@ -99,7 +92,7 @@ export default function WorkspacesIndex({
             href="/workspaces/new"
             className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
           >
-            <Plus size={18} />
+            <PlusCircle size={18} />
             New Workspace
           </Link>
         </motion.div>

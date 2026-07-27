@@ -70,32 +70,23 @@ export default function WorkspaceShow({
             </Link>
           </motion.div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.04 }}
-            className="mt-6 text-sm font-bold uppercase tracking-wide text-cyan-500"
-          >
-            Workspace Details
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-            className="mt-2 text-3xl font-bold text-slate-950"
+            transition={{ delay: 0.04 }}
+            className="mt-6 text-3xl font-bold text-slate-950"
           >
-            {workspace.name}
+            Workspace: {workspace.name}
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 }}
-            className="mt-1 text-slate-500"
+            transition={{ delay: 0.08 }}
+            className="mt-2 max-w-2xl text-slate-500"
           >
-            Review workspace information, amenities, pricing and reservation
-            activity.
+            Review workspace details, amenities, pricing, location, and
+            reservation activity.
           </motion.p>
         </div>
 
@@ -242,9 +233,7 @@ export default function WorkspaceShow({
               </div>
 
               <div>
-                <h2 className="text-2xl font-bold text-slate-950">
-                  Amenities
-                </h2>
+                <h2 className="text-2xl font-bold text-slate-950">Amenities</h2>
 
                 <p className="mt-2 text-sm leading-6 text-slate-500">
                   Features available in this workspace.
@@ -418,41 +407,6 @@ export default function WorkspaceShow({
 
               <SummaryRow label="Reservations" value={reservation_count} />
             </div>
-
-            <div className="mt-8 flex flex-col gap-3">
-              <Link
-                href={`/reservations/new?workspace_id=${workspace.id}`}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-500"
-              >
-                <CalendarPlus size={16} />
-                Reserve Workspace
-              </Link>
-
-              <Link
-                href={`/workspaces/${workspace.id}/edit`}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
-              >
-                <Edit3 size={16} />
-                Edit Workspace
-              </Link>
-
-              <Link
-                href={`/workspaces/${workspace.id}/delete`}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-6 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50"
-              >
-                <Trash2 size={16} />
-                Delete Workspace
-              </Link>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-cyan-100 bg-cyan-50 p-6">
-            <h2 className="text-lg font-bold text-cyan-700">Demo Note</h2>
-
-            <p className="mt-3 text-sm leading-6 text-cyan-700">
-              This screen shows how an organization can review a workspace,
-              validate its amenities and monitor recent reservations.
-            </p>
           </div>
         </motion.aside>
       </section>
@@ -513,7 +467,7 @@ function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
         <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
       </div>
 
-      <p className="break-words text-sm font-bold text-slate-900">{value}</p>
+      <p className="wrap-break-word text-sm font-bold text-slate-900">{value}</p>
     </div>
   );
 }

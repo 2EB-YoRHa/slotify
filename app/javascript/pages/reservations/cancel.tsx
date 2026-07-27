@@ -43,56 +43,38 @@ export default function CancelReservation({
 
   return (
     <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Link
-              href={`/reservations/${reservation.id}`}
-              className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
-            >
-              <ArrowLeft size={16} />
-              Back to Reservation
-            </Link>
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.04 }}
-            className="mt-6 text-sm font-bold uppercase tracking-wide text-red-500"
-          >
-            Dangerous Action
-          </motion.p>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-            className="mt-2 text-3xl font-bold text-slate-950"
-          >
-            Cancel Reservation
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 }}
-            className="mt-1 text-slate-500"
-          >
-            Review the booking details before cancelling this reservation.
-          </motion.p>
-        </div>
-
+      <div className="mb-8">
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
         >
-          <CalendarX size={24} strokeWidth={2.4} />
+          <Link
+            href={`/reservations/${reservation.id}`}
+            className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
+          >
+            <ArrowLeft size={16} />
+            Back to Reservation
+          </Link>
         </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 }}
+          className="mt-6 text-3xl font-bold text-slate-950"
+        >
+          Cancel Reservation
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mt-2 max-w-2xl text-slate-500"
+        >
+          Review the reservation details and confirm whether this booking should
+          be cancelled.
+        </motion.p>
       </div>
 
       {cancel_error && (
@@ -153,7 +135,7 @@ export default function CancelReservation({
                 icon={Clock3}
                 label="Time"
                 value={`${formatTime(reservation.start_time)} - ${formatTime(
-                  reservation.end_time
+                  reservation.end_time,
                 )}`}
               />
 
@@ -206,10 +188,6 @@ export default function CancelReservation({
         >
           <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
             <div className="mb-8">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
-                <ShieldAlert size={26} strokeWidth={2.4} />
-              </div>
-
               <h2 className="text-2xl font-bold text-slate-950">
                 Cancellation Summary
               </h2>
@@ -233,7 +211,7 @@ export default function CancelReservation({
               <SummaryRow
                 label="Time"
                 value={`${formatTime(reservation.start_time)} - ${formatTime(
-                  reservation.end_time
+                  reservation.end_time,
                 )}`}
               />
 
@@ -283,7 +261,7 @@ export default function CancelReservation({
         description={`This will cancel your reservation for ${
           reservation.workspace?.name || "this workspace"
         } on ${formatDate(reservation.start_time)} from ${formatTime(
-          reservation.start_time
+          reservation.start_time,
         )} to ${formatTime(reservation.end_time)}.`}
         confirmText="Cancel Reservation"
         cancelText="Keep Reservation"

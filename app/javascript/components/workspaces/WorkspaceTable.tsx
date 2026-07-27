@@ -77,7 +77,7 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
           <select
             value={typeFilter}
             onChange={(event) => setTypeFilter(event.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-600 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+            className="h-12 w-40 rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
           >
             <option value="all">All Types</option>
             <option value="meeting_room">Meeting Room</option>
@@ -90,7 +90,7 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
           <select
             value={capacityFilter}
             onChange={(event) => setCapacityFilter(event.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-600 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+            className="h-12 w-44 rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
           >
             <option value="all">Any Capacity</option>
             <option value="1-4">1-4 people</option>

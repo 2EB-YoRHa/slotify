@@ -64,7 +64,7 @@ export default function OrganizationMemberShow({
           setProcessing(false);
           setConfirmOpen(false);
         },
-      }
+      },
     );
   }
 
@@ -97,64 +97,37 @@ export default function OrganizationMemberShow({
 
   return (
     <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
+      <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Link
+            href="/organization"
+            className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
           >
-            <Link
-              href="/organization"
-              className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
-            >
-              <ArrowLeft size={16} />
-              Back to Organization
-            </Link>
-          </motion.div>
+            <ArrowLeft size={16} />
+            Back to Organization
+          </Link>
+        </motion.div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.04 }}
-            className="mt-6 text-sm font-bold uppercase tracking-wide text-cyan-500"
-          >
-            Member Management
-          </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 }}
+          className="mt-6 text-3xl font-bold text-slate-950"
+        >
+          Member: {member.name}
+        </motion.h1>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-            className="mt-2 text-3xl font-bold text-slate-950"
-          >
-            Manage Member
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 }}
-            className="mt-1 text-slate-500"
-          >
-            Review this member profile, access status and reservation activity.
-          </motion.p>
-        </div>
-
-        {can_toggle_access && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-          >
-            <LoadingButton
-              type="button"
-              variant={member.active ? "danger" : "primary"}
-              loading={false}
-              onClick={() => setConfirmOpen(true)}
-            >
-              {member.active ? "Deactivate Access" : "Activate Access"}
-            </LoadingButton>
-          </motion.div>
-        )}
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mt-2 max-w-2xl text-slate-500"
+        >
+          Review role, access status, account details, and reservation activity.
+        </motion.p>
       </div>
 
       {!can_toggle_access && (
@@ -274,21 +247,13 @@ export default function OrganizationMemberShow({
 
                 <thead className="bg-slate-50 text-slate-500">
                   <tr>
-                    <th className="px-6 py-4 text-left font-bold">
-                      Workspace
-                    </th>
+                    <th className="px-6 py-4 text-left font-bold">Workspace</th>
 
-                    <th className="px-6 py-4 text-center font-bold">
-                      Date
-                    </th>
+                    <th className="px-6 py-4 text-center font-bold">Date</th>
 
-                    <th className="px-6 py-4 text-center font-bold">
-                      Time
-                    </th>
+                    <th className="px-6 py-4 text-center font-bold">Time</th>
 
-                    <th className="px-6 py-4 text-center font-bold">
-                      Status
-                    </th>
+                    <th className="px-6 py-4 text-center font-bold">Status</th>
                   </tr>
                 </thead>
 
@@ -342,7 +307,10 @@ export default function OrganizationMemberShow({
           transition={{ delay: 0.22 }}
           className="space-y-6"
         >
-          <SidePanel title="Access Control" icon={member.active ? Power : PowerOff}>
+          <SidePanel
+            title="Access Control"
+            icon={member.active ? Power : PowerOff}
+          >
             <p className="text-sm leading-6 text-slate-500">
               Deactivating a member prevents them from signing in, but keeps
               their historical reservations available for reports and audit.

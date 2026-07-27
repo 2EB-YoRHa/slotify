@@ -73,23 +73,6 @@ export default function BookingRuleForm({
       onSubmit={handleSubmit}
       className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
     >
-      <div className="mb-8 flex items-start gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-          <ShieldCheck size={26} strokeWidth={2.4} />
-        </div>
-
-        <div>
-          <h2 className="text-2xl font-bold text-slate-950">
-            Edit Booking Rules
-          </h2>
-
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            Configure the reservation limits that apply to members when they
-            create or cancel bookings.
-          </p>
-        </div>
-      </div>
-
       <div className="grid grid-cols-3 gap-5">
         <RuleInput
           icon={Clock3}

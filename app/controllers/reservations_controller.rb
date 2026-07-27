@@ -48,9 +48,18 @@ class ReservationsController < InertiaController
                                     .includes(:amenities)
                                     .order(:name)
 
+    default_start_time = Time.zone.parse("#{Time.zone.today} 09:00")
+    default_end_time = Time.zone.parse("#{Time.zone.today} 10:00")
+
     render inertia: "reservations/new", props: {
       workspaces: workspaces.as_json(include: :amenities),
-      selected_workspace_id: params[:workspace_id]
+      selected_workspace_id: params[:workspace_id],
+      initial_start_time: default_start_time.strftime("%Y-%m-%dT%H:%M"),
+      initial_end_time: default_end_time.strftime("%Y-%m-%dT%H:%M"),
+      initial_unavailable_workspace_ids: unavailable_workspace_ids_for(
+        default_start_time,
+        default_end_time
+      )
     }
   end
 
@@ -246,17 +255,19 @@ class ReservationsController < InertiaController
   end
 
   def availability
-    start_time = Time.zone.parse(params[:start_time])
-    end_time = Time.zone.parse(params[:end_time])
+    start_time = Time.zone.parse(params[:start_time].to_s)
+    end_time = Time.zone.parse(params[:end_time].to_s)
 
-    unavailable_workspace_ids = current_organization.reservations
-                                                    .where.not(status: "cancelled")
-                                                    .where("start_time < ? AND end_time > ?", end_time, start_time)
-                                                    .pluck(:workspace_id)
-                                                    .uniq
+    if start_time.blank? || end_time.blank? || start_time >= end_time
+      render json: {
+        error: "Invalid date or time"
+      }, status: :unprocessable_entity
+
+      return
+    end
 
     render json: {
-      unavailable_workspace_ids: unavailable_workspace_ids
+      unavailable_workspace_ids: unavailable_workspace_ids_for(start_time, end_time)
     }
   rescue ArgumentError, TypeError
     render json: {
@@ -287,6 +298,14 @@ class ReservationsController < InertiaController
       :attendees_count,
       :notes
     )
+  end
+
+  def unavailable_workspace_ids_for(start_time, end_time)
+    current_organization.reservations
+                        .where.not(status: "cancelled")
+                        .where("start_time < ? AND end_time > ?", end_time, start_time)
+                        .pluck(:workspace_id)
+                        .uniq
   end
 
   def reservation_includes

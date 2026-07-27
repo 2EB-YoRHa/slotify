@@ -43,60 +43,31 @@ export default function BookingRuleShow({
       helper: "Before booking starts",
       icon: TimerReset,
     },
-    {
-      label: "Rules Status",
-      value: rulesActive ? "Active" : "Inactive",
-      helper: rulesActive ? "Rules are enforced" : "Rules are disabled",
-      icon: rulesActive ? ToggleRight : ToggleLeft,
-    },
   ];
 
   return (
     <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-2 text-sm font-bold uppercase tracking-wide text-cyan-500"
-          >
-            Reservation Policy
-          </motion.p>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="text-3xl font-bold text-slate-950"
-          >
-            Booking Rules
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mt-1 text-slate-500"
-          >
-            Configure how members can create and cancel workspace reservations.
-          </motion.p>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
+      <div className="mb-8">
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-3xl font-bold text-slate-950"
         >
-          <Link
-            href="/booking_rule/edit"
-            className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
-          >
-            <Pencil size={18} />
-            Edit Rules
-          </Link>
-        </motion.div>
+          Booking Rules
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="mt-2 max-w-2xl text-slate-500"
+        >
+          Configure reservation limits, advance notice, cancellation rules, and
+          weekend bookings.
+        </motion.p>
       </div>
 
-      <section className="mb-8 grid grid-cols-4 gap-6">
+      <section className="mb-8 grid grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <RuleStatCard key={stat.label} stat={stat} index={index} />
         ))}
@@ -187,21 +158,11 @@ export default function BookingRuleShow({
 
             <Link
               href="/booking_rule/edit"
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
             >
               <Pencil size={16} />
-              Update Rules
+              Change Rules
             </Link>
-          </div>
-
-          <div className="rounded-xl border border-cyan-100 bg-cyan-50 p-6">
-            <h2 className="text-lg font-bold text-cyan-700">Demo Example</h2>
-
-            <p className="mt-3 text-sm leading-6 text-cyan-700">
-              If max duration is 2 hours and minimum notice is 60 minutes, a
-              member must reserve at least 1 hour in advance and cannot book a
-              space for more than 2 hours.
-            </p>
           </div>
         </motion.aside>
       </section>

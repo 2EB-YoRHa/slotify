@@ -1,51 +1,70 @@
 import { Link } from "@inertiajs/react";
+import { motion } from "motion/react";
+import { ArrowLeft } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import BookingRuleForm from "../../components/booking_rules/BookingRuleForm";
-import type {
-  BookingRule,
-  BookingRuleErrors,
-} from "../../types/bookingRule";
+import type { BookingRule } from "../../types/bookingRule";
 
 type BookingRuleEditProps = {
-  booking_rule: BookingRule;
-  errors?: BookingRuleErrors;
+  booking_rule?: BookingRule;
+  bookingRule?: BookingRule;
+  errors?: Partial<Record<string, string | string[]>>;
 };
 
 export default function BookingRuleEdit({
   booking_rule,
+  bookingRule,
   errors = {},
 }: BookingRuleEditProps) {
+  const rule = booking_rule || bookingRule;
+
+  if (!rule) {
+    return (
+      <AppLayout>
+        <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-sm text-red-600">
+          Booking rules could not be loaded.
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-8 flex items-start justify-between">
-          <div>
-            <div className="mb-2 text-sm text-slate-400">
-              <Link href="/booking_rule" className="hover:text-cyan-500">
-                Booking Rules
-              </Link>{" "}
-              / Edit
-            </div>
-
-            <h1 className="text-3xl font-bold text-slate-900">
-              Edit Booking Rules
-            </h1>
-
-            <p className="mt-1 text-slate-500">
-              Define how members can create and cancel reservations.
-            </p>
-          </div>
-
+      <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
           <Link
             href="/booking_rule"
-            className="rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
           >
-            Back to Rules
+            <ArrowLeft size={16} />
+            Back to Booking Rules
           </Link>
-        </div>
+        </motion.div>
 
-        <BookingRuleForm bookingRule={booking_rule} errors={errors} />
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 }}
+          className="mt-6 text-3xl font-bold text-slate-950"
+        >
+          Change Booking Rules
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mt-2 max-w-2xl text-slate-500"
+        >
+          Change reservation duration, advance notice, cancellation limits, and
+          weekend booking availability.
+        </motion.p>
       </div>
+
+      <BookingRuleForm bookingRule={rule} errors={errors} />
     </AppLayout>
   );
 }

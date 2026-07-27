@@ -47,7 +47,10 @@ export default function DeleteWorkspace({
   const [processing, setProcessing] = useState(false);
 
   const totalReservations =
-    reservation_count ?? reservations_count ?? workspace.reservations_count ?? 0;
+    reservation_count ??
+    reservations_count ??
+    workspace.reservations_count ??
+    0;
 
   const amenities = workspace.amenities || [];
   const blocked = !can_delete || Boolean(delete_error);
@@ -65,57 +68,37 @@ export default function DeleteWorkspace({
 
   return (
     <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Link
-              href={`/workspaces/${workspace.id}`}
-              className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
-            >
-              <ArrowLeft size={16} />
-              Back to Workspace
-            </Link>
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.04 }}
-            className="mt-6 text-sm font-bold uppercase tracking-wide text-red-500"
-          >
-            Dangerous Action
-          </motion.p>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-            className="mt-2 text-3xl font-bold text-slate-950"
-          >
-            Delete Workspace
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 }}
-            className="mt-1 text-slate-500"
-          >
-            Review this workspace before permanently removing it from the
-            organization.
-          </motion.p>
-        </div>
-
+      <div className="mb-8">
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
         >
-          <Trash2 size={24} strokeWidth={2.4} />
+          <Link
+            href={`/workspaces/${workspace.id}`}
+            className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
+          >
+            <ArrowLeft size={16} />
+            Back to Workspace
+          </Link>
         </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 }}
+          className="mt-6 text-3xl font-bold text-slate-950"
+        >
+          Delete Workspace
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mt-2 max-w-2xl text-slate-500"
+        >
+          Review workspace details and confirm whether it can be safely removed.
+        </motion.p>
       </div>
 
       {delete_error && (
@@ -274,9 +257,6 @@ export default function DeleteWorkspace({
         >
           <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
             <div className="mb-8">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
-                <ShieldAlert size={26} strokeWidth={2.4} />
-              </div>
 
               <h2 className="text-2xl font-bold text-slate-950">
                 Delete Summary
@@ -297,10 +277,7 @@ export default function DeleteWorkspace({
 
               <SummaryRow label="Capacity" value={workspace.capacity} />
 
-              <SummaryRow
-                label="Reservations"
-                value={totalReservations}
-              />
+              <SummaryRow label="Reservations" value={totalReservations} />
 
               <SummaryRow
                 label="Status"

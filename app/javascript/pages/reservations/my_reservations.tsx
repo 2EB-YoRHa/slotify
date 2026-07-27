@@ -2,10 +2,10 @@ import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
 import {
   CalendarCheck,
-  CalendarClock,
   CalendarPlus,
-  CalendarX,
   Clock3,
+  ListChecks,
+  XCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
@@ -21,23 +21,18 @@ export default function MyReservations({
 }: MyReservationsProps) {
   const now = Date.now();
 
-  const activeNow = reservations.filter((reservation) => {
-    const startTime = new Date(reservation.start_time).getTime();
-    const endTime = new Date(reservation.end_time).getTime();
+  const activeReservations = reservations.filter((reservation) => {
+    const start = new Date(reservation.start_time).getTime();
+    const end = new Date(reservation.end_time).getTime();
 
-    return (
-      reservation.status !== "cancelled" &&
-      startTime <= now &&
-      endTime >= now
-    );
+    return reservation.status !== "cancelled" && start <= now && end >= now;
   });
 
-  const upcomingReservations = reservations.filter((reservation) => {
-    return (
+  const upcomingReservations = reservations.filter(
+    (reservation) =>
       reservation.status !== "cancelled" &&
-      new Date(reservation.start_time).getTime() >= now
-    );
-  });
+      new Date(reservation.start_time).getTime() > now
+  );
 
   const cancelledReservations = reservations.filter(
     (reservation) => reservation.status === "cancelled"
@@ -47,26 +42,26 @@ export default function MyReservations({
     {
       label: "My Bookings",
       value: reservations.length,
-      helper: "Total reservations",
-      icon: CalendarCheck,
+      helper: "Total reservations created by you",
+      icon: ListChecks,
     },
     {
       label: "Active Now",
-      value: activeNow.length,
-      helper: "Currently in use",
+      value: activeReservations.length,
+      helper: "Reservations currently in progress",
       icon: Clock3,
     },
     {
       label: "Upcoming",
       value: upcomingReservations.length,
-      helper: "Future bookings",
-      icon: CalendarClock,
+      helper: "Future active bookings",
+      icon: CalendarCheck,
     },
     {
       label: "Cancelled",
       value: cancelledReservations.length,
-      helper: "Inactive bookings",
-      icon: CalendarX,
+      helper: "Cancelled personal bookings",
+      icon: XCircle,
     },
   ];
 
@@ -74,18 +69,9 @@ export default function MyReservations({
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-2 text-sm font-bold uppercase tracking-wide text-cyan-500"
-          >
-            Personal Reservations
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
             className="text-3xl font-bold text-slate-950"
           >
             My Bookings
@@ -94,10 +80,11 @@ export default function MyReservations({
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mt-1 text-slate-500"
+            transition={{ delay: 0.05 }}
+            className="mt-2 max-w-2xl text-slate-500"
           >
-            View and manage the reservations created with your account.
+            Review your workspace reservations, upcoming bookings, and booking
+            history.
           </motion.p>
         </div>
 
@@ -110,7 +97,7 @@ export default function MyReservations({
             className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
           >
             <CalendarPlus size={18} />
-            New Booking
+            Create Reservation
           </Link>
         </motion.div>
       </div>

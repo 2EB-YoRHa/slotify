@@ -68,7 +68,7 @@ export default function OrganizationShow({
   const activeUsers = users.filter((user) => user.active);
   const managers = users.filter((user) => user.role?.name === "manager");
   const pendingInvitations = invitations.filter(
-    (invitation) => invitation.status === "pending"
+    (invitation) => invitation.status === "pending",
   );
 
   const stats = [
@@ -102,18 +102,9 @@ export default function OrganizationShow({
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-2 text-sm font-bold uppercase tracking-wide text-cyan-500"
-          >
-            Organization Settings
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
             className="text-3xl font-bold text-slate-950"
           >
             {organization.name}
@@ -122,10 +113,11 @@ export default function OrganizationShow({
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mt-1 text-slate-500"
+            transition={{ delay: 0.05 }}
+            className="mt-2 max-w-2xl text-slate-500"
           >
-            Manage organization details, members, booking rules and invitations.
+            Manage your organization details, members, invitations, booking rules,
+            and subscription information.
           </motion.p>
         </div>
 
@@ -197,11 +189,7 @@ export default function OrganizationShow({
               value={organization.name}
             />
 
-            <InfoCard
-              icon={Settings2}
-              label="Slug"
-              value={organization.slug}
-            />
+            <InfoCard icon={Settings2} label="Slug" value={organization.slug} />
 
             <InfoCard
               icon={Mail}
@@ -249,7 +237,9 @@ export default function OrganizationShow({
 
             <SummaryRow
               label="Weekends"
-              value={booking_rule?.allow_weekend_bookings ? "Allowed" : "Blocked"}
+              value={
+                booking_rule?.allow_weekend_bookings ? "Allowed" : "Blocked"
+              }
             />
 
             <Link

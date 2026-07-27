@@ -33,27 +33,27 @@ const plans = [
     key: "starter",
     name: "Starter",
     price: "$19",
-    description: "For small coworking spaces starting with reservations.",
+    description: "For small coworking spaces that need basic booking control.",
     icon: Building2,
     features: [
       "Up to 10 workspaces",
-      "Basic reservation management",
+      "Reservation management",
       "Member invitations",
-      "Booking rules",
+      "Basic booking rules",
     ],
   },
   {
     key: "pro",
     name: "Pro",
     price: "$49",
-    description: "For growing coworkings that need more control.",
+    description: "For growing teams that need stronger workspace management.",
     icon: Zap,
     highlighted: true,
     features: [
       "Unlimited workspaces",
-      "Advanced availability checks",
-      "Organization management",
+      "Availability checks",
       "Member access control",
+      "Organization management",
       "Dashboard insights",
     ],
   },
@@ -61,14 +61,14 @@ const plans = [
     key: "business",
     name: "Business",
     price: "$99",
-    description: "For larger operations with advanced needs.",
+    description: "For larger organizations with advanced operational needs.",
     icon: ShieldCheck,
     features: [
       "Multi-location support",
       "Advanced reports",
       "Priority support",
-      "Custom rules",
-      "Audit-ready activity history",
+      "Custom booking rules",
+      "Activity history",
     ],
   },
 ];
@@ -78,7 +78,7 @@ export default function SubscriptionShow({
 }: SubscriptionShowProps) {
   const currentPlan = normalizePlan(subscription?.plan_name || subscription?.plan);
   const status = formatStatus(subscription?.status);
-  const renewalDate =
+  const referenceDate =
     subscription?.expires_at ||
     subscription?.ends_at ||
     subscription?.started_at ||
@@ -89,25 +89,25 @@ export default function SubscriptionShow({
     {
       label: "Current Plan",
       value: formatPlan(currentPlan),
-      helper: "Configured subscription",
+      helper: "Plan assigned to the organization",
       icon: CreditCard,
     },
     {
       label: "Status",
       value: status,
-      helper: "Billing state",
+      helper: "Current subscription state",
       icon: Sparkles,
     },
     {
       label: "Workspace Access",
       value: currentPlan === "starter" ? "10" : "Unlimited",
-      helper: "Available spaces",
+      helper: "Workspace capacity by plan",
       icon: Database,
     },
     {
       label: "Members",
       value: "Included",
-      helper: "Team management",
+      helper: "Team access management",
       icon: UsersRound,
     },
   ];
@@ -115,18 +115,9 @@ export default function SubscriptionShow({
   return (
     <AppLayout>
       <div className="mb-8">
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-2 text-sm font-bold uppercase tracking-wide text-cyan-500"
-        >
-          SaaS Billing
-        </motion.p>
-
         <motion.h1
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
           className="text-3xl font-bold text-slate-950"
         >
           Subscription
@@ -135,10 +126,11 @@ export default function SubscriptionShow({
         <motion.p
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mt-1 text-slate-500"
+          transition={{ delay: 0.05 }}
+          className="mt-2 max-w-2xl text-slate-500"
         >
-          Review the organization plan, billing status and available features.
+          Review the organization plan, subscription status, available features,
+          and plan limits.
         </motion.p>
       </div>
 
@@ -161,18 +153,14 @@ export default function SubscriptionShow({
                 <CreditCard size={26} strokeWidth={2.4} />
               </div>
 
-              <p className="text-sm font-bold uppercase tracking-wide text-cyan-600">
-                Active Subscription
-              </p>
-
-              <h2 className="mt-2 text-4xl font-extrabold text-slate-950">
+              <h2 className="text-4xl font-extrabold text-slate-950">
                 {formatPlan(currentPlan)}
               </h2>
 
               <p className="mt-3 max-w-xl leading-7 text-slate-600">
-                This plan defines the features available for the organization.
-                Billing integration can be connected later with Stripe or
-                another payment provider.
+                This plan controls the workspace limits, member management
+                options, booking rules, and reporting features available to the
+                organization.
               </p>
             </div>
 
@@ -186,11 +174,11 @@ export default function SubscriptionShow({
               <div className="mt-6 h-px bg-slate-100" />
 
               <p className="mt-6 text-sm font-bold text-slate-500">
-                Renewal / Reference Date
+                Reference Date
               </p>
 
               <p className="mt-2 text-sm font-bold text-slate-950">
-                {renewalDate ? formatDate(renewalDate) : "Not configured"}
+                {referenceDate ? formatDate(referenceDate) : "Not configured"}
               </p>
             </div>
           </div>
@@ -208,21 +196,22 @@ export default function SubscriptionShow({
             </div>
 
             <h2 className="text-lg font-bold text-slate-950">
-              Billing Notes
+              Plan Overview
             </h2>
           </div>
 
-          <p className="text-sm leading-6 text-slate-500">
-            Payment processing is not enabled in this MVP. The subscription is
-            stored internally to demonstrate SaaS plan management.
-          </p>
-
-          <div className="mt-6 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
-            <p className="font-bold text-slate-700">Demo scope</p>
-            <p className="mt-1 leading-6">
-              For the presentation, this screen shows the business model and
-              future billing direction without charging real payments.
-            </p>
+          <div className="rounded-xl bg-slate-50 p-5">
+            <SummaryRow label="Plan" value={formatPlan(currentPlan)} />
+            <SummaryRow label="Status" value={status} />
+            <SummaryRow
+              label="Workspaces"
+              value={currentPlan === "starter" ? "Up to 10" : "Unlimited"}
+            />
+            <SummaryRow label="Members" value="Included" />
+            <SummaryRow
+              label="Date"
+              value={referenceDate ? formatDate(referenceDate) : "Not configured"}
+            />
           </div>
         </motion.aside>
       </section>
@@ -233,8 +222,8 @@ export default function SubscriptionShow({
             Available Plans
           </h2>
 
-          <p className="mt-1 text-sm text-slate-500">
-            Compare plan levels and features for future SaaS billing.
+          <p className="mt-2 max-w-2xl text-sm text-slate-500">
+            Compare plan levels and the features available for each subscription.
           </p>
         </div>
 
@@ -304,6 +293,23 @@ function SubscriptionStatCard({
 
       <p className="mt-3 text-xs text-slate-500">{stat.helper}</p>
     </motion.div>
+  );
+}
+
+type SummaryRowProps = {
+  label: string;
+  value: string | number;
+};
+
+function SummaryRow({ label, value }: SummaryRowProps) {
+  return (
+    <div className="flex justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
+      <span className="text-sm text-slate-500">{label}</span>
+
+      <span className="text-right text-sm font-bold text-slate-950">
+        {value}
+      </span>
+    </div>
   );
 }
 

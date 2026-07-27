@@ -328,7 +328,6 @@ export default function WorkspaceForm({
       >
         <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-8">
-            <IconBox icon={Save} large />
 
             <h2 className="mt-4 text-2xl font-bold text-slate-950">
               {isEditing ? "Update Workspace" : "Create Workspace"}
@@ -394,15 +393,6 @@ export default function WorkspaceForm({
               Cancel
             </a>
           </div>
-        </div>
-
-        <div className="rounded-xl border border-cyan-100 bg-cyan-50 p-6">
-          <h2 className="text-lg font-bold text-cyan-700">Demo Tip</h2>
-
-          <p className="mt-3 text-sm leading-6 text-cyan-700">
-            Workspaces are the core resource of Slotify. Each one can have its
-            own type, capacity, price and amenities.
-          </p>
         </div>
       </motion.aside>
     </form>

@@ -12,15 +12,21 @@ import {
   DollarSign,
   MapPin,
   Search,
+  Sparkles,
   StickyNote,
   UsersRound,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
+import type { Amenity } from "../../types/amenity";
 import type { Workspace } from "../../types/workspace";
 
 type NewReservationFormProps = {
   workspaces: Workspace[];
   selectedWorkspaceId?: number | string | null;
+  initialStartTime?: string | null;
+  initialEndTime?: string | null;
+  initialUnavailableWorkspaceIds?: number[];
   initialErrors?: Record<string, string | string[]>;
 };
 
@@ -46,19 +52,28 @@ const timeSlots = [
 export default function NewReservationForm({
   workspaces,
   selectedWorkspaceId = null,
+  initialStartTime = null,
+  initialEndTime = null,
+  initialUnavailableWorkspaceIds = [],
   initialErrors = {},
 }: NewReservationFormProps) {
   const today = new Date().toISOString().split("T")[0];
   const firstSlot = timeSlots[0];
 
-  const [selectedDate, setSelectedDate] = useState(today);
-  const [selectedSlot, setSelectedSlot] = useState(firstSlot);
+  const defaultStartTime =
+    initialStartTime || buildDateTime(today, firstSlot.start);
+  const defaultEndTime = initialEndTime || buildDateTime(today, firstSlot.end);
+  const defaultDate = extractDate(defaultStartTime);
+  const defaultSlot = findSlotByDateTimes(defaultStartTime, defaultEndTime);
+
+  const [selectedDate, setSelectedDate] = useState(defaultDate);
+  const [selectedSlot, setSelectedSlot] = useState(defaultSlot);
   const [search, setSearch] = useState("");
   const [checkingAvailability, setCheckingAvailability] = useState(false);
-  const [availabilityChecked, setAvailabilityChecked] = useState(false);
+  const [availabilityChecked, setAvailabilityChecked] = useState(true);
   const [unavailableWorkspaceIds, setUnavailableWorkspaceIds] = useState<
     number[]
-  >([]);
+  >(initialUnavailableWorkspaceIds);
   const [availabilityError, setAvailabilityError] = useState<string | null>(
     null,
   );
@@ -73,8 +88,8 @@ export default function NewReservationForm({
     useForm<ReservationFormData>({
       reservation: {
         workspace_id: validSelectedWorkspaceId,
-        start_time: buildDateTime(today, firstSlot.start),
-        end_time: buildDateTime(today, firstSlot.end),
+        start_time: defaultStartTime,
+        end_time: defaultEndTime,
         attendees_count: 1,
         notes: "",
       },
@@ -97,7 +112,10 @@ export default function NewReservationForm({
     return (
       workspace.name.toLowerCase().includes(query) ||
       workspace.workspace_type.toLowerCase().includes(query) ||
-      (workspace.location || "").toLowerCase().includes(query)
+      (workspace.location || "").toLowerCase().includes(query) ||
+      (workspace.amenities || []).some((amenity) =>
+        amenity.name.toLowerCase().includes(query),
+      )
     );
   });
 
@@ -115,6 +133,7 @@ export default function NewReservationForm({
   const canSubmit =
     Boolean(data.reservation.workspace_id) &&
     availabilityChecked &&
+    !checkingAvailability &&
     !selectedWorkspaceUnavailable &&
     !attendeesExceedCapacity;
 
@@ -127,13 +146,17 @@ export default function NewReservationForm({
     : 0;
 
   function handleDateChange(date: string) {
+    const nextStartTime = buildDateTime(date, selectedSlot.start);
+    const nextEndTime = buildDateTime(date, selectedSlot.end);
+
     setSelectedDate(date);
-    resetAvailability();
 
     updateReservation({
-      start_time: buildDateTime(date, selectedSlot.start),
-      end_time: buildDateTime(date, selectedSlot.end),
+      start_time: nextStartTime,
+      end_time: nextEndTime,
     });
+
+    void checkAvailabilityFor(nextStartTime, nextEndTime);
   }
 
   function handleSlotChange(slotLabel: string) {
@@ -141,19 +164,30 @@ export default function NewReservationForm({
 
     if (!slot) return;
 
+    const nextStartTime = buildDateTime(selectedDate, slot.start);
+    const nextEndTime = buildDateTime(selectedDate, slot.end);
+
     setSelectedSlot(slot);
-    resetAvailability();
 
     updateReservation({
-      start_time: buildDateTime(selectedDate, slot.start),
-      end_time: buildDateTime(selectedDate, slot.end),
+      start_time: nextStartTime,
+      end_time: nextEndTime,
     });
+
+    void checkAvailabilityFor(nextStartTime, nextEndTime);
   }
 
   function selectWorkspace(workspaceId: number) {
     updateReservation({
       workspace_id: workspaceId,
     });
+
+    if (!availabilityChecked && !checkingAvailability) {
+      void checkAvailabilityFor(
+        data.reservation.start_time,
+        data.reservation.end_time,
+      );
+    }
   }
 
   function updateReservation(
@@ -172,13 +206,21 @@ export default function NewReservationForm({
   }
 
   async function checkAvailability() {
+    await checkAvailabilityFor(
+      data.reservation.start_time,
+      data.reservation.end_time,
+    );
+  }
+
+  async function checkAvailabilityFor(startTime: string, endTime: string) {
     setCheckingAvailability(true);
+    setAvailabilityChecked(false);
     setAvailabilityError(null);
 
     try {
       const params = new URLSearchParams({
-        start_time: data.reservation.start_time,
-        end_time: data.reservation.end_time,
+        start_time: startTime,
+        end_time: endTime,
       });
 
       const response = await fetch(`/reservations/availability?${params}`);
@@ -309,13 +351,14 @@ export default function NewReservationForm({
               type="button"
               loading={checkingAvailability}
               loadingText="Checking..."
-              onClick={checkAvailability}
+              onClick={() => void checkAvailability()}
             >
-              Check Availability
+              Refresh Availability
             </LoadingButton>
           </div>
 
           <AvailabilityMessage
+            checkingAvailability={checkingAvailability}
             availabilityChecked={availabilityChecked}
             availabilityError={availabilityError}
             unavailableCount={unavailableWorkspaceIds.length}
@@ -401,9 +444,6 @@ export default function NewReservationForm({
       >
         <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-8">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-              <CalendarSearch size={26} strokeWidth={2.4} />
-            </div>
 
             <h2 className="text-2xl font-bold text-slate-950">
               Reservation Summary
@@ -494,6 +534,8 @@ export default function NewReservationForm({
               value={`$${estimatedTotal.toFixed(2)}`}
             />
           </div>
+
+          <SelectedWorkspaceSummary workspace={selectedWorkspace} />
 
           <ValidationNotice
             availabilityChecked={availabilityChecked}
@@ -590,12 +632,22 @@ function WorkspaceOption({
           <span className="truncate">{workspace.location}</span>
         </div>
       )}
+      <div className="mt-5 border-t border-slate-100 pt-4">
+        <div className="mb-3 flex items-center gap-2 text-slate-400">
+          <Sparkles size={15} />
+          <p className="text-[10px] font-bold uppercase tracking-wide">
+            Amenities
+          </p>
+        </div>
+
+        <AmenityChips amenities={workspace.amenities || []} maxVisible={4} />
+      </div>
     </motion.button>
   );
 }
 
 type InfoProps = {
-  icon: typeof UsersRound;
+  icon: LucideIcon;
   label: string;
   value: string | number;
 };
@@ -609,6 +661,111 @@ function Info({ icon: Icon, label, value }: InfoProps) {
       </div>
 
       <p className="font-bold text-slate-800">{value}</p>
+    </div>
+  );
+}
+
+type SelectedWorkspaceSummaryProps = {
+  workspace?: Workspace | null;
+};
+
+function SelectedWorkspaceSummary({
+  workspace,
+}: SelectedWorkspaceSummaryProps) {
+  if (!workspace) {
+    return (
+      <div className="mt-5 rounded-xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-500">
+        Select a workspace to see its details and amenities here.
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 rounded-xl border border-cyan-100 bg-cyan-50/50 p-5">
+      <div className="mb-4 flex items-start gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500">
+          <Building2 size={18} strokeWidth={2.4} />
+        </div>
+
+        <div className="min-w-0">
+          <p className="font-bold text-slate-950">{workspace.name}</p>
+
+          <p className="mt-1 text-xs font-bold uppercase text-slate-400">
+            {formatText(workspace.workspace_type)}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 text-sm">
+        <Info icon={UsersRound} label="Capacity" value={workspace.capacity} />
+
+        <Info
+          icon={DollarSign}
+          label="Rate"
+          value={`$${workspace.hourly_rate || 0}/h`}
+        />
+
+        <Info icon={Building2} label="Floor" value={workspace.floor || "-"} />
+
+        <Info icon={MapPin} label="Zone" value={workspace.zone || "-"} />
+      </div>
+
+      {workspace.location && (
+        <div className="mt-4 flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-sm text-slate-500">
+          <MapPin size={15} className="text-slate-400" />
+          <span>{workspace.location}</span>
+        </div>
+      )}
+
+      <div className="mt-4 border-t border-cyan-100 pt-4">
+        <div className="mb-3 flex items-center gap-2 text-cyan-600">
+          <Sparkles size={15} />
+
+          <p className="text-[10px] font-bold uppercase tracking-wide">
+            Amenities Included
+          </p>
+        </div>
+
+        <AmenityChips amenities={workspace.amenities || []} maxVisible={8} />
+      </div>
+    </div>
+  );
+}
+
+type AmenityChipsProps = {
+  amenities: Amenity[];
+  maxVisible: number;
+};
+
+function AmenityChips({ amenities, maxVisible }: AmenityChipsProps) {
+  if (amenities.length === 0) {
+    return (
+      <div className="rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-400">
+        No amenities assigned
+      </div>
+    );
+  }
+
+  const visibleAmenities = amenities.slice(0, maxVisible);
+  const hiddenCount = amenities.length - visibleAmenities.length;
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {visibleAmenities.map((amenity) => (
+        <span
+          key={amenity.id}
+          className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-600 ring-1 ring-slate-200"
+        >
+          <Sparkles size={12} className="text-cyan-500" />
+          {amenity.name}
+        </span>
+      ))}
+
+      {hiddenCount > 0 && (
+        <span className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-600 ring-1 ring-cyan-100">
+          +{hiddenCount} more
+        </span>
+      )}
     </div>
   );
 }
@@ -631,14 +788,26 @@ function SummaryRow({ label, value }: SummaryRowProps) {
 }
 
 function AvailabilityMessage({
+  checkingAvailability,
   availabilityChecked,
   availabilityError,
   unavailableCount,
 }: {
+  checkingAvailability: boolean;
   availabilityChecked: boolean;
   availabilityError: string | null;
   unavailableCount: number;
 }) {
+  if (checkingAvailability) {
+    return (
+      <div className="mt-6 flex items-start gap-3 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm text-cyan-700">
+        <CalendarSearch size={18} className="mt-0.5 shrink-0" />
+        <span>
+          Checking availability automatically for the selected time slot...
+        </span>
+      </div>
+    );
+  }
   if (availabilityError) {
     return (
       <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
@@ -738,6 +907,26 @@ function AvailabilityBadge({
     <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
       Available
     </span>
+  );
+}
+
+function extractDate(value: string): string {
+  return value.split("T")[0];
+}
+
+function extractTime(value: string): string {
+  const timePart = value.split("T")[1] || "";
+
+  return timePart.slice(0, 5);
+}
+
+function findSlotByDateTimes(startTime: string, endTime: string) {
+  const start = extractTime(startTime);
+  const end = extractTime(endTime);
+
+  return (
+    timeSlots.find((slot) => slot.start === start && slot.end === end) ||
+    timeSlots[0]
   );
 }
 

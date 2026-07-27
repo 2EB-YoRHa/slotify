@@ -55,16 +55,6 @@ export default function OrganizationForm({
       onSubmit={handleSubmit}
       className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
     >
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-950">
-          Organization Details
-        </h2>
-
-        <p className="mt-2 text-sm text-slate-500">
-          Update the information used to identify your coworking organization.
-        </p>
-      </div>
-
       <div className="grid grid-cols-2 gap-6">
         <label className="block">
           <span className="mb-2 block text-sm font-bold text-slate-700">

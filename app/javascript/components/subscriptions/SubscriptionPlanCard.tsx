@@ -23,9 +23,7 @@ export default function SubscriptionPlanCard({
   return (
     <div
       className={`relative rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md ${
-        highlighted
-          ? "border-cyan-200 ring-4 ring-cyan-50"
-          : "border-slate-200"
+        highlighted ? "border-cyan-200 ring-4 ring-cyan-50" : "border-slate-200"
       }`}
     >
       {highlighted && (
@@ -51,13 +49,9 @@ export default function SubscriptionPlanCard({
       <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
 
       <div className="mt-6 flex items-end gap-1">
-        <span className="text-4xl font-extrabold text-slate-950">
-          {price}
-        </span>
+        <span className="text-4xl font-extrabold text-slate-950">{price}</span>
 
-        <span className="pb-1 text-sm font-medium text-slate-400">
-          /month
-        </span>
+        <span className="pb-1 text-sm font-medium text-slate-400">/month</span>
       </div>
 
       <div className="my-6 h-px bg-slate-100" />
@@ -65,14 +59,9 @@ export default function SubscriptionPlanCard({
       <div className="space-y-4">
         {features.map((feature) => (
           <div key={feature} className="flex items-start gap-3">
-            <CheckCircle2
-              size={18}
-              className="mt-0.5 shrink-0 text-cyan-500"
-            />
+            <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-cyan-500" />
 
-            <span className="text-sm leading-6 text-slate-600">
-              {feature}
-            </span>
+            <span className="text-sm leading-6 text-slate-600">{feature}</span>
           </div>
         ))}
       </div>
@@ -81,7 +70,7 @@ export default function SubscriptionPlanCard({
         className={`mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold ${
           current
             ? "bg-green-50 text-green-600"
-            : "border border-slate-200 bg-slate-50 text-slate-400"
+            : "border border-slate-200 bg-slate-50 text-slate-500"
         }`}
       >
         {current ? (
@@ -92,7 +81,7 @@ export default function SubscriptionPlanCard({
         ) : (
           <>
             <CreditCard size={16} />
-            Available Upgrade
+            Plan Option
           </>
         )}
       </div>

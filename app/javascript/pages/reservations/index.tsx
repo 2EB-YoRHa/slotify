@@ -2,10 +2,10 @@ import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
 import {
   CalendarCheck,
-  CalendarClock,
   CalendarPlus,
-  CalendarX,
   Clock3,
+  ListChecks,
+  XCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
@@ -19,45 +19,44 @@ type ReservationsIndexProps = {
 export default function ReservationsIndex({
   reservations = [],
 }: ReservationsIndexProps) {
-  const upcomingReservations = reservations.filter((reservation) => {
-    return (
+  const upcomingReservations = reservations.filter(
+    (reservation) =>
       reservation.status !== "cancelled" &&
       new Date(reservation.start_time).getTime() >= Date.now()
-    );
-  });
-
-  const cancelledReservations = reservations.filter(
-    (reservation) => reservation.status === "cancelled"
   );
 
   const confirmedReservations = reservations.filter(
     (reservation) => reservation.status === "confirmed"
   );
 
+  const cancelledReservations = reservations.filter(
+    (reservation) => reservation.status === "cancelled"
+  );
+
   const stats = [
     {
       label: "Total Reservations",
       value: reservations.length,
-      helper: "All bookings",
-      icon: CalendarCheck,
+      helper: "All bookings in the organization",
+      icon: ListChecks,
     },
     {
       label: "Upcoming",
       value: upcomingReservations.length,
-      helper: "Future bookings",
-      icon: CalendarClock,
+      helper: "Future active reservations",
+      icon: Clock3,
     },
     {
       label: "Confirmed",
       value: confirmedReservations.length,
-      helper: "Ready to use",
-      icon: Clock3,
+      helper: "Approved bookings",
+      icon: CalendarCheck,
     },
     {
       label: "Cancelled",
       value: cancelledReservations.length,
-      helper: "Inactive bookings",
-      icon: CalendarX,
+      helper: "Cancelled bookings",
+      icon: XCircle,
     },
   ];
 
@@ -65,18 +64,9 @@ export default function ReservationsIndex({
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-2 text-sm font-bold uppercase tracking-wide text-cyan-500"
-          >
-            Reservation Management
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
             className="text-3xl font-bold text-slate-950"
           >
             Reservations
@@ -85,10 +75,11 @@ export default function ReservationsIndex({
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mt-1 text-slate-500"
+            transition={{ delay: 0.05 }}
+            className="mt-2 max-w-2xl text-slate-500"
           >
-            Review, update and manage workspace reservations.
+            Manage workspace bookings, review availability, and keep reservation
+            activity organized.
           </motion.p>
         </div>
 
