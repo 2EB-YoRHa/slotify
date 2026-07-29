@@ -2,7 +2,7 @@ import { Link } from "@inertiajs/react";
 
 export default function WorkspaceEmptyState() {
   return (
-    <div className="flex min-h-[650px] items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="flex min-h-162.5 items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="max-w-lg text-center">
         <div className="mx-auto mb-8 flex h-32 w-32 items-center justify-center rounded-3xl border border-dashed border-cyan-200 bg-cyan-50 text-6xl text-cyan-400">
           ⌖
