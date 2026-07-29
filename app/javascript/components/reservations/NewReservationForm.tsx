@@ -2,27 +2,21 @@ import { useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
 import type { FormEvent } from "react";
 import { useState } from "react";
-import DatePickerField from "../ui/DatePickerField";
-import TimeSlotPicker from "../ui/TimeSlotPicker";
 import { generateTimeSlots } from "../../utils/timeSlots";
 import type { TimeSlot } from "../../utils/timeSlots";
-import {
-  AlertTriangle,
-  Building2,
-  CalendarDays,
-  CalendarSearch,
-  CheckCircle2,
-  DollarSign,
-  MapPin,
-  Search,
-  Sparkles,
-  StickyNote,
-  UsersRound,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import LoadingButton from "../ui/LoadingButton";
-import type { Amenity } from "../../types/amenity";
 import type { Workspace } from "../../types/workspace";
+import AvailableWorkspaceGrid from "../reservations/AvailableWorkspaceGrid";
+import ReservationDateTimeSection from "../reservations/ReservationDateTimeSection";
+import ReservationSummaryPanel from "../reservations/ReservationSummaryPanel";
+import {
+  buildDateTime,
+  calculateEstimatedTotal,
+  extractDate,
+  findSlotByDateTimes,
+  normalizeError,
+  violatesMinimumNotice,
+  violatesWeekendRule,
+} from "../../utils/reservationFormUtils";
 
 type NewReservationFormProps = {
   workspaces: Workspace[];
@@ -72,7 +66,7 @@ export default function NewReservationForm({
   );
 
   const [selectedDate, setSelectedDate] = useState(defaultDate);
-  const [selectedSlot, setSelectedSlot] = useState(defaultSlot);
+  const [selectedSlot, setSelectedSlot] = useState<TimeSlot>(defaultSlot);
   const [search, setSearch] = useState("");
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [availabilityChecked, setAvailabilityChecked] = useState(true);
@@ -122,30 +116,20 @@ export default function NewReservationForm({
   );
 
   const ruleViolation = minNoticeViolation || weekendViolation;
-
-  const filteredWorkspaces = workspaces.filter((workspace) => {
-    const query = search.toLowerCase();
-
-    return (
-      workspace.name.toLowerCase().includes(query) ||
-      workspace.workspace_type.toLowerCase().includes(query) ||
-      (workspace.location || "").toLowerCase().includes(query) ||
-      (workspace.amenities || []).some((amenity) =>
-        amenity.name.toLowerCase().includes(query),
-      )
-    );
-  });
+  const filteredWorkspaces = filterWorkspaces(workspaces, search);
 
   const selectedWorkspace = workspaces.find(
     (workspace) => workspace.id === Number(data.reservation.workspace_id),
   );
 
-  const selectedWorkspaceUnavailable =
-    selectedWorkspace && unavailableWorkspaceIds.includes(selectedWorkspace.id);
+  const selectedWorkspaceUnavailable = Boolean(
+    selectedWorkspace && unavailableWorkspaceIds.includes(selectedWorkspace.id),
+  );
 
-  const attendeesExceedCapacity =
+  const attendeesExceedCapacity = Boolean(
     selectedWorkspace &&
-    Number(data.reservation.attendees_count) > selectedWorkspace.capacity;
+      Number(data.reservation.attendees_count) > selectedWorkspace.capacity,
+  );
 
   const canSubmit =
     Boolean(data.reservation.workspace_id) &&
@@ -270,157 +254,35 @@ export default function NewReservationForm({
         transition={{ delay: 0.12 }}
         className="col-span-2 space-y-8"
       >
-        <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-          <div className="mb-8 flex items-start gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-              <CalendarDays size={26} strokeWidth={2.4} />
-            </div>
+        <ReservationDateTimeSection
+          selectedDate={selectedDate}
+          selectedSlot={selectedSlot}
+          timeSlots={timeSlots}
+          search={search}
+          processing={processing}
+          checkingAvailability={checkingAvailability}
+          availabilityChecked={availabilityChecked}
+          availabilityError={availabilityError}
+          unavailableCount={unavailableWorkspaceIds.length}
+          minNoticeViolation={minNoticeViolation}
+          minNoticeMinutes={minNoticeMinutes || 0}
+          weekendViolation={weekendViolation}
+          baseErrors={baseErrors}
+          onDateChange={handleDateChange}
+          onSlotChange={handleSlotChange}
+          onSearchChange={setSearch}
+          onRefreshAvailability={() => void checkAvailability()}
+        />
 
-            <div>
-              <h2 className="text-2xl font-bold text-slate-950">Date & Time</h2>
-
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Choose when the workspace will be reserved. Availability must be
-                checked before creating the reservation.
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="max-w-xl">
-              <DatePickerField
-                label="Reservation Date"
-                value={selectedDate}
-                disabled={processing || checkingAvailability}
-                onChange={handleDateChange}
-              />
-            </div>
-
-            <TimeSlotPicker
-              label="Time Slot"
-              value={selectedSlot.label}
-              options={timeSlots}
-              disabled={processing || checkingAvailability}
-              onChange={handleSlotChange}
-            />
-          </div>
-
-          <div className="mt-8 flex items-end gap-4">
-            <label className="flex-1">
-              <span className="mb-2 block text-sm font-bold text-slate-700">
-                Search Workspace
-              </span>
-
-              <div className="relative">
-                <Search
-                  size={17}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
-                  placeholder="Search by name, type or location"
-                  disabled={processing}
-                />
-              </div>
-            </label>
-
-            <LoadingButton
-              type="button"
-              loading={checkingAvailability}
-              loadingText="Checking..."
-              onClick={() => void checkAvailability()}
-            >
-              Refresh Availability
-            </LoadingButton>
-          </div>
-
-          <AvailabilityMessage
-            checkingAvailability={checkingAvailability}
-            availabilityChecked={availabilityChecked}
-            availabilityError={availabilityError}
-            unavailableCount={unavailableWorkspaceIds.length}
-          />
-
-          <BusinessRuleNotice
-            minNoticeViolation={minNoticeViolation}
-            minNoticeMinutes={minNoticeMinutes || 0}
-            weekendViolation={weekendViolation}
-          />
-
-          {baseErrors.length > 0 && (
-            <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-              {baseErrors.join(", ")}
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-          <div className="mb-6 flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-slate-950">
-                Available Workspaces
-              </h2>
-
-              <p className="mt-2 text-sm text-slate-500">
-                Showing {filteredWorkspaces.length} of {workspaces.length}{" "}
-                workspaces.
-              </p>
-            </div>
-
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-bold ${
-                availabilityChecked
-                  ? "bg-green-50 text-green-600"
-                  : "bg-yellow-50 text-yellow-600"
-              }`}
-            >
-              {availabilityChecked ? "Availability checked" : "Check required"}
-            </span>
-          </div>
-
-          {filteredWorkspaces.length === 0 ? (
-            <div className="rounded-xl bg-slate-50 p-12 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-                <Building2 size={24} />
-              </div>
-
-              <h3 className="mt-4 text-lg font-bold text-slate-900">
-                No workspaces found
-              </h3>
-
-              <p className="mt-2 text-sm text-slate-500">
-                Try changing the search text.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {filteredWorkspaces.map((workspace, index) => {
-                const unavailable = unavailableWorkspaceIds.includes(
-                  workspace.id,
-                );
-                const selected =
-                  Number(data.reservation.workspace_id) === workspace.id;
-
-                return (
-                  <WorkspaceOption
-                    key={workspace.id}
-                    workspace={workspace}
-                    index={index}
-                    selected={selected}
-                    unavailable={unavailable}
-                    disabled={processing || unavailable}
-                    availabilityChecked={availabilityChecked}
-                    onSelect={() => selectWorkspace(workspace.id)}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <AvailableWorkspaceGrid
+          workspaces={workspaces}
+          filteredWorkspaces={filteredWorkspaces}
+          selectedWorkspaceId={data.reservation.workspace_id}
+          unavailableWorkspaceIds={unavailableWorkspaceIds}
+          availabilityChecked={availabilityChecked}
+          processing={processing}
+          onSelectWorkspace={selectWorkspace}
+        />
       </motion.section>
 
       <motion.aside
@@ -429,623 +291,43 @@ export default function NewReservationForm({
         transition={{ delay: 0.16 }}
         className="space-y-6"
       >
-        <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-950">
-              Reservation Summary
-            </h2>
-
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              Confirm attendees and notes before creating the reservation.
-            </p>
-          </div>
-
-          <div className="space-y-5">
-            <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700">
-                Attendees
-              </span>
-
-              <div className="relative">
-                <UsersRound
-                  size={17}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-
-                <input
-                  type="number"
-                  min="1"
-                  value={data.reservation.attendees_count}
-                  onChange={(event) =>
-                    updateReservation({
-                      attendees_count: event.target.value,
-                    })
-                  }
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
-                  disabled={processing}
-                  required
-                />
-              </div>
-
-              {attendeesExceedCapacity && (
-                <p className="mt-2 text-xs font-semibold text-red-500">
-                  Attendees exceed workspace capacity.
-                </p>
-              )}
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700">
-                Notes
-              </span>
-
-              <div className="relative">
-                <StickyNote
-                  size={17}
-                  className="pointer-events-none absolute left-4 top-4 text-slate-400"
-                />
-
-                <textarea
-                  value={data.reservation.notes}
-                  onChange={(event) =>
-                    updateReservation({
-                      notes: event.target.value,
-                    })
-                  }
-                  className="min-h-32 w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
-                  placeholder="Optional notes for this reservation"
-                  disabled={processing}
-                />
-              </div>
-            </label>
-          </div>
-
-          <div className="mt-8 rounded-xl bg-slate-50 p-5">
-            <SummaryRow
-              label="Workspace"
-              value={selectedWorkspace?.name || "Not selected"}
-            />
-
-            <SummaryRow label="Date" value={selectedDate} />
-
-            <SummaryRow label="Time" value={selectedSlot.label} />
-
-            <SummaryRow
-              label="Availability"
-              value={availabilityChecked ? "Checked" : "Pending"}
-            />
-
-            <SummaryRow
-              label="Booking Rules"
-              value={ruleViolation ? "Action required" : "Valid"}
-            />
-
-            <SummaryRow
-              label="Estimated Total"
-              value={`$${estimatedTotal.toFixed(2)}`}
-            />
-          </div>
-
-          <SelectedWorkspaceSummary workspace={selectedWorkspace} />
-
-          <ValidationNotice
-            availabilityChecked={availabilityChecked}
-            selectedWorkspaceUnavailable={Boolean(selectedWorkspaceUnavailable)}
-            attendeesExceedCapacity={Boolean(attendeesExceedCapacity)}
-            minNoticeViolation={minNoticeViolation}
-            minNoticeMinutes={minNoticeMinutes || 0}
-            weekendViolation={weekendViolation}
-          />
-
-          <LoadingButton
-            type="submit"
-            loading={processing}
-            loadingText="Creating..."
-            disabled={!canSubmit}
-            className="mt-8 w-full"
-          >
-            Create Reservation
-          </LoadingButton>
-        </div>
+        <ReservationSummaryPanel
+          selectedWorkspace={selectedWorkspace}
+          selectedDate={selectedDate}
+          selectedSlotLabel={selectedSlot.label}
+          attendeesCount={data.reservation.attendees_count}
+          notes={data.reservation.notes}
+          estimatedTotal={estimatedTotal}
+          availabilityChecked={availabilityChecked}
+          ruleViolation={ruleViolation}
+          selectedWorkspaceUnavailable={selectedWorkspaceUnavailable}
+          attendeesExceedCapacity={attendeesExceedCapacity}
+          minNoticeViolation={minNoticeViolation}
+          minNoticeMinutes={minNoticeMinutes || 0}
+          weekendViolation={weekendViolation}
+          processing={processing}
+          canSubmit={canSubmit}
+          onAttendeesChange={(value) =>
+            updateReservation({ attendees_count: value })
+          }
+          onNotesChange={(value) => updateReservation({ notes: value })}
+        />
       </motion.aside>
     </form>
   );
 }
 
-type WorkspaceOptionProps = {
-  workspace: Workspace;
-  index: number;
-  selected: boolean;
-  unavailable: boolean;
-  disabled: boolean;
-  availabilityChecked: boolean;
-  onSelect: () => void;
-};
+function filterWorkspaces(workspaces: Workspace[], search: string) {
+  const query = search.toLowerCase();
 
-function WorkspaceOption({
-  workspace,
-  index,
-  selected,
-  unavailable,
-  disabled,
-  availabilityChecked,
-  onSelect,
-}: WorkspaceOptionProps) {
-  return (
-    <motion.button
-      type="button"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.035 }}
-      onClick={onSelect}
-      disabled={disabled}
-      className={`rounded-xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${
-        selected
-          ? "border-cyan-300 bg-cyan-50 ring-4 ring-cyan-50"
-          : "border-slate-200 bg-white hover:border-cyan-100"
-      } ${unavailable ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-    >
-      <div className="mb-5 flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
-            <Building2 size={20} strokeWidth={2.4} />
-          </div>
-
-          <div>
-            <h3 className="font-bold text-slate-950">{workspace.name}</h3>
-
-            <p className="mt-1 text-xs font-bold uppercase text-slate-400">
-              {formatText(workspace.workspace_type)}
-            </p>
-          </div>
-        </div>
-
-        <AvailabilityBadge
-          checked={availabilityChecked}
-          unavailable={unavailable}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 text-sm">
-        <Info icon={UsersRound} label="Capacity" value={workspace.capacity} />
-
-        <Info
-          icon={DollarSign}
-          label="Rate"
-          value={`$${workspace.hourly_rate || 0}/h`}
-        />
-
-        <Info icon={Building2} label="Floor" value={workspace.floor || "-"} />
-
-        <Info icon={MapPin} label="Zone" value={workspace.zone || "-"} />
-      </div>
-
-      {workspace.location && (
-        <div className="mt-5 flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-500">
-          <MapPin size={15} className="text-slate-400" />
-          <span className="truncate">{workspace.location}</span>
-        </div>
-      )}
-      <div className="mt-5 border-t border-slate-100 pt-4">
-        <div className="mb-3 flex items-center gap-2 text-slate-400">
-          <Sparkles size={15} />
-          <p className="text-[10px] font-bold uppercase tracking-wide">
-            Amenities
-          </p>
-        </div>
-
-        <AmenityChips amenities={workspace.amenities || []} maxVisible={4} />
-      </div>
-    </motion.button>
-  );
-}
-
-type InfoProps = {
-  icon: LucideIcon;
-  label: string;
-  value: string | number;
-};
-
-function Info({ icon: Icon, label, value }: InfoProps) {
-  return (
-    <div className="rounded-lg bg-slate-50 p-3">
-      <div className="mb-1 flex items-center gap-2 text-slate-400">
-        <Icon size={14} />
-        <p className="text-[10px] font-bold uppercase tracking-wide">{label}</p>
-      </div>
-
-      <p className="font-bold text-slate-800">{value}</p>
-    </div>
-  );
-}
-
-type SelectedWorkspaceSummaryProps = {
-  workspace?: Workspace | null;
-};
-
-function SelectedWorkspaceSummary({
-  workspace,
-}: SelectedWorkspaceSummaryProps) {
-  if (!workspace) {
+  return workspaces.filter((workspace) => {
     return (
-      <div className="mt-5 rounded-xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-500">
-        Select a workspace to see its details and amenities here.
-      </div>
+      workspace.name.toLowerCase().includes(query) ||
+      workspace.workspace_type.toLowerCase().includes(query) ||
+      (workspace.location || "").toLowerCase().includes(query) ||
+      (workspace.amenities || []).some((amenity) =>
+        amenity.name.toLowerCase().includes(query),
+      )
     );
-  }
-
-  return (
-    <div className="mt-5 rounded-xl border border-cyan-100 bg-cyan-50/50 p-5">
-      <div className="mb-4 flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500">
-          <Building2 size={18} strokeWidth={2.4} />
-        </div>
-
-        <div className="min-w-0">
-          <p className="font-bold text-slate-950">{workspace.name}</p>
-
-          <p className="mt-1 text-xs font-bold uppercase text-slate-400">
-            {formatText(workspace.workspace_type)}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 text-sm">
-        <Info icon={UsersRound} label="Capacity" value={workspace.capacity} />
-
-        <Info
-          icon={DollarSign}
-          label="Rate"
-          value={`$${workspace.hourly_rate || 0}/h`}
-        />
-
-        <Info icon={Building2} label="Floor" value={workspace.floor || "-"} />
-
-        <Info icon={MapPin} label="Zone" value={workspace.zone || "-"} />
-      </div>
-
-      {workspace.location && (
-        <div className="mt-4 flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-sm text-slate-500">
-          <MapPin size={15} className="text-slate-400" />
-          <span>{workspace.location}</span>
-        </div>
-      )}
-
-      <div className="mt-4 border-t border-cyan-100 pt-4">
-        <div className="mb-3 flex items-center gap-2 text-cyan-600">
-          <Sparkles size={15} />
-
-          <p className="text-[10px] font-bold uppercase tracking-wide">
-            Amenities Included
-          </p>
-        </div>
-
-        <AmenityChips amenities={workspace.amenities || []} maxVisible={8} />
-      </div>
-    </div>
-  );
-}
-
-type AmenityChipsProps = {
-  amenities: Amenity[];
-  maxVisible: number;
-};
-
-function AmenityChips({ amenities, maxVisible }: AmenityChipsProps) {
-  if (amenities.length === 0) {
-    return (
-      <div className="rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-400">
-        No amenities assigned
-      </div>
-    );
-  }
-
-  const visibleAmenities = amenities.slice(0, maxVisible);
-  const hiddenCount = amenities.length - visibleAmenities.length;
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      {visibleAmenities.map((amenity) => (
-        <span
-          key={amenity.id}
-          className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-600 ring-1 ring-slate-200"
-        >
-          <Sparkles size={12} className="text-cyan-500" />
-          {amenity.name}
-        </span>
-      ))}
-
-      {hiddenCount > 0 && (
-        <span className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-600 ring-1 ring-cyan-100">
-          +{hiddenCount} more
-        </span>
-      )}
-    </div>
-  );
-}
-
-type SummaryRowProps = {
-  label: string;
-  value: string | number;
-};
-
-function SummaryRow({ label, value }: SummaryRowProps) {
-  return (
-    <div className="flex justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
-      <span className="text-sm text-slate-500">{label}</span>
-
-      <span className="text-right text-sm font-bold text-slate-950">
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function BusinessRuleNotice({
-  minNoticeViolation,
-  minNoticeMinutes,
-  weekendViolation,
-}: {
-  minNoticeViolation: boolean;
-  minNoticeMinutes: number;
-  weekendViolation: boolean;
-}) {
-  if (!minNoticeViolation && !weekendViolation) return null;
-
-  return (
-    <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-      <AlertTriangle size={18} className="mt-0.5 shrink-0" />
-
-      <div className="space-y-1">
-        {minNoticeViolation && (
-          <p>
-            This organization requires reservations to be booked at least{" "}
-            <span className="font-bold">{minNoticeMinutes} minutes</span> in
-            advance. Please choose a later time slot.
-          </p>
-        )}
-
-        {weekendViolation && (
-          <p>
-            Weekend bookings are disabled for this organization. Please choose a
-            weekday.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function AvailabilityMessage({
-  checkingAvailability,
-  availabilityChecked,
-  availabilityError,
-  unavailableCount,
-}: {
-  checkingAvailability: boolean;
-  availabilityChecked: boolean;
-  availabilityError: string | null;
-  unavailableCount: number;
-}) {
-  if (checkingAvailability) {
-    return (
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm text-cyan-700">
-        <CalendarSearch size={18} className="mt-0.5 shrink-0" />
-        <span>
-          Checking availability automatically for the selected time slot...
-        </span>
-      </div>
-    );
-  }
-  if (availabilityError) {
-    return (
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-        <AlertTriangle size={18} className="mt-0.5 shrink-0" />
-        <span>{availabilityError}</span>
-      </div>
-    );
-  }
-
-  if (!availabilityChecked) {
-    return (
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700">
-        <AlertTriangle size={18} className="mt-0.5 shrink-0" />
-        <span>
-          Availability has not been checked yet. You must check availability
-          before creating the reservation.
-        </span>
-      </div>
-    );
-  }
-
-  if (unavailableCount > 0) {
-    return (
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-        <AlertTriangle size={18} className="mt-0.5 shrink-0" />
-        <span>
-          Availability checked. {unavailableCount} workspace
-          {unavailableCount === 1 ? " is" : "s are"} unavailable for this time.
-        </span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-6 flex items-start gap-3 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
-      <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
-      <span>All workspaces are available for this time slot.</span>
-    </div>
-  );
-}
-
-function ValidationNotice({
-  availabilityChecked,
-  selectedWorkspaceUnavailable,
-  attendeesExceedCapacity,
-  minNoticeViolation,
-  minNoticeMinutes,
-  weekendViolation,
-}: {
-  availabilityChecked: boolean;
-  selectedWorkspaceUnavailable: boolean;
-  attendeesExceedCapacity: boolean;
-  minNoticeViolation: boolean;
-  minNoticeMinutes: number;
-  weekendViolation: boolean;
-}) {
-  if (!availabilityChecked) {
-    return (
-      <div className="mt-5 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700">
-        Check availability before creating the reservation.
-      </div>
-    );
-  }
-
-  if (minNoticeViolation) {
-    return (
-      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-        Reservations must be booked at least {minNoticeMinutes} minutes in
-        advance.
-      </div>
-    );
-  }
-
-  if (weekendViolation) {
-    return (
-      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-        Weekend bookings are disabled for this organization.
-      </div>
-    );
-  }
-
-  if (selectedWorkspaceUnavailable) {
-    return (
-      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-        The selected workspace is not available for this time slot.
-      </div>
-    );
-  }
-
-  if (attendeesExceedCapacity) {
-    return (
-      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-        Attendees exceed the selected workspace capacity.
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-5 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
-      Reservation is ready to be created.
-    </div>
-  );
-}
-
-function AvailabilityBadge({
-  checked,
-  unavailable,
-}: {
-  checked: boolean;
-  unavailable: boolean;
-}) {
-  if (!checked) {
-    return (
-      <span className="rounded-full bg-yellow-50 px-3 py-1 text-xs font-bold text-yellow-600">
-        Check first
-      </span>
-    );
-  }
-
-  if (unavailable) {
-    return (
-      <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-600">
-        Unavailable
-      </span>
-    );
-  }
-
-  return (
-    <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
-      Available
-    </span>
-  );
-}
-
-function extractDate(value: string): string {
-  return value.split("T")[0];
-}
-
-function extractTime(value: string): string {
-  const timePart = value.split("T")[1] || "";
-
-  return timePart.slice(0, 5);
-}
-
-function findSlotByDateTimes(
-  startTime: string,
-  endTime: string,
-  slots: TimeSlot[],
-) {
-  const start = extractTime(startTime);
-  const end = extractTime(endTime);
-
-  return (
-    slots.find((slot) => slot.start === start && slot.end === end) || slots[0]
-  );
-}
-
-function buildDateTime(date: string, time: string): string {
-  return `${date}T${time}`;
-}
-
-function calculateEstimatedTotal(
-  hourlyRate: number,
-  startTime: string,
-  endTime: string,
-): number {
-  const start = new Date(startTime).getTime();
-  const end = new Date(endTime).getTime();
-  const hours = Math.max(0, (end - start) / 3600000);
-
-  return hourlyRate * hours;
-}
-
-function violatesMinimumNotice(
-  startTime: string,
-  minNoticeMinutes?: number | null,
-): boolean {
-  const notice = Number(minNoticeMinutes || 0);
-
-  if (!notice) return false;
-
-  const start = new Date(startTime).getTime();
-  const minimumStart = Date.now() + notice * 60000;
-
-  return Number.isFinite(start) && start < minimumStart;
-}
-
-function violatesWeekendRule(
-  startTime: string,
-  allowWeekendBookings?: boolean | null,
-): boolean {
-  if (allowWeekendBookings !== false) return false;
-
-  const date = new Date(startTime);
-  const day = date.getDay();
-
-  return day === 0 || day === 6;
-}
-
-function normalizeError(error?: string | string[]): string[] {
-  if (!error) return [];
-
-  return Array.isArray(error) ? error : [error];
-}
-
-function formatText(value?: string | null): string {
-  if (!value) return "-";
-
-  return value
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
+  });
 }

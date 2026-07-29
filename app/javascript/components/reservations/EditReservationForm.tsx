@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import {
-  AlertTriangle,
   Building2,
   CalendarDays,
   CheckCircle2,
