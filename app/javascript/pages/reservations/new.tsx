@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import AppLayout from "../../components/AppLayout";
 import NewReservationForm from "../../components/reservations/NewReservationForm";
 import type { Workspace } from "../../types/workspace";
+import type { BookingRule } from "../../types/bookingRule";
 
 type NewReservationProps = {
   workspaces?: Workspace[];
@@ -10,6 +11,7 @@ type NewReservationProps = {
   initial_end_time?: string | null;
   initial_unavailable_workspace_ids?: number[];
   errors?: Record<string, string | string[]>;
+  booking_rule?: BookingRule | null;
 };
 
 export default function NewReservation({
@@ -19,6 +21,7 @@ export default function NewReservation({
   initial_end_time = null,
   initial_unavailable_workspace_ids = [],
   errors = {},
+  booking_rule = null,
 }: NewReservationProps) {
   return (
     <AppLayout>
@@ -37,7 +40,8 @@ export default function NewReservation({
           transition={{ delay: 0.05 }}
           className="mt-2 max-w-2xl text-slate-500"
         >
-          Choose a date, review workspace availability, and complete your booking.
+          Choose a date, review workspace availability, and complete your
+          booking.
         </motion.p>
       </div>
 
@@ -48,6 +52,9 @@ export default function NewReservation({
         initialEndTime={initial_end_time}
         initialUnavailableWorkspaceIds={initial_unavailable_workspace_ids}
         initialErrors={errors}
+        maxReservationHours={booking_rule?.max_hours_per_reservation}
+        minNoticeMinutes={booking_rule?.min_notice_minutes}
+        allowWeekendBookings={booking_rule?.allow_weekend_bookings}
       />
     </AppLayout>
   );

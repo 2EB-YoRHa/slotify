@@ -1,16 +1,21 @@
 import { useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import {
+  AlertTriangle,
   Building2,
   CalendarDays,
   CheckCircle2,
-  Clock3,
   ShieldCheck,
   StickyNote,
   UsersRound,
 } from "lucide-react";
+import DatePickerField from "../ui/DatePickerField";
+import TimeSlotPicker from "../ui/TimeSlotPicker";
 import LoadingButton from "../ui/LoadingButton";
+import { generateTimeSlots } from "../../utils/timeSlots";
+import type { TimeSlot } from "../../utils/timeSlots";
 import type { Reservation } from "../../types/reservation";
 import type { Workspace } from "../../types/workspace";
 
@@ -18,6 +23,9 @@ type EditReservationFormProps = {
   reservation: Reservation;
   workspaces: Workspace[];
   errors?: Partial<Record<string, string | string[]>>;
+  maxReservationHours?: number | null;
+  minNoticeMinutes?: number | null;
+  allowWeekendBookings?: boolean | null;
 };
 
 type EditReservationFormData = {
@@ -29,24 +37,21 @@ type EditReservationFormData = {
   notes: string;
 };
 
-const timeSlots = [
-  { label: "09:00 AM - 10:00 AM", start: "09:00", end: "10:00" },
-  { label: "10:00 AM - 11:00 AM", start: "10:00", end: "11:00" },
-  { label: "11:00 AM - 12:00 PM", start: "11:00", end: "12:00" },
-  { label: "01:00 PM - 02:00 PM", start: "13:00", end: "14:00" },
-  { label: "02:00 PM - 03:00 PM", start: "14:00", end: "15:00" },
-  { label: "03:00 PM - 04:00 PM", start: "15:00", end: "16:00" },
-];
-
 export default function EditReservationForm({
   reservation,
   workspaces,
   errors: initialErrors = {},
+  maxReservationHours = 4,
+  minNoticeMinutes = 0,
+  allowWeekendBookings = true,
 }: EditReservationFormProps) {
+  const timeSlots = generateTimeSlots(maxReservationHours);
+
   const initialDate = extractDate(reservation.start_time);
   const initialSlot = findSlotByDateTimes(
     reservation.start_time,
-    reservation.end_time
+    reservation.end_time,
+    timeSlots
   );
 
   const {
@@ -74,14 +79,89 @@ export default function EditReservationForm({
     (workspace) => workspace.id === Number(data.workspace_id)
   );
 
-  const attendeesExceedCapacity =
+  const attendeesExceedCapacity = Boolean(
     selectedWorkspace &&
-    Number(data.attendees_count) > selectedWorkspace.capacity;
+      Number(data.attendees_count) > Number(selectedWorkspace.capacity || 0)
+  );
+
+  const selectedSlot = findSlotByDateTimes(
+    data.start_time,
+    data.end_time,
+    timeSlots
+  );
+
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
+  const [availabilityChecked, setAvailabilityChecked] = useState(false);
+  const [unavailableWorkspaceIds, setUnavailableWorkspaceIds] = useState<
+    number[]
+  >([]);
+  const [availabilityError, setAvailabilityError] = useState<string | null>(
+    null
+  );
+
+  const selectedWorkspaceUnavailable = Boolean(
+    selectedWorkspace && unavailableWorkspaceIds.includes(selectedWorkspace.id)
+  );
+
+  const minNoticeViolation = violatesMinimumNotice(
+    data.start_time,
+    minNoticeMinutes
+  );
+
+  const weekendViolation = violatesWeekendRule(
+    data.start_time,
+    allowWeekendBookings
+  );
+
+  const ruleViolation = minNoticeViolation || weekendViolation;
+
+  const canSubmit =
+    Boolean(data.workspace_id) &&
+    availabilityChecked &&
+    !checkingAvailability &&
+    !availabilityError &&
+    !ruleViolation &&
+    !selectedWorkspaceUnavailable &&
+    !attendeesExceedCapacity;
+
+  useEffect(() => {
+    void checkAvailabilityFor(data.start_time, data.end_time);
+  }, [data.start_time, data.end_time]);
+
+  async function checkAvailabilityFor(startTime: string, endTime: string) {
+    setCheckingAvailability(true);
+    setAvailabilityChecked(false);
+    setAvailabilityError(null);
+
+    try {
+      const params = new URLSearchParams({
+        start_time: startTime,
+        end_time: endTime,
+        reservation_id: String(reservation.id),
+      });
+
+      const response = await fetch(`/reservations/availability?${params}`);
+
+      if (!response.ok) {
+        throw new Error("Availability could not be checked.");
+      }
+
+      const result = await response.json();
+
+      setUnavailableWorkspaceIds(result.unavailable_workspace_ids || []);
+      setAvailabilityChecked(true);
+    } catch {
+      setAvailabilityError("Could not check availability. Please try again.");
+      setAvailabilityChecked(false);
+    } finally {
+      setCheckingAvailability(false);
+    }
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (attendeesExceedCapacity) return;
+    if (!canSubmit) return;
 
     transform((formData) => ({
       reservation: {
@@ -102,7 +182,11 @@ export default function EditReservationForm({
   }
 
   function handleDateChange(date: string) {
-    const currentSlot = findSlotByDateTimes(data.start_time, data.end_time);
+    const currentSlot = findSlotByDateTimes(
+      data.start_time,
+      data.end_time,
+      timeSlots
+    );
 
     setData({
       ...data,
@@ -167,7 +251,7 @@ export default function EditReservationForm({
                   onChange={(event) =>
                     updateField("workspace_id", event.target.value)
                   }
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+                  className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
                   disabled={processing}
                   required
                 >
@@ -198,7 +282,7 @@ export default function EditReservationForm({
                 <select
                   value={data.status}
                   onChange={(event) => updateField("status", event.target.value)}
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+                  className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
                   disabled={processing}
                   required
                 >
@@ -211,58 +295,28 @@ export default function EditReservationForm({
               <FormError error={errors.status} />
             </label>
 
-            <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700">
-                Reservation Date
-              </span>
-
-              <div className="relative">
-                <CalendarDays
-                  size={17}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-
-                <input
-                  type="date"
+            <div className="col-span-2 space-y-6">
+              <div className="max-w-xl">
+                <DatePickerField
+                  label="Reservation Date"
                   value={extractDate(data.start_time)}
-                  onChange={(event) => handleDateChange(event.target.value)}
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
                   disabled={processing}
-                  required
-                />
-              </div>
-
-              <FormError error={errors.start_time} />
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700">
-                Time Slot
-              </span>
-
-              <div className="relative">
-                <Clock3
-                  size={17}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  onChange={handleDateChange}
                 />
 
-                <select
-                  value={findSlotByDateTimes(data.start_time, data.end_time).label}
-                  onChange={(event) => handleSlotChange(event.target.value)}
-                  className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
-                  disabled={processing}
-                  required
-                >
-                  {timeSlots.map((slot) => (
-                    <option key={slot.label} value={slot.label}>
-                      {slot.label}
-                    </option>
-                  ))}
-                </select>
+                <FormError error={errors.start_time} />
               </div>
+
+              <TimeSlotPicker
+                label="Time Slot"
+                value={selectedSlot.label}
+                options={timeSlots}
+                disabled={processing}
+                onChange={handleSlotChange}
+              />
 
               <FormError error={errors.end_time} />
-            </label>
+            </div>
           </div>
         </div>
 
@@ -359,7 +413,6 @@ export default function EditReservationForm({
       >
         <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-8">
-
             <h2 className="text-2xl font-bold text-slate-950">
               Update Summary
             </h2>
@@ -377,33 +430,35 @@ export default function EditReservationForm({
 
             <SummaryRow label="Date" value={extractDate(data.start_time)} />
 
-            <SummaryRow
-              label="Time"
-              value={findSlotByDateTimes(data.start_time, data.end_time).label}
-            />
+            <SummaryRow label="Time" value={selectedSlot.label} />
 
             <SummaryRow label="Status" value={formatText(data.status)} />
 
             <SummaryRow label="Attendees" value={data.attendees_count} />
+
+            <SummaryRow
+              label="Booking Rules"
+              value={ruleViolation ? "Action required" : "Valid"}
+            />
           </div>
 
-          {attendeesExceedCapacity ? (
-            <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-              Attendees exceed the selected workspace capacity.
-            </div>
-          ) : (
-            <div className="mt-5 flex items-start gap-3 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
-              <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
-              <span>Reservation is ready to be updated.</span>
-            </div>
-          )}
+          <UpdateValidationNotice
+            checkingAvailability={checkingAvailability}
+            availabilityChecked={availabilityChecked}
+            availabilityError={availabilityError}
+            selectedWorkspaceUnavailable={selectedWorkspaceUnavailable}
+            attendeesExceedCapacity={attendeesExceedCapacity}
+            minNoticeViolation={minNoticeViolation}
+            minNoticeMinutes={minNoticeMinutes || 0}
+            weekendViolation={weekendViolation}
+          />
 
           <div className="mt-8 flex flex-col gap-3">
             <LoadingButton
               type="submit"
               loading={processing}
               loadingText="Saving..."
-              disabled={Boolean(attendeesExceedCapacity)}
+              disabled={!canSubmit}
               className="w-full"
             >
               Save Changes
@@ -431,6 +486,7 @@ function WorkspacePreview({ workspace }: WorkspacePreviewProps) {
     <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
       <div className="mb-3 flex items-center gap-2 text-slate-400">
         <Building2 size={16} />
+
         <p className="text-xs font-bold uppercase tracking-wide">
           Selected Workspace
         </p>
@@ -464,6 +520,90 @@ function SummaryRow({ label, value }: SummaryRowProps) {
   );
 }
 
+function UpdateValidationNotice({
+  checkingAvailability,
+  availabilityChecked,
+  availabilityError,
+  selectedWorkspaceUnavailable,
+  attendeesExceedCapacity,
+  minNoticeViolation,
+  minNoticeMinutes,
+  weekendViolation,
+}: {
+  checkingAvailability: boolean;
+  availabilityChecked: boolean;
+  availabilityError: string | null;
+  selectedWorkspaceUnavailable: boolean;
+  attendeesExceedCapacity: boolean;
+  minNoticeViolation: boolean;
+  minNoticeMinutes: number;
+  weekendViolation: boolean;
+}) {
+  if (checkingAvailability) {
+    return (
+      <div className="mt-5 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm text-cyan-700">
+        Checking availability for this time slot...
+      </div>
+    );
+  }
+
+  if (availabilityError) {
+    return (
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        {availabilityError}
+      </div>
+    );
+  }
+
+  if (!availabilityChecked) {
+    return (
+      <div className="mt-5 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700">
+        Availability must be checked before saving changes.
+      </div>
+    );
+  }
+
+  if (minNoticeViolation) {
+    return (
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        Reservations must be booked at least {minNoticeMinutes} minutes in
+        advance.
+      </div>
+    );
+  }
+
+  if (weekendViolation) {
+    return (
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        Weekend bookings are disabled for this organization.
+      </div>
+    );
+  }
+
+  if (selectedWorkspaceUnavailable) {
+    return (
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        The selected workspace is not available for this time slot.
+      </div>
+    );
+  }
+
+  if (attendeesExceedCapacity) {
+    return (
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        Attendees exceed the selected workspace capacity.
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 flex items-start gap-3 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
+      <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
+      <span>Reservation is ready to be updated.</span>
+    </div>
+  );
+}
+
 type FormErrorProps = {
   error?: string | string[];
 };
@@ -486,6 +626,32 @@ function getBaseError(
   return Array.isArray(error) ? error.join(", ") : error;
 }
 
+function violatesMinimumNotice(
+  startTime: string,
+  minNoticeMinutes?: number | null
+): boolean {
+  const notice = Number(minNoticeMinutes || 0);
+
+  if (!notice) return false;
+
+  const start = new Date(startTime).getTime();
+  const minimumStart = Date.now() + notice * 60000;
+
+  return Number.isFinite(start) && start < minimumStart;
+}
+
+function violatesWeekendRule(
+  startTime: string,
+  allowWeekendBookings?: boolean | null
+): boolean {
+  if (allowWeekendBookings !== false) return false;
+
+  const date = new Date(startTime);
+  const day = date.getDay();
+
+  return day === 0 || day === 6;
+}
+
 function extractDate(value: string): string {
   return value.split("T")[0];
 }
@@ -500,13 +666,16 @@ function buildDateTime(date: string, time: string): string {
   return `${date}T${time}`;
 }
 
-function findSlotByDateTimes(startTime: string, endTime: string) {
+function findSlotByDateTimes(
+  startTime: string,
+  endTime: string,
+  slots: TimeSlot[]
+): TimeSlot {
   const start = extractTime(startTime);
   const end = extractTime(endTime);
 
   return (
-    timeSlots.find((slot) => slot.start === start && slot.end === end) ||
-    timeSlots[0]
+    slots.find((slot) => slot.start === start && slot.end === end) || slots[0]
   );
 }
 

@@ -3,17 +3,20 @@ import AppLayout from "../../components/AppLayout";
 import EditReservationForm from "../../components/reservations/EditReservationForm";
 import type { Reservation } from "../../types/reservation";
 import type { Workspace } from "../../types/workspace";
+import type { BookingRule } from "../../types/bookingRule";
 
 type EditReservationProps = {
   reservation: Reservation;
   workspaces?: Workspace[];
   errors?: Record<string, string | string[]>;
+  booking_rule?: BookingRule | null;
 };
 
 export default function EditReservation({
   reservation,
   workspaces = [],
   errors = {},
+  booking_rule = null,
 }: EditReservationProps) {
   return (
     <AppLayout>
@@ -47,6 +50,9 @@ export default function EditReservation({
         reservation={reservation}
         workspaces={workspaces}
         errors={errors}
+        maxReservationHours={booking_rule?.max_hours_per_reservation}
+        minNoticeMinutes={booking_rule?.min_notice_minutes}
+        allowWeekendBookings={booking_rule?.allow_weekend_bookings}
       />
     </AppLayout>
   );

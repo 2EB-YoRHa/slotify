@@ -90,7 +90,7 @@ module Reservations
       if reservation.start_time < minimum_start_time
         reservation.errors.add(
           :start_time,
-          "does not meet the minimum notice time"
+          "must be at least #{rules.min_notice_minutes} minutes from now"
         )
       end
     end

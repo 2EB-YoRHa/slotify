@@ -59,15 +59,15 @@ class ReservationsController < InertiaController
       initial_unavailable_workspace_ids: unavailable_workspace_ids_for(
         default_start_time,
         default_end_time
-      )
+      ),
+      booking_rule: current_organization.booking_rule
     }
   end
 
   def create
-    result = Reservations::CreateReservation.new(
-      user: current_user,
-      params: reservation_params
-    ).call
+    result = Reservations::CreateReservation
+             .new(user: current_user, params: reservation_params)
+             .call
 
     respond_to do |format|
       if result.success?
@@ -77,24 +77,28 @@ class ReservationsController < InertiaController
         end
 
         format.json do
-          render json: result.reservation.as_json(
-            include: reservation_includes
-          ), status: :created
+          render json: result.reservation.as_json(include: reservation_includes),
+                 status: :created
         end
       else
         format.html do
-          workspaces = current_organization.workspaces
-                                          .where(active: true)
-                                          .includes(:amenities)
-                                          .order(:name)
+          workspaces = current_organization
+                       .workspaces
+                       .where(active: true)
+                       .includes(:amenities)
+                       .order(:name)
 
           render inertia: "reservations/new",
                  props: {
                    workspaces: workspaces.as_json(include: :amenities),
                    selected_workspace_id: reservation_params[:workspace_id],
+                   initial_start_time: reservation_params[:start_time],
+                   initial_end_time: reservation_params[:end_time],
+                   initial_unavailable_workspace_ids: unavailable_workspace_ids_from_params,
                    errors: {
                      base: result.errors
-                   }
+                   },
+                   booking_rule: current_organization.booking_rule
                  },
                  status: :unprocessable_entity
         end
@@ -113,10 +117,11 @@ class ReservationsController < InertiaController
                                     .includes(:amenities)
                                     .order(:name)
 
-    render inertia: "reservations/edit", props: {
-      reservation: @reservation.as_json(include: reservation_includes),
-      workspaces: workspaces.as_json(include: :amenities)
-    }
+      render inertia: "reservations/edit", props: {
+        reservation: @reservation.as_json(include: reservation_includes),
+        workspaces: workspaces.as_json(include: :amenities),
+        booking_rule: current_organization.booking_rule
+      }
   end
 
   def update
@@ -124,16 +129,12 @@ class ReservationsController < InertiaController
     workspace_id = attrs.delete(:workspace_id)
 
     if workspace_id.present?
-      workspace = current_organization.workspaces.find_by(
-        id: workspace_id,
-        active: true
-      )
+      workspace = current_organization
+                  .workspaces
+                  .find_by(id: workspace_id, active: true)
 
       @reservation.workspace = workspace
-
-      if workspace.blank?
-        @reservation.errors.add(:workspace_id, "is invalid")
-      end
+      @reservation.errors.add(:workspace_id, "is invalid") if workspace.blank?
     end
 
     @reservation.assign_attributes(attrs)
@@ -150,16 +151,18 @@ class ReservationsController < InertiaController
         end
       else
         format.html do
-          workspaces = current_organization.workspaces
-                                          .where("active = ? OR id = ?", true, @reservation.workspace_id)
-                                          .includes(:amenities)
-                                          .order(:name)
+          workspaces = current_organization
+                       .workspaces
+                       .where("active = ? OR id = ?", true, @reservation.workspace_id)
+                       .includes(:amenities)
+                       .order(:name)
 
           render inertia: "reservations/edit",
                  props: {
                    reservation: @reservation.as_json(include: reservation_includes),
                    workspaces: workspaces.as_json(include: :amenities),
-                   errors: @reservation.errors.to_hash
+                   errors: @reservation.errors.to_hash,
+                   booking_rule: current_organization.booking_rule
                  },
                  status: :unprocessable_entity
         end
@@ -254,26 +257,30 @@ class ReservationsController < InertiaController
     }
   end
 
-  def availability
-    start_time = Time.zone.parse(params[:start_time].to_s)
-    end_time = Time.zone.parse(params[:end_time].to_s)
+def availability
+  start_time = Time.zone.parse(params[:start_time].to_s)
+  end_time = Time.zone.parse(params[:end_time].to_s)
 
-    if start_time.blank? || end_time.blank? || start_time >= end_time
-      render json: {
-        error: "Invalid date or time"
-      }, status: :unprocessable_entity
-
-      return
-    end
-
-    render json: {
-      unavailable_workspace_ids: unavailable_workspace_ids_for(start_time, end_time)
-    }
-  rescue ArgumentError, TypeError
+  if start_time.blank? || end_time.blank? || start_time >= end_time
     render json: {
       error: "Invalid date or time"
     }, status: :unprocessable_entity
+
+    return
   end
+
+  render json: {
+    unavailable_workspace_ids: unavailable_workspace_ids_for(
+      start_time,
+      end_time,
+      except_reservation_id: params[:reservation_id]
+    )
+  }
+rescue ArgumentError, TypeError
+  render json: {
+    error: "Invalid date or time"
+  }, status: :unprocessable_entity
+end
 
   private
 
@@ -300,13 +307,33 @@ class ReservationsController < InertiaController
     )
   end
 
-  def unavailable_workspace_ids_for(start_time, end_time)
-    current_organization.reservations
-                        .where.not(status: "cancelled")
-                        .where("start_time < ? AND end_time > ?", end_time, start_time)
-                        .pluck(:workspace_id)
-                        .uniq
+def unavailable_workspace_ids_for(start_time, end_time, except_reservation_id: nil)
+  reservations = current_organization.reservations
+                                     .where.not(status: "cancelled")
+                                     .where(
+                                       "start_time < ? AND end_time > ?",
+                                       end_time,
+                                       start_time
+                                     )
+
+  if except_reservation_id.present?
+    reservations = reservations.where.not(id: except_reservation_id)
   end
+
+  reservations.pluck(:workspace_id).uniq
+end
+
+  def unavailable_workspace_ids_from_params
+    start_time = Time.zone.parse(reservation_params[:start_time].to_s)
+    end_time = Time.zone.parse(reservation_params[:end_time].to_s)
+
+    return [] if start_time.blank? || end_time.blank? || start_time >= end_time
+
+    unavailable_workspace_ids_for(start_time, end_time)
+  rescue ArgumentError, TypeError
+    []
+  end
+
 
   def reservation_includes
     {

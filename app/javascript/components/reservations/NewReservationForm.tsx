@@ -4,6 +4,8 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import DatePickerField from "../ui/DatePickerField";
 import TimeSlotPicker from "../ui/TimeSlotPicker";
+import { generateTimeSlots } from "../../utils/timeSlots";
+import type { TimeSlot } from "../../utils/timeSlots";
 import {
   AlertTriangle,
   Building2,
@@ -29,6 +31,9 @@ type NewReservationFormProps = {
   initialEndTime?: string | null;
   initialUnavailableWorkspaceIds?: number[];
   initialErrors?: Record<string, string | string[]>;
+  maxReservationHours?: number | null;
+  minNoticeMinutes?: number | null;
+  allowWeekendBookings?: boolean | null;
 };
 
 type ReservationFormData = {
@@ -41,15 +46,6 @@ type ReservationFormData = {
   };
 };
 
-const timeSlots = [
-  { label: "09:00 AM - 10:00 AM", start: "09:00", end: "10:00" },
-  { label: "10:00 AM - 11:00 AM", start: "10:00", end: "11:00" },
-  { label: "11:00 AM - 12:00 PM", start: "11:00", end: "12:00" },
-  { label: "01:00 PM - 02:00 PM", start: "13:00", end: "14:00" },
-  { label: "02:00 PM - 03:00 PM", start: "14:00", end: "15:00" },
-  { label: "03:00 PM - 04:00 PM", start: "15:00", end: "16:00" },
-];
-
 export default function NewReservationForm({
   workspaces,
   selectedWorkspaceId = null,
@@ -57,7 +53,11 @@ export default function NewReservationForm({
   initialEndTime = null,
   initialUnavailableWorkspaceIds = [],
   initialErrors = {},
+  maxReservationHours = 4,
+  minNoticeMinutes = 0,
+  allowWeekendBookings = true,
 }: NewReservationFormProps) {
+  const timeSlots = generateTimeSlots(maxReservationHours);
   const today = new Date().toISOString().split("T")[0];
   const firstSlot = timeSlots[0];
 
@@ -65,7 +65,11 @@ export default function NewReservationForm({
     initialStartTime || buildDateTime(today, firstSlot.start);
   const defaultEndTime = initialEndTime || buildDateTime(today, firstSlot.end);
   const defaultDate = extractDate(defaultStartTime);
-  const defaultSlot = findSlotByDateTimes(defaultStartTime, defaultEndTime);
+  const defaultSlot = findSlotByDateTimes(
+    defaultStartTime,
+    defaultEndTime,
+    timeSlots,
+  );
 
   const [selectedDate, setSelectedDate] = useState(defaultDate);
   const [selectedSlot, setSelectedSlot] = useState(defaultSlot);
@@ -107,6 +111,18 @@ export default function NewReservationForm({
     ...normalizeError(allErrors["reservation.base"]),
   ];
 
+  const minNoticeViolation = violatesMinimumNotice(
+    data.reservation.start_time,
+    minNoticeMinutes,
+  );
+
+  const weekendViolation = violatesWeekendRule(
+    data.reservation.start_time,
+    allowWeekendBookings,
+  );
+
+  const ruleViolation = minNoticeViolation || weekendViolation;
+
   const filteredWorkspaces = workspaces.filter((workspace) => {
     const query = search.toLowerCase();
 
@@ -135,6 +151,8 @@ export default function NewReservationForm({
     Boolean(data.reservation.workspace_id) &&
     availabilityChecked &&
     !checkingAvailability &&
+    !availabilityError &&
+    !ruleViolation &&
     !selectedWorkspaceUnavailable &&
     !attendeesExceedCapacity;
 
@@ -327,6 +345,12 @@ export default function NewReservationForm({
             unavailableCount={unavailableWorkspaceIds.length}
           />
 
+          <BusinessRuleNotice
+            minNoticeViolation={minNoticeViolation}
+            minNoticeMinutes={minNoticeMinutes || 0}
+            weekendViolation={weekendViolation}
+          />
+
           {baseErrors.length > 0 && (
             <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
               {baseErrors.join(", ")}
@@ -492,6 +516,11 @@ export default function NewReservationForm({
             />
 
             <SummaryRow
+              label="Booking Rules"
+              value={ruleViolation ? "Action required" : "Valid"}
+            />
+
+            <SummaryRow
               label="Estimated Total"
               value={`$${estimatedTotal.toFixed(2)}`}
             />
@@ -503,6 +532,9 @@ export default function NewReservationForm({
             availabilityChecked={availabilityChecked}
             selectedWorkspaceUnavailable={Boolean(selectedWorkspaceUnavailable)}
             attendeesExceedCapacity={Boolean(attendeesExceedCapacity)}
+            minNoticeViolation={minNoticeViolation}
+            minNoticeMinutes={minNoticeMinutes || 0}
+            weekendViolation={weekendViolation}
           />
 
           <LoadingButton
@@ -749,6 +781,41 @@ function SummaryRow({ label, value }: SummaryRowProps) {
   );
 }
 
+function BusinessRuleNotice({
+  minNoticeViolation,
+  minNoticeMinutes,
+  weekendViolation,
+}: {
+  minNoticeViolation: boolean;
+  minNoticeMinutes: number;
+  weekendViolation: boolean;
+}) {
+  if (!minNoticeViolation && !weekendViolation) return null;
+
+  return (
+    <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+      <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+
+      <div className="space-y-1">
+        {minNoticeViolation && (
+          <p>
+            This organization requires reservations to be booked at least{" "}
+            <span className="font-bold">{minNoticeMinutes} minutes</span> in
+            advance. Please choose a later time slot.
+          </p>
+        )}
+
+        {weekendViolation && (
+          <p>
+            Weekend bookings are disabled for this organization. Please choose a
+            weekday.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function AvailabilityMessage({
   checkingAvailability,
   availabilityChecked,
@@ -791,13 +858,22 @@ function AvailabilityMessage({
     );
   }
 
+  if (unavailableCount > 0) {
+    return (
+      <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+        <span>
+          Availability checked. {unavailableCount} workspace
+          {unavailableCount === 1 ? " is" : "s are"} unavailable for this time.
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="mt-6 flex items-start gap-3 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
       <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
-      <span>
-        Availability checked successfully. {unavailableCount} workspace
-        {unavailableCount === 1 ? " is" : "s are"} unavailable for this time.
-      </span>
+      <span>All workspaces are available for this time slot.</span>
     </div>
   );
 }
@@ -806,15 +882,38 @@ function ValidationNotice({
   availabilityChecked,
   selectedWorkspaceUnavailable,
   attendeesExceedCapacity,
+  minNoticeViolation,
+  minNoticeMinutes,
+  weekendViolation,
 }: {
   availabilityChecked: boolean;
   selectedWorkspaceUnavailable: boolean;
   attendeesExceedCapacity: boolean;
+  minNoticeViolation: boolean;
+  minNoticeMinutes: number;
+  weekendViolation: boolean;
 }) {
   if (!availabilityChecked) {
     return (
       <div className="mt-5 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700">
         Check availability before creating the reservation.
+      </div>
+    );
+  }
+
+  if (minNoticeViolation) {
+    return (
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        Reservations must be booked at least {minNoticeMinutes} minutes in
+        advance.
+      </div>
+    );
+  }
+
+  if (weekendViolation) {
+    return (
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        Weekend bookings are disabled for this organization.
       </div>
     );
   }
@@ -882,13 +981,16 @@ function extractTime(value: string): string {
   return timePart.slice(0, 5);
 }
 
-function findSlotByDateTimes(startTime: string, endTime: string) {
+function findSlotByDateTimes(
+  startTime: string,
+  endTime: string,
+  slots: TimeSlot[],
+) {
   const start = extractTime(startTime);
   const end = extractTime(endTime);
 
   return (
-    timeSlots.find((slot) => slot.start === start && slot.end === end) ||
-    timeSlots[0]
+    slots.find((slot) => slot.start === start && slot.end === end) || slots[0]
   );
 }
 
@@ -906,6 +1008,32 @@ function calculateEstimatedTotal(
   const hours = Math.max(0, (end - start) / 3600000);
 
   return hourlyRate * hours;
+}
+
+function violatesMinimumNotice(
+  startTime: string,
+  minNoticeMinutes?: number | null,
+): boolean {
+  const notice = Number(minNoticeMinutes || 0);
+
+  if (!notice) return false;
+
+  const start = new Date(startTime).getTime();
+  const minimumStart = Date.now() + notice * 60000;
+
+  return Number.isFinite(start) && start < minimumStart;
+}
+
+function violatesWeekendRule(
+  startTime: string,
+  allowWeekendBookings?: boolean | null,
+): boolean {
+  if (allowWeekendBookings !== false) return false;
+
+  const date = new Date(startTime);
+  const day = date.getDay();
+
+  return day === 0 || day === 6;
 }
 
 function normalizeError(error?: string | string[]): string[] {
