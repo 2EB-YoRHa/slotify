@@ -1,8 +1,8 @@
 import { StickyNote, UsersRound } from "lucide-react";
-import LoadingButton from ".././ui/LoadingButton";
-import type { Workspace } from "../.././types/workspace";
-import { SelectedWorkspaceSummary } from "./WorkspaceInfoBlocks";
-import { ValidationNotice } from "./ReservationNotices";
+import LoadingButton from "../../ui/LoadingButton";
+import type { Workspace } from "../../../types/workspace";
+import { SelectedWorkspaceSummary } from "../new/WorkspaceInfoBlocks";
+import { ValidationNotice } from "../new/ReservationNotices";
 
 type ReservationSummaryPanelProps = {
   selectedWorkspace?: Workspace | null;

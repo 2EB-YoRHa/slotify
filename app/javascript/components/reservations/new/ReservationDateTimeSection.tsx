@@ -1,8 +1,8 @@
 import { CalendarDays, Search } from "lucide-react";
-import DatePickerField from ".././ui/DatePickerField";
-import LoadingButton from ".././ui/LoadingButton";
-import TimeSlotPicker from ".././ui/TimeSlotPicker";
-import type { TimeSlot } from "../.././utils/timeSlots";
+import DatePickerField from "../../ui/DatePickerField";
+import LoadingButton from "../../ui/LoadingButton";
+import TimeSlotPicker from "../../ui/TimeSlotPicker";
+import type { TimeSlot } from "../../../utils/timeSlots";
 import {
   AvailabilityMessage,
   BusinessRuleNotice,

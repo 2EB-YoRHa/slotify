@@ -6,8 +6,8 @@ import {
   Sparkles,
   UsersRound,
 } from "lucide-react";
-import type { Workspace } from "../.././types/workspace";
-import { formatText } from "../../utils/reservationFormUtils";
+import type { Workspace } from "../../../types/workspace";
+import { formatText } from "../../../utils/reservationFormUtils";
 import { AmenityChips, Info } from "./WorkspaceInfoBlocks";
 
 type AvailableWorkspaceGridProps = {

@@ -6,9 +6,9 @@ import {
   UsersRound,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { Amenity } from "../.././types/amenity";
-import type { Workspace } from "../.././types/workspace";
-import { formatText } from "../../utils/reservationFormUtils";
+import type { Amenity } from "../../../types/amenity";
+import type { Workspace } from "../../../types/workspace";
+import { formatText } from "../../../utils/reservationFormUtils";
 
 type InfoProps = {
   icon: LucideIcon;

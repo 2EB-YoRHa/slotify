@@ -5,9 +5,9 @@ import { useState } from "react";
 import { generateTimeSlots } from "../../utils/timeSlots";
 import type { TimeSlot } from "../../utils/timeSlots";
 import type { Workspace } from "../../types/workspace";
-import AvailableWorkspaceGrid from "../reservations/AvailableWorkspaceGrid";
-import ReservationDateTimeSection from "../reservations/ReservationDateTimeSection";
-import ReservationSummaryPanel from "../reservations/ReservationSummaryPanel";
+import AvailableWorkspaceGrid from "./new/AvailableWorkspaceGrid";
+import ReservationDateTimeSection from "./new/ReservationDateTimeSection";
+import ReservationSummaryPanel from "../reservations/new/ReservationSummaryPanel";
 import {
   buildDateTime,
   calculateEstimatedTotal,
