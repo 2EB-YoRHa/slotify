@@ -14,17 +14,29 @@ type SharedPageProps = {
 
 export default function Header() {
   const { current_user } = usePage<SharedPageProps>().props;
+  const role = current_user?.role;
+
+  const headerContent =
+    role === "member"
+      ? {
+          title: "Member Workspace",
+          description: "Browse spaces, create bookings, and manage your reservations.",
+        }
+      : {
+          title: "Workspace Operations",
+          description: "Manage reservations, spaces, members, and organization settings.",
+        };
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="flex h-16 items-center justify-between px-8">
         <div>
           <h2 className="text-sm font-extrabold uppercase tracking-wide text-slate-400">
-            Workspace Operations
+            {headerContent.title}
           </h2>
 
           <p className="text-sm text-slate-500">
-            Manage reservations, spaces, members, and organization settings.
+            {headerContent.description}
           </p>
         </div>
 

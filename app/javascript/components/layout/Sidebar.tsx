@@ -14,13 +14,24 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+type SharedCurrentUser = {
+  id: number;
+  name: string;
+  email: string;
+  role?: string | null;
+};
+
+type SharedPageProps = {
+  current_user?: SharedCurrentUser | null;
+};
+
 type NavItem = {
   label: string;
   href: string;
   icon: LucideIcon;
 };
 
-const navItems: NavItem[] = [
+const managerNavItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Reservations", href: "/reservations", icon: CalendarCheck },
   { label: "Workspaces", href: "/workspaces", icon: Building2 },
@@ -31,9 +42,18 @@ const navItems: NavItem[] = [
   { label: "Booking Rules", href: "/booking_rule", icon: SlidersHorizontal },
 ];
 
+const memberNavItems: NavItem[] = [
+  { label: "Browse Workspaces", href: "/workspaces", icon: Building2 },
+  { label: "My Bookings", href: "/my_reservations", icon: CalendarDays },
+];
+
 export default function Sidebar() {
-  const { url } = usePage();
+  const { url, props } = usePage<SharedPageProps>();
   const [signingOut, setSigningOut] = useState(false);
+
+  const role = props.current_user?.role;
+  const isMember = role === "member";
+  const navItems = isMember ? memberNavItems : managerNavItems;
 
   function signOut() {
     setSigningOut(true);
@@ -47,13 +67,14 @@ export default function Sidebar() {
     <>
       <aside className="flex min-h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
         <div className="flex h-16 items-center px-7">
-          <Link href="/" className="group inline-block">
+          <Link href={isMember ? "/workspaces" : "/"} className="group inline-block">
             <span className="block text-2xl font-black tracking-[-0.055em] text-slate-950 transition group-hover:text-slate-800">
               Slotify
             </span>
 
             <span className="mt-1.5 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-cyan-400 transition group-hover:scale-125" />
+
               <span className="h-px w-14 bg-linear-to-r from-cyan-400 to-transparent" />
             </span>
           </Link>
@@ -105,7 +126,7 @@ export default function Sidebar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/30 backdrop-blur-sm"
+            className="fixed inset-0 z-120 flex items-center justify-center bg-slate-950/30 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, y: 18, scale: 0.96 }}

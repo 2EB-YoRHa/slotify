@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { motion } from "motion/react";
 import {
   Building2,
@@ -9,8 +9,20 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
+import MemberWorkspaceGrid from "../../components/workspaces/MemberWorkspaceGrid";
 import WorkspaceTable from "../../components/workspaces/WorkspaceTable";
 import type { Workspace } from "../../types/workspace";
+
+type CurrentUser = {
+  id: number;
+  name: string;
+  email: string;
+  role?: string | null;
+};
+
+type SharedPageProps = {
+  current_user?: CurrentUser | null;
+};
 
 type WorkspacesIndexProps = {
   workspaces?: Workspace[];
@@ -19,18 +31,69 @@ type WorkspacesIndexProps = {
 export default function WorkspacesIndex({
   workspaces = [],
 }: WorkspacesIndexProps) {
+  const { current_user } = usePage<SharedPageProps>().props;
+  const isMember = current_user?.role === "member";
+
+  if (isMember) {
+    return <MemberWorkspacesIndex workspaces={workspaces} />;
+  }
+
+  return <ManagerWorkspacesIndex workspaces={workspaces} />;
+}
+
+function MemberWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
+  const activeCount = workspaces.filter((workspace) => workspace.active).length;
+
+  return (
+    <AppLayout>
+      <div className="mb-8 flex items-start justify-between gap-6">
+        <div>
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-3xl font-bold text-slate-950"
+          >
+            Browse Workspaces
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="mt-2 max-w-2xl text-slate-500"
+          >
+            Explore available rooms, offices, desks, amenities, pricing, and
+            capacity before creating your next reservation.
+          </motion.p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="rounded-xl border border-cyan-100 bg-cyan-50 px-5 py-3 text-sm font-bold text-cyan-700"
+        >
+          {activeCount} spaces available
+        </motion.div>
+      </div>
+
+      <MemberWorkspaceGrid workspaces={workspaces} />
+    </AppLayout>
+  );
+}
+
+function ManagerWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
   const activeWorkspaces = workspaces.filter((workspace) => workspace.active);
 
   const totalCapacity = workspaces.reduce(
     (sum, workspace) => sum + Number(workspace.capacity || 0),
-    0
+    0,
   );
 
   const averageRate =
     workspaces.length > 0
       ? workspaces.reduce(
           (sum, workspace) => sum + Number(workspace.hourly_rate || 0),
-          0
+          0,
         ) / workspaces.length
       : 0;
 
