@@ -1,0 +1,86 @@
+import {
+  Building2,
+  DollarSign,
+  Layers3,
+  MapPin,
+  UsersRound,
+} from "lucide-react";
+import { formatText } from "../../../utils/reservationFormUtils";
+import { IconBox, InfoCard, StatusBadge } from "./WorkspaceShowShared";
+import type { WorkspaceWithAmenities } from "../../../types/workspaceShowTypes";
+
+type WorkspaceInformationProps = {
+  workspace: WorkspaceWithAmenities;
+};
+
+export default function WorkspaceInformation({
+  workspace,
+}: WorkspaceInformationProps) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="mb-8 flex items-start justify-between">
+        <div className="flex items-start gap-4">
+          <IconBox icon={Building2} />
+
+          <div>
+            <h2 className="text-2xl font-bold text-slate-950">
+              Workspace Information
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Main details used for reservations and availability.
+            </p>
+          </div>
+        </div>
+
+        <StatusBadge active={workspace.active} />
+      </div>
+
+      {workspace.description && (
+        <div className="mb-6 rounded-xl border border-cyan-100 bg-cyan-50/50 p-5">
+          <p className="text-sm leading-6 text-slate-600">
+            {workspace.description}
+          </p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-5">
+        <InfoCard icon={Building2} label="Name" value={workspace.name} />
+
+        <InfoCard
+          icon={Layers3}
+          label="Type"
+          value={formatText(workspace.workspace_type)}
+        />
+
+        <InfoCard
+          icon={UsersRound}
+          label="Capacity"
+          value={workspace.capacity}
+        />
+
+        <InfoCard
+          icon={DollarSign}
+          label="Hourly Rate"
+          value={`$${Number(workspace.hourly_rate || 0).toFixed(2)}`}
+        />
+
+        <InfoCard
+          icon={Building2}
+          label="Floor"
+          value={workspace.floor || "-"}
+        />
+
+        <InfoCard icon={MapPin} label="Zone" value={workspace.zone || "-"} />
+
+        <div className="col-span-2">
+          <InfoCard
+            icon={MapPin}
+            label="Location"
+            value={workspace.location || "-"}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
