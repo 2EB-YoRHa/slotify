@@ -3,13 +3,8 @@ class WorkspacesController < InertiaController
   before_action :set_workspace, only: %i[show edit update destroy delete_confirmation]
 
   def index
-    workspaces = current_organization
-                 .workspaces
-                 .with_attached_photo
-                 .includes(:amenities)
-                 .order(:name)
-
-    serialized_workspaces = workspaces.map { |workspace| serialized_workspace(workspace) }
+    workspaces = workspace_scope.order(:name)
+    serialized_workspaces = serialize_workspaces(workspaces)
 
     respond_to do |format|
       format.html do
@@ -31,16 +26,27 @@ class WorkspacesController < InertiaController
                              .limit(10)
 
     serialized_reservations = reservations.as_json(
-      only: [ :id, :start_time, :end_time, :status ],
+      only: [
+        :id,
+        :start_time,
+        :end_time,
+        :status
+      ],
       include: {
-        user: { only: [ :id, :name, :email ] }
+        user: {
+          only: [
+            :id,
+            :name,
+            :email
+          ]
+        }
       }
     )
 
     respond_to do |format|
       format.html do
         render inertia: "workspaces/show", props: {
-          workspace: serialized_workspace(@workspace),
+          workspace: serialize_workspace(@workspace),
           reservations: serialized_reservations,
           reservation_count: @workspace.reservations.count
         }
@@ -48,7 +54,7 @@ class WorkspacesController < InertiaController
 
       format.json do
         render json: {
-          workspace: serialized_workspace(@workspace),
+          workspace: serialize_workspace(@workspace),
           reservations: serialized_reservations,
           reservation_count: @workspace.reservations.count
         }
@@ -58,7 +64,7 @@ class WorkspacesController < InertiaController
 
   def new
     render inertia: "workspaces/new", props: {
-      amenities: Amenity.order(:name)
+      amenities: amenities_for_form
     }
   end
 
@@ -68,25 +74,28 @@ class WorkspacesController < InertiaController
     respond_to do |format|
       if workspace.save
         format.html do
-          redirect_to workspaces_path, notice: "Workspace created successfully"
+          redirect_to workspaces_path,
+                      notice: "Workspace created successfully"
         end
 
         format.json do
-          render json: serialized_workspace(workspace), status: :created
+          render json: serialize_workspace(workspace),
+                 status: :created
         end
       else
         format.html do
           render inertia: "workspaces/new",
                  props: {
-                   amenities: Amenity.order(:name),
+                   amenities: amenities_for_form,
                    errors: workspace.errors.to_hash
                  },
                  status: :unprocessable_entity
         end
 
         format.json do
-          render json: { errors: workspace.errors.full_messages },
-                 status: :unprocessable_entity
+          render json: {
+            errors: workspace.errors.full_messages
+          }, status: :unprocessable_entity
         end
       end
     end
@@ -94,8 +103,8 @@ class WorkspacesController < InertiaController
 
   def edit
     render inertia: "workspaces/edit", props: {
-      workspace: serialized_workspace(@workspace),
-      amenities: Amenity.order(:name),
+      workspace: serialize_workspace(@workspace),
+      amenities: amenities_for_form,
       selected_amenity_ids: @workspace.amenity_ids
     }
   end
@@ -104,18 +113,19 @@ class WorkspacesController < InertiaController
     respond_to do |format|
       if @workspace.update(workspace_params)
         format.html do
-          redirect_to workspaces_path, notice: "Workspace updated successfully"
+          redirect_to workspaces_path,
+                      notice: "Workspace updated successfully"
         end
 
         format.json do
-          render json: serialized_workspace(@workspace)
+          render json: serialize_workspace(@workspace)
         end
       else
         format.html do
           render inertia: "workspaces/edit",
                  props: {
-                   workspace: serialized_workspace(@workspace),
-                   amenities: Amenity.order(:name),
+                   workspace: serialize_workspace(@workspace),
+                   amenities: amenities_for_form,
                    selected_amenity_ids: @workspace.amenity_ids,
                    errors: @workspace.errors.to_hash
                  },
@@ -123,8 +133,9 @@ class WorkspacesController < InertiaController
         end
 
         format.json do
-          render json: { errors: @workspace.errors.full_messages },
-                 status: :unprocessable_entity
+          render json: {
+            errors: @workspace.errors.full_messages
+          }, status: :unprocessable_entity
         end
       end
     end
@@ -135,10 +146,10 @@ class WorkspacesController < InertiaController
     can_delete = reservation_count.zero?
 
     render inertia: "workspaces/delete", props: {
-      workspace: serialized_workspace(@workspace),
+      workspace: serialize_workspace(@workspace),
       reservation_count: reservation_count,
       can_delete: can_delete,
-      delete_error: can_delete ? nil : "This workspace has reservation history. Mark it as inactive instead of deleting it."
+      delete_error: delete_error_for(can_delete)
     }
   end
 
@@ -148,17 +159,20 @@ class WorkspacesController < InertiaController
         format.html do
           render inertia: "workspaces/delete",
                  props: {
-                   workspace: serialized_workspace(@workspace),
+                   workspace: serialize_workspace(@workspace),
                    reservation_count: @workspace.reservations.count,
                    can_delete: false,
-                   delete_error: "This workspace has reservation history. Mark it as inactive instead of deleting it."
+                   delete_error: delete_error_for(false)
                  },
                  status: :unprocessable_entity
         end
 
         format.json do
-          render json: { errors: [ "Workspace has reservation history" ] },
-                 status: :unprocessable_entity
+          render json: {
+            errors: [
+              "Workspace has reservation history"
+            ]
+          }, status: :unprocessable_entity
         end
       end
 
@@ -169,23 +183,33 @@ class WorkspacesController < InertiaController
 
     respond_to do |format|
       format.html do
-        redirect_to workspaces_path, notice: "Workspace deleted successfully"
+        redirect_to workspaces_path,
+                    notice: "Workspace deleted successfully"
       end
 
       format.json do
-        render json: { message: "Workspace deleted successfully" }
+        render json: {
+          message: "Workspace deleted successfully"
+        }
       end
     end
   end
 
   private
 
+  def workspace_scope
+    current_organization
+      .workspaces
+      .with_attached_photo
+      .includes(:amenities)
+  end
+
   def set_workspace
-    @workspace = current_organization
-                 .workspaces
-                 .with_attached_photo
-                 .includes(:amenities)
-                 .find(params[:id])
+    @workspace = workspace_scope.find(params[:id])
+  end
+
+  def amenities_for_form
+    Amenity.order(:name)
   end
 
   def workspace_params
@@ -204,44 +228,21 @@ class WorkspacesController < InertiaController
     )
   end
 
-  def serialized_workspace(workspace)
-    workspace.as_json(
-      only: [
-        :id,
-        :name,
-        :workspace_type,
-        :capacity,
-        :floor,
-        :zone,
-        :location,
-        :description,
-        :hourly_rate,
-        :active
-      ],
-      include: {
-        amenities: {
-          only: [
-            :id,
-            :name
-          ]
-        }
-      }
-    ).merge(
-      photo_attached: workspace.photo.attached?,
-      photo_url: workspace_photo_url(workspace),
-      photo_filename: workspace_photo_filename(workspace)
-    )
+  def serialize_workspaces(workspaces)
+    workspaces.map do |workspace|
+      serialize_workspace(workspace)
+    end
   end
 
-  def workspace_photo_url(workspace)
-    return nil unless workspace.photo.attached?
-
-    url_for(workspace.photo)
+  def serialize_workspace(workspace)
+    WorkspaceSerializer
+      .new(workspace, view_context: view_context)
+      .as_json
   end
 
-  def workspace_photo_filename(workspace)
-    return nil unless workspace.photo.attached?
+  def delete_error_for(can_delete)
+    return nil if can_delete
 
-    workspace.photo.filename.to_s
+    "This workspace has reservation history. Mark it as inactive instead of deleting it."
   end
 end
