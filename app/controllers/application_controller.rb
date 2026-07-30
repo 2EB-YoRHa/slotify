@@ -5,8 +5,8 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
 
-  # TEMPORAL: solo para pruebas con Postman en desarrollo
-  skip_forgery_protection if Rails.env.development?
+  rescue_from ActionController::InvalidAuthenticityToken,
+              with: :handle_invalid_authenticity_token
 
   stale_when_importmap_changes
 
@@ -43,5 +43,14 @@ class ApplicationController < ActionController::Base
 
   def after_sign_out_path_for(_resource_or_scope)
     new_user_session_path
+  end
+
+  private
+
+  def handle_invalid_authenticity_token
+    reset_session
+
+    redirect_to new_user_session_path,
+                alert: "Your session expired. Please sign in again."
   end
 end

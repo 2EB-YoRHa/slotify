@@ -1,5 +1,18 @@
 import { createInertiaApp } from "@inertiajs/react";
 
+function csrfToken(): string | null {
+  return (
+    document.querySelector<HTMLMetaElement>("meta[name='csrf-token']")
+      ?.content || null
+  );
+}
+
+function csrfHeaders(): Record<string, string> {
+  const token = csrfToken();
+
+  return token ? { "X-CSRF-Token": token } : {};
+}
+
 void createInertiaApp({
   pages: "../pages",
 
@@ -15,8 +28,14 @@ void createInertiaApp({
       forceIndicesArrayFormatInFormData: false,
       withAllErrors: true,
     },
-    visitOptions: () => {
-      return { queryStringArrayFormat: "brackets" };
+    visitOptions: (_href, options) => {
+      return {
+        queryStringArrayFormat: "brackets",
+        headers: {
+          ...options.headers,
+          ...csrfHeaders(),
+        },
+      };
     },
   },
 }).catch((error) => {
