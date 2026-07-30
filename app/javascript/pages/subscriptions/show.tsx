@@ -145,7 +145,7 @@ export default function SubscriptionShow({
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="col-span-2 rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50 to-white p-8 shadow-sm"
+          className="col-span-2 rounded-2xl border border-cyan-100 bg-linear-to-br from-cyan-50 to-white p-8 shadow-sm"
         >
           <div className="flex items-start justify-between gap-8">
             <div>
