@@ -19,11 +19,8 @@ class Users::SessionsController < Devise::SessionsController
 
     if user&.valid_password?(password)
       unless user.active?
-        render inertia: "auth/inactive_account", props: {
-          name: user.name,
-          email: user.email,
-          organization_name: user.organization&.name
-        }, status: :forbidden
+        redirect_to new_user_session_path,
+                    alert: "Your account has been deactivated. Please contact your organization administrator to restore access."
 
         return
       end
@@ -33,12 +30,14 @@ class Users::SessionsController < Devise::SessionsController
       redirect_to after_sign_in_path_for(user),
                   notice: "Signed in successfully"
     else
-      render inertia: "auth/sign_in", props: {
-        invitation_token: session[:pending_invitation_token],
-        errors: {
-          email: "Invalid email or password"
-        }
-      }, status: :unprocessable_entity
+      render inertia: "auth/sign_in",
+             props: {
+               invitation_token: session[:pending_invitation_token],
+               errors: {
+                 email: "Invalid email or password"
+               }
+             },
+             status: :unprocessable_entity
     end
   end
 end

@@ -4,6 +4,7 @@ import { LockKeyhole, Mail } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
 import AuthFooter from "../../components/auth/AuthFooter";
 import LoadingButton from "../../components/ui/LoadingButton";
+import FlashMessages from "../../components/ui/FlashMessages";
 
 type SignInProps = {
   invitation_token?: string | null;
@@ -48,6 +49,7 @@ export default function SignIn({
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">
+      <FlashMessages />
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
         <header className="mb-10 flex justify-center">
           <AuthBrand />
