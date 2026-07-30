@@ -123,7 +123,8 @@ class ReservationsController < InertiaController
           reservation: serialized_reservation(@reservation),
           workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
           booking_rule: current_organization.booking_rule,
-          can_manage_status: admin? || manager?
+          can_manage_status: admin? || manager?,
+          initial_unavailable_workspace_ids: initial_unavailable_workspace_ids_for(@reservation)
         }
   end
 
@@ -161,15 +162,16 @@ class ReservationsController < InertiaController
                        .includes(:amenities)
                        .order(:name)
 
-            render inertia: "reservations/edit",
-                  props: {
-                    reservation: serialized_reservation(@reservation),
-                    workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
-                    errors: @reservation.errors.to_hash,
-                    booking_rule: current_organization.booking_rule,
-                    can_manage_status: admin? || manager?
-                  },
-                  status: :unprocessable_entity
+              render inertia: "reservations/edit",
+                    props: {
+                      reservation: serialized_reservation(@reservation),
+                      workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
+                      errors: @reservation.errors.to_hash,
+                      booking_rule: current_organization.booking_rule,
+                      can_manage_status: admin? || manager?,
+                      initial_unavailable_workspace_ids: initial_unavailable_workspace_ids_for(@reservation)
+                    },
+                    status: :unprocessable_entity
         end
 
         format.json do
@@ -310,6 +312,17 @@ def reservation_params
   permitted_attributes << :status if admin? || manager?
 
   params.require(:reservation).permit(permitted_attributes)
+end
+
+def initial_unavailable_workspace_ids_for(reservation)
+  return [] if reservation.start_time.blank? || reservation.end_time.blank?
+  return [] if reservation.start_time >= reservation.end_time
+
+  unavailable_workspace_ids_for(
+    reservation.start_time,
+    reservation.end_time,
+    except_reservation_id: reservation.id
+  )
 end
 
   def unavailable_workspace_ids_for(start_time, end_time, except_reservation_id: nil)

@@ -1,6 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { generateTimeSlots } from "../../utils/timeSlots";
 import {
@@ -24,6 +24,7 @@ type EditReservationFormProps = {
   minNoticeMinutes?: number | null;
   allowWeekendBookings?: boolean | null;
   canManageStatus?: boolean;
+  initialUnavailableWorkspaceIds?: number[];
 };
 
 type EditReservationFormData = {
@@ -43,6 +44,7 @@ export default function EditReservationForm({
   minNoticeMinutes = 0,
   allowWeekendBookings = true,
   canManageStatus = false,
+  initialUnavailableWorkspaceIds = [],
 }: EditReservationFormProps) {
   const timeSlots = generateTimeSlots(maxReservationHours);
 
@@ -80,7 +82,7 @@ export default function EditReservationForm({
 
   const attendeesExceedCapacity = Boolean(
     selectedWorkspace &&
-      Number(data.attendees_count) > Number(selectedWorkspace.capacity || 0),
+    Number(data.attendees_count) > Number(selectedWorkspace.capacity || 0),
   );
 
   const selectedSlot = findSlotByDateTimes(
@@ -90,10 +92,11 @@ export default function EditReservationForm({
   );
 
   const [checkingAvailability, setCheckingAvailability] = useState(false);
-  const [availabilityChecked, setAvailabilityChecked] = useState(false);
+
+  const [availabilityChecked, setAvailabilityChecked] = useState(true);
   const [unavailableWorkspaceIds, setUnavailableWorkspaceIds] = useState<
     number[]
-  >([]);
+  >(initialUnavailableWorkspaceIds);
   const [availabilityError, setAvailabilityError] = useState<string | null>(
     null,
   );
@@ -122,10 +125,6 @@ export default function EditReservationForm({
     !ruleViolation &&
     !selectedWorkspaceUnavailable &&
     !attendeesExceedCapacity;
-
-  useEffect(() => {
-    void checkAvailabilityFor(data.start_time, data.end_time);
-  }, [data.start_time, data.end_time]);
 
   async function checkAvailabilityFor(startTime: string, endTime: string) {
     setCheckingAvailability(true);
@@ -187,11 +186,16 @@ export default function EditReservationForm({
       timeSlots,
     );
 
+    const nextStartTime = buildDateTime(date, currentSlot.start);
+    const nextEndTime = buildDateTime(date, currentSlot.end);
+
     setData({
       ...data,
-      start_time: buildDateTime(date, currentSlot.start),
-      end_time: buildDateTime(date, currentSlot.end),
+      start_time: nextStartTime,
+      end_time: nextEndTime,
     });
+
+    void checkAvailabilityFor(nextStartTime, nextEndTime);
   }
 
   function handleSlotChange(slotLabel: string) {
@@ -200,12 +204,16 @@ export default function EditReservationForm({
     if (!slot) return;
 
     const currentDate = extractDate(data.start_time);
+    const nextStartTime = buildDateTime(currentDate, slot.start);
+    const nextEndTime = buildDateTime(currentDate, slot.end);
 
     setData({
       ...data,
-      start_time: buildDateTime(currentDate, slot.start),
-      end_time: buildDateTime(currentDate, slot.end),
+      start_time: nextStartTime,
+      end_time: nextEndTime,
     });
+
+    void checkAvailabilityFor(nextStartTime, nextEndTime);
   }
 
   return (
@@ -236,9 +244,7 @@ export default function EditReservationForm({
           processing={processing}
           selectedWorkspace={selectedWorkspace}
           attendeesExceedCapacity={attendeesExceedCapacity}
-          onAttendeesChange={(value) =>
-            updateField("attendees_count", value)
-          }
+          onAttendeesChange={(value) => updateField("attendees_count", value)}
           onNotesChange={(value) => updateField("notes", value)}
         />
       </motion.section>

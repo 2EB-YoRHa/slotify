@@ -11,6 +11,7 @@ type EditReservationProps = {
   errors?: Record<string, string | string[]>;
   booking_rule?: BookingRule | null;
   can_manage_status?: boolean;
+  initial_unavailable_workspace_ids?: number[];
 };
 
 export default function EditReservation({
@@ -19,6 +20,7 @@ export default function EditReservation({
   errors = {},
   booking_rule = null,
   can_manage_status = false,
+  initial_unavailable_workspace_ids = [],
 }: EditReservationProps) {
   const reservationsHref = can_manage_status ? "/reservations" : "/my_reservations";
 
@@ -60,6 +62,7 @@ export default function EditReservation({
         minNoticeMinutes={booking_rule?.min_notice_minutes}
         allowWeekendBookings={booking_rule?.allow_weekend_bookings}
         canManageStatus={can_manage_status}
+        initialUnavailableWorkspaceIds={initial_unavailable_workspace_ids}
       />
     </AppLayout>
   );
