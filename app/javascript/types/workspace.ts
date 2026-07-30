@@ -12,6 +12,9 @@ export type Workspace = {
   hourly_rate?: number | string | null;
   active: boolean;
   amenities?: Amenity[];
+  photo_attached?: boolean;
+  photo_url?: string | null;
+  photo_filename?: string | null;
 };
 
 export type WorkspaceFormData = {
@@ -25,6 +28,7 @@ export type WorkspaceFormData = {
   hourly_rate: string | number;
   active: boolean;
   amenity_ids: number[];
+  photo: File | null;
 };
 
 export type WorkspaceErrors = Partial<

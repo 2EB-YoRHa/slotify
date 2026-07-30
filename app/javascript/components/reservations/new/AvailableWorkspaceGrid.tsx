@@ -9,6 +9,7 @@ import {
 import type { Workspace } from "../../../types/workspace";
 import { formatText } from "../../../utils/reservationFormUtils";
 import { AmenityChips, Info } from "./WorkspaceInfoBlocks";
+import WorkspacePhoto from "../../workspaces/WorkspacePhoto";
 
 type AvailableWorkspaceGridProps = {
   workspaces: Workspace[];
@@ -132,6 +133,14 @@ function WorkspaceOption({
           : "border-slate-200 bg-white hover:border-cyan-100"
       } ${unavailable ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
     >
+      <WorkspacePhoto
+        name={workspace.name}
+        photoUrl={workspace.photo_url}
+        fit="cover"
+        position="object-center"
+        className="-mx-5 -mt-5 mb-5 h-56 rounded-t-xl bg-slate-100"
+      />
+
       <div className="mb-5 flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">

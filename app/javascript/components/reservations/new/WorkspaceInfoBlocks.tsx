@@ -9,6 +9,7 @@ import type { LucideIcon } from "lucide-react";
 import type { Amenity } from "../../../types/amenity";
 import type { Workspace } from "../../../types/workspace";
 import { formatText } from "../../../utils/reservationFormUtils";
+import WorkspacePhoto from "../../workspaces/WorkspacePhoto";
 
 type InfoProps = {
   icon: LucideIcon;
@@ -22,9 +23,7 @@ export function Info({ icon: Icon, label, value }: InfoProps) {
       <div className="mb-1 flex items-center gap-2 text-slate-400">
         <Icon size={14} />
 
-        <p className="text-[10px] font-bold uppercase tracking-wide">
-          {label}
-        </p>
+        <p className="text-[10px] font-bold uppercase tracking-wide">{label}</p>
       </div>
 
       <p className="font-bold text-slate-800">{value}</p>
@@ -86,7 +85,16 @@ export function SelectedWorkspaceSummary({
   }
 
   return (
-    <div className="mt-5 rounded-xl border border-cyan-100 bg-cyan-50/50 p-5">
+    <div className="mt-5 overflow-hidden rounded-xl border border-cyan-100 bg-cyan-50/50">
+      <WorkspacePhoto
+        name={workspace.name}
+        photoUrl={workspace.photo_url}
+        fit="cover"
+        position="object-center"
+        className="h-56 w-full bg-slate-100"
+      />
+
+      <div className="p-5"></div>
       <div className="mb-4 flex items-start gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500">
           <Building2 size={18} strokeWidth={2.4} />

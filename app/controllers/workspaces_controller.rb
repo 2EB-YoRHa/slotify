@@ -3,8 +3,13 @@ class WorkspacesController < InertiaController
   before_action :set_workspace, only: %i[show edit update destroy delete_confirmation]
 
   def index
-    workspaces = current_organization.workspaces.includes(:amenities)
-    serialized_workspaces = workspaces.as_json(include: :amenities)
+    workspaces = current_organization
+                 .workspaces
+                 .with_attached_photo
+                 .includes(:amenities)
+                 .order(:name)
+
+    serialized_workspaces = workspaces.map { |workspace| serialized_workspace(workspace) }
 
     respond_to do |format|
       format.html do
@@ -20,8 +25,6 @@ class WorkspacesController < InertiaController
   end
 
   def show
-    serialized_workspace = @workspace.as_json(include: :amenities)
-
     reservations = @workspace.reservations
                              .includes(:user)
                              .order(start_time: :desc)
@@ -37,7 +40,7 @@ class WorkspacesController < InertiaController
     respond_to do |format|
       format.html do
         render inertia: "workspaces/show", props: {
-          workspace: serialized_workspace,
+          workspace: serialized_workspace(@workspace),
           reservations: serialized_reservations,
           reservation_count: @workspace.reservations.count
         }
@@ -45,7 +48,7 @@ class WorkspacesController < InertiaController
 
       format.json do
         render json: {
-          workspace: serialized_workspace,
+          workspace: serialized_workspace(@workspace),
           reservations: serialized_reservations,
           reservation_count: @workspace.reservations.count
         }
@@ -69,7 +72,7 @@ class WorkspacesController < InertiaController
         end
 
         format.json do
-          render json: workspace.as_json(include: :amenities), status: :created
+          render json: serialized_workspace(workspace), status: :created
         end
       else
         format.html do
@@ -91,7 +94,7 @@ class WorkspacesController < InertiaController
 
   def edit
     render inertia: "workspaces/edit", props: {
-      workspace: @workspace.as_json(include: :amenities),
+      workspace: serialized_workspace(@workspace),
       amenities: Amenity.order(:name),
       selected_amenity_ids: @workspace.amenity_ids
     }
@@ -105,13 +108,13 @@ class WorkspacesController < InertiaController
         end
 
         format.json do
-          render json: @workspace.as_json(include: :amenities)
+          render json: serialized_workspace(@workspace)
         end
       else
         format.html do
           render inertia: "workspaces/edit",
                  props: {
-                   workspace: @workspace.as_json(include: :amenities),
+                   workspace: serialized_workspace(@workspace),
                    amenities: Amenity.order(:name),
                    selected_amenity_ids: @workspace.amenity_ids,
                    errors: @workspace.errors.to_hash
@@ -132,7 +135,7 @@ class WorkspacesController < InertiaController
     can_delete = reservation_count.zero?
 
     render inertia: "workspaces/delete", props: {
-      workspace: @workspace.as_json(include: :amenities),
+      workspace: serialized_workspace(@workspace),
       reservation_count: reservation_count,
       can_delete: can_delete,
       delete_error: can_delete ? nil : "This workspace has reservation history. Mark it as inactive instead of deleting it."
@@ -145,7 +148,7 @@ class WorkspacesController < InertiaController
         format.html do
           render inertia: "workspaces/delete",
                  props: {
-                   workspace: @workspace.as_json(include: :amenities),
+                   workspace: serialized_workspace(@workspace),
                    reservation_count: @workspace.reservations.count,
                    can_delete: false,
                    delete_error: "This workspace has reservation history. Mark it as inactive instead of deleting it."
@@ -178,7 +181,11 @@ class WorkspacesController < InertiaController
   private
 
   def set_workspace
-    @workspace = current_organization.workspaces.find(params[:id])
+    @workspace = current_organization
+                 .workspaces
+                 .with_attached_photo
+                 .includes(:amenities)
+                 .find(params[:id])
   end
 
   def workspace_params
@@ -192,7 +199,49 @@ class WorkspacesController < InertiaController
       :description,
       :hourly_rate,
       :active,
+      :photo,
       amenity_ids: []
     )
+  end
+
+  def serialized_workspace(workspace)
+    workspace.as_json(
+      only: [
+        :id,
+        :name,
+        :workspace_type,
+        :capacity,
+        :floor,
+        :zone,
+        :location,
+        :description,
+        :hourly_rate,
+        :active
+      ],
+      include: {
+        amenities: {
+          only: [
+            :id,
+            :name
+          ]
+        }
+      }
+    ).merge(
+      photo_attached: workspace.photo.attached?,
+      photo_url: workspace_photo_url(workspace),
+      photo_filename: workspace_photo_filename(workspace)
+    )
+  end
+
+  def workspace_photo_url(workspace)
+    return nil unless workspace.photo.attached?
+
+    url_for(workspace.photo)
+  end
+
+  def workspace_photo_filename(workspace)
+    return nil unless workspace.photo.attached?
+
+    workspace.photo.filename.to_s
   end
 end

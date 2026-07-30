@@ -46,6 +46,7 @@ export default function WorkspaceForm({
     hourly_rate: workspace?.hourly_rate || 0,
     active: workspace?.active ?? true,
     amenity_ids: initialAmenityIds,
+    photo: null,
   });
 
   const errors: Record<string, string | string[] | undefined> = {
@@ -62,6 +63,7 @@ export default function WorkspaceForm({
         capacity: Number(formData.capacity),
         hourly_rate: Number(formData.hourly_rate),
         amenity_ids: formData.amenity_ids,
+        photo: formData.photo,
       },
     }));
 
@@ -114,6 +116,7 @@ export default function WorkspaceForm({
           onZoneChange={(value) => updateField("zone", value)}
           onLocationChange={(value) => updateField("location", value)}
           onDescriptionChange={(value) => updateField("description", value)}
+          onPhotoChange={(file) => updateField("photo", file)}
         />
 
         <WorkspaceAmenitiesSection

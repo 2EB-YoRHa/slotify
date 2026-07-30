@@ -4,12 +4,12 @@ class ReservationsController < InertiaController
 
   def index
     reservations = reservation_scope
-                   .includes(:workspace, :user)
+                   .includes(:user, workspace: [ :amenities, { photo_attachment: :blob } ])
                    .order(start_time: :desc)
 
-    serialized_reservations = reservations.as_json(
-      include: reservation_includes
-    )
+    serialized_reservations = reservations.map do |reservation|
+      serialized_reservation(reservation)
+    end
 
     respond_to do |format|
       format.html do
@@ -25,9 +25,7 @@ class ReservationsController < InertiaController
   end
 
   def show
-    serialized_reservation = @reservation.as_json(
-      include: reservation_includes
-    )
+    serialized_reservation = serialized_reservation(@reservation)
 
     respond_to do |format|
       format.html do
@@ -43,16 +41,18 @@ class ReservationsController < InertiaController
   end
 
   def new
-    workspaces = current_organization.workspaces
-                                    .where(active: true)
-                                    .includes(:amenities)
-                                    .order(:name)
+    workspaces = current_organization
+                 .workspaces
+                 .where(active: true)
+                 .with_attached_photo
+                 .includes(:amenities)
+                 .order(:name)
 
     default_start_time = Time.zone.parse("#{Time.zone.today} 09:00")
     default_end_time = Time.zone.parse("#{Time.zone.today} 10:00")
 
     render inertia: "reservations/new", props: {
-      workspaces: workspaces.as_json(include: :amenities),
+      workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
       selected_workspace_id: params[:workspace_id],
       initial_start_time: default_start_time.strftime("%Y-%m-%dT%H:%M"),
       initial_end_time: default_end_time.strftime("%Y-%m-%dT%H:%M"),
@@ -77,7 +77,7 @@ class ReservationsController < InertiaController
         end
 
         format.json do
-          render json: result.reservation.as_json(include: reservation_includes),
+          render json: serialized_reservation(result.reservation),
                  status: :created
         end
       else
@@ -85,12 +85,13 @@ class ReservationsController < InertiaController
           workspaces = current_organization
                        .workspaces
                        .where(active: true)
+                       .with_attached_photo
                        .includes(:amenities)
                        .order(:name)
 
           render inertia: "reservations/new",
                  props: {
-                   workspaces: workspaces.as_json(include: :amenities),
+                   workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
                    selected_workspace_id: reservation_params[:workspace_id],
                    initial_start_time: reservation_params[:start_time],
                    initial_end_time: reservation_params[:end_time],
@@ -112,16 +113,18 @@ class ReservationsController < InertiaController
   end
 
   def edit
-    workspaces = current_organization.workspaces
-                                    .where("active = ? OR id = ?", true, @reservation.workspace_id)
-                                    .includes(:amenities)
-                                    .order(:name)
+    workspaces = current_organization
+                 .workspaces
+                 .where("active = ? OR id = ?", true, @reservation.workspace_id)
+                 .with_attached_photo
+                 .includes(:amenities)
+                 .order(:name)
 
-      render inertia: "reservations/edit", props: {
-        reservation: @reservation.as_json(include: reservation_includes),
-        workspaces: workspaces.as_json(include: :amenities),
-        booking_rule: current_organization.booking_rule
-      }
+    render inertia: "reservations/edit", props: {
+      reservation: serialized_reservation(@reservation),
+      workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
+      booking_rule: current_organization.booking_rule
+    }
   end
 
   def update
@@ -147,20 +150,21 @@ class ReservationsController < InertiaController
         end
 
         format.json do
-          render json: @reservation.as_json(include: reservation_includes)
+          render json: serialized_reservation(@reservation)
         end
       else
         format.html do
           workspaces = current_organization
                        .workspaces
                        .where("active = ? OR id = ?", true, @reservation.workspace_id)
+                       .with_attached_photo
                        .includes(:amenities)
                        .order(:name)
 
           render inertia: "reservations/edit",
                  props: {
-                   reservation: @reservation.as_json(include: reservation_includes),
-                   workspaces: workspaces.as_json(include: :amenities),
+                   reservation: serialized_reservation(@reservation),
+                   workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
                    errors: @reservation.errors.to_hash,
                    booking_rule: current_organization.booking_rule
                  },
@@ -177,9 +181,7 @@ class ReservationsController < InertiaController
 
   def cancel_confirmation
     render inertia: "reservations/cancel", props: {
-      reservation: @reservation.as_json(
-        include: reservation_includes
-      )
+      reservation: serialized_reservation(@reservation)
     }
   end
 
@@ -194,9 +196,7 @@ class ReservationsController < InertiaController
           format.html do
             render inertia: "reservations/cancel",
                    props: {
-                     reservation: @reservation.as_json(
-                       include: reservation_includes
-                     ),
+                     reservation: serialized_reservation(@reservation),
                      cancel_error: "This reservation cannot be cancelled because it starts too soon according to the organization's cancellation policy."
                    },
                    status: :unprocessable_entity
@@ -220,19 +220,19 @@ class ReservationsController < InertiaController
     respond_to do |format|
       if @reservation.save
         format.html do
-          redirect_to reservations_path,
+          redirect_to member? ? my_reservations_path : reservations_path,
                       notice: "Reservation cancelled successfully"
         end
 
         format.json do
           render json: {
             message: "Reservation cancelled successfully",
-            reservation: @reservation
+            reservation: serialized_reservation(@reservation)
           }
         end
       else
         format.html do
-          redirect_to reservations_path,
+          redirect_to member? ? my_reservations_path : reservations_path,
                       alert: "Reservation could not be cancelled"
         end
 
@@ -245,42 +245,41 @@ class ReservationsController < InertiaController
   end
 
   def my_reservations
-    reservations = current_user.reservations
-                               .where(organization: current_organization)
-                               .includes(:workspace, :user)
-                               .order(start_time: :desc)
+    reservations = current_user
+                   .reservations
+                   .where(organization: current_organization)
+                   .includes(:user, workspace: [ :amenities, { photo_attachment: :blob } ])
+                   .order(start_time: :desc)
 
     render inertia: "reservations/my_reservations", props: {
-      reservations: reservations.as_json(
-        include: reservation_includes
-      )
+      reservations: reservations.map { |reservation| serialized_reservation(reservation) }
     }
   end
 
-def availability
-  start_time = Time.zone.parse(params[:start_time].to_s)
-  end_time = Time.zone.parse(params[:end_time].to_s)
+  def availability
+    start_time = Time.zone.parse(params[:start_time].to_s)
+    end_time = Time.zone.parse(params[:end_time].to_s)
 
-  if start_time.blank? || end_time.blank? || start_time >= end_time
+    if start_time.blank? || end_time.blank? || start_time >= end_time
+      render json: {
+        error: "Invalid date or time"
+      }, status: :unprocessable_entity
+
+      return
+    end
+
+    render json: {
+      unavailable_workspace_ids: unavailable_workspace_ids_for(
+        start_time,
+        end_time,
+        except_reservation_id: params[:reservation_id]
+      )
+    }
+  rescue ArgumentError, TypeError
     render json: {
       error: "Invalid date or time"
     }, status: :unprocessable_entity
-
-    return
   end
-
-  render json: {
-    unavailable_workspace_ids: unavailable_workspace_ids_for(
-      start_time,
-      end_time,
-      except_reservation_id: params[:reservation_id]
-    )
-  }
-rescue ArgumentError, TypeError
-  render json: {
-    error: "Invalid date or time"
-  }, status: :unprocessable_entity
-end
 
   private
 
@@ -293,7 +292,9 @@ end
   end
 
   def set_reservation
-    @reservation = reservation_scope.find(params[:id])
+    @reservation = reservation_scope
+                   .includes(:user, workspace: [ :amenities, { photo_attachment: :blob } ])
+                   .find(params[:id])
   end
 
   def reservation_params
@@ -307,21 +308,22 @@ end
     )
   end
 
-def unavailable_workspace_ids_for(start_time, end_time, except_reservation_id: nil)
-  reservations = current_organization.reservations
-                                     .where.not(status: "cancelled")
-                                     .where(
-                                       "start_time < ? AND end_time > ?",
-                                       end_time,
-                                       start_time
-                                     )
+  def unavailable_workspace_ids_for(start_time, end_time, except_reservation_id: nil)
+    reservations = current_organization
+                   .reservations
+                   .where.not(status: "cancelled")
+                   .where(
+                     "start_time < ? AND end_time > ?",
+                     end_time,
+                     start_time
+                   )
 
-  if except_reservation_id.present?
-    reservations = reservations.where.not(id: except_reservation_id)
+    if except_reservation_id.present?
+      reservations = reservations.where.not(id: except_reservation_id)
+    end
+
+    reservations.pluck(:workspace_id).uniq
   end
-
-  reservations.pluck(:workspace_id).uniq
-end
 
   def unavailable_workspace_ids_from_params
     start_time = Time.zone.parse(reservation_params[:start_time].to_s)
@@ -334,36 +336,76 @@ end
     []
   end
 
+  def serialized_reservation(reservation)
+    reservation.as_json(
+      only: [
+        :id,
+        :workspace_id,
+        :user_id,
+        :organization_id,
+        :start_time,
+        :end_time,
+        :status,
+        :attendees_count,
+        :notes,
+        :total_price,
+        :created_at,
+        :updated_at
+      ]
+    ).merge(
+      workspace: reservation.workspace.present? ? serialized_workspace(reservation.workspace) : nil,
+      user: reservation.user.present? ? serialized_user(reservation.user) : nil
+    )
+  end
 
-  def reservation_includes
-    {
-      workspace: {
-        only: [
-          :id,
-          :name,
-          :workspace_type,
-          :capacity,
-          :location,
-          :floor,
-          :zone,
-          :hourly_rate
-        ],
-        include: {
-          amenities: {
-            only: [
-              :id,
-              :name
-            ]
-          }
+  def serialized_user(user)
+    user.as_json(
+      only: [
+        :id,
+        :name,
+        :email
+      ]
+    )
+  end
+
+  def serialized_workspace(workspace)
+    workspace.as_json(
+      only: [
+        :id,
+        :name,
+        :workspace_type,
+        :capacity,
+        :floor,
+        :zone,
+        :location,
+        :description,
+        :hourly_rate,
+        :active
+      ],
+      include: {
+        amenities: {
+          only: [
+            :id,
+            :name
+          ]
         }
-      },
-      user: {
-        only: [
-          :id,
-          :name,
-          :email
-        ]
       }
-    }
+    ).merge(
+      photo_attached: workspace.photo.attached?,
+      photo_url: workspace_photo_url(workspace),
+      photo_filename: workspace_photo_filename(workspace)
+    )
+  end
+
+  def workspace_photo_url(workspace)
+    return nil unless workspace.photo.attached?
+
+    url_for(workspace.photo)
+  end
+
+  def workspace_photo_filename(workspace)
+    return nil unless workspace.photo.attached?
+
+    workspace.photo.filename.to_s
   end
 end

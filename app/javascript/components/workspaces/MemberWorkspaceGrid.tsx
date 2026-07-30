@@ -1,5 +1,6 @@
 import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
+import WorkspacePhoto from "./WorkspacePhoto";
 import {
   Building2,
   CalendarPlus,
@@ -144,6 +145,14 @@ function MemberWorkspaceCard({ workspace, index }: MemberWorkspaceCardProps) {
       transition={{ delay: index * 0.04 }}
       className="flex min-h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-cyan-100 hover:shadow-md"
     >
+      <WorkspacePhoto
+        name={workspace.name}
+        photoUrl={workspace.photo_url}
+        fit="cover"
+        position="object-center"
+        className="h-72 w-full bg-slate-100"
+      />
+
       <div className="border-b border-slate-100 bg-linear-to-br from-cyan-50 to-white p-5">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
@@ -256,9 +265,7 @@ function SmallInfo({ icon: Icon, label, value }: SmallInfoProps) {
       <div className="mb-1 flex items-center gap-2 text-slate-400">
         <Icon size={14} />
 
-        <p className="text-[10px] font-bold uppercase tracking-wide">
-          {label}
-        </p>
+        <p className="text-[10px] font-bold uppercase tracking-wide">{label}</p>
       </div>
 
       <p className="text-sm font-bold text-slate-800">{value}</p>

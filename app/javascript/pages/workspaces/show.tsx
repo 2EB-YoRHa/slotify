@@ -23,6 +23,7 @@ import { formatDate, formatTime } from "../../utils/dateTime";
 import { formatText } from "../../utils/reservationFormUtils";
 import type { Amenity } from "../../types/amenity";
 import type { Workspace } from "../../types/workspace";
+import WorkspacePhoto from "../../components/workspaces/WorkspacePhoto";
 
 type CurrentUser = {
   id: number;
@@ -81,13 +82,19 @@ export default function WorkspaceShow({
           transition={{ delay: 0.12 }}
           className="col-span-2 space-y-8"
         >
+          <WorkspacePhoto
+            name={workspace.name}
+            photoUrl={workspace.photo_url}
+            fit="cover"
+            position="object-center"
+            className="h-[520px] rounded-2xl border border-slate-200 bg-slate-100 shadow-sm"
+          />
+
           <WorkspaceInformation workspace={workspace} />
 
           <WorkspaceAmenities amenities={amenities} isMember={isMember} />
 
-          {!isMember && (
-            <RecentReservations reservations={reservations} />
-          )}
+          {!isMember && <RecentReservations reservations={reservations} />}
         </motion.div>
 
         <motion.aside
@@ -295,11 +302,7 @@ function WorkspaceInformation({ workspace }: WorkspaceInformationProps) {
           value={workspace.floor || "-"}
         />
 
-        <InfoCard
-          icon={MapPin}
-          label="Zone"
-          value={workspace.zone || "-"}
-        />
+        <InfoCard icon={MapPin} label="Zone" value={workspace.zone || "-"} />
 
         <div className="col-span-2">
           <InfoCard
@@ -484,9 +487,7 @@ function WorkspaceSummary({
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-950">
-          Workspace Summary
-        </h2>
+        <h2 className="text-2xl font-bold text-slate-950">Workspace Summary</h2>
 
         <p className="mt-2 text-sm leading-6 text-slate-500">
           Quick overview of this workspace.
@@ -496,10 +497,7 @@ function WorkspaceSummary({
       <div className="rounded-xl bg-slate-50 p-5">
         <SummaryRow label="Name" value={workspace.name} />
 
-        <SummaryRow
-          label="Type"
-          value={formatText(workspace.workspace_type)}
-        />
+        <SummaryRow label="Type" value={formatText(workspace.workspace_type)} />
 
         <SummaryRow label="Capacity" value={workspace.capacity} />
 
