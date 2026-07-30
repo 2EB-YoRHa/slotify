@@ -28,12 +28,14 @@ class ApplicationController < ActionController::Base
     }
   }
 
-  def after_sign_in_path_for(resource)
+  def after_sign_in_path_for(_resource)
     invitation_token = session[:pending_invitation_token]
 
     if invitation_token.present? &&
        OrganizationInvitation.exists?(token: invitation_token, status: "pending")
       accept_organization_invitations_path(token: invitation_token)
+    elsif current_user&.role&.name == "member"
+      workspaces_path
     else
       root_path
     end

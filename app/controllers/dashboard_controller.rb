@@ -1,4 +1,6 @@
 class DashboardController < InertiaController
+  before_action :redirect_member_dashboard
+
   def index
     organization = current_organization
 
@@ -80,6 +82,12 @@ class DashboardController < InertiaController
   end
 
   private
+
+  def redirect_member_dashboard
+    return unless member?
+
+    redirect_to workspaces_path
+  end
 
   def empty_dashboard_props
     {
