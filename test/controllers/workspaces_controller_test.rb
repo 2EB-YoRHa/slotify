@@ -1,38 +1,49 @@
 require "test_helper"
 
 class WorkspacesControllerTest < ActionDispatch::IntegrationTest
-  test "should get index" do
-    get workspaces_index_url
-    assert_response :success
+  setup do
+    @organization = create_organization
+
+    @manager = create_user(
+      organization: @organization,
+      role_name: "manager"
+    )
+
+    @member = create_user(
+      organization: @organization,
+      role_name: "member"
+    )
   end
 
-  test "should get show" do
-    get workspaces_show_url
-    assert_response :success
+  test "manager can create workspace" do
+    sign_in @manager
+
+    assert_difference "Workspace.count", 1 do
+      post workspaces_path,
+           params: {
+             workspace: {
+               name: "Test Boardroom",
+               workspace_type: "meeting_room",
+               capacity: 6,
+               floor: "3",
+               zone: "East",
+               location: "Main Building",
+               description: "Workspace created from test",
+               hourly_rate: 30,
+               active: true,
+               amenity_ids: []
+             }
+           }
+    end
+
+    assert_redirected_to workspaces_path
   end
 
-  test "should get new" do
-    get workspaces_new_url
-    assert_response :success
-  end
+  test "member cannot open new workspace page" do
+    sign_in @member
 
-  test "should get create" do
-    get workspaces_create_url
-    assert_response :success
-  end
+    get new_workspace_path
 
-  test "should get edit" do
-    get workspaces_edit_url
-    assert_response :success
-  end
-
-  test "should get update" do
-    get workspaces_update_url
-    assert_response :success
-  end
-
-  test "should get destroy" do
-    get workspaces_destroy_url
-    assert_response :success
+    assert_redirected_to root_path
   end
 end
