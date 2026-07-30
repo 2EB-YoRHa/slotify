@@ -87,7 +87,7 @@ export default function WorkspaceShow({
             photoUrl={workspace.photo_url}
             fit="cover"
             position="object-center"
-            className="h-[520px] rounded-2xl border border-slate-200 bg-slate-100 shadow-sm"
+            className="h-130 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm"
           />
 
           <WorkspaceInformation workspace={workspace} />

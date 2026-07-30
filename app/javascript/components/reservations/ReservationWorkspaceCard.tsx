@@ -1,4 +1,5 @@
 import type { Workspace } from "../../types/workspace";
+import WorkspacePhoto from "../workspaces/WorkspacePhoto";
 
 type ReservationWorkspaceCardProps = {
   workspace: Workspace;
@@ -29,9 +30,13 @@ export default function ReservationWorkspaceCard({
       }`}
     >
       <div className="flex">
-        <div className="flex h-36 w-44 shrink-0 items-center justify-center bg-slate-100 text-slate-400">
-          Space
-        </div>
+        <WorkspacePhoto
+          name={workspace.name}
+          photoUrl={workspace.photo_url}
+          fit="cover"
+          position="object-center"
+          className="h-36 w-44 shrink-0"
+        />
 
         <div className="flex flex-1 items-start justify-between p-5">
           <div>

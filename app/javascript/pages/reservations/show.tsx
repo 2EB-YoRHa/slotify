@@ -21,6 +21,7 @@ import AppLayout from "../../components/AppLayout";
 import ReservationStatusBadge from "../../components/reservations/ReservationStatusBadge";
 import { duration, formatDate, formatTime } from "../../utils/dateTime";
 import type { Reservation } from "../../types/reservation";
+import WorkspacePhoto from "../../components/workspaces/WorkspacePhoto";
 
 type ReservationShowProps = {
   reservation: Reservation;
@@ -135,6 +136,13 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
           transition={{ delay: 0.12 }}
           className="col-span-2 space-y-8"
         >
+          <WorkspacePhoto
+            name={reservation.workspace?.name || "Workspace"}
+            photoUrl={reservation.workspace?.photo_url}
+            fit="cover"
+            position="object-center"
+            className="h-105 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm"
+          />
           <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
             <div className="mb-8 flex items-start justify-between">
               <div className="flex items-start gap-4">

@@ -2,9 +2,9 @@ import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import WorkspacePhoto from "../workspaces/WorkspacePhoto";
 import {
   Ban,
-  Building2,
   CalendarDays,
   Clock3,
   Eye,
@@ -166,9 +166,13 @@ export default function ReservationsTable({
 
                   <td className="px-6 py-5 align-middle">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-400">
-                        <Building2 size={18} strokeWidth={2.4} />
-                      </div>
+                      <WorkspacePhoto
+                        name={reservation.workspace?.name || "Workspace"}
+                        photoUrl={reservation.workspace?.photo_url}
+                        fit="cover"
+                        position="object-center"
+                        className="h-10 w-14 shrink-0 rounded-xl border border-slate-100"
+                      />
 
                       <div className="min-w-0">
                         <div className="truncate font-bold text-slate-950">

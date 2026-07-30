@@ -10,6 +10,9 @@ export type ReservationWorkspace = {
   zone?: string | null;
   hourly_rate?: string | number | null;
   amenities?: Amenity[];
+  photo_attached?: boolean;
+  photo_url?: string | null;
+  photo_filename?: string | null;
 };
 
 export type ReservationUser = {
