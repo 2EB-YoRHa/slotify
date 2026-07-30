@@ -10,6 +10,7 @@ type EditReservationProps = {
   workspaces?: Workspace[];
   errors?: Record<string, string | string[]>;
   booking_rule?: BookingRule | null;
+  can_manage_status?: boolean;
 };
 
 export default function EditReservation({
@@ -17,14 +18,17 @@ export default function EditReservation({
   workspaces = [],
   errors = {},
   booking_rule = null,
+  can_manage_status = false,
 }: EditReservationProps) {
+  const reservationsHref = can_manage_status ? "/reservations" : "/my_reservations";
+
   return (
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
         <div>
           <div className="mb-2 text-sm text-slate-400">
-            <Link href="/reservations" className="hover:text-cyan-500">
-              Reservations
+            <Link href={reservationsHref} className="hover:text-cyan-500">
+              {can_manage_status ? "Reservations" : "My Bookings"}
             </Link>{" "}
             / Edit
           </div>
@@ -34,7 +38,9 @@ export default function EditReservation({
           </h1>
 
           <p className="mt-1 text-slate-500">
-            Update workspace, schedule, or reservation status.
+            {can_manage_status
+              ? "Update workspace, schedule, attendees, notes, or reservation status."
+              : "Update workspace, schedule, attendees, or notes for your booking."}
           </p>
         </div>
 
@@ -53,6 +59,7 @@ export default function EditReservation({
         maxReservationHours={booking_rule?.max_hours_per_reservation}
         minNoticeMinutes={booking_rule?.min_notice_minutes}
         allowWeekendBookings={booking_rule?.allow_weekend_bookings}
+        canManageStatus={can_manage_status}
       />
     </AppLayout>
   );

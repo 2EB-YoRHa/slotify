@@ -23,6 +23,7 @@ type EditReservationFormProps = {
   maxReservationHours?: number | null;
   minNoticeMinutes?: number | null;
   allowWeekendBookings?: boolean | null;
+  canManageStatus?: boolean;
 };
 
 type EditReservationFormData = {
@@ -41,6 +42,7 @@ export default function EditReservationForm({
   maxReservationHours = 4,
   minNoticeMinutes = 0,
   allowWeekendBookings = true,
+  canManageStatus = false,
 }: EditReservationFormProps) {
   const timeSlots = generateTimeSlots(maxReservationHours);
 
@@ -221,6 +223,7 @@ export default function EditReservationForm({
           processing={processing}
           selectedSlot={selectedSlot}
           timeSlots={timeSlots}
+          canManageStatus={canManageStatus}
           onWorkspaceChange={(value) => updateField("workspace_id", value)}
           onStatusChange={(value) => updateField("status", value)}
           onDateChange={handleDateChange}

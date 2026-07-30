@@ -21,6 +21,7 @@ type EditReservationScheduleSectionProps = {
   processing: boolean;
   selectedSlot: TimeSlot;
   timeSlots: TimeSlot[];
+  canManageStatus: boolean;
   onWorkspaceChange: (value: string) => void;
   onStatusChange: (value: string) => void;
   onDateChange: (date: string) => void;
@@ -34,6 +35,7 @@ export default function EditReservationScheduleSection({
   processing,
   selectedSlot,
   timeSlots,
+  canManageStatus,
   onWorkspaceChange,
   onStatusChange,
   onDateChange,
@@ -89,32 +91,34 @@ export default function EditReservationScheduleSection({
           <FormError error={errors.workspace_id} />
         </label>
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Status
-          </span>
+        {canManageStatus && (
+          <label className="block">
+            <span className="mb-2 block text-sm font-bold text-slate-700">
+              Status
+            </span>
 
-          <div className="relative">
-            <ShieldCheck
-              size={17}
-              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-            />
+            <div className="relative">
+              <ShieldCheck
+                size={17}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              />
 
-            <select
-              value={data.status}
-              onChange={(event) => onStatusChange(event.target.value)}
-              className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
-              disabled={processing}
-              required
-            >
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
+              <select
+                value={data.status}
+                onChange={(event) => onStatusChange(event.target.value)}
+                className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+                disabled={processing}
+                required
+              >
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
 
-          <FormError error={errors.status} />
-        </label>
+            <FormError error={errors.status} />
+          </label>
+        )}
 
         <div className="col-span-2 space-y-6">
           <div className="max-w-xl">

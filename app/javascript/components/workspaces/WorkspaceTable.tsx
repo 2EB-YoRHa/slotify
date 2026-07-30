@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import type { Workspace } from "../../types/workspace";
+import WorkspacePhoto from "./WorkspacePhoto";
 
 type WorkspaceTableProps = {
   workspaces: Workspace[];
@@ -153,9 +154,13 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
               >
                 <td className="px-6 py-5 align-middle">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
-                      <Building2 size={20} strokeWidth={2.4} />
-                    </div>
+                    <WorkspacePhoto
+                      name={workspace.name}
+                      photoUrl={workspace.photo_url}
+                      fit="cover"
+                      position="object-center"
+                      className="h-12 w-16 shrink-0 rounded-xl border border-slate-100"
+                    />
 
                     <div className="min-w-0">
                       <div className="truncate font-bold text-slate-950">

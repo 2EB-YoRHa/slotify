@@ -1,5 +1,4 @@
 class ReservationsController < InertiaController
-  before_action :require_manager_or_admin!, only: %i[edit update]
   before_action :set_reservation, only: %i[show edit update destroy cancel_confirmation]
 
   def index
@@ -120,11 +119,12 @@ class ReservationsController < InertiaController
                  .includes(:amenities)
                  .order(:name)
 
-    render inertia: "reservations/edit", props: {
-      reservation: serialized_reservation(@reservation),
-      workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
-      booking_rule: current_organization.booking_rule
-    }
+        render inertia: "reservations/edit", props: {
+          reservation: serialized_reservation(@reservation),
+          workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
+          booking_rule: current_organization.booking_rule,
+          can_manage_status: admin? || manager?
+        }
   end
 
   def update
@@ -145,7 +145,7 @@ class ReservationsController < InertiaController
     respond_to do |format|
       if @reservation.errors.blank? && @reservation.save
         format.html do
-          redirect_to reservations_path,
+          redirect_to member? ? my_reservations_path : reservations_path,
                       notice: "Reservation updated successfully"
         end
 
@@ -161,14 +161,15 @@ class ReservationsController < InertiaController
                        .includes(:amenities)
                        .order(:name)
 
-          render inertia: "reservations/edit",
-                 props: {
-                   reservation: serialized_reservation(@reservation),
-                   workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
-                   errors: @reservation.errors.to_hash,
-                   booking_rule: current_organization.booking_rule
-                 },
-                 status: :unprocessable_entity
+            render inertia: "reservations/edit",
+                  props: {
+                    reservation: serialized_reservation(@reservation),
+                    workspaces: workspaces.map { |workspace| serialized_workspace(workspace) },
+                    errors: @reservation.errors.to_hash,
+                    booking_rule: current_organization.booking_rule,
+                    can_manage_status: admin? || manager?
+                  },
+                  status: :unprocessable_entity
         end
 
         format.json do
@@ -297,16 +298,19 @@ class ReservationsController < InertiaController
                    .find(params[:id])
   end
 
-  def reservation_params
-    params.require(:reservation).permit(
-      :workspace_id,
-      :start_time,
-      :end_time,
-      :status,
-      :attendees_count,
-      :notes
-    )
-  end
+def reservation_params
+  permitted_attributes = [
+    :workspace_id,
+    :start_time,
+    :end_time,
+    :attendees_count,
+    :notes
+  ]
+
+  permitted_attributes << :status if admin? || manager?
+
+  params.require(:reservation).permit(permitted_attributes)
+end
 
   def unavailable_workspace_ids_for(start_time, end_time, except_reservation_id: nil)
     reservations = current_organization
