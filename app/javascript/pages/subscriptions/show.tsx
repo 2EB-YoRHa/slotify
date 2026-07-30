@@ -4,7 +4,6 @@ import {
   CalendarClock,
   CreditCard,
   Database,
-  ShieldCheck,
   Sparkles,
   UsersRound,
   Zap,
@@ -12,71 +11,20 @@ import {
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import SubscriptionPlanCard from "../../components/subscriptions/SubscriptionPlanCard";
-
-type Subscription = {
-  id?: number;
-  plan?: string | null;
-  plan_name?: string | null;
-  status?: string | null;
-  started_at?: string | null;
-  starts_at?: string | null;
-  expires_at?: string | null;
-  ends_at?: string | null;
-};
+import type { Subscription, SubscriptionPlan } from "../../types/subscription";
 
 type SubscriptionShowProps = {
   subscription?: Subscription | null;
+  plans?: SubscriptionPlan[];
 };
-
-const plans = [
-  {
-    key: "starter",
-    name: "Starter",
-    price: "$19",
-    description: "For small coworking spaces that need basic booking control.",
-    icon: Building2,
-    features: [
-      "Up to 10 workspaces",
-      "Reservation management",
-      "Member invitations",
-      "Basic booking rules",
-    ],
-  },
-  {
-    key: "pro",
-    name: "Pro",
-    price: "$49",
-    description: "For growing teams that need stronger workspace management.",
-    icon: Zap,
-    highlighted: true,
-    features: [
-      "Unlimited workspaces",
-      "Availability checks",
-      "Member access control",
-      "Organization management",
-      "Dashboard insights",
-    ],
-  },
-  {
-    key: "business",
-    name: "Business",
-    price: "$99",
-    description: "For larger organizations with advanced operational needs.",
-    icon: ShieldCheck,
-    features: [
-      "Multi-location support",
-      "Advanced reports",
-      "Priority support",
-      "Custom booking rules",
-      "Activity history",
-    ],
-  },
-];
 
 export default function SubscriptionShow({
   subscription = null,
+  plans = [],
 }: SubscriptionShowProps) {
-  const currentPlan = normalizePlan(subscription?.plan_name || subscription?.plan);
+  const currentPlan = normalizePlan(
+    subscription?.plan_name || subscription?.plan,
+  );
   const status = formatStatus(subscription?.status);
   const referenceDate =
     subscription?.expires_at ||
@@ -195,9 +143,7 @@ export default function SubscriptionShow({
               <CalendarClock size={19} strokeWidth={2.4} />
             </div>
 
-            <h2 className="text-lg font-bold text-slate-950">
-              Plan Overview
-            </h2>
+            <h2 className="text-lg font-bold text-slate-950">Plan Overview</h2>
           </div>
 
           <div className="rounded-xl bg-slate-50 p-5">
@@ -210,7 +156,9 @@ export default function SubscriptionShow({
             <SummaryRow label="Members" value="Included" />
             <SummaryRow
               label="Date"
-              value={referenceDate ? formatDate(referenceDate) : "Not configured"}
+              value={
+                referenceDate ? formatDate(referenceDate) : "Not configured"
+              }
             />
           </div>
         </motion.aside>
@@ -218,12 +166,11 @@ export default function SubscriptionShow({
 
       <section>
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-slate-950">
-            Available Plans
-          </h2>
+          <h2 className="text-2xl font-bold text-slate-950">Available Plans</h2>
 
           <p className="mt-2 max-w-2xl text-sm text-slate-500">
-            Compare plan levels and the features available for each subscription.
+            Compare plan levels and the features available for each
+            subscription.
           </p>
         </div>
 
@@ -236,13 +183,15 @@ export default function SubscriptionShow({
               transition={{ delay: 0.2 + index * 0.06 }}
             >
               <SubscriptionPlanCard
+                planKey={plan.key}
                 name={plan.name}
                 price={plan.price}
                 description={plan.description}
                 features={plan.features}
-                icon={plan.icon}
+                icon={plan.key === "pro" ? Zap : Building2}
                 highlighted={plan.highlighted}
                 current={currentPlan === plan.key}
+                checkoutReady={plan.checkout_ready}
               />
             </motion.div>
           ))}
@@ -264,10 +213,7 @@ type SubscriptionStatCardProps = {
   index: number;
 };
 
-function SubscriptionStatCard({
-  stat,
-  index,
-}: SubscriptionStatCardProps) {
+function SubscriptionStatCard({ stat, index }: SubscriptionStatCardProps) {
   const Icon = stat.icon;
 
   return (

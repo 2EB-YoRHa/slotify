@@ -1,7 +1,10 @@
+import { router } from "@inertiajs/react";
+import { useState } from "react";
 import { CheckCircle2, CreditCard, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 type SubscriptionPlanCardProps = {
+  planKey: string;
   name: string;
   price: string;
   description: string;
@@ -9,9 +12,11 @@ type SubscriptionPlanCardProps = {
   icon: LucideIcon;
   current?: boolean;
   highlighted?: boolean;
+  checkoutReady?: boolean;
 };
 
 export default function SubscriptionPlanCard({
+  planKey,
   name,
   price,
   description,
@@ -19,7 +24,24 @@ export default function SubscriptionPlanCard({
   icon: Icon,
   current = false,
   highlighted = false,
+  checkoutReady = true,
 }: SubscriptionPlanCardProps) {
+  const [processing, setProcessing] = useState(false);
+
+  function handleCheckout() {
+    if (current || !checkoutReady || processing) return;
+
+    setProcessing(true);
+
+    router.post(
+      `/subscription/checkout/${planKey}`,
+      {},
+      {
+        onFinish: () => setProcessing(false),
+      },
+    );
+  }
+
   return (
     <div
       className={`relative rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md ${
@@ -66,11 +88,16 @@ export default function SubscriptionPlanCard({
         ))}
       </div>
 
-      <div
-        className={`mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold ${
+      <button
+        type="button"
+        disabled={current || processing || !checkoutReady}
+        onClick={handleCheckout}
+        className={`mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition ${
           current
             ? "bg-green-50 text-green-600"
-            : "border border-slate-200 bg-slate-50 text-slate-500"
+            : checkoutReady
+              ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
+              : "cursor-not-allowed bg-slate-100 text-slate-400"
         }`}
       >
         {current ? (
@@ -81,10 +108,14 @@ export default function SubscriptionPlanCard({
         ) : (
           <>
             <CreditCard size={16} />
-            Plan Option
+            {processing
+              ? "Redirecting..."
+              : checkoutReady
+                ? "Choose Plan"
+                : "Stripe Not Configured"}
           </>
         )}
-      </div>
+      </button>
     </div>
   );
 }

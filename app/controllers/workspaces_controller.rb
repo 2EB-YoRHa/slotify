@@ -69,6 +69,20 @@ class WorkspacesController < InertiaController
   end
 
   def create
+      if current_organization.workspace_limit_reached?
+    render inertia: "workspaces/new",
+           props: {
+             amenities: amenities_for_form,
+             errors: {
+               base: [
+                 "Your current plan has reached the workspace limit. Upgrade to Pro to add more workspaces."
+               ]
+             }
+           },
+           status: :unprocessable_entity
+
+    return
+      end
     workspace = current_organization.workspaces.build(workspace_params)
 
     respond_to do |format|

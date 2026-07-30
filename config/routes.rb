@@ -22,7 +22,20 @@ Rails.application.routes.draw do
     as: :toggle_active_organization_member
 
   resource :booking_rule, only: [ :show, :edit, :update ]
-  resource :subscription, only: [ :show ]
+
+  resource :subscription, only: [ :show ] do
+    post "checkout/:plan",
+        to: "subscriptions#checkout",
+        as: :checkout
+
+    get "success",
+        to: "subscriptions#success",
+        as: :success
+
+    get "cancel",
+        to: "subscriptions#cancel",
+        as: :cancel
+  end
 
   get "workspaces/:id/delete",
       to: "workspaces#delete_confirmation",
