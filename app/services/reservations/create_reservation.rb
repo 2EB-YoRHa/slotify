@@ -17,7 +17,7 @@ module Reservations
     def initialize(user:, params:)
       @user = user
       @organization = user.organization
-      @params = params.to_h.symbolize_keys
+      @params = normalized_params(params)
     end
 
     def call
@@ -36,6 +36,21 @@ module Reservations
     end
 
     private
+
+    def normalized_params(params)
+      attrs = params.to_h.symbolize_keys
+      attrs[:start_time] = parse_time(attrs[:start_time]) if attrs[:start_time].present?
+      attrs[:end_time] = parse_time(attrs[:end_time]) if attrs[:end_time].present?
+      attrs
+    end
+
+    def parse_time(value)
+      return value if value.respond_to?(:in_time_zone)
+
+      Time.zone.parse(value.to_s)
+    rescue ArgumentError, TypeError
+      nil
+    end
 
     def build_reservation
       workspace = @organization.workspaces.find_by(

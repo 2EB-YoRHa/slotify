@@ -3,10 +3,7 @@ import DatePickerField from "../../ui/DatePickerField";
 import LoadingButton from "../../ui/LoadingButton";
 import TimeSlotPicker from "../../ui/TimeSlotPicker";
 import type { TimeSlot } from "../../../utils/timeSlots";
-import {
-  AvailabilityMessage,
-  BusinessRuleNotice,
-} from "./ReservationNotices";
+import { AvailabilityMessage, BusinessRuleNotice } from "./ReservationNotices";
 
 type ReservationDateTimeSectionProps = {
   selectedDate: string;
@@ -22,6 +19,7 @@ type ReservationDateTimeSectionProps = {
   minNoticeMinutes: number;
   weekendViolation: boolean;
   baseErrors: string[];
+  minDate: string;
   onDateChange: (date: string) => void;
   onSlotChange: (slotLabel: string) => void;
   onSearchChange: (search: string) => void;
@@ -42,6 +40,7 @@ export default function ReservationDateTimeSection({
   minNoticeMinutes,
   weekendViolation,
   baseErrors,
+  minDate,
   onDateChange,
   onSlotChange,
   onSearchChange,
@@ -70,6 +69,7 @@ export default function ReservationDateTimeSection({
             label="Reservation Date"
             value={selectedDate}
             disabled={processing || checkingAvailability}
+            min={minDate}
             onChange={onDateChange}
           />
         </div>

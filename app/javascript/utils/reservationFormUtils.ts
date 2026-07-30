@@ -1,4 +1,4 @@
-import type { TimeSlot } from ".././utils/timeSlots";
+import type { TimeSlot } from "./timeSlots";
 
 export function extractDate(value: string): string {
   return value.split("T")[0];
@@ -12,6 +12,14 @@ export function extractTime(value: string): string {
 
 export function buildDateTime(date: string, time: string): string {
   return `${date}T${time}`;
+}
+
+export function localDateValue(date = new Date()): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 export function findSlotByDateTimes(

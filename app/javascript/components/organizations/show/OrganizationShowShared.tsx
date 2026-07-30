@@ -67,7 +67,7 @@ export function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
         <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
       </div>
 
-      <p className="break-words text-sm font-bold text-slate-900">{value}</p>
+      <p className="wrap-break-word text-sm font-bold text-slate-900">{value}</p>
     </div>
   );
 }

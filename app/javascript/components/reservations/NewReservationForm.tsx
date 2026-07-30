@@ -13,6 +13,7 @@ import {
   calculateEstimatedTotal,
   extractDate,
   findSlotByDateTimes,
+  localDateValue,
   normalizeError,
   violatesMinimumNotice,
   violatesWeekendRule,
@@ -52,7 +53,7 @@ export default function NewReservationForm({
   allowWeekendBookings = true,
 }: NewReservationFormProps) {
   const timeSlots = generateTimeSlots(maxReservationHours);
-  const today = new Date().toISOString().split("T")[0];
+  const today = localDateValue();
   const firstSlot = timeSlots[0];
 
   const defaultStartTime =
@@ -128,7 +129,7 @@ export default function NewReservationForm({
 
   const attendeesExceedCapacity = Boolean(
     selectedWorkspace &&
-      Number(data.reservation.attendees_count) > selectedWorkspace.capacity,
+    Number(data.reservation.attendees_count) > selectedWorkspace.capacity,
   );
 
   const canSubmit =
@@ -268,6 +269,7 @@ export default function NewReservationForm({
           minNoticeMinutes={minNoticeMinutes || 0}
           weekendViolation={weekendViolation}
           baseErrors={baseErrors}
+          minDate={today}
           onDateChange={handleDateChange}
           onSlotChange={handleSlotChange}
           onSearchChange={setSearch}
