@@ -65,9 +65,12 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="flex min-h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
+      <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
         <div className="flex h-16 items-center px-7">
-          <Link href={isMember ? "/workspaces" : "/"} className="group inline-block">
+          <Link
+            href={isMember ? "/workspaces" : "/"}
+            className="group inline-block"
+          >
             <span className="block text-2xl font-black tracking-[-0.055em] text-slate-950 transition group-hover:text-slate-800">
               Slotify
             </span>
@@ -80,7 +83,7 @@ export default function Sidebar() {
           </Link>
         </div>
 
-        <nav className="flex-1 space-y-2 px-4 py-6">
+        <nav className="min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-6">
           {navItems.map((item) => {
             const active = isActive(url, item.href);
             const Icon = item.icon;
@@ -102,7 +105,7 @@ export default function Sidebar() {
           })}
         </nav>
 
-        <div className="border-t border-slate-200 px-4 py-6">
+        <div className="shrink-0 border-t border-slate-200 px-4 py-6">
           <button
             type="button"
             onClick={signOut}
