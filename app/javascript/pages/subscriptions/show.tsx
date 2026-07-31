@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { router } from "@inertiajs/react";
 import {
   Building2,
   CalendarClock,
@@ -21,12 +22,14 @@ type SubscriptionShowProps = {
   subscription?: Subscription | null;
   plans?: SubscriptionPlan[];
   usage?: SubscriptionUsage | null;
+  can_manage_billing?: boolean;
 };
 
 export default function SubscriptionShow({
   subscription = null,
   plans = [],
   usage = null,
+  can_manage_billing = false,
 }: SubscriptionShowProps) {
   const currentPlan = normalizePlan(
     subscription?.plan_name || subscription?.plan,
@@ -46,6 +49,12 @@ export default function SubscriptionShow({
   );
 
   const memberUsage = formatUsage(usage?.member_slots_used, usage?.user_limit);
+
+  function openBillingPortal() {
+    if (!can_manage_billing) return;
+
+    router.post("/subscription/portal");
+  }
 
   const stats = [
     {
@@ -124,6 +133,20 @@ export default function SubscriptionShow({
                 options, booking rules, and reporting features available to the
                 organization.
               </p>
+
+              <button
+                type="button"
+                disabled={!can_manage_billing}
+                onClick={openBillingPortal}
+                className={`mt-6 inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition ${
+                  can_manage_billing
+                    ? "bg-slate-950 text-white shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md"
+                    : "cursor-not-allowed bg-slate-100 text-slate-400"
+                }`}
+              >
+                <CreditCard size={17} />
+                Manage Billing
+              </button>
             </div>
 
             <div className="rounded-2xl border border-white bg-white/80 p-6 shadow-sm">

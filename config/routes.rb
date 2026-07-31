@@ -28,6 +28,10 @@ Rails.application.routes.draw do
         to: "subscriptions#checkout",
         as: :checkout
 
+    post "portal",
+     to: "subscriptions#portal",
+     as: :portal
+
     get "success",
         to: "subscriptions#success",
         as: :success
