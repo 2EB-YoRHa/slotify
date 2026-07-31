@@ -4,6 +4,7 @@ import CurrentPlanPanel from "../../components/subscriptions/show/CurrentPlanPan
 import PlanOverviewPanel from "../../components/subscriptions/show/PlanOverviewPanel";
 import SubscriptionHeader from "../../components/subscriptions/show/SubscriptionHeader";
 import SubscriptionStatsGrid from "../../components/subscriptions/show/SubscriptionStatsGrid";
+import BillingModeNotice from "../../components/subscriptions/show/BillingModeNotice";
 import {
   formatPlan,
   formatStatus,
@@ -50,10 +51,7 @@ export default function SubscriptionShow({
     usage?.workspace_limit,
   );
 
-  const memberUsage = formatUsage(
-    usage?.member_slots_used,
-    usage?.user_limit,
-  );
+  const memberUsage = formatUsage(usage?.member_slots_used, usage?.user_limit);
 
   return (
     <AppLayout>
@@ -64,6 +62,12 @@ export default function SubscriptionShow({
         status={status}
         workspaceUsage={workspaceUsage}
         memberUsage={memberUsage}
+      />
+
+      <BillingModeNotice
+        currentPlanLabel={currentPlanLabel}
+        canStartCheckout={can_start_checkout}
+        canManageBilling={can_manage_billing}
       />
 
       <section className="mb-8 grid grid-cols-3 gap-8">
