@@ -1,5 +1,6 @@
 class Organization < ApplicationRecord
   ACTIVE_SUBSCRIPTION_STATUSES = Subscription::ACTIVE_STATUSES
+  SLUG_FORMAT = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
 
   has_many :users, dependent: :destroy
   has_many :workspaces, dependent: :destroy
@@ -8,8 +9,41 @@ class Organization < ApplicationRecord
   has_many :organization_invitations, dependent: :destroy
   has_one :booking_rule, dependent: :destroy
 
+  before_validation :normalize_slug
+  before_validation :assign_unique_slug,
+                    if: :should_assign_unique_slug?
+
   validates :name, presence: true
-  validates :slug, presence: true, uniqueness: true
+
+  validates :slug,
+            presence: true,
+            uniqueness: {
+              case_sensitive: false
+            },
+            format: {
+              with: SLUG_FORMAT,
+              message: "must contain only lowercase letters, numbers, and hyphens"
+            }
+
+  def self.normalize_slug(value)
+    value.to_s.parameterize
+  end
+
+  def self.unique_slug_for(value, ignored_id: nil)
+    base_slug = normalize_slug(value).presence || "organization"
+    slug = base_slug
+    counter = 2
+
+    scope = all
+    scope = scope.where.not(id: ignored_id) if ignored_id.present?
+
+    while scope.exists?(slug: slug)
+      slug = "#{base_slug}-#{counter}"
+      counter += 1
+    end
+
+    slug
+  end
 
   def active_subscription
     subscriptions
@@ -107,5 +141,22 @@ class Organization < ApplicationRecord
       member_slots_used: member_slots_used,
       user_limit: user_limit
     }
+  end
+
+  private
+
+  def normalize_slug
+    self.slug = self.class.normalize_slug(slug.presence || name)
+  end
+
+  def assign_unique_slug
+    self.slug = self.class.unique_slug_for(
+      slug,
+      ignored_id: id
+    )
+  end
+
+  def should_assign_unique_slug?
+    new_record? || will_save_change_to_slug?
   end
 end

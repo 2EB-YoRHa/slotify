@@ -83,9 +83,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def create_manager_account
     organization_name = sign_up_params[:organization_name].to_s.strip
-    organization_slug = normalized_slug(
-      sign_up_params[:organization_slug].presence || organization_name
-    )
+    organization_slug = sign_up_params[:organization_slug].presence || organization_name
 
     if organization_name.blank?
       render_sign_up(
@@ -97,21 +95,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
       return
     end
 
-    if organization_slug.blank?
-      render_sign_up(
-        invitation: nil,
-        invitation_token: nil,
-        errors: { organization_slug: "Organization slug is required." },
-        status: :unprocessable_entity
-      )
-      return
-    end
-
     manager_role = Role.find_or_create_by!(name: "manager")
 
     organization = Organization.new(
       name: organization_name,
-      slug: unique_organization_slug(organization_slug),
+      slug: organization_slug,
       email: sign_up_params[:email],
       phone: sign_up_params[:organization_phone],
       address: sign_up_params[:organization_address]
@@ -197,21 +185,5 @@ class Users::RegistrationsController < Devise::RegistrationsController
         invited_by: { only: [ :id, :name, :email ] }
       }
     )
-  end
-
-  def normalized_slug(value)
-    value.to_s.parameterize
-  end
-
-  def unique_organization_slug(base_slug)
-    slug = base_slug
-    counter = 2
-
-    while Organization.exists?(slug: slug)
-      slug = "#{base_slug}-#{counter}"
-      counter += 1
-    end
-
-    slug
   end
 end

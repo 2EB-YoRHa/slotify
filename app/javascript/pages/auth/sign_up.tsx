@@ -125,17 +125,22 @@ export default function SignUp({
                     placeholder="Acme Workspace"
                     disabled={processing}
                     error={errors.organization_name}
-                    onChange={(value) => updateField("organization_name", value)}
+                    onChange={(value) =>
+                      updateField("organization_name", value)
+                    }
                   />
 
                   <TextField
                     label="Slug"
                     icon={Hash}
                     value={data.user.organization_slug}
-                    placeholder="acme-workspace"
+                    placeholder="Optional, generated from organization name"
                     disabled={processing}
+                    required={false}
                     error={errors.organization_slug}
-                    onChange={(value) => updateField("organization_slug", value)}
+                    onChange={(value) =>
+                      updateField("organization_slug", value)
+                    }
                   />
 
                   <TextField
@@ -145,7 +150,9 @@ export default function SignUp({
                     placeholder="+506 8888-8888"
                     disabled={processing}
                     error={errors.organization_phone}
-                    onChange={(value) => updateField("organization_phone", value)}
+                    onChange={(value) =>
+                      updateField("organization_phone", value)
+                    }
                   />
 
                   <TextField
@@ -260,6 +267,7 @@ type TextFieldProps = {
   placeholder: string;
   disabled: boolean;
   readOnly?: boolean;
+  required?: boolean;
   error?: string | string[];
   onChange: (value: string) => void;
 };
@@ -272,6 +280,7 @@ function TextField({
   placeholder,
   disabled,
   readOnly = false,
+  required = true,
   error,
   onChange,
 }: TextFieldProps) {
@@ -297,7 +306,7 @@ function TextField({
           placeholder={placeholder}
           readOnly={readOnly}
           disabled={disabled}
-          required
+          required={required}
         />
       </div>
 
@@ -317,7 +326,9 @@ function FormError({ errors, field, error }: FormErrorProps) {
 
   if (!fieldError) return null;
 
-  const message = Array.isArray(fieldError) ? fieldError.join(", ") : fieldError;
+  const message = Array.isArray(fieldError)
+    ? fieldError.join(", ")
+    : fieldError;
 
   return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
 }
