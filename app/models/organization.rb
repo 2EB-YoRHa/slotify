@@ -18,22 +18,73 @@ class Organization < ApplicationRecord
   end
 
   def workspace_limit
-    current_subscription&.workspace_limit || SubscriptionPlan.find!("starter")[:workspace_limit]
+    subscription = current_subscription
+
+    return SubscriptionPlan.find!("starter")[:workspace_limit] if subscription.blank?
+
+    subscription.workspace_limit
   end
 
   def user_limit
-    current_subscription&.user_limit || SubscriptionPlan.find!("starter")[:user_limit]
+    subscription = current_subscription
+
+    return SubscriptionPlan.find!("starter")[:user_limit] if subscription.blank?
+
+    subscription.user_limit
+  end
+
+  def workspaces_used
+    workspaces.count
+  end
+
+  def users_used
+    users.count
+  end
+
+  def pending_invitation_slots(excluding_invitation: nil)
+    invitations = organization_invitations.where(status: "pending")
+
+    if excluding_invitation.present?
+      invitations = invitations.where.not(id: excluding_invitation.id)
+    end
+
+    invitations.count
+  end
+
+  def member_slots_used(excluding_invitation: nil)
+    users_used + pending_invitation_slots(
+      excluding_invitation: excluding_invitation
+    )
   end
 
   def workspace_limit_reached?
     return false if workspace_limit.blank?
 
-    workspaces.count >= workspace_limit
+    workspaces_used >= workspace_limit
   end
 
-  def user_limit_reached?
+  def user_limit_reached?(excluding_invitation: nil)
     return false if user_limit.blank?
 
-    users.count >= user_limit
+    member_slots_used(
+      excluding_invitation: excluding_invitation
+    ) >= user_limit
+  end
+
+  def user_limit_available?(excluding_invitation: nil)
+    !user_limit_reached?(
+      excluding_invitation: excluding_invitation
+    )
+  end
+
+  def plan_usage
+    {
+      workspaces_used: workspaces_used,
+      workspace_limit: workspace_limit,
+      users_used: users_used,
+      pending_invitations: pending_invitation_slots,
+      member_slots_used: member_slots_used,
+      user_limit: user_limit
+    }
   end
 end

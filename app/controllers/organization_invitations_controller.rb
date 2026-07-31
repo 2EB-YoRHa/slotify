@@ -5,6 +5,13 @@ class OrganizationInvitationsController < InertiaController
   before_action :set_invitation_by_token, only: [ :accept, :confirm_accept ]
 
   def create
+    if current_organization.user_limit_reached?
+      redirect_to organization_path,
+                  alert: "Your current plan has reached the member limit. Upgrade to Pro to invite more members."
+
+      return
+    end
+
     invitation = current_organization.organization_invitations.build(
       invitation_params.merge(invited_by: current_user)
     )
@@ -82,6 +89,15 @@ class OrganizationInvitationsController < InertiaController
     if @invitation.expires_at.present? && @invitation.expires_at < Time.current
       redirect_to root_path,
                   alert: "This invitation has expired"
+      return
+    end
+
+    unless @invitation.organization.user_limit_available?(
+      excluding_invitation: @invitation
+    )
+      redirect_to root_path,
+                  alert: "This organization has reached its member limit."
+
       return
     end
 

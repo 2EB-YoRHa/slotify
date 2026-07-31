@@ -40,3 +40,12 @@ export type SubscriptionPlan = {
   highlighted?: boolean;
   checkout_ready?: boolean;
 };
+
+export type SubscriptionUsage = {
+  workspaces_used: number;
+  workspace_limit?: number | null;
+  users_used: number;
+  pending_invitations: number;
+  member_slots_used: number;
+  user_limit?: number | null;
+};

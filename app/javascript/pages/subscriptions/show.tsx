@@ -11,27 +11,41 @@ import {
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import SubscriptionPlanCard from "../../components/subscriptions/SubscriptionPlanCard";
-import type { Subscription, SubscriptionPlan } from "../../types/subscription";
+import type {
+  Subscription,
+  SubscriptionPlan,
+  SubscriptionUsage,
+} from "../../types/subscription";
 
 type SubscriptionShowProps = {
   subscription?: Subscription | null;
   plans?: SubscriptionPlan[];
+  usage?: SubscriptionUsage | null;
 };
 
 export default function SubscriptionShow({
   subscription = null,
   plans = [],
+  usage = null,
 }: SubscriptionShowProps) {
   const currentPlan = normalizePlan(
     subscription?.plan_name || subscription?.plan,
   );
   const status = formatStatus(subscription?.status);
+
   const referenceDate =
     subscription?.expires_at ||
     subscription?.ends_at ||
     subscription?.started_at ||
     subscription?.starts_at ||
     null;
+
+  const workspaceUsage = formatUsage(
+    usage?.workspaces_used,
+    usage?.workspace_limit,
+  );
+
+  const memberUsage = formatUsage(usage?.member_slots_used, usage?.user_limit);
 
   const stats = [
     {
@@ -48,14 +62,14 @@ export default function SubscriptionShow({
     },
     {
       label: "Workspace Access",
-      value: currentPlan === "starter" ? "10" : "Unlimited",
-      helper: "Workspace capacity by plan",
+      value: workspaceUsage,
+      helper: "Current workspaces / plan limit",
       icon: Database,
     },
     {
       label: "Members",
-      value: "Included",
-      helper: "Team access management",
+      value: memberUsage,
+      helper: "Users plus pending invitations",
       icon: UsersRound,
     },
   ];
@@ -149,10 +163,8 @@ export default function SubscriptionShow({
           <div className="rounded-xl bg-slate-50 p-5">
             <SummaryRow label="Plan" value={formatPlan(currentPlan)} />
             <SummaryRow label="Status" value={status} />
-            <SummaryRow
-              label="Workspaces"
-              value={currentPlan === "starter" ? "Up to 10" : "Unlimited"}
-            />
+            <SummaryRow label="Workspaces" value={workspaceUsage} />
+            <SummaryRow label="Members" value={memberUsage} />
             <SummaryRow label="Members" value="Included" />
             <SummaryRow
               label="Date"
@@ -279,6 +291,16 @@ function formatStatus(value?: string | null): string {
   return value
     .replace(/_/g, " ")
     .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
+}
+
+function formatLimit(value?: number | null): string {
+  if (value === null || value === undefined) return "Unlimited";
+
+  return String(value);
+}
+
+function formatUsage(used?: number | null, limit?: number | null): string {
+  return `${used || 0} / ${formatLimit(limit)}`;
 }
 
 function formatDate(value: string): string {

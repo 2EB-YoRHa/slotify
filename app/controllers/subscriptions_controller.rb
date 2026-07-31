@@ -83,7 +83,8 @@ end
         ]
       ),
       subscription: subscription,
-      plans: SubscriptionPlan.frontend_plans
+      plans: SubscriptionPlan.frontend_plans,
+      usage: current_organization.plan_usage
     }
   end
 
