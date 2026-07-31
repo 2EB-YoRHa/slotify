@@ -59,6 +59,51 @@ module ActiveSupport
       )
     end
 
+    def create_subscription(
+      organization:,
+      plan_name: "starter",
+      status: "active",
+      stripe_subscription_id: nil,
+      stripe_price_id: nil,
+      stripe_checkout_session_id: nil,
+      workspace_limit: :catalog,
+      user_limit: :catalog
+      )
+      plan = SubscriptionPlan.find!(plan_name)
+
+      workspace_limit = plan[:workspace_limit] if workspace_limit == :catalog
+      user_limit = plan[:user_limit] if user_limit == :catalog
+
+      organization.subscriptions.create!(
+        plan_name: plan_name,
+        status: status,
+        starts_at: Time.current,
+        ends_at: nil,
+        workspace_limit: workspace_limit,
+        user_limit: user_limit,
+        stripe_subscription_id: stripe_subscription_id,
+        stripe_price_id: stripe_price_id,
+        stripe_checkout_session_id: stripe_checkout_session_id
+      )
+    end
+
+    def create_invitation(
+      organization:,
+      invited_by:,
+      role_name: "member",
+      email: nil,
+      status: "pending"
+    )
+      role = create_role(name: role_name)
+
+      organization.organization_invitations.create!(
+        email: email || "#{unique_value("invite")}@slotify.test",
+        invited_by: invited_by,
+        role: role,
+        status: status
+      )
+    end
+
     def create_workspace(
       organization:,
       name: nil,
