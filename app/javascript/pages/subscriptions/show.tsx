@@ -23,6 +23,7 @@ type SubscriptionShowProps = {
   plans?: SubscriptionPlan[];
   usage?: SubscriptionUsage | null;
   can_manage_billing?: boolean;
+  can_start_checkout?: boolean;
 };
 
 export default function SubscriptionShow({
@@ -30,6 +31,7 @@ export default function SubscriptionShow({
   plans = [],
   usage = null,
   can_manage_billing = false,
+  can_start_checkout = true,
 }: SubscriptionShowProps) {
   const currentPlan = normalizePlan(
     subscription?.plan_name || subscription?.plan,
@@ -188,7 +190,6 @@ export default function SubscriptionShow({
             <SummaryRow label="Status" value={status} />
             <SummaryRow label="Workspaces" value={workspaceUsage} />
             <SummaryRow label="Members" value={memberUsage} />
-            <SummaryRow label="Members" value="Included" />
             <SummaryRow
               label="Date"
               value={
@@ -227,6 +228,8 @@ export default function SubscriptionShow({
                 highlighted={plan.highlighted}
                 current={currentPlan === plan.key}
                 checkoutReady={plan.checkout_ready}
+                canStartCheckout={can_start_checkout}
+                canManageBilling={can_manage_billing}
               />
             </motion.div>
           ))}

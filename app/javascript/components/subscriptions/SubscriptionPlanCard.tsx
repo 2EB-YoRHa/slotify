@@ -13,6 +13,8 @@ type SubscriptionPlanCardProps = {
   current?: boolean;
   highlighted?: boolean;
   checkoutReady?: boolean;
+  canStartCheckout?: boolean;
+  canManageBilling?: boolean;
 };
 
 export default function SubscriptionPlanCard({
@@ -25,16 +27,23 @@ export default function SubscriptionPlanCard({
   current = false,
   highlighted = false,
   checkoutReady = true,
+  canStartCheckout = true,
+  canManageBilling = false,
 }: SubscriptionPlanCardProps) {
   const [processing, setProcessing] = useState(false);
+  const canSubmit = checkoutReady && (canStartCheckout || canManageBilling);
 
   function handleCheckout() {
-    if (current || !checkoutReady || processing) return;
+    if (current || !canSubmit || processing) return;
 
     setProcessing(true);
 
+    const path = canStartCheckout
+      ? `/subscription/checkout/${planKey}`
+      : "/subscription/portal";
+
     router.post(
-      `/subscription/checkout/${planKey}`,
+      path,
       {},
       {
         onFinish: () => setProcessing(false),
@@ -90,12 +99,12 @@ export default function SubscriptionPlanCard({
 
       <button
         type="button"
-        disabled={current || processing || !checkoutReady}
+        disabled={current || processing || !canSubmit}
         onClick={handleCheckout}
         className={`mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition ${
           current
             ? "bg-green-50 text-green-600"
-            : checkoutReady
+            : canSubmit
               ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
               : "cursor-not-allowed bg-slate-100 text-slate-400"
         }`}
@@ -110,8 +119,12 @@ export default function SubscriptionPlanCard({
             <CreditCard size={16} />
             {processing
               ? "Redirecting..."
-              : checkoutReady
-                ? "Choose Plan"
+              : canSubmit
+                ? canStartCheckout
+                  ? "Choose Plan"
+                  : canManageBilling
+                    ? "Manage in Stripe"
+                    : "Billing Not Available"
                 : "Stripe Not Configured"}
           </>
         )}

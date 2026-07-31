@@ -39,7 +39,7 @@ module Subscriptions
     def find_or_build_subscription
       find_by_stripe_subscription ||
         find_by_checkout_session ||
-        @organization.current_subscription ||
+        @organization.active_subscription ||
         @organization.subscriptions.build
     end
 

@@ -1,4 +1,6 @@
 class Organization < ApplicationRecord
+  ACTIVE_SUBSCRIPTION_STATUSES = %w[active trialing].freeze
+
   has_many :users, dependent: :destroy
   has_many :workspaces, dependent: :destroy
   has_many :reservations, dependent: :destroy
@@ -9,16 +11,31 @@ class Organization < ApplicationRecord
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
 
+  def active_subscription
+    subscriptions
+      .where(status: ACTIVE_SUBSCRIPTION_STATUSES)
+      .order(created_at: :desc)
+      .first
+  end
+
+  def active_stripe_subscription
+    subscriptions
+      .where(status: ACTIVE_SUBSCRIPTION_STATUSES)
+      .where.not(stripe_subscription_id: [ nil, "" ])
+      .order(created_at: :desc)
+      .first
+  end
+
   def current_subscription
-    subscriptions.order(created_at: :desc).first
+    active_subscription || subscriptions.order(created_at: :desc).first
   end
 
   def current_plan
-    current_subscription&.plan_name || "starter"
+    active_subscription&.plan_name || "starter"
   end
 
   def workspace_limit
-    subscription = current_subscription
+    subscription = active_subscription
 
     return SubscriptionPlan.find!("starter")[:workspace_limit] if subscription.blank?
 
@@ -26,7 +43,7 @@ class Organization < ApplicationRecord
   end
 
   def user_limit
-    subscription = current_subscription
+    subscription = active_subscription
 
     return SubscriptionPlan.find!("starter")[:user_limit] if subscription.blank?
 
@@ -75,6 +92,10 @@ class Organization < ApplicationRecord
     !user_limit_reached?(
       excluding_invitation: excluding_invitation
     )
+  end
+
+  def can_start_subscription_checkout?
+    active_stripe_subscription.blank?
   end
 
   def plan_usage

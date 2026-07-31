@@ -2,10 +2,20 @@ class SubscriptionsController < InertiaController
   before_action :require_manager_or_admin!
 
   def show
-      render inertia: "subscriptions/show", props: subscription_props
+    render inertia: "subscriptions/show", props: subscription_props
   end
 
   def checkout
+    if current_organization.active_stripe_subscription.present?
+      portal_session = Subscriptions::CreatePortalSession.new(
+        organization: current_organization,
+        return_url: subscription_url
+      ).call
+
+      inertia_location portal_session.url
+      return
+    end
+
     success_url = "#{success_subscription_url}?session_id={CHECKOUT_SESSION_ID}"
 
     session = Subscriptions::CreateCheckoutSession.new(
@@ -74,14 +84,14 @@ class SubscriptionsController < InertiaController
   end
 
   def cancel
-      redirect_to subscription_path,
-                  alert: "Subscription checkout was cancelled."
+    redirect_to subscription_path,
+                alert: "Subscription checkout was cancelled."
   end
 
-private
+  private
 
   def subscription_props
-    subscription = current_organization.current_subscription
+    subscription = current_organization.active_subscription
 
     {
       organization: current_organization.as_json(
@@ -97,7 +107,8 @@ private
       subscription: subscription,
       plans: SubscriptionPlan.frontend_plans,
       usage: current_organization.plan_usage,
-      can_manage_billing: current_organization.stripe_customer_id.present?
+      can_manage_billing: current_organization.stripe_customer_id.present?,
+      can_start_checkout: current_organization.can_start_subscription_checkout?
     }
   end
 
