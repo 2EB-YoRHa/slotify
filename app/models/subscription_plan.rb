@@ -58,12 +58,32 @@ module SubscriptionPlan
 
   def stripe_price_id(plan_key)
     plan = find!(plan_key)
+    price_id = ENV[plan[:stripe_price_env]]
 
-    ENV[plan[:stripe_price_env]]
+    return nil if price_id.blank?
+
+    unless price_id.start_with?("price_")
+      raise ArgumentError,
+            "#{plan[:stripe_price_env]} must be a Stripe Price ID that starts with price_. You used #{price_id}."
+    end
+
+    price_id
+  end
+
+  def plan_key_for_price_id(price_id)
+    return nil if price_id.blank?
+
+    CATALOG.each_value do |plan|
+      return plan[:key] if ENV[plan[:stripe_price_env]] == price_id
+    end
+
+    nil
   end
 
   def checkout_ready?(plan_key)
     stripe_price_id(plan_key).present?
+  rescue ArgumentError
+    false
   end
 
   def frontend_plans
@@ -74,13 +94,21 @@ module SubscriptionPlan
     end
   end
 
-  def apply_to!(subscription, plan_key:, status:, stripe_subscription_id: nil, stripe_price_id: nil, stripe_checkout_session_id: nil, ends_at: nil)
+  def apply_to!(
+    subscription,
+    plan_key:,
+    status:,
+    stripe_subscription_id: nil,
+    stripe_price_id: nil,
+    stripe_checkout_session_id: nil,
+    ends_at: nil
+  )
     plan = find!(plan_key)
 
     subscription.update!(
       plan_name: plan[:key],
       status: status,
-      starts_at: Time.current,
+      starts_at: subscription.starts_at || Time.current,
       ends_at: ends_at,
       workspace_limit: plan[:workspace_limit],
       user_limit: plan[:user_limit],

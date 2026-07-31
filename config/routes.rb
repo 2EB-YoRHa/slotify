@@ -37,6 +37,9 @@ Rails.application.routes.draw do
         as: :cancel
   end
 
+  post "stripe/webhooks",
+     to: "stripe_webhooks#create"
+
   get "workspaces/:id/delete",
       to: "workspaces#delete_confirmation",
       as: :delete_workspace_confirmation
