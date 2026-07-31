@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_30_213759) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_31_212335) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -135,6 +135,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_30_213759) do
     t.integer "user_limit"
     t.integer "workspace_limit"
     t.index ["organization_id"], name: "index_subscriptions_on_organization_id"
+    t.index ["organization_id"], name: "index_subscriptions_one_active_per_organization", unique: true, where: "((status)::text = ANY ((ARRAY['active'::character varying, 'trialing'::character varying])::text[]))"
+    t.index ["stripe_checkout_session_id"], name: "index_subscriptions_on_unique_stripe_checkout_session_id", unique: true, where: "((stripe_checkout_session_id IS NOT NULL) AND ((stripe_checkout_session_id)::text <> ''::text))"
+    t.index ["stripe_subscription_id"], name: "index_subscriptions_on_unique_stripe_subscription_id", unique: true, where: "((stripe_subscription_id IS NOT NULL) AND ((stripe_subscription_id)::text <> ''::text))"
   end
 
   create_table "users", force: :cascade do |t|

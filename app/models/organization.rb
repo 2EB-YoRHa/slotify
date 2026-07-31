@@ -1,5 +1,5 @@
 class Organization < ApplicationRecord
-  ACTIVE_SUBSCRIPTION_STATUSES = %w[active trialing].freeze
+  ACTIVE_SUBSCRIPTION_STATUSES = Subscription::ACTIVE_STATUSES
 
   has_many :users, dependent: :destroy
   has_many :workspaces, dependent: :destroy
