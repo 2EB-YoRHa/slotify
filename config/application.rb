@@ -23,6 +23,7 @@ module Slotify
     #
     config.time_zone = "Central America"
     config.active_record.default_timezone = :utc
+    config.exceptions_app = self.routes
 
     # config.eager_load_paths << Rails.root.join("extras")
   end

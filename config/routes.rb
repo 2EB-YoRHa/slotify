@@ -72,5 +72,14 @@ Rails.application.routes.draw do
         end
     end
 
-  get "up" => "rails/health#show", as: :rails_health_check
+    get "up" => "rails/health#show", as: :rails_health_check
+
+    get "errors/403", to: "errors#forbidden"
+    get "errors/404", to: "errors#not_found"
+    get "errors/422", to: "errors#unprocessable"
+    get "errors/500", to: "errors#internal_server_error"
+
+    match "*unmatched",
+        to: "errors#not_found",
+        via: :all
 end

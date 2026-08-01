@@ -8,6 +8,12 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::InvalidAuthenticityToken,
               with: :handle_invalid_authenticity_token
 
+  rescue_from ActiveRecord::RecordNotFound,
+              with: :handle_record_not_found
+
+  rescue_from ActionController::ParameterMissing,
+              with: :handle_bad_request
+
   stale_when_importmap_changes
 
   inertia_share flash: -> {
@@ -52,5 +58,31 @@ class ApplicationController < ActionController::Base
 
     redirect_to new_user_session_path,
                 alert: "Your session expired. Please sign in again."
+  end
+
+  def handle_record_not_found
+    response.status = :not_found
+
+    render inertia: "errors/show",
+          props: {
+            status: 404,
+            title: "Record not found",
+            description: "The item you are trying to open does not exist or is no longer available.",
+            action_label: "Go back home",
+            action_href: root_path
+          }
+  end
+
+  def handle_bad_request(error)
+    response.status = :bad_request
+
+    render inertia: "errors/show",
+          props: {
+            status: 400,
+            title: "Invalid request",
+            description: error.message,
+            action_label: "Go back home",
+            action_href: root_path
+          }
   end
 end
