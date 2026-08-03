@@ -3,7 +3,9 @@ import type { FormEvent } from "react";
 import { LockKeyhole } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
 import AuthFooter from "../../components/auth/AuthFooter";
-import PasswordChecklist from "../../components/auth/PasswordChecklist";
+import PasswordChecklist, {
+  isStrongPassword,
+} from "../../components/auth/PasswordChecklist";
 import FlashMessages from "../../components/ui/FlashMessages";
 import LoadingButton from "../../components/ui/LoadingButton";
 
@@ -35,9 +37,10 @@ export default function ResetPassword({
     },
   });
 
-  const passwordReady =
-    data.user.password.length >= 6 &&
-    data.user.password === data.user.password_confirmation;
+  const passwordReady = isStrongPassword(
+    data.user.password,
+    data.user.password_confirmation,
+  );
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -105,7 +108,7 @@ export default function ResetPassword({
                       updateField("password", event.target.value)
                     }
                     className={inputClass}
-                    placeholder="Create a password"
+                    placeholder="Create a strong password"
                     autoComplete="new-password"
                     disabled={processing}
                     required
@@ -133,7 +136,7 @@ export default function ResetPassword({
                       updateField("password_confirmation", event.target.value)
                     }
                     className={inputClass}
-                    placeholder="Repeat password"
+                    placeholder="Confirm your password"
                     autoComplete="new-password"
                     disabled={processing}
                     required

@@ -12,7 +12,9 @@ import {
 import type { LucideIcon } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
 import AuthFooter from "../../components/auth/AuthFooter";
-import PasswordChecklist from "../../components/auth/PasswordChecklist";
+import PasswordChecklist, {
+  isStrongPassword,
+} from "../../components/auth/PasswordChecklist";
 import LoadingButton from "../../components/ui/LoadingButton";
 import type { OrganizationInvitation } from "../../types/organization";
 
@@ -60,9 +62,10 @@ export default function SignUp({
     },
   });
 
-  const passwordReady =
-    data.user.password.length >= 6 &&
-    data.user.password === data.user.password_confirmation;
+  const passwordReady = isStrongPassword(
+    data.user.password,
+    data.user.password_confirmation,
+  );
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -122,7 +125,7 @@ export default function SignUp({
                     label="Organization"
                     icon={Building2}
                     value={data.user.organization_name}
-                    placeholder="Acme Workspace"
+                    placeholder="Enter organization name"
                     disabled={processing}
                     error={errors.organization_name}
                     onChange={(value) =>
@@ -147,7 +150,7 @@ export default function SignUp({
                     label="Phone"
                     icon={Phone}
                     value={data.user.organization_phone}
-                    placeholder="+506 8888-8888"
+                    placeholder="Enter phone number"
                     disabled={processing}
                     error={errors.organization_phone}
                     onChange={(value) =>
@@ -159,7 +162,7 @@ export default function SignUp({
                     label="Address"
                     icon={MapPin}
                     value={data.user.organization_address}
-                    placeholder="San José, Costa Rica"
+                    placeholder="Enter organization address"
                     disabled={processing}
                     error={errors.organization_address}
                     onChange={(value) =>
@@ -185,7 +188,7 @@ export default function SignUp({
                   icon={Mail}
                   type="email"
                   value={data.user.email}
-                  placeholder="name@company.com"
+                  placeholder="Enter email address"
                   readOnly={isInvitationSignup}
                   disabled={processing}
                   error={errors.email}
@@ -199,7 +202,7 @@ export default function SignUp({
                   icon={LockKeyhole}
                   type="password"
                   value={data.user.password}
-                  placeholder="Create a password"
+                  placeholder="Create a strong password"
                   disabled={processing}
                   error={errors.password}
                   onChange={(value) => updateField("password", value)}
@@ -210,7 +213,7 @@ export default function SignUp({
                   icon={LockKeyhole}
                   type="password"
                   value={data.user.password_confirmation}
-                  placeholder="Repeat password"
+                  placeholder="Confirm your password"
                   disabled={processing}
                   error={errors.password_confirmation}
                   onChange={(value) =>

@@ -25,7 +25,7 @@ admin_role = Role.create!(name: "admin")
 manager_role = Role.create!(name: "manager")
 member_role = Role.create!(name: "member")
 
-PASSWORD = "password123"
+PASSWORD = "Password123!"
 
 def create_user!(name:, email:, role:, organization:, active: true)
   User.create!(

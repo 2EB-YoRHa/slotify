@@ -3,15 +3,53 @@ type PasswordChecklistProps = {
   passwordConfirmation: string;
 };
 
+export function isStrongPassword(
+  password: string,
+  passwordConfirmation: string,
+): boolean {
+  return (
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /\d/.test(password) &&
+    /[^A-Za-z0-9]/.test(password) &&
+    password.length > 0 &&
+    password === passwordConfirmation
+  );
+}
+
 export default function PasswordChecklist({
   password,
   passwordConfirmation,
 }: PasswordChecklistProps) {
-  const passwordLengthOk = password.length >= 6;
-  const passwordsMatch =
-    password.length > 0 && password === passwordConfirmation;
+  const checks = [
+    {
+      label: "8+ characters",
+      checked: password.length >= 8,
+    },
+    {
+      label: "Uppercase letter",
+      checked: /[A-Z]/.test(password),
+    },
+    {
+      label: "Lowercase letter",
+      checked: /[a-z]/.test(password),
+    },
+    {
+      label: "Number",
+      checked: /\d/.test(password),
+    },
+    {
+      label: "Symbol",
+      checked: /[^A-Za-z0-9]/.test(password),
+    },
+    {
+      label: "Passwords match",
+      checked: password.length > 0 && password === passwordConfirmation,
+    },
+  ];
 
-  const ready = passwordLengthOk && passwordsMatch;
+  const ready = checks.every((check) => check.checked);
 
   return (
     <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
@@ -28,8 +66,13 @@ export default function PasswordChecklist({
       </div>
 
       <div className="grid grid-cols-2 gap-3 text-xs text-slate-500">
-        <CheckItem checked={passwordLengthOk} label="6+ characters" />
-        <CheckItem checked={passwordsMatch} label="Passwords match" />
+        {checks.map((check) => (
+          <CheckItem
+            key={check.label}
+            checked={check.checked}
+            label={check.label}
+          />
+        ))}
       </div>
     </div>
   );
