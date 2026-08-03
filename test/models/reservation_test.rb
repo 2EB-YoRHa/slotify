@@ -197,4 +197,40 @@ class ReservationTest < ActiveSupport::TestCase
     assert_includes reservation.errors.full_messages,
                     "Weekend bookings are not allowed."
   end
+
+  test "rejects non integer attendees count" do
+  start_time = next_weekday_time(hour: 10)
+
+  reservation = Reservation.new(
+    organization: @organization,
+    user: @member,
+    workspace: @workspace,
+    start_time: start_time,
+    end_time: start_time + 1.hour,
+    status: "confirmed",
+    attendees_count: 1.5
+  )
+
+  assert_not reservation.valid?
+  assert_includes reservation.errors[:attendees_count], "must be an integer"
+  end
+
+  test "rejects notes longer than five hundred characters" do
+    start_time = next_weekday_time(hour: 10)
+
+    reservation = Reservation.new(
+      organization: @organization,
+      user: @member,
+      workspace: @workspace,
+      start_time: start_time,
+      end_time: start_time + 1.hour,
+      status: "confirmed",
+      attendees_count: 1,
+      notes: "a" * 501
+    )
+
+    assert_not reservation.valid?
+    assert_includes reservation.errors[:notes],
+                    "is too long (maximum is 500 characters)"
+  end
 end

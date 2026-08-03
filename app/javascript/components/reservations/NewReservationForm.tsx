@@ -299,6 +299,7 @@ export default function NewReservationForm({
           selectedSlotLabel={selectedSlot.label}
           attendeesCount={data.reservation.attendees_count}
           notes={data.reservation.notes}
+          errors={allErrors}
           estimatedTotal={estimatedTotal}
           availabilityChecked={availabilityChecked}
           ruleViolation={ruleViolation}

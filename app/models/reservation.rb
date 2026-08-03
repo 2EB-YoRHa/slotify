@@ -11,7 +11,18 @@ class Reservation < ApplicationRecord
   validates :start_time, presence: true
   validates :end_time, presence: true
   validates :status, presence: true, inclusion: { in: STATUSES }
-  validates :attendees_count, numericality: { greater_than: 0 }
+
+  validates :attendees_count,
+            numericality: {
+              only_integer: true,
+              greater_than: 0
+            }
+
+  validates :notes,
+            length: {
+              maximum: 500
+            },
+            allow_blank: true
 
   validate :end_time_after_start_time
   validate :workspace_available
