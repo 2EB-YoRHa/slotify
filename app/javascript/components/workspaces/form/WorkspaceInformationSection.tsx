@@ -71,8 +71,11 @@ export default function WorkspaceInformationSection({
           icon={Building2}
           label="Workspace Name"
           value={data.name}
-          placeholder="Executive Meeting Room"
+          placeholder="Enter workspace name"
           disabled={processing}
+          required
+          maxLength={80}
+          helper="Use a short and clear name for this workspace."
           error={fieldError(errors, "name")}
           onChange={onNameChange}
         />
@@ -82,6 +85,7 @@ export default function WorkspaceInformationSection({
           label="Workspace Type"
           value={data.workspace_type}
           disabled={processing}
+          helper="Choose the category that best describes how this space is used."
           error={fieldError(errors, "workspace_type")}
           options={workspaceTypes}
           onChange={onWorkspaceTypeChange}
@@ -92,7 +96,9 @@ export default function WorkspaceInformationSection({
           label="Capacity"
           value={data.capacity}
           min="1"
+          placeholder="Enter capacity"
           disabled={processing}
+          helper="Maximum number of people allowed in the space."
           error={fieldError(errors, "capacity")}
           onChange={onCapacityChange}
         />
@@ -103,7 +109,9 @@ export default function WorkspaceInformationSection({
           value={data.hourly_rate}
           min="0"
           step="0.01"
+          placeholder="Enter hourly rate"
           disabled={processing}
+          helper="Price charged per reserved hour."
           error={fieldError(errors, "hourly_rate")}
           onChange={onHourlyRateChange}
         />
@@ -112,8 +120,10 @@ export default function WorkspaceInformationSection({
           icon={Building2}
           label="Floor"
           value={data.floor}
-          placeholder="2"
+          placeholder="Enter floor or level"
           disabled={processing}
+          maxLength={30}
+          helper="Optional. Helps users locate the workspace."
           error={fieldError(errors, "floor")}
           onChange={onFloorChange}
         />
@@ -122,8 +132,10 @@ export default function WorkspaceInformationSection({
           icon={MapPin}
           label="Zone"
           value={data.zone}
-          placeholder="North Wing"
+          placeholder="Enter zone or area"
           disabled={processing}
+          maxLength={80}
+          helper="Optional. Use this when the workspace belongs to a specific area."
           error={fieldError(errors, "zone")}
           onChange={onZoneChange}
         />
@@ -133,8 +145,11 @@ export default function WorkspaceInformationSection({
             icon={MapPin}
             label="Location"
             value={data.location}
-            placeholder="Building A, second floor"
+            placeholder="Enter workspace location"
             disabled={processing}
+            required
+            maxLength={120}
+            helper="Use a clear location reference inside the building."
             error={fieldError(errors, "location")}
             onChange={onLocationChange}
           />
@@ -145,8 +160,10 @@ export default function WorkspaceInformationSection({
             icon={StickyNote}
             label="Description"
             value={data.description}
-            placeholder="Describe this workspace..."
+            placeholder="Describe the workspace, equipment, and recommended use."
             disabled={processing}
+            maxLength={500}
+            helper="Briefly describe what this space is best used for."
             error={fieldError(errors, "description")}
             onChange={onDescriptionChange}
           />

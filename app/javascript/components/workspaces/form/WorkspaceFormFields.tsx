@@ -24,6 +24,9 @@ type TextInputProps = {
   value: string;
   placeholder?: string;
   disabled: boolean;
+  helper?: string;
+  required?: boolean;
+  maxLength?: number;
   error?: string | string[];
   onChange: (value: string) => void;
 };
@@ -34,14 +37,17 @@ export function TextInput({
   value,
   placeholder,
   disabled,
+  helper,
+  required = false,
+  maxLength,
   error,
   onChange,
 }: TextInputProps) {
+  const hasError = Boolean(error);
+
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-bold text-slate-700">
-        {label}
-      </span>
+      <FieldLabel label={label} required={required} />
 
       <div className="relative">
         <Icon
@@ -52,13 +58,17 @@ export function TextInput({
         <input
           type="text"
           value={value}
+          maxLength={maxLength}
+          required={required}
+          aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
-          className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+          className={fieldClassName(hasError)}
           placeholder={placeholder}
           disabled={disabled}
         />
       </div>
 
+      <FormHelper helper={helper} />
       <FormError error={error} />
     </label>
   );
@@ -70,7 +80,10 @@ type NumberInputProps = {
   value: string | number;
   min: string;
   step?: string;
+  placeholder?: string;
   disabled: boolean;
+  helper?: string;
+  required?: boolean;
   error?: string | string[];
   onChange: (value: string) => void;
 };
@@ -81,15 +94,18 @@ export function NumberInput({
   value,
   min,
   step,
+  placeholder,
   disabled,
+  helper,
+  required = true,
   error,
   onChange,
 }: NumberInputProps) {
+  const hasError = Boolean(error);
+
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-bold text-slate-700">
-        {label}
-      </span>
+      <FieldLabel label={label} required={required} />
 
       <div className="relative">
         <Icon
@@ -102,13 +118,16 @@ export function NumberInput({
           min={min}
           step={step}
           value={value}
+          required={required}
+          aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
-          className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+          className={fieldClassName(hasError)}
+          placeholder={placeholder}
           disabled={disabled}
-          required
         />
       </div>
 
+      <FormHelper helper={helper} />
       <FormError error={error} />
     </label>
   );
@@ -119,6 +138,8 @@ type SelectInputProps = {
   label: string;
   value: string;
   disabled: boolean;
+  helper?: string;
+  required?: boolean;
   error?: string | string[];
   options: {
     value: string;
@@ -132,15 +153,17 @@ export function SelectInput({
   label,
   value,
   disabled,
+  helper,
+  required = true,
   error,
   options,
   onChange,
 }: SelectInputProps) {
+  const hasError = Boolean(error);
+
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-bold text-slate-700">
-        {label}
-      </span>
+      <FieldLabel label={label} required={required} />
 
       <div className="relative">
         <Icon
@@ -150,10 +173,11 @@ export function SelectInput({
 
         <select
           value={value}
+          required={required}
+          aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
-          className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+          className={`${fieldClassName(hasError)} appearance-none bg-white pr-10`}
           disabled={disabled}
-          required
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -163,6 +187,7 @@ export function SelectInput({
         </select>
       </div>
 
+      <FormHelper helper={helper} />
       <FormError error={error} />
     </label>
   );
@@ -174,6 +199,9 @@ type TextAreaInputProps = {
   value: string;
   placeholder?: string;
   disabled: boolean;
+  helper?: string;
+  required?: boolean;
+  maxLength?: number;
   error?: string | string[];
   onChange: (value: string) => void;
 };
@@ -184,14 +212,17 @@ export function TextAreaInput({
   value,
   placeholder,
   disabled,
+  helper,
+  required = false,
+  maxLength,
   error,
   onChange,
 }: TextAreaInputProps) {
+  const hasError = Boolean(error);
+
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-bold text-slate-700">
-        {label}
-      </span>
+      <FieldLabel label={label} required={required} />
 
       <div className="relative">
         <Icon
@@ -201,11 +232,24 @@ export function TextAreaInput({
 
         <textarea
           value={value}
+          required={required}
+          maxLength={maxLength}
+          aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
-          className="min-h-32 w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+          className={`${fieldClassName(hasError)} min-h-32 resize-y`}
           placeholder={placeholder}
           disabled={disabled}
         />
+      </div>
+
+      <div className="mt-2 flex items-center justify-between gap-4">
+        <FormHelper helper={helper} />
+
+        {maxLength && (
+          <span className="text-xs font-semibold text-slate-400">
+            {value.length}/{maxLength}
+          </span>
+        )}
       </div>
 
       <FormError error={error} />
@@ -261,6 +305,31 @@ export function ToggleStatus({
   );
 }
 
+type FieldLabelProps = {
+  label: string;
+  required?: boolean;
+};
+
+function FieldLabel({ label, required = false }: FieldLabelProps) {
+  return (
+    <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+      {label}
+
+      {required && <span className="text-red-500">*</span>}
+    </span>
+  );
+}
+
+type FormHelperProps = {
+  helper?: string;
+};
+
+function FormHelper({ helper }: FormHelperProps) {
+  if (!helper) return null;
+
+  return <p className="mt-2 text-xs font-semibold text-slate-400">{helper}</p>;
+}
+
 type FormErrorProps = {
   error?: string | string[];
 };
@@ -271,4 +340,15 @@ export function FormError({ error }: FormErrorProps) {
   const message = Array.isArray(error) ? error.join(", ") : error;
 
   return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
+}
+
+function fieldClassName(hasError: boolean): string {
+  const baseClass =
+    "w-full rounded-xl py-3 pl-11 pr-4 text-sm font-medium outline-none transition disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
+
+  if (hasError) {
+    return `${baseClass} border border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-4 focus:ring-red-50`;
+  }
+
+  return `${baseClass} border border-slate-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50`;
 }
