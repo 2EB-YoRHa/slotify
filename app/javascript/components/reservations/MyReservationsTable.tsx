@@ -174,7 +174,7 @@ export default function MyReservationsTable({
                       <WorkspacePhoto
                         name={reservation.workspace?.name || "Workspace"}
                         photoUrl={reservation.workspace?.photo_url}
-                        fit="cover"
+                        fit="contain"
                         position="object-center"
                         className="h-11 w-14 shrink-0 rounded-xl border border-slate-100"
                       />

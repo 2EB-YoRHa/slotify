@@ -18,7 +18,7 @@ export default function WorkspacePhoto({
   className = "",
   imageClassName = "",
   fallbackClassName = "",
-  fit = "cover",
+  fit = "contain",
   position = "object-center",
 }: WorkspacePhotoProps) {
   const fitClass = {
@@ -27,16 +27,29 @@ export default function WorkspacePhoto({
     fill: "object-fill",
   }[fit];
 
+  const shouldShowBlurredBackground = photoUrl && fit === "contain";
+
   return (
     <div
-      className={`overflow-hidden bg-linear-to-br from-slate-100 to-slate-200 ${className}`}
+      className={`relative flex items-center justify-center overflow-hidden bg-slate-100 ${className}`}
     >
       {photoUrl ? (
-        <img
-          src={photoUrl}
-          alt={name}
-          className={`h-full w-full ${fitClass} ${position} ${imageClassName}`}
-        />
+        <>
+          {shouldShowBlurredBackground && (
+            <img
+              src={photoUrl}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-20 blur-xl"
+            />
+          )}
+
+          <img
+            src={photoUrl}
+            alt={name}
+            className={`relative z-10 h-full w-full ${fitClass} ${position} ${imageClassName}`}
+          />
+        </>
       ) : (
         <div
           className={`flex h-full w-full items-center justify-center bg-linear-to-br from-cyan-50 to-slate-100 text-cyan-500 ${fallbackClassName}`}

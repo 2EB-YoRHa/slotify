@@ -89,7 +89,7 @@ export function SelectedWorkspaceSummary({
       <WorkspacePhoto
         name={workspace.name}
         photoUrl={workspace.photo_url}
-        fit="cover"
+        fit="contain"
         position="object-center"
         className="h-56 w-full bg-slate-100"
       />

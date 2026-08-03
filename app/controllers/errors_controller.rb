@@ -66,6 +66,10 @@ class ErrorsController < InertiaController
           description: description
         }, status: status
       end
+
+      format.any do
+        head status
+      end
     end
   end
 end

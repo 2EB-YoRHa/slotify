@@ -148,7 +148,7 @@ function MemberWorkspaceCard({ workspace, index }: MemberWorkspaceCardProps) {
       <WorkspacePhoto
         name={workspace.name}
         photoUrl={workspace.photo_url}
-        fit="cover"
+        fit="contain"
         position="object-center"
         className="h-72 w-full bg-slate-100"
       />

@@ -33,7 +33,7 @@ export default function ReservationWorkspaceCard({
         <WorkspacePhoto
           name={workspace.name}
           photoUrl={workspace.photo_url}
-          fit="cover"
+          fit="contain"
           position="object-center"
           className="h-36 w-44 shrink-0"
         />

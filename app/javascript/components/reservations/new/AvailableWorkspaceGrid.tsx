@@ -136,7 +136,7 @@ function WorkspaceOption({
       <WorkspacePhoto
         name={workspace.name}
         photoUrl={workspace.photo_url}
-        fit="cover"
+        fit="contain"
         position="object-center"
         className="-mx-5 -mt-5 mb-5 h-56 rounded-t-xl bg-slate-100"
       />

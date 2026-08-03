@@ -33,7 +33,7 @@ export default function ReservationWorkspacePanel({
       <WorkspacePhoto
         name={reservation.workspace?.name || "Workspace"}
         photoUrl={reservation.workspace?.photo_url}
-        fit="cover"
+        fit="contain"
         position="object-center"
         className="h-105 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm"
       />

@@ -157,7 +157,7 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
                     <WorkspacePhoto
                       name={workspace.name}
                       photoUrl={workspace.photo_url}
-                      fit="cover"
+                      fit="contain"
                       position="object-center"
                       className="h-12 w-16 shrink-0 rounded-xl border border-slate-100"
                     />

@@ -81,5 +81,9 @@ Rails.application.routes.draw do
 
     match "*unmatched",
         to: "errors#not_found",
-        via: :all
+        via: :all,
+        constraints: lambda { |request|
+            request.format.html? &&
+            !request.path.start_with?("/rails/", "/assets/", "/vite/", "/favicon")
+        }
 end

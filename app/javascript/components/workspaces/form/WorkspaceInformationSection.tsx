@@ -1,7 +1,6 @@
 import {
   Building2,
   DollarSign,
-  ImagePlus,
   Layers3,
   MapPin,
   StickyNote,
@@ -9,6 +8,7 @@ import {
 } from "lucide-react";
 import type { WorkspaceFormData } from "../../../types/workspace";
 import { fieldError, workspaceTypes } from "../../../utils/workspaceFormUtils";
+import WorkspacePhotoUpload from "./WorkspacePhotoUpload";
 import {
   IconBox,
   NumberInput,
@@ -21,6 +21,8 @@ type WorkspaceInformationSectionProps = {
   data: WorkspaceFormData;
   errors: Record<string, string | string[] | undefined>;
   processing: boolean;
+  currentPhotoUrl?: string | null;
+  currentPhotoFilename?: string | null;
   onNameChange: (value: string) => void;
   onWorkspaceTypeChange: (value: string) => void;
   onCapacityChange: (value: string) => void;
@@ -36,6 +38,8 @@ export default function WorkspaceInformationSection({
   data,
   errors,
   processing,
+  currentPhotoUrl = null,
+  currentPhotoFilename = null,
   onNameChange,
   onWorkspaceTypeChange,
   onCapacityChange,
@@ -147,42 +151,16 @@ export default function WorkspaceInformationSection({
             onChange={onDescriptionChange}
           />
         </div>
+
         <div className="col-span-2">
-          <label className="block">
-            <span className="mb-2 block text-sm font-bold text-slate-700">
-              Workspace Photo
-            </span>
-
-            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 transition hover:border-cyan-300 hover:bg-cyan-50/40">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
-                  <ImagePlus size={22} strokeWidth={2.4} />
-                </div>
-
-                <div className="flex-1">
-                  <input
-                    type="file"
-                    accept="image/png,image/jpg,image/jpeg,image/webp"
-                    disabled={processing}
-                    onChange={(event) =>
-                      onPhotoChange(event.target.files?.[0] || null)
-                    }
-                    className="block w-full text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
-                  />
-
-                  <p className="mt-2 text-xs font-semibold text-slate-400">
-                    PNG, JPG, JPEG or WEBP. Maximum size: 5MB.
-                  </p>
-
-                  {data.photo && (
-                    <p className="mt-2 text-xs font-bold text-cyan-600">
-                      Selected file: {data.photo.name}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </label>
+          <WorkspacePhotoUpload
+            selectedFile={data.photo}
+            initialPreviewUrl={currentPhotoUrl}
+            currentFilename={currentPhotoFilename}
+            disabled={processing}
+            error={fieldError(errors, "photo")}
+            onPhotoChange={onPhotoChange}
+          />
         </div>
       </div>
     </div>

@@ -68,9 +68,13 @@ export default function WorkspaceForm({
     }));
 
     if (isEditing && workspace?.id) {
-      patch(`/workspaces/${workspace.id}`);
+      patch(`/workspaces/${workspace.id}`, {
+        forceFormData: true,
+      });
     } else {
-      post("/workspaces");
+      post("/workspaces", {
+        forceFormData: true,
+      });
     }
   }
 
@@ -106,6 +110,8 @@ export default function WorkspaceForm({
           data={data}
           errors={errors}
           processing={processing}
+          currentPhotoUrl={workspace?.photo_url}
+          currentPhotoFilename={workspace?.photo_filename}
           onNameChange={(value) => updateField("name", value)}
           onWorkspaceTypeChange={(value) =>
             updateField("workspace_type", value)
