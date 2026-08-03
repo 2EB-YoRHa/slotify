@@ -162,21 +162,39 @@ class ReservationTest < ActiveSupport::TestCase
   end
 
   test "rejects weekend reservations when weekends are blocked" do
-    @organization.booking_rule.update!(
+    create_booking_rule(
+      organization: @organization,
       allow_weekend_bookings: false
     )
 
+    saturday = Date.current
+
+    saturday += 1.day until saturday.saturday?
+
     reservation = Reservation.new(
       organization: @organization,
-      user: @member,
+      user: @user,
       workspace: @workspace,
-      start_time: Time.zone.local(2026, 8, 1, 10, 0, 0),
-      end_time: Time.zone.local(2026, 8, 1, 11, 0, 0),
+      start_time: Time.zone.local(
+        saturday.year,
+        saturday.month,
+        saturday.day,
+        10,
+        0
+      ),
+      end_time: Time.zone.local(
+        saturday.year,
+        saturday.month,
+        saturday.day,
+        11,
+        0
+      ),
       status: "confirmed",
-      attendees_count: 1
+      attendees_count: 2
     )
 
     assert_not reservation.valid?
-    assert_includes reservation.errors[:base], "Weekend bookings are not allowed."
+    assert_includes reservation.errors.full_messages,
+                    "Weekend bookings are not allowed."
   end
 end

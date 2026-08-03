@@ -74,10 +74,6 @@ def next_start_within_24_hours
     candidate = Time.zone.local(tomorrow.year, tomorrow.month, tomorrow.day, 9, 0)
   end
 
-  if candidate > now + 23.hours
-    candidate = (now + 2.hours).change(min: 0, sec: 0)
-  end
-
   candidate
 end
 
@@ -379,6 +375,22 @@ harbor_room = harbor.workspaces.create!(
   ]
 )
 
+puts "Creating booking rules..."
+
+northstar.create_booking_rule!(
+  max_hours_per_reservation: 2,
+  min_notice_minutes: 60,
+  cancellation_limit_hours: 24,
+  allow_weekend_bookings: false
+)
+
+harbor.create_booking_rule!(
+  max_hours_per_reservation: 2,
+  min_notice_minutes: 120,
+  cancellation_limit_hours: 12,
+  allow_weekend_bookings: false
+)
+
 puts "Creating subscriptions and demo payments..."
 
 northstar_subscription = northstar.subscriptions.create!(
@@ -390,16 +402,14 @@ northstar_subscription = northstar.subscriptions.create!(
   user_limit: nil
 )
 
-if northstar_subscription.respond_to?(:payments)
-  northstar_subscription.payments.create!(
-    amount: 49.00,
-    currency: "USD",
-    status: "paid",
-    payment_provider: "demo",
-    provider_payment_id: "demo-northstar-payment-001",
-    paid_at: 15.days.ago
-  )
-end
+northstar_subscription.payments.create!(
+  amount: 49.00,
+  currency: "USD",
+  status: "paid",
+  payment_provider: "demo",
+  provider_payment_id: "demo-northstar-payment-001",
+  paid_at: 15.days.ago
+)
 
 harbor_subscription = harbor.subscriptions.create!(
   plan_name: "starter",
@@ -407,19 +417,17 @@ harbor_subscription = harbor.subscriptions.create!(
   starts_at: 10.days.ago,
   ends_at: 20.days.from_now,
   workspace_limit: 10,
-  user_limit: 25
+  user_limit: 20
 )
 
-if harbor_subscription.respond_to?(:payments)
-  harbor_subscription.payments.create!(
-    amount: 19.00,
-    currency: "USD",
-    status: "paid",
-    payment_provider: "demo",
-    provider_payment_id: "demo-harbor-payment-001",
-    paid_at: 10.days.ago
-  )
-end
+harbor_subscription.payments.create!(
+  amount: 19.00,
+  currency: "USD",
+  status: "paid",
+  payment_provider: "demo",
+  provider_payment_id: "demo-harbor-payment-001",
+  paid_at: 10.days.ago
+)
 
 puts "Creating pending invitations..."
 
@@ -470,7 +478,7 @@ cancellation_blocked_end = cancellation_blocked_start + 1.hour
 overlap_date = next_weekday(1)
 edit_test_date = next_weekday(2)
 cancellation_allowed_date = next_weekday(3)
-future_pending_date = next_weekday(4)
+future_confirmed_date = next_weekday(4)
 last_weekday = previous_weekday(1)
 older_weekday = previous_weekday(4)
 
@@ -494,7 +502,8 @@ cancellation_blocked_reservation = create_reservation!(
   end_time: cancellation_blocked_end,
   status: "confirmed",
   attendees_count: 1,
-  notes: "Cancellation test: this reservation starts in less than 24 hours, so cancellation should be blocked."
+  notes: "Cancellation test: this reservation starts in less than 24 hours, so cancellation should be blocked.",
+  validate: false
 )
 
 overlap_reservation = create_reservation!(
@@ -541,30 +550,30 @@ cancellation_allowed_reservation = create_reservation!(
   notes: "Cancellation test: this reservation starts more than 24 hours from now, so cancellation should be allowed."
 )
 
-create_reservation!(
+future_confirmed_reservation = create_reservation!(
   organization: northstar,
   user: noah,
   workspace: summit_boardroom,
-  start_time: at_time(future_pending_date, 14, 0),
-  end_time: at_time(future_pending_date, 15, 0),
-  status: "pending",
+  start_time: at_time(future_confirmed_date, 14, 0),
+  end_time: at_time(future_confirmed_date, 15, 0),
+  status: "confirmed",
   attendees_count: 6,
-  notes: "Pending booking for a client presentation."
+  notes: "Upcoming confirmed booking for a client presentation."
 )
 
-create_reservation!(
+concluded_reservation = create_reservation!(
   organization: northstar,
   user: mia,
   workspace: summit_boardroom,
   start_time: at_time(last_weekday, 11, 0),
   end_time: at_time(last_weekday, 12, 0),
-  status: "confirmed",
+  status: "concluded",
   attendees_count: 6,
-  notes: "Historical completed partner meeting.",
+  notes: "Historical concluded partner meeting. This reservation should not be editable or cancellable.",
   validate: false
 )
 
-create_reservation!(
+cancelled_reservation = create_reservation!(
   organization: northstar,
   user: lucas,
   workspace: legacy_room,
@@ -572,11 +581,11 @@ create_reservation!(
   end_time: at_time(older_weekday, 10, 0),
   status: "cancelled",
   attendees_count: 4,
-  notes: "Historical cancelled reservation used to demonstrate delete protection.",
+  notes: "Historical cancelled reservation used to demonstrate cancellation history.",
   validate: false
 )
 
-create_reservation!(
+harbor_reservation = create_reservation!(
   organization: harbor,
   user: harbor_member,
   workspace: harbor_room,
@@ -585,22 +594,6 @@ create_reservation!(
   status: "confirmed",
   attendees_count: 4,
   notes: "Secondary organization reservation used to demonstrate data isolation."
-)
-
-puts "Creating booking rules..."
-
-northstar.create_booking_rule!(
-  max_hours_per_reservation: 2,
-  min_notice_minutes: 60,
-  cancellation_limit_hours: 24,
-  allow_weekend_bookings: false
-)
-
-harbor.create_booking_rule!(
-  max_hours_per_reservation: 2,
-  min_notice_minutes: 120,
-  cancellation_limit_hours: 12,
-  allow_weekend_bookings: false
 )
 
 puts ""
@@ -618,44 +611,21 @@ puts "Member Mia:        mia@slotify.test / #{PASSWORD}"
 puts "Member Lucas:      lucas@slotify.test / #{PASSWORD}"
 puts "Inactive Member:   inactive@slotify.test / #{PASSWORD}"
 puts ""
-puts "Secondary organization: Harbor Desk Studios"
-puts "Manager:           manager@harbordesk.test / #{PASSWORD}"
-puts "Member:            member@harbordesk.test / #{PASSWORD}"
+puts "Secondary organization:"
+puts "Harbor Manager:    manager@harbordesk.test / #{PASSWORD}"
+puts "Harbor Member:     member@harbordesk.test / #{PASSWORD}"
 puts ""
-puts "Pending invitation links:"
-puts "Member Oliver:     /organization_invitations/accept/demo-member-oliver-token"
-puts "Member Grace:      /organization_invitations/accept/demo-member-grace-token"
-puts "Manager Henry:     /organization_invitations/accept/demo-manager-henry-token"
+puts "Demo reservation references:"
+print_time("Current active reservation", current_reservation.start_time)
+print_time("Cancellation blocked reservation", cancellation_blocked_reservation.start_time)
+print_time("Overlap test reservation", overlap_reservation.start_time)
+print_time("Editable future reservation", edit_test_reservation.start_time)
+print_time("Cancellation allowed reservation", cancellation_allowed_reservation.start_time)
+print_time("Future confirmed reservation", future_confirmed_reservation.start_time)
+print_time("Concluded reservation", concluded_reservation.start_time)
+print_time("Cancelled reservation", cancelled_reservation.start_time)
 puts ""
-puts "Booking rule demo values:"
-puts "Northstar max duration:      2 hours"
-puts "Northstar minimum notice:    60 minutes"
-puts "Northstar cancellation rule: 24 hours before start time"
-puts "Northstar weekends:          disabled"
-puts ""
-puts "Demo testing scenarios:"
-print_time("Overlap test date", at_time(overlap_date, 10, 0))
-puts "Overlap workspace: Creative Studio, reserved from 10:00 AM to 12:00 PM"
-puts "Try creating another Creative Studio reservation inside that range."
-puts ""
-print_time("Cancellation BLOCKED reservation starts", cancellation_blocked_start)
-puts "Reservation: Open Desk Lounge"
-puts "Expected result: cancellation should be blocked because it starts within 24 hours."
-puts ""
-print_time("Cancellation ALLOWED reservation starts", at_time(cancellation_allowed_date, 13, 0))
-puts "Reservation: Podcast Room"
-puts "Expected result: cancellation should be allowed because it starts more than 24 hours from now."
-puts ""
-print_time("Edit test reservation starts", at_time(edit_test_date, 9, 0))
-puts "Reservation: Private Office 204"
-puts "Expected result: saving without changes should work and should not overlap with itself."
-puts ""
-puts "Capacity test:"
-puts "Workspace: Focus Booth A"
-puts "Capacity: 1"
-puts "Try setting attendees to 2."
-puts ""
-puts "Delete protection test:"
-puts "Workspace: Legacy Training Room"
-puts "Expected result: delete should be blocked because it has reservation history."
+puts "Invitation tokens:"
+puts "Member token:      demo-member-oliver-token"
+puts "Manager token:     demo-manager-henry-token"
 puts "------------------------------------------------------------"

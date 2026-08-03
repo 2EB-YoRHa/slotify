@@ -5,13 +5,12 @@ type ReservationStatusBadgeProps = {
 export default function ReservationStatusBadge({
   status,
 }: ReservationStatusBadgeProps) {
-  const normalizedStatus = status || "pending";
+  const normalizedStatus = status || "confirmed";
 
   const classes: Record<string, string> = {
     confirmed: "bg-green-50 text-green-600",
-    pending: "bg-yellow-50 text-yellow-600",
     cancelled: "bg-red-50 text-red-600",
-    completed: "bg-slate-100 text-slate-500",
+    concluded: "bg-slate-100 text-slate-500",
   };
 
   return (
@@ -20,11 +19,13 @@ export default function ReservationStatusBadge({
         classes[normalizedStatus] || "bg-slate-100 text-slate-500"
       }`}
     >
-      {capitalize(normalizedStatus)}
+      {formatStatus(normalizedStatus)}
     </span>
   );
 }
 
-function capitalize(value: string): string {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function formatStatus(value: string): string {
+  return value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }

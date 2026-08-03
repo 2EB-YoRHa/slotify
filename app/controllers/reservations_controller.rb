@@ -1,6 +1,9 @@
 class ReservationsController < InertiaController
   before_action :set_reservation, only: %i[show edit update destroy cancel_confirmation]
 
+  before_action :ensure_reservation_can_be_modified,
+              only: %i[edit update destroy cancel_confirmation]
+
   def index
     reservations = reservation_scope
                    .includes(:user, workspace: [ :amenities, { photo_attachment: :blob } ])
@@ -229,6 +232,13 @@ class ReservationsController < InertiaController
 
   private
 
+  def ensure_reservation_can_be_modified
+  return if @reservation.modifiable?
+
+  redirect_to reservation_path(@reservation),
+              alert: "Concluded or cancelled reservations cannot be edited or cancelled."
+  end
+
   def reservation_scope
     if member?
       current_user.reservations.where(organization: current_organization)
@@ -296,14 +306,14 @@ class ReservationsController < InertiaController
   end
 
   def unavailable_workspace_ids_for(start_time, end_time, except_reservation_id: nil)
-    reservations = current_organization
-                   .reservations
-                   .where.not(status: "cancelled")
-                   .where(
-                     "start_time < ? AND end_time > ?",
-                     end_time,
-                     start_time
-                   )
+  reservations = current_organization
+                .reservations
+                .where(status: Reservation::ACTIVE_STATUSES)
+                .where(
+                  "start_time < ? AND end_time > ?",
+                  end_time,
+                  start_time
+                )
 
     if except_reservation_id.present?
       reservations = reservations.where.not(id: except_reservation_id)

@@ -23,7 +23,7 @@ class ErrorsController < InertiaController
 
   def unprocessable
     render_error(
-      status: :unprocessable_entity,
+      status: :unprocessable_content,
       title: "Request could not be processed",
       description: "The request was valid, but Slotify could not complete the action.",
       action_label: "Go back home",

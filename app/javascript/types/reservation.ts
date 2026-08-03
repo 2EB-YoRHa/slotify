@@ -26,6 +26,7 @@ export type Reservation = {
   start_time: string;
   end_time: string;
   status: string;
+  can_modify?: boolean;
   attendees_count?: number | null;
   notes?: string | null;
   total_price?: number | string | null;

@@ -110,7 +110,6 @@ export default function EditReservationScheduleSection({
                 disabled={processing}
                 required
               >
-                <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="cancelled">Cancelled</option>
               </select>

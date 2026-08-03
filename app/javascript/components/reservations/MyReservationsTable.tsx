@@ -108,9 +108,9 @@ export default function MyReservationsTable({
             className="h-12 w-44 rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
           >
             <option value="all">All Statuses</option>
-            <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
             <option value="cancelled">Cancelled</option>
+            <option value="concluded">Concluded</option>
           </select>
         </div>
       </div>
@@ -288,9 +288,14 @@ function ActionLink({ href, title, icon, danger = false }: ActionLinkProps) {
 }
 
 function canModifyReservation(reservation: Reservation): boolean {
-  if (reservation.status === "cancelled") return false;
+  if (typeof reservation.can_modify === "boolean") {
+    return reservation.can_modify;
+  }
 
-  return new Date(reservation.end_time).getTime() >= Date.now();
+  return (
+    reservation.status === "confirmed" &&
+    new Date(reservation.end_time).getTime() >= Date.now()
+  );
 }
 
 function formatText(value?: string | null): string {

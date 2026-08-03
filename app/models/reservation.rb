@@ -1,49 +1,88 @@
 class Reservation < ApplicationRecord
+  STATUSES = %w[confirmed cancelled concluded].freeze
+  ACTIVE_STATUSES = %w[confirmed].freeze
+
   belongs_to :organization
   belongs_to :user
   belongs_to :workspace
 
+  before_validation :normalize_status
+
   validates :start_time, presence: true
   validates :end_time, presence: true
-  validates :status, presence: true
+  validates :status, presence: true, inclusion: { in: STATUSES }
   validates :attendees_count, numericality: { greater_than: 0 }
 
   validate :end_time_after_start_time
   validate :workspace_available
   validate :attendees_count_within_workspace_capacity
-
   validate :within_booking_rules
+
+  def cancelled?
+    status == "cancelled"
+  end
+
+  def concluded?
+    status == "concluded" || ended_without_cancellation?
+  end
+
+  def display_status
+    return "cancelled" if cancelled?
+    return "concluded" if concluded?
+
+    "confirmed"
+  end
+
+  def modifiable?
+    status == "confirmed" && !concluded?
+  end
 
   private
 
-    def end_time_after_start_time
-      return if start_time.blank? || end_time.blank?
+  def normalize_status
+    self.status = "confirmed" if status.blank? || status == "pending"
+    self.status = "concluded" if status == "completed"
 
-      errors.add(:end_time, "must be after start time") if end_time <= start_time
+    if status == "confirmed" && ended_without_cancellation?
+      self.status = "concluded"
     end
+  end
 
-    def workspace_available
-      return if workspace.blank? || start_time.blank? || end_time.blank?
+  def ended_without_cancellation?
+    return false if status == "cancelled"
 
-      overlapping = Reservation
-        .where(workspace_id: workspace_id)
-        .where.not(id: id)
-        .where.not(status: "cancelled")
-        .where("start_time < ? AND end_time > ?", end_time, start_time)
+    end_time.present? && end_time < Time.current
+  end
 
-      errors.add(:base, "Workspace is already reserved for this time") if overlapping.exists?
+  def end_time_after_start_time
+    return if start_time.blank? || end_time.blank?
+
+    errors.add(:end_time, "must be after start time") if end_time <= start_time
+  end
+
+  def workspace_available
+    return if workspace.blank? || start_time.blank? || end_time.blank?
+    return unless status == "confirmed"
+
+    overlapping = Reservation
+      .where(workspace_id: workspace_id)
+      .where.not(id: id)
+      .where(status: ACTIVE_STATUSES)
+      .where("start_time < ? AND end_time > ?", end_time, start_time)
+
+    errors.add(:base, "Workspace is already reserved for this time") if overlapping.exists?
+  end
+
+  def attendees_count_within_workspace_capacity
+    return if workspace.blank? || attendees_count.blank?
+
+    if attendees_count > workspace.capacity
+      errors.add(:attendees_count, "cannot exceed workspace capacity")
     end
+  end
 
-    def attendees_count_within_workspace_capacity
-      return if workspace.blank? || attendees_count.blank?
-
-      if attendees_count > workspace.capacity
-        errors.add(:attendees_count, "cannot exceed workspace capacity")
-      end
-    end
-
-    def within_booking_rules
-    return if status == "cancelled"
+  def within_booking_rules
+    return unless status == "confirmed"
     return if organization.blank?
     return if start_time.blank? || end_time.blank?
 
@@ -82,10 +121,20 @@ class Reservation < ApplicationRecord
   end
 
   def validate_weekend_booking(booking_rule)
-    return if booking_rule.allow_weekend_bookings?
+    return if weekend_bookings_allowed?(booking_rule)
 
-    if start_time.saturday? || start_time.sunday?
-      errors.add(:base, "Weekend bookings are not allowed.")
+    return unless start_time.saturday? || start_time.sunday?
+
+    errors.add(:base, "Weekend bookings are not allowed.")
+  end
+
+  def weekend_bookings_allowed?(booking_rule)
+    if booking_rule.respond_to?(:allow_weekend_bookings?)
+      booking_rule.allow_weekend_bookings?
+    elsif booking_rule.respond_to?(:allow_weekends?)
+      booking_rule.allow_weekends?
+    else
+      false
     end
   end
 end

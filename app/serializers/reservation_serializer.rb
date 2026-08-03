@@ -29,6 +29,8 @@ class ReservationSerializer
     reservation.as_json(
       only: RESERVATION_ATTRIBUTES
     ).merge(
+      status: reservation.display_status,
+      can_modify: reservation.modifiable?,
       workspace: serialized_workspace,
       user: serialized_user
     )

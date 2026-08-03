@@ -84,9 +84,9 @@ export default function ReservationsTable({
             className="h-12 w-44 rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
           >
             <option value="all">All Statuses</option>
-            <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
             <option value="cancelled">Cancelled</option>
+            <option value="concluded">Concluded</option>
           </select>
         </div>
       </div>
@@ -136,7 +136,10 @@ export default function ReservationsTable({
 
           <tbody>
             {filteredReservations.map((reservation, index) => {
-              const isCancelled = reservation.status === "cancelled";
+              const canModify =
+                reservation.can_modify ??
+                (reservation.status === "confirmed" &&
+                  new Date(reservation.end_time).getTime() >= Date.now());
 
               return (
                 <motion.tr
@@ -214,7 +217,7 @@ export default function ReservationsTable({
                         icon={<Eye size={16} />}
                       />
 
-                      {!isCancelled && (
+                      {canModify && (
                         <>
                           <ActionLink
                             href={`/reservations/${reservation.id}/edit`}
