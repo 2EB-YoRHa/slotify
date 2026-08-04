@@ -3,6 +3,13 @@ import type { FormEvent } from "react";
 import { Building2, Hash, Mail, MapPin, Phone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
+import {
+  FieldError,
+  FieldHint,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../ui/FormFeedback";
 import type {
   Organization,
   OrganizationErrors,
@@ -135,7 +142,7 @@ export default function OrganizationForm({
               value={data.address}
               maxLength={200}
               onChange={(event) => updateField("address", event.target.value)}
-              className={`${fieldClassName(Boolean(errors.address))} min-h-32 resize-y`}
+              className={`${fieldClassName(hasFieldError(errors.address))} min-h-32 resize-y`}
               placeholder="Enter organization address"
               disabled={processing}
             />
@@ -149,7 +156,7 @@ export default function OrganizationForm({
             </span>
           </div>
 
-          <FormError error={errors.address} />
+          <FormError error={errors.address} label="Address" />
         </label>
       </div>
 
@@ -200,15 +207,14 @@ function TextInput({
   placeholder,
   disabled,
   helper,
-  required = false,
   error,
   onChange,
 }: TextInputProps) {
-  const hasError = Boolean(error);
+  const hasError = hasFieldError(error);
 
   return (
     <label className="block">
-      <FieldLabel label={label} required={required} />
+      <FieldLabel label={label}/>
 
       <div className="relative">
         <Icon
@@ -219,7 +225,6 @@ function TextInput({
         <input
           type={type}
           value={value}
-          required={required}
           aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
           className={fieldClassName(hasError)}
@@ -229,7 +234,7 @@ function TextInput({
       </div>
 
       <FormHelper helper={helper} />
-      <FormError error={error} />
+      <FormError error={error} label={label} />
     </label>
   );
 }
@@ -243,7 +248,7 @@ function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
     <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
       {label}
-      {required && <span className="text-red-500">*</span>}
+      <RequiredMark show={required} />
     </span>
   );
 }
@@ -253,32 +258,20 @@ type FormHelperProps = {
 };
 
 function FormHelper({ helper }: FormHelperProps) {
-  if (!helper) return null;
-
-  return <p className="mt-2 text-xs font-semibold text-slate-400">{helper}</p>;
+  return <FieldHint>{helper}</FieldHint>;
 }
 
 type FormErrorProps = {
   error?: string | string[];
+  label?: string;
 };
 
-function FormError({ error }: FormErrorProps) {
-  if (!error) return null;
-
-  const message = Array.isArray(error) ? error.join(", ") : error;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
+function FormError({ error, label }: FormErrorProps) {
+  return <FieldError error={error} label={label} />;
 }
 
 function fieldClassName(hasError: boolean): string {
-  const baseClass =
-    "w-full rounded-xl py-3 pl-11 pr-4 text-sm font-medium outline-none transition disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
-
-  if (hasError) {
-    return `${baseClass} border border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-4 focus:ring-red-50`;
-  }
-
-  return `${baseClass} border border-slate-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50`;
+  return formInputClassName(hasError);
 }
 
 function getBaseError(

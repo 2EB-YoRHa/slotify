@@ -4,10 +4,11 @@ export type FormErrorValue = string | string[] | undefined | null;
 
 type FieldErrorProps = {
   error?: FormErrorValue;
+  label?: string;
 };
 
-export function FieldError({ error }: FieldErrorProps) {
-  const message = errorMessage(error);
+export function FieldError({ error, label = "This field" }: FieldErrorProps) {
+  const message = errorMessage(error, label);
 
   if (!message) return null;
 
@@ -44,14 +45,19 @@ export function RequiredMark({ show = true }: RequiredMarkProps) {
   return <span className="text-red-500">*</span>;
 }
 
-export function errorMessage(error?: FormErrorValue): string | null {
+export function errorMessage(
+  error?: FormErrorValue,
+  label = "This field",
+): string | null {
   if (!error) return null;
 
-  if (Array.isArray(error)) {
-    return error.filter(Boolean).join(", ");
-  }
+  const rawMessage = Array.isArray(error)
+    ? error.filter(Boolean).join(", ")
+    : error;
 
-  return error;
+  if (!rawMessage) return null;
+
+  return humanizeRailsMessage(rawMessage, label);
 }
 
 export function hasFieldError(error?: FormErrorValue): boolean {
@@ -69,4 +75,59 @@ export function formInputClassName(hasError: boolean, paddingLeft = true) {
   }
 
   return `${baseClass} ${leftPadding} border-slate-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50`;
+}
+
+function humanizeRailsMessage(message: string, label: string): string {
+  const field = label.trim() || "This field";
+  const lowerField = field.toLowerCase();
+
+  if (message.includes("can't be blank")) {
+    return `${field} is required.`;
+  }
+
+  if (message.includes("is invalid")) {
+    return `Enter a valid ${lowerField}.`;
+  }
+
+  if (message.includes("is not included in the list")) {
+    return `Select a valid ${lowerField}.`;
+  }
+
+  if (message.includes("must be greater than 0")) {
+    return `${field} must be greater than 0.`;
+  }
+
+  if (message.includes("must be greater than or equal to 0")) {
+    return `${field} cannot be negative.`;
+  }
+
+  if (message.includes("must be an integer")) {
+    return `${field} must be a whole number.`;
+  }
+
+  if (message.includes("must be less than or equal to")) {
+    return `${field} ${message}.`;
+  }
+
+  if (message.includes("is too short")) {
+    return `${field} ${message}.`;
+  }
+
+  if (message.includes("is too long")) {
+    return `${field} ${message}.`;
+  }
+
+  if (message.includes("has already been taken")) {
+    return `${field} is already in use.`;
+  }
+
+  if (message.includes("already belongs to this organization")) {
+    return `This email already belongs to this organization.`;
+  }
+
+  if (message.includes("already has a pending invitation")) {
+    return `This email already has a pending invitation.`;
+  }
+
+  return message.endsWith(".") ? message : `${message}.`;
 }

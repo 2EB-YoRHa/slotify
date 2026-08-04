@@ -9,6 +9,12 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
+import {
+  FieldError,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../ui/FormFeedback";
 import type { BookingRule } from "../../types/bookingRule";
 
 type BookingRuleFormProps = {
@@ -215,7 +221,7 @@ function RuleInput({
   error,
   onChange,
 }: RuleInputProps) {
-  const hasError = Boolean(error);
+  const hasError = hasFieldError(error);
 
   return (
     <label className="rounded-xl border border-slate-200 bg-slate-50 p-5">
@@ -240,7 +246,6 @@ function RuleInput({
         onChange={(event) => onChange(event.target.value)}
         className={fieldClassName(hasError)}
         disabled={disabled}
-        required
       />
 
       <div className="mt-2 flex justify-between gap-4 text-xs font-semibold text-slate-400">
@@ -248,7 +253,7 @@ function RuleInput({
         <span>Max: {max}</span>
       </div>
 
-      <FormError error={error} />
+      <FormError error={error} label={label} />
     </label>
   );
 }
@@ -324,32 +329,22 @@ function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
     <span className="flex items-center gap-1 font-bold text-slate-950">
       {label}
-      {required && <span className="text-red-500">*</span>}
+      <RequiredMark show={required} />
     </span>
   );
 }
 
 type FormErrorProps = {
   error?: string | string[];
+  label?: string;
 };
 
-function FormError({ error }: FormErrorProps) {
-  if (!error) return null;
-
-  const message = Array.isArray(error) ? error.join(", ") : error;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
+function FormError({ error, label }: FormErrorProps) {
+  return <FieldError error={error} label={label} />;
 }
 
 function fieldClassName(hasError: boolean): string {
-  const baseClass =
-    "w-full rounded-xl border bg-white px-4 py-3 text-sm font-medium outline-none transition disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
-
-  if (hasError) {
-    return `${baseClass} border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-4 focus:ring-red-50`;
-  }
-
-  return `${baseClass} border-slate-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50`;
+  return formInputClassName(hasError, false);
 }
 
 function fieldError(

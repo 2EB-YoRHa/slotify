@@ -74,7 +74,7 @@ export function TextInput({
       </div>
 
       <FormHelper helper={helper} />
-      <FormError error={error} />
+      <FormError error={error} label={label} />
     </label>
   );
 }
@@ -131,7 +131,7 @@ export function NumberInput({
       </div>
 
       <FormHelper helper={helper} />
-      <FormError error={error} />
+      <FormError error={error} label={label} />
     </label>
   );
 }
@@ -189,7 +189,7 @@ export function SelectInput({
       </div>
 
       <FormHelper helper={helper} />
-      <FormError error={error} />
+      <FormError error={error} label={label} />
     </label>
   );
 }
@@ -251,7 +251,7 @@ export function TextAreaInput({
         )}
       </div>
 
-      <FormError error={error} />
+      <FormError error={error} label={label} />
     </label>
   );
 }
@@ -328,10 +328,11 @@ function FormHelper({ helper }: FormHelperProps) {
 
 type FormErrorProps = {
   error?: string | string[];
+  label?: string;
 };
 
-export function FormError({ error }: FormErrorProps) {
-  return <FieldError error={error} />;
+export function FormError({ error, label }: FormErrorProps) {
+  return <FieldError error={error} label={label} />;
 }
 
 function fieldClassName(hasError: boolean): string {
