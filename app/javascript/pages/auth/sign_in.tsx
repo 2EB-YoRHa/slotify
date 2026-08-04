@@ -1,4 +1,5 @@
 import { Link, useForm } from "@inertiajs/react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { LockKeyhole, Mail } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
@@ -12,6 +13,12 @@ import {
   formInputClassName,
   hasFieldError,
 } from "../../components/ui/FormFeedback";
+import {
+  hasValidationErrors,
+  validateEmail,
+  validateRequired,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 
 type SignInProps = {
   invitation_token?: string | null;
@@ -30,6 +37,8 @@ export default function SignIn({
   invitation_token = null,
   errors: initialErrors = {},
 }: SignInProps) {
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
+
   const {
     data,
     setData,
@@ -47,6 +56,7 @@ export default function SignIn({
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
+    ...clientErrors,
   };
 
   const emailError = fieldError(errors, "email");
@@ -55,13 +65,31 @@ export default function SignIn({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const validationErrors = validateSignInForm(data);
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
+
     post("/users/sign_in");
   }
 
   function updateField(field: keyof SignInFormData["user"], value: string) {
+    clearClientError(field);
+
     setData("user", {
       ...data.user,
       [field]: value,
+    });
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`user.${field}`];
+
+      return nextErrors;
     });
   }
 
@@ -200,6 +228,22 @@ export default function SignIn({
       </div>
     </main>
   );
+}
+
+function validateSignInForm(data: SignInFormData): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  const emailError = validateEmail(data.user.email, "Email", {
+    required: true,
+  });
+
+  if (emailError) errors.email = emailError;
+
+  const passwordError = validateRequired(data.user.password, "Password");
+
+  if (passwordError) errors.password = passwordError;
+
+  return errors;
 }
 
 function fieldError(

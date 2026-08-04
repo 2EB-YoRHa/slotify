@@ -162,3 +162,55 @@ export function validateNumberRange(
 
   return undefined;
 }
+
+export function validatePasswordStrength(
+  value: unknown,
+  label = "Password",
+): string | undefined {
+  const password = String(value ?? "");
+
+  if (password.length === 0) {
+    return `${label} is required.`;
+  }
+
+  if (password.length < 8) {
+    return `${label} must be at least 8 characters.`;
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return `${label} must include at least one uppercase letter.`;
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return `${label} must include at least one lowercase letter.`;
+  }
+
+  if (!/\d/.test(password)) {
+    return `${label} must include at least one number.`;
+  }
+
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    return `${label} must include at least one symbol.`;
+  }
+
+  return undefined;
+}
+
+export function validatePasswordConfirmation(
+  password: unknown,
+  passwordConfirmation: unknown,
+  label = "Confirm Password",
+): string | undefined {
+  const passwordValue = String(password ?? "");
+  const confirmationValue = String(passwordConfirmation ?? "");
+
+  if (confirmationValue.length === 0) {
+    return `${label} is required.`;
+  }
+
+  if (passwordValue !== confirmationValue) {
+    return "Passwords must match.";
+  }
+
+  return undefined;
+}

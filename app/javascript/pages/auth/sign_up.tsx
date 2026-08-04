@@ -1,4 +1,5 @@
 import { Link, useForm } from "@inertiajs/react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import {
   Building2,
@@ -12,9 +13,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
 import AuthFooter from "../../components/auth/AuthFooter";
-import PasswordChecklist, {
-  isStrongPassword,
-} from "../../components/auth/PasswordChecklist";
+import PasswordChecklist from "../../components/auth/PasswordChecklist";
 import LoadingButton from "../../components/ui/LoadingButton";
 import {
   FieldError,
@@ -23,6 +22,15 @@ import {
   formInputClassName,
   hasFieldError,
 } from "../../components/ui/FormFeedback";
+import {
+  hasValidationErrors,
+  validateEmail,
+  validatePasswordConfirmation,
+  validatePasswordStrength,
+  validatePhone,
+  validateTextLength,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 import type { OrganizationInvitation } from "../../types/organization";
 
 type SignUpProps = {
@@ -45,12 +53,15 @@ type SignUpFormData = {
   };
 };
 
+const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
 export default function SignUp({
   invitation = null,
   invitation_token = null,
   errors: initialErrors = {},
 }: SignUpProps) {
   const isInvitationSignup = Boolean(invitation);
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
 
   const {
     data,
@@ -75,25 +86,37 @@ export default function SignUp({
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
+    ...clientErrors,
   };
-
-  const passwordReady = isStrongPassword(
-    data.user.password,
-    data.user.password_confirmation,
-  );
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!passwordReady) return;
+    const validationErrors = validateSignUpForm(data, isInvitationSignup);
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
 
     post("/users");
   }
 
   function updateField(field: keyof SignUpFormData["user"], value: string) {
+    clearClientError(field);
+
     setData("user", {
       ...data.user,
       [field]: value,
+    });
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`user.${field}`];
+
+      return nextErrors;
     });
   }
 
@@ -160,7 +183,7 @@ export default function SignUp({
                     disabled={processing}
                     required={false}
                     error={fieldError(errors, "organization_slug")}
-                    helper="Optional URL-friendly identifier. Leave it blank to auto-generate it."
+                    helper="Optional. Use lowercase letters, numbers, and hyphens only."
                     onChange={(value) =>
                       updateField("organization_slug", value)
                     }
@@ -267,7 +290,6 @@ export default function SignUp({
                 type="submit"
                 loading={processing}
                 loadingText="Creating account..."
-                disabled={!passwordReady}
                 className="w-full"
               >
                 Create Account
@@ -351,6 +373,84 @@ function TextField({
       <FieldError error={error} label={label} />
     </label>
   );
+}
+
+function validateSignUpForm(
+  data: SignUpFormData,
+  isInvitationSignup: boolean,
+): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  if (!isInvitationSignup) {
+    const organizationError = validateTextLength(
+      data.user.organization_name,
+      "Organization",
+      {
+        min: 3,
+        max: 100,
+      },
+    );
+
+    if (organizationError) errors.organization_name = organizationError;
+
+    const slug = data.user.organization_slug.trim();
+
+    if (slug.length > 0 && !SLUG_REGEX.test(slug)) {
+      errors.organization_slug =
+        "Slug can only include lowercase letters, numbers, and hyphens.";
+    }
+
+    if (slug.length > 120) {
+      errors.organization_slug = "Slug must be 120 characters or less.";
+    }
+
+    const phoneError = validatePhone(data.user.organization_phone, "Phone");
+
+    if (phoneError) errors.organization_phone = phoneError;
+
+    const addressError = validateTextLength(
+      data.user.organization_address,
+      "Address",
+      {
+        max: 200,
+        required: false,
+      },
+    );
+
+    if (addressError) errors.organization_address = addressError;
+  }
+
+  const nameError = validateTextLength(data.user.name, "Full Name", {
+    min: 2,
+    max: 100,
+  });
+
+  if (nameError) errors.name = nameError;
+
+  const emailError = validateEmail(data.user.email, "Email", {
+    required: true,
+  });
+
+  if (emailError) errors.email = emailError;
+
+  const passwordError = validatePasswordStrength(
+    data.user.password,
+    "Password",
+  );
+
+  if (passwordError) errors.password = passwordError;
+
+  const confirmationError = validatePasswordConfirmation(
+    data.user.password,
+    data.user.password_confirmation,
+    "Confirm Password",
+  );
+
+  if (confirmationError) {
+    errors.password_confirmation = confirmationError;
+  }
+
+  return errors;
 }
 
 function fieldError(

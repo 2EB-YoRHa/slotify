@@ -1,4 +1,5 @@
 import { Link, useForm } from "@inertiajs/react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { Mail } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
@@ -12,6 +13,11 @@ import {
   formInputClassName,
   hasFieldError,
 } from "../../components/ui/FormFeedback";
+import {
+  hasValidationErrors,
+  validateEmail,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 
 type ForgotPasswordProps = {
   errors?: Partial<Record<string, string | string[]>>;
@@ -28,6 +34,8 @@ export default function ForgotPassword({
   errors: initialErrors = {},
   status = null,
 }: ForgotPasswordProps) {
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
+
   const {
     data,
     setData,
@@ -43,6 +51,7 @@ export default function ForgotPassword({
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
+    ...clientErrors,
   };
 
   const emailError = fieldError(errors, "email");
@@ -50,7 +59,32 @@ export default function ForgotPassword({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const validationErrors = validateForgotPasswordForm(data);
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
+
     post("/users/password");
+  }
+
+  function updateEmail(email: string) {
+    clearClientError("email");
+
+    setData("user", {
+      ...data.user,
+      email,
+    });
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`user.${field}`];
+
+      return nextErrors;
+    });
   }
 
   return (
@@ -97,12 +131,7 @@ export default function ForgotPassword({
                   <input
                     type="email"
                     value={data.user.email}
-                    onChange={(event) =>
-                      setData("user", {
-                        ...data.user,
-                        email: event.target.value,
-                      })
-                    }
+                    onChange={(event) => updateEmail(event.target.value)}
                     className={`h-12 ${formInputClassName(
                       hasFieldError(emailError),
                     )}`}
@@ -144,6 +173,20 @@ export default function ForgotPassword({
       </div>
     </main>
   );
+}
+
+function validateForgotPasswordForm(
+  data: ForgotPasswordFormData,
+): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  const emailError = validateEmail(data.user.email, "Email", {
+    required: true,
+  });
+
+  if (emailError) errors.email = emailError;
+
+  return errors;
 }
 
 function fieldError(

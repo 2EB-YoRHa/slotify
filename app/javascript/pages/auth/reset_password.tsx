@@ -1,11 +1,10 @@
 import { Link, useForm } from "@inertiajs/react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { LockKeyhole } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
 import AuthFooter from "../../components/auth/AuthFooter";
-import PasswordChecklist, {
-  isStrongPassword,
-} from "../../components/auth/PasswordChecklist";
+import PasswordChecklist from "../../components/auth/PasswordChecklist";
 import FlashMessages from "../../components/ui/FlashMessages";
 import LoadingButton from "../../components/ui/LoadingButton";
 import {
@@ -14,6 +13,12 @@ import {
   formInputClassName,
   hasFieldError,
 } from "../../components/ui/FormFeedback";
+import {
+  hasValidationErrors,
+  validatePasswordConfirmation,
+  validatePasswordStrength,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 
 type ResetPasswordProps = {
   reset_password_token?: string | null;
@@ -32,6 +37,8 @@ export default function ResetPassword({
   reset_password_token = null,
   errors: initialErrors = {},
 }: ResetPasswordProps) {
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
+
   const {
     data,
     setData,
@@ -49,6 +56,7 @@ export default function ResetPassword({
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
+    ...clientErrors,
   };
 
   const passwordError = fieldError(errors, "password");
@@ -58,15 +66,13 @@ export default function ResetPassword({
   );
   const tokenError = fieldError(errors, "reset_password_token");
 
-  const passwordReady = isStrongPassword(
-    data.user.password,
-    data.user.password_confirmation,
-  );
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!passwordReady) return;
+    const validationErrors = validateResetPasswordForm(data);
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
 
     patch("/users/password");
   }
@@ -75,9 +81,22 @@ export default function ResetPassword({
     field: keyof ResetPasswordFormData["user"],
     value: string,
   ) {
+    clearClientError(field);
+
     setData("user", {
       ...data.user,
       [field]: value,
+    });
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`user.${field}`];
+
+      return nextErrors;
     });
   }
 
@@ -183,7 +202,6 @@ export default function ResetPassword({
                 type="submit"
                 loading={processing}
                 loadingText="Updating..."
-                disabled={!passwordReady}
                 className="w-full"
               >
                 Update Password
@@ -205,6 +223,31 @@ export default function ResetPassword({
       </div>
     </main>
   );
+}
+
+function validateResetPasswordForm(
+  data: ResetPasswordFormData,
+): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  const passwordError = validatePasswordStrength(
+    data.user.password,
+    "New Password",
+  );
+
+  if (passwordError) errors.password = passwordError;
+
+  const confirmationError = validatePasswordConfirmation(
+    data.user.password,
+    data.user.password_confirmation,
+    "Confirm Password",
+  );
+
+  if (confirmationError) {
+    errors.password_confirmation = confirmationError;
+  }
+
+  return errors;
 }
 
 function fieldError(

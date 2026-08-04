@@ -1,4 +1,5 @@
 import { useForm } from "@inertiajs/react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { Mail, ShieldCheck } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
@@ -9,6 +10,12 @@ import {
   formInputClassName,
   hasFieldError,
 } from "../ui/FormFeedback";
+import {
+  hasValidationErrors,
+  validateEmail,
+  validateRequired,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 import type { Role } from "../../types/organization";
 
 type InviteMemberModalProps = {
@@ -30,6 +37,7 @@ export default function InviteMemberModal({
   onClose,
 }: InviteMemberModalProps) {
   const defaultRole = roles.find((role) => role.name === "member") || roles[0];
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
 
   const {
     data,
@@ -45,7 +53,11 @@ export default function InviteMemberModal({
     },
   });
 
-  const errors: Record<string, string | string[] | undefined> = formErrors;
+  const errors: Record<string, string | string[] | undefined> = {
+    ...formErrors,
+    ...clientErrors,
+  };
+
   const emailError = errors.email || errors["organization_invitation.email"];
   const roleError = errors.role_id || errors["organization_invitation.role_id"];
 
@@ -54,16 +66,24 @@ export default function InviteMemberModal({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const validationErrors = validateInvitationForm(data);
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
+
     post("/organization_invitations", {
       preserveScroll: true,
       onSuccess: () => {
         reset();
+        setClientErrors({});
         onClose();
       },
     });
   }
 
   function updateEmail(email: string) {
+    clearClientError("email");
+
     setData("organization_invitation", {
       ...data.organization_invitation,
       email,
@@ -71,9 +91,29 @@ export default function InviteMemberModal({
   }
 
   function updateRole(roleId: string) {
+    clearClientError("role_id");
+
     setData("organization_invitation", {
       ...data.organization_invitation,
       role_id: roleId,
+    });
+  }
+
+  function closeModal() {
+    if (processing) return;
+
+    setClientErrors({});
+    onClose();
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`organization_invitation.${field}`];
+
+      return nextErrors;
     });
   }
 
@@ -127,7 +167,7 @@ export default function InviteMemberModal({
 
               <button
                 type="button"
-                onClick={onClose}
+                onClick={closeModal}
                 disabled={processing}
                 className="text-xl text-slate-400 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -206,7 +246,7 @@ export default function InviteMemberModal({
                 variant="secondary"
                 loading={false}
                 disabled={processing}
-                onClick={onClose}
+                onClick={closeModal}
                 className="flex-1"
               >
                 Cancel
@@ -240,6 +280,33 @@ function InfoItem({ title, description }: InfoItemProps) {
       <p className="mt-1 leading-6 text-slate-500">{description}</p>
     </div>
   );
+}
+
+function validateInvitationForm(data: InvitationFormData): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  const emailError = validateEmail(
+    data.organization_invitation.email,
+    "Email Address",
+    {
+      required: true,
+    },
+  );
+
+  if (emailError) {
+    errors.email = emailError;
+  }
+
+  const roleError = validateRequired(
+    data.organization_invitation.role_id,
+    "Initial Role",
+  );
+
+  if (roleError) {
+    errors.role_id = roleError;
+  }
+
+  return errors;
 }
 
 function formatRole(role: string): string {

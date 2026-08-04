@@ -1,4 +1,5 @@
 import { useForm } from "@inertiajs/react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { PlusCircle, Sparkles } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
@@ -9,6 +10,11 @@ import {
   formInputClassName,
   hasFieldError,
 } from "../ui/FormFeedback";
+import {
+  hasValidationErrors,
+  validateTextLength,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 
 type AmenityFormProps = {
   errors?: Partial<Record<string, string | string[]>>;
@@ -23,6 +29,8 @@ type AmenityFormData = {
 export default function AmenityForm({
   errors: initialErrors = {},
 }: AmenityFormProps) {
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
+
   const {
     data,
     setData,
@@ -39,6 +47,7 @@ export default function AmenityForm({
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
+    ...clientErrors,
   };
 
   const nameError = errors.name || errors["amenity.name"];
@@ -46,13 +55,39 @@ export default function AmenityForm({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const validationErrors = validateAmenityForm(data);
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
+
     post("/amenities", {
       preserveScroll: true,
       preserveState: true,
       only: ["amenities", "errors", "flash"],
       onSuccess: () => {
         reset();
+        setClientErrors({});
       },
+    });
+  }
+
+  function updateName(name: string) {
+    clearClientError("name");
+
+    setData("amenity", {
+      ...data.amenity,
+      name,
+    });
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`amenity.${field}`];
+
+      return nextErrors;
     });
   }
 
@@ -69,7 +104,9 @@ export default function AmenityForm({
               <PlusCircle size={20} strokeWidth={2.4} />
             </div>
 
-            <h2 className="text-xl font-bold text-slate-950">Create Amenity</h2>
+            <h2 className="text-xl font-bold text-slate-950">
+              Create Amenity
+            </h2>
           </div>
 
           <p className="mt-3 text-sm leading-6 text-slate-500">
@@ -95,12 +132,7 @@ export default function AmenityForm({
                   <input
                     type="text"
                     value={data.amenity.name}
-                    onChange={(event) =>
-                      setData("amenity", {
-                        ...data.amenity,
-                        name: event.target.value,
-                      })
-                    }
+                    onChange={(event) => updateName(event.target.value)}
                     className={`h-12 ${formInputClassName(
                       hasFieldError(nameError),
                     )}`}
@@ -131,4 +163,19 @@ export default function AmenityForm({
       </div>
     </form>
   );
+}
+
+function validateAmenityForm(data: AmenityFormData): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  const nameError = validateTextLength(data.amenity.name, "Amenity Name", {
+    min: 2,
+    max: 60,
+  });
+
+  if (nameError) {
+    errors.name = nameError;
+  }
+
+  return errors;
 }
