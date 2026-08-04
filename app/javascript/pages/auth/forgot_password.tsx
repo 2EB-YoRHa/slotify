@@ -64,7 +64,7 @@ export default function ForgotPassword({
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            <form noValidate onSubmit={handleSubmit} className="mt-8 space-y-6">
               <label className="block">
                 <span className="mb-2 block text-sm font-bold text-slate-700">
                   Email

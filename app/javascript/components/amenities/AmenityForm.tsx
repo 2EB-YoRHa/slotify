@@ -49,6 +49,7 @@ export default function AmenityForm({
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
     >

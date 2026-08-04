@@ -54,6 +54,7 @@ export default function OrganizationForm({
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
     >

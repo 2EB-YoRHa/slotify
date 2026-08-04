@@ -1,5 +1,12 @@
 import { Power } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import {
+  FieldError,
+  FieldHint,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../../ui/FormFeedback";
 
 type IconBoxProps = {
   icon: LucideIcon;
@@ -38,16 +45,15 @@ export function TextInput({
   placeholder,
   disabled,
   helper,
-  required = false,
   maxLength,
   error,
   onChange,
 }: TextInputProps) {
-  const hasError = Boolean(error);
+  const hasError = hasFieldError(error);
 
   return (
     <label className="block">
-      <FieldLabel label={label} required={required} />
+      <FieldLabel label={label} />
 
       <div className="relative">
         <Icon
@@ -59,7 +65,6 @@ export function TextInput({
           type="text"
           value={value}
           maxLength={maxLength}
-          required={required}
           aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
           className={fieldClassName(hasError)}
@@ -97,15 +102,14 @@ export function NumberInput({
   placeholder,
   disabled,
   helper,
-  required = true,
   error,
   onChange,
 }: NumberInputProps) {
-  const hasError = Boolean(error);
+  const hasError = hasFieldError(error);
 
   return (
     <label className="block">
-      <FieldLabel label={label} required={required} />
+      <FieldLabel label={label} />
 
       <div className="relative">
         <Icon
@@ -118,7 +122,6 @@ export function NumberInput({
           min={min}
           step={step}
           value={value}
-          required={required}
           aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
           className={fieldClassName(hasError)}
@@ -154,16 +157,15 @@ export function SelectInput({
   value,
   disabled,
   helper,
-  required = true,
   error,
   options,
   onChange,
 }: SelectInputProps) {
-  const hasError = Boolean(error);
+  const hasError = hasFieldError(error);
 
   return (
     <label className="block">
-      <FieldLabel label={label} required={required} />
+      <FieldLabel label={label} />
 
       <div className="relative">
         <Icon
@@ -173,7 +175,6 @@ export function SelectInput({
 
         <select
           value={value}
-          required={required}
           aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
           className={`${fieldClassName(hasError)} appearance-none bg-white pr-10`}
@@ -213,16 +214,15 @@ export function TextAreaInput({
   placeholder,
   disabled,
   helper,
-  required = false,
   maxLength,
   error,
   onChange,
 }: TextAreaInputProps) {
-  const hasError = Boolean(error);
+  const hasError = hasFieldError(error);
 
   return (
     <label className="block">
-      <FieldLabel label={label} required={required} />
+      <FieldLabel label={label} />
 
       <div className="relative">
         <Icon
@@ -232,7 +232,6 @@ export function TextAreaInput({
 
         <textarea
           value={value}
-          required={required}
           maxLength={maxLength}
           aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
@@ -314,8 +313,7 @@ function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
     <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
       {label}
-
-      {required && <span className="text-red-500">*</span>}
+      <RequiredMark show={required} />
     </span>
   );
 }
@@ -325,9 +323,7 @@ type FormHelperProps = {
 };
 
 function FormHelper({ helper }: FormHelperProps) {
-  if (!helper) return null;
-
-  return <p className="mt-2 text-xs font-semibold text-slate-400">{helper}</p>;
+  return <FieldHint>{helper}</FieldHint>;
 }
 
 type FormErrorProps = {
@@ -335,20 +331,9 @@ type FormErrorProps = {
 };
 
 export function FormError({ error }: FormErrorProps) {
-  if (!error) return null;
-
-  const message = Array.isArray(error) ? error.join(", ") : error;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
+  return <FieldError error={error} />;
 }
 
 function fieldClassName(hasError: boolean): string {
-  const baseClass =
-    "w-full rounded-xl py-3 pl-11 pr-4 text-sm font-medium outline-none transition disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
-
-  if (hasError) {
-    return `${baseClass} border border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-4 focus:ring-red-50`;
-  }
-
-  return `${baseClass} border border-slate-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50`;
+  return formInputClassName(hasError);
 }

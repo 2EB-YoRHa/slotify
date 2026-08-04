@@ -217,7 +217,7 @@ export default function EditReservationForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
+    <form noValidate onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
       <motion.section
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}

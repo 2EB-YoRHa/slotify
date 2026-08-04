@@ -116,7 +116,7 @@ export default function SignUp({
               )}
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <form noValidate onSubmit={handleSubmit} className="mt-8 space-y-5">
               <FormError errors={errors} field="invitation_token" />
 
               {!isInvitationSignup && (

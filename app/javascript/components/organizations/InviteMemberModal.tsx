@@ -94,7 +94,7 @@ export default function InviteMemberModal({
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8">
+          <form noValidate onSubmit={handleSubmit} className="p-8">
             <div className="mb-6 flex items-start justify-between">
               <div>
                 <h3 className="text-xl font-bold text-slate-900">

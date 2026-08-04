@@ -81,7 +81,7 @@ export default function ResetPassword({
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <form noValidate onSubmit={handleSubmit} className="mt-8 space-y-5">
               <input
                 type="hidden"
                 value={data.user.reset_password_token}
