@@ -1,5 +1,7 @@
 import { useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import { Building2, Hash, Mail, MapPin, Phone } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
 import type {
   Organization,
@@ -55,89 +57,96 @@ export default function OrganizationForm({
       onSubmit={handleSubmit}
       className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
     >
+      <div className="mb-8 flex items-start gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+          <Building2 size={26} strokeWidth={2.4} />
+        </div>
+
+        <div>
+          <h2 className="text-2xl font-bold text-slate-950">
+            Organization Details
+          </h2>
+
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            Update the organization profile information shown across Slotify.
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 gap-6">
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Organization Name
-          </span>
+        <TextInput
+          icon={Building2}
+          label="Organization Name"
+          value={data.name}
+          placeholder="Enter organization name"
+          disabled={processing}
+          required
+          helper="Use the official or public name of the organization."
+          error={errors.name}
+          onChange={(value) => updateField("name", value)}
+        />
 
-          <input
-            type="text"
-            value={data.name}
-            onChange={(event) => updateField("name", event.target.value)}
-            className="input"
-            placeholder="Slotify Demo"
-            disabled={processing}
-            required
-          />
+        <TextInput
+          icon={Hash}
+          label="Slug"
+          value={data.slug}
+          placeholder="Generated automatically from the name"
+          disabled={processing}
+          required
+          helper="Used as a unique URL-friendly identifier."
+          error={errors.slug}
+          onChange={(value) => updateField("slug", value)}
+        />
 
-          <FormError error={errors.name} />
-        </label>
+        <TextInput
+          icon={Mail}
+          type="email"
+          label="Email"
+          value={data.email}
+          placeholder="Enter contact email"
+          disabled={processing}
+          helper="Optional. Used as the organization contact email."
+          error={errors.email}
+          onChange={(value) => updateField("email", value)}
+        />
 
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Slug
-          </span>
-
-          <input
-            type="text"
-            value={data.slug}
-            onChange={(event) => updateField("slug", event.target.value)}
-            className="input"
-            placeholder="slotify-demo"
-            disabled={processing}
-            required
-          />
-
-          <FormError error={errors.slug} />
-        </label>
-
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Email
-          </span>
-
-          <input
-            type="email"
-            value={data.email}
-            onChange={(event) => updateField("email", event.target.value)}
-            className="input"
-            placeholder="admin@slotify.com"
-            disabled={processing}
-          />
-
-          <FormError error={errors.email} />
-        </label>
-
-        <label className="block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Phone
-          </span>
-
-          <input
-            type="text"
-            value={data.phone}
-            onChange={(event) => updateField("phone", event.target.value)}
-            className="input"
-            placeholder="8888-8888"
-            disabled={processing}
-          />
-
-          <FormError error={errors.phone} />
-        </label>
+        <TextInput
+          icon={Phone}
+          label="Phone"
+          value={data.phone}
+          placeholder="Enter contact phone"
+          disabled={processing}
+          helper="Optional. Use only numbers and basic phone symbols."
+          error={errors.phone}
+          onChange={(value) => updateField("phone", value)}
+        />
 
         <label className="col-span-2 block">
-          <span className="mb-2 block text-sm font-bold text-slate-700">
-            Address
-          </span>
+          <FieldLabel label="Address" />
 
-          <textarea
-            value={data.address}
-            onChange={(event) => updateField("address", event.target.value)}
-            className="input min-h-32"
-            placeholder="San José, Costa Rica"
-            disabled={processing}
-          />
+          <div className="relative">
+            <MapPin
+              size={17}
+              className="pointer-events-none absolute left-4 top-4 text-slate-400"
+            />
+
+            <textarea
+              value={data.address}
+              maxLength={200}
+              onChange={(event) => updateField("address", event.target.value)}
+              className={`${fieldClassName(Boolean(errors.address))} min-h-32 resize-y`}
+              placeholder="Enter organization address"
+              disabled={processing}
+            />
+          </div>
+
+          <div className="mt-2 flex items-center justify-between gap-4">
+            <FormHelper helper="Optional. Add the main physical location or business address." />
+
+            <span className="text-xs font-semibold text-slate-400">
+              {data.address.length}/200
+            </span>
+          </div>
 
           <FormError error={errors.address} />
         </label>
@@ -169,6 +178,85 @@ export default function OrganizationForm({
   );
 }
 
+type TextInputProps = {
+  icon: LucideIcon;
+  label: string;
+  type?: string;
+  value: string;
+  placeholder: string;
+  disabled: boolean;
+  helper?: string;
+  required?: boolean;
+  error?: string | string[];
+  onChange: (value: string) => void;
+};
+
+function TextInput({
+  icon: Icon,
+  label,
+  type = "text",
+  value,
+  placeholder,
+  disabled,
+  helper,
+  required = false,
+  error,
+  onChange,
+}: TextInputProps) {
+  const hasError = Boolean(error);
+
+  return (
+    <label className="block">
+      <FieldLabel label={label} required={required} />
+
+      <div className="relative">
+        <Icon
+          size={17}
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+        />
+
+        <input
+          type={type}
+          value={value}
+          required={required}
+          aria-invalid={hasError}
+          onChange={(event) => onChange(event.target.value)}
+          className={fieldClassName(hasError)}
+          placeholder={placeholder}
+          disabled={disabled}
+        />
+      </div>
+
+      <FormHelper helper={helper} />
+      <FormError error={error} />
+    </label>
+  );
+}
+
+type FieldLabelProps = {
+  label: string;
+  required?: boolean;
+};
+
+function FieldLabel({ label, required = false }: FieldLabelProps) {
+  return (
+    <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+      {label}
+      {required && <span className="text-red-500">*</span>}
+    </span>
+  );
+}
+
+type FormHelperProps = {
+  helper?: string;
+};
+
+function FormHelper({ helper }: FormHelperProps) {
+  if (!helper) return null;
+
+  return <p className="mt-2 text-xs font-semibold text-slate-400">{helper}</p>;
+}
+
 type FormErrorProps = {
   error?: string | string[];
 };
@@ -181,8 +269,19 @@ function FormError({ error }: FormErrorProps) {
   return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
 }
 
+function fieldClassName(hasError: boolean): string {
+  const baseClass =
+    "w-full rounded-xl py-3 pl-11 pr-4 text-sm font-medium outline-none transition disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
+
+  if (hasError) {
+    return `${baseClass} border border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-4 focus:ring-red-50`;
+  }
+
+  return `${baseClass} border border-slate-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50`;
+}
+
 function getBaseError(
-  errors: Record<string, string | string[] | undefined>
+  errors: Record<string, string | string[] | undefined>,
 ): string | null {
   const error = errors.base;
 

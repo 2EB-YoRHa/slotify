@@ -1,6 +1,8 @@
 class Organization < ApplicationRecord
   ACTIVE_SUBSCRIPTION_STATUSES = Subscription::ACTIVE_STATUSES
   SLUG_FORMAT = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
+  EMAIL_FORMAT = URI::MailTo::EMAIL_REGEXP
+  PHONE_FORMAT = /\A[\d\s+\-().]+\z/
 
   has_many :users, dependent: :destroy
   has_many :workspaces, dependent: :destroy
@@ -10,10 +12,38 @@ class Organization < ApplicationRecord
   has_one :booking_rule, dependent: :destroy
 
   before_validation :normalize_slug
+  before_validation :normalize_contact_fields
   before_validation :assign_unique_slug,
                     if: :should_assign_unique_slug?
 
-  validates :name, presence: true
+validates :name,
+          presence: true,
+          length: {
+            minimum: 3,
+            maximum: 100
+          }
+
+validates :email,
+          format: {
+            with: EMAIL_FORMAT
+          },
+          allow_blank: true
+
+validates :phone,
+          length: {
+            maximum: 30
+          },
+          format: {
+            with: PHONE_FORMAT,
+            message: "can only include numbers, spaces, +, -, parentheses, and dots"
+          },
+          allow_blank: true
+
+validates :address,
+          length: {
+            maximum: 200
+          },
+          allow_blank: true
 
   validates :slug,
             presence: true,
@@ -144,6 +174,13 @@ class Organization < ApplicationRecord
   end
 
   private
+
+  def normalize_contact_fields
+    self.name = name.to_s.strip
+    self.email = email.to_s.strip.downcase
+    self.phone = phone.to_s.strip
+    self.address = address.to_s.strip
+  end
 
   def normalize_slug
     self.slug = self.class.normalize_slug(slug.presence || name)

@@ -1,4 +1,6 @@
 class OrganizationInvitation < ApplicationRecord
+  STATUSES = %w[pending accepted expired cancelled].freeze
+
   belongs_to :organization
   belongs_to :invited_by, class_name: "User"
   belongs_to :role
@@ -6,9 +8,22 @@ class OrganizationInvitation < ApplicationRecord
   before_validation :normalize_email
   before_validation :set_defaults, on: :create
 
-  validates :email, presence: true
-  validates :token, presence: true, uniqueness: true
-  validates :status, presence: true
+  validates :email,
+            presence: true,
+            format: {
+              with: URI::MailTo::EMAIL_REGEXP
+            }
+
+  validates :token,
+            presence: true,
+            uniqueness: true
+
+  validates :status,
+            presence: true,
+            inclusion: {
+              in: STATUSES
+            }
+
   validates :expires_at, presence: true
 
   validate :email_is_not_already_member, on: :create

@@ -78,7 +78,7 @@ export default function InviteMemberModal({
 
             <div className="mt-8 space-y-5 text-sm">
               <InfoItem
-                title="Role Based Access"
+                title="Role-Based Access"
                 description="Assign member or manager permissions."
               />
 
@@ -102,7 +102,7 @@ export default function InviteMemberModal({
                 </h3>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Complete the email and initial role.
+                  Enter the email address and select the access level.
                 </p>
               </div>
 
@@ -126,7 +126,7 @@ export default function InviteMemberModal({
                 value={data.organization_invitation.email}
                 onChange={(event) => updateEmail(event.target.value)}
                 className="input"
-                placeholder="name@company.com"
+                placeholder="Enter member email"
                 disabled={processing}
                 required
               />
