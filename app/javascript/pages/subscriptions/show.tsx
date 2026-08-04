@@ -1,14 +1,11 @@
 import AppLayout from "../../components/AppLayout";
 import AvailablePlansSection from "../../components/subscriptions/show/AvailablePlansSection";
-import CurrentPlanPanel from "../../components/subscriptions/show/CurrentPlanPanel";
-import PlanOverviewPanel from "../../components/subscriptions/show/PlanOverviewPanel";
-import SubscriptionHeader from "../../components/subscriptions/show/SubscriptionHeader";
-import SubscriptionStatsGrid from "../../components/subscriptions/show/SubscriptionStatsGrid";
 import BillingModeNotice from "../../components/subscriptions/show/BillingModeNotice";
+import CurrentPlanPanel from "../../components/subscriptions/show/CurrentPlanPanel";
+import SubscriptionHeader from "../../components/subscriptions/show/SubscriptionHeader";
 import {
   formatPlan,
   formatStatus,
-  formatUsage,
   normalizePlan,
 } from "../../helpers/subscriptionShowHelpers";
 import type {
@@ -38,6 +35,7 @@ export default function SubscriptionShow({
 
   const currentPlanLabel = formatPlan(currentPlan);
   const status = formatStatus(subscription?.status);
+  const activePlan = plans.find((plan) => plan.key === currentPlan);
 
   const referenceDate =
     subscription?.expires_at ||
@@ -46,22 +44,12 @@ export default function SubscriptionShow({
     subscription?.starts_at ||
     null;
 
-  const workspaceUsage = formatUsage(
-    usage?.workspaces_used,
-    usage?.workspace_limit,
-  );
-
-  const memberUsage = formatUsage(usage?.member_slots_used, usage?.user_limit);
-
   return (
     <AppLayout>
-      <SubscriptionHeader />
-
-      <SubscriptionStatsGrid
+      <SubscriptionHeader
         currentPlanLabel={currentPlanLabel}
         status={status}
-        workspaceUsage={workspaceUsage}
-        memberUsage={memberUsage}
+        activePlan={activePlan}
       />
 
       <BillingModeNotice
@@ -70,25 +58,14 @@ export default function SubscriptionShow({
         canManageBilling={can_manage_billing}
       />
 
-      <section className="mb-8 grid grid-cols-3 gap-8">
-        <CurrentPlanPanel
-          currentPlanLabel={currentPlanLabel}
-          status={status}
-          referenceDate={referenceDate}
-          workspaceUsage={workspaceUsage}
-          memberUsage={memberUsage}
-          usage={usage}
-          canManageBilling={can_manage_billing}
-        />
-
-        <PlanOverviewPanel
-          currentPlanLabel={currentPlanLabel}
-          status={status}
-          referenceDate={referenceDate}
-          workspaceUsage={workspaceUsage}
-          memberUsage={memberUsage}
-        />
-      </section>
+      <CurrentPlanPanel
+        currentPlanLabel={currentPlanLabel}
+        status={status}
+        referenceDate={referenceDate}
+        usage={usage}
+        activePlan={activePlan}
+        canManageBilling={can_manage_billing}
+      />
 
       <AvailablePlansSection
         plans={plans}

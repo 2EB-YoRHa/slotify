@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { CreditCard, Info, ShieldCheck } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 type BillingModeNoticeProps = {
   currentPlanLabel: string;
@@ -16,8 +17,9 @@ export default function BillingModeNotice({
     return (
       <NoticeContainer
         icon={CreditCard}
-        title="Ready to start billing"
-        description="No active Stripe subscription was found for this organization. Selecting a plan will open Stripe Checkout and create the first subscription."
+        tone="cyan"
+        title="Billing is ready to start"
+        description="This organization does not have an active Stripe subscription yet. Choosing a plan will open Stripe Checkout."
       />
     );
   }
@@ -26,8 +28,9 @@ export default function BillingModeNotice({
     return (
       <NoticeContainer
         icon={ShieldCheck}
-        title="Active Stripe subscription detected"
-        description={`This organization is currently on the ${currentPlanLabel} plan. Plan changes, payment methods, and cancellations are managed from the Stripe Customer Portal to avoid duplicate subscriptions.`}
+        tone="green"
+        title="Billing is managed through Stripe"
+        description={`This organization is currently on ${currentPlanLabel}. Plan changes, payment methods, invoices, and cancellations should be managed in the Stripe Customer Portal.`}
       />
     );
   }
@@ -35,32 +38,41 @@ export default function BillingModeNotice({
   return (
     <NoticeContainer
       icon={Info}
-      title="Billing portal unavailable"
-      description="This organization has subscription information, but no Stripe customer is linked yet. Review the Stripe configuration before managing billing."
+      tone="amber"
+      title="Billing portal is not available"
+      description="Subscription information exists, but no Stripe customer is linked yet. Review the Stripe configuration before managing billing."
     />
   );
 }
 
 type NoticeContainerProps = {
-  icon: typeof Info;
+  icon: LucideIcon;
+  tone: "cyan" | "green" | "amber";
   title: string;
   description: string;
 };
 
 function NoticeContainer({
   icon: Icon,
+  tone,
   title,
   description,
 }: NoticeContainerProps) {
+  const toneClass = {
+    cyan: "border-cyan-100 bg-cyan-50 text-cyan-600",
+    green: "border-green-100 bg-green-50 text-green-600",
+    amber: "border-amber-100 bg-amber-50 text-amber-600",
+  }[tone];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.11 }}
-      className="mb-8 rounded-2xl border border-cyan-100 bg-cyan-50/70 p-5 shadow-sm"
+      transition={{ delay: 0.1 }}
+      className={`mb-8 rounded-2xl border p-5 shadow-sm ${toneClass}`}
     >
       <div className="flex items-start gap-4">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
           <Icon size={21} strokeWidth={2.4} />
         </div>
 

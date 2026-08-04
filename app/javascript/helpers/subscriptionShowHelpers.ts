@@ -1,3 +1,5 @@
+export type UsageTone = "safe" | "warning" | "danger" | "unlimited";
+
 export function normalizePlan(value?: string | null): string {
   if (!value) return "starter";
 
@@ -48,4 +50,18 @@ export function usagePercentage(
   if (!limit) return 100;
 
   return Math.min(100, Math.round(((used || 0) / limit) * 100));
+}
+
+export function usageTone(
+  used?: number | null,
+  limit?: number | null,
+): UsageTone {
+  if (!limit) return "unlimited";
+
+  const percentage = usagePercentage(used, limit);
+
+  if (percentage >= 95) return "danger";
+  if (percentage >= 75) return "warning";
+
+  return "safe";
 }

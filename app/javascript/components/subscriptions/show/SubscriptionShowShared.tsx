@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import type { LucideIcon } from "lucide-react";
+import type { UsageTone } from "../../../helpers/subscriptionShowHelpers";
 
 type IconBoxProps = {
   icon: LucideIcon;
@@ -77,6 +78,7 @@ type UsageMeterProps = {
   value: string;
   percentage: number;
   helper: string;
+  tone?: UsageTone;
 };
 
 export function UsageMeter({
@@ -84,25 +86,80 @@ export function UsageMeter({
   value,
   percentage,
   helper,
+  tone = "safe",
 }: UsageMeterProps) {
-  return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 p-5">
-      <div className="mb-3 flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-bold text-slate-700">{label}</p>
+  const toneClasses = usageToneClasses(tone);
 
-          <p className="mt-1 text-xs text-slate-400">{helper}</p>
+  return (
+    <div className={`rounded-2xl border p-5 ${toneClasses.container}`}>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-extrabold text-slate-800">{label}</p>
+
+          <p className="mt-1 text-xs leading-5 text-slate-500">{helper}</p>
         </div>
 
-        <p className="text-sm font-extrabold text-slate-950">{value}</p>
+        <p className={`text-sm font-extrabold ${toneClasses.text}`}>{value}</p>
       </div>
 
       <div className="h-3 overflow-hidden rounded-full bg-white">
         <div
-          className="h-full rounded-full bg-cyan-400"
+          className={`h-full rounded-full transition-all ${toneClasses.bar}`}
           style={{ width: `${percentage}%` }}
         />
       </div>
+
+      <p className={`mt-3 text-xs font-bold ${toneClasses.text}`}>
+        {usageHelperText(tone, percentage)}
+      </p>
     </div>
   );
+}
+
+function usageToneClasses(tone: UsageTone) {
+  if (tone === "danger") {
+    return {
+      container: "border-red-100 bg-red-50",
+      bar: "bg-red-400",
+      text: "text-red-600",
+    };
+  }
+
+  if (tone === "warning") {
+    return {
+      container: "border-amber-100 bg-amber-50",
+      bar: "bg-amber-400",
+      text: "text-amber-600",
+    };
+  }
+
+  if (tone === "unlimited") {
+    return {
+      container: "border-cyan-100 bg-cyan-50",
+      bar: "bg-cyan-400",
+      text: "text-cyan-600",
+    };
+  }
+
+  return {
+    container: "border-slate-100 bg-slate-50",
+    bar: "bg-cyan-400",
+    text: "text-slate-700",
+  };
+}
+
+function usageHelperText(tone: UsageTone, percentage: number): string {
+  if (tone === "unlimited") {
+    return "Unlimited on this plan.";
+  }
+
+  if (tone === "danger") {
+    return "Limit reached or almost reached.";
+  }
+
+  if (tone === "warning") {
+    return "Getting close to the plan limit.";
+  }
+
+  return `${percentage}% of plan limit used.`;
 }
