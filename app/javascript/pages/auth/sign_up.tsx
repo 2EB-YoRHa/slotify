@@ -16,6 +16,13 @@ import PasswordChecklist, {
   isStrongPassword,
 } from "../../components/auth/PasswordChecklist";
 import LoadingButton from "../../components/ui/LoadingButton";
+import {
+  FieldError,
+  FieldHint,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../../components/ui/FormFeedback";
 import type { OrganizationInvitation } from "../../types/organization";
 
 type SignUpProps = {
@@ -38,17 +45,20 @@ type SignUpFormData = {
   };
 };
 
-const inputClass =
-  "h-12 w-full rounded-xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
-
 export default function SignUp({
   invitation = null,
   invitation_token = null,
-  errors = {},
+  errors: initialErrors = {},
 }: SignUpProps) {
   const isInvitationSignup = Boolean(invitation);
 
-  const { data, setData, post, processing } = useForm<SignUpFormData>({
+  const {
+    data,
+    setData,
+    post,
+    processing,
+    errors: formErrors,
+  } = useForm<SignUpFormData>({
     user: {
       name: "",
       email: invitation?.email || "",
@@ -61,6 +71,11 @@ export default function SignUp({
       organization_address: "",
     },
   });
+
+  const errors: Record<string, string | string[] | undefined> = {
+    ...initialErrors,
+    ...formErrors,
+  };
 
   const passwordReady = isStrongPassword(
     data.user.password,
@@ -117,7 +132,10 @@ export default function SignUp({
             </div>
 
             <form noValidate onSubmit={handleSubmit} className="mt-8 space-y-5">
-              <FormError errors={errors} field="invitation_token" />
+              <FieldError
+                error={fieldError(errors, "invitation_token")}
+                label="Invitation"
+              />
 
               {!isInvitationSignup && (
                 <div className="grid grid-cols-2 gap-4">
@@ -127,7 +145,8 @@ export default function SignUp({
                     value={data.user.organization_name}
                     placeholder="Enter organization name"
                     disabled={processing}
-                    error={errors.organization_name}
+                    error={fieldError(errors, "organization_name")}
+                    helper="Use the public name of the coworking organization."
                     onChange={(value) =>
                       updateField("organization_name", value)
                     }
@@ -140,7 +159,8 @@ export default function SignUp({
                     placeholder="Optional, generated from organization name"
                     disabled={processing}
                     required={false}
-                    error={errors.organization_slug}
+                    error={fieldError(errors, "organization_slug")}
+                    helper="Optional URL-friendly identifier. Leave it blank to auto-generate it."
                     onChange={(value) =>
                       updateField("organization_slug", value)
                     }
@@ -152,7 +172,9 @@ export default function SignUp({
                     value={data.user.organization_phone}
                     placeholder="Enter phone number"
                     disabled={processing}
-                    error={errors.organization_phone}
+                    required={false}
+                    error={fieldError(errors, "organization_phone")}
+                    helper="Optional contact phone for the organization."
                     onChange={(value) =>
                       updateField("organization_phone", value)
                     }
@@ -164,7 +186,9 @@ export default function SignUp({
                     value={data.user.organization_address}
                     placeholder="Enter organization address"
                     disabled={processing}
-                    error={errors.organization_address}
+                    required={false}
+                    error={fieldError(errors, "organization_address")}
+                    helper="Optional main physical location or business address."
                     onChange={(value) =>
                       updateField("organization_address", value)
                     }
@@ -177,9 +201,10 @@ export default function SignUp({
                   label="Full Name"
                   icon={UserRound}
                   value={data.user.name}
-                  placeholder="Your full name"
+                  placeholder="Enter your full name"
                   disabled={processing}
-                  error={errors.name}
+                  error={fieldError(errors, "name")}
+                  helper="Use the name that should appear in the platform."
                   onChange={(value) => updateField("name", value)}
                 />
 
@@ -191,7 +216,12 @@ export default function SignUp({
                   placeholder="Enter email address"
                   readOnly={isInvitationSignup}
                   disabled={processing}
-                  error={errors.email}
+                  error={fieldError(errors, "email")}
+                  helper={
+                    isInvitationSignup
+                      ? "This email comes from the invitation and cannot be changed."
+                      : "Use a valid email address for sign in."
+                  }
                   onChange={(value) => updateField("email", value)}
                 />
               </div>
@@ -204,7 +234,7 @@ export default function SignUp({
                   value={data.user.password}
                   placeholder="Create a strong password"
                   disabled={processing}
-                  error={errors.password}
+                  error={fieldError(errors, "password")}
                   onChange={(value) => updateField("password", value)}
                 />
 
@@ -215,7 +245,7 @@ export default function SignUp({
                   value={data.user.password_confirmation}
                   placeholder="Confirm your password"
                   disabled={processing}
-                  error={errors.password_confirmation}
+                  error={fieldError(errors, "password_confirmation")}
                   onChange={(value) =>
                     updateField("password_confirmation", value)
                   }
@@ -271,6 +301,7 @@ type TextFieldProps = {
   disabled: boolean;
   readOnly?: boolean;
   required?: boolean;
+  helper?: string;
   error?: string | string[];
   onChange: (value: string) => void;
 };
@@ -284,13 +315,17 @@ function TextField({
   disabled,
   readOnly = false,
   required = true,
+  helper,
   error,
   onChange,
 }: TextFieldProps) {
+  const hasError = hasFieldError(error);
+
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-bold text-slate-700">
+      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
         {label}
+        <RequiredMark show={required} />
       </span>
 
       <div className="relative">
@@ -303,37 +338,26 @@ function TextField({
           type={type}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className={`${inputClass} ${
+          className={`h-12 ${formInputClassName(hasError)} ${
             readOnly ? "bg-slate-50 text-slate-500" : ""
           }`}
           placeholder={placeholder}
           readOnly={readOnly}
           disabled={disabled}
-          required={required}
         />
       </div>
 
-      <FormError error={error} />
+      <FieldHint>{helper}</FieldHint>
+      <FieldError error={error} label={label} />
     </label>
   );
 }
 
-type FormErrorProps = {
-  errors?: Partial<Record<string, string | string[]>>;
-  field?: string;
-  error?: string | string[];
-};
-
-function FormError({ errors, field, error }: FormErrorProps) {
-  const fieldError = field && errors ? errors[field] : error;
-
-  if (!fieldError) return null;
-
-  const message = Array.isArray(fieldError)
-    ? fieldError.join(", ")
-    : fieldError;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
+function fieldError(
+  errors: Record<string, string | string[] | undefined>,
+  field: string,
+): string | string[] | undefined {
+  return errors[field] || errors[`user.${field}`];
 }
 
 function formatRole(role?: string | null): string {

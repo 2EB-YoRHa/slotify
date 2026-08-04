@@ -1,4 +1,5 @@
 import { useForm } from "@inertiajs/react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import {
   AlertTriangle,
@@ -15,6 +16,11 @@ import {
   formInputClassName,
   hasFieldError,
 } from "../ui/FormFeedback";
+import {
+  hasValidationErrors,
+  validateIntegerRange,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 import type { BookingRule } from "../../types/bookingRule";
 
 type BookingRuleFormProps = {
@@ -33,6 +39,8 @@ export default function BookingRuleForm({
   bookingRule,
   errors: initialErrors = {},
 }: BookingRuleFormProps) {
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
+
   const {
     data,
     setData,
@@ -50,10 +58,16 @@ export default function BookingRuleForm({
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
+    ...clientErrors,
   };
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const validationErrors = validateBookingRuleForm(data);
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
 
     transform((formData) => ({
       booking_rule: {
@@ -75,10 +89,23 @@ export default function BookingRuleForm({
     field: K,
     value: BookingRuleFormData[K],
   ) {
+    clearClientError(String(field));
+
     setData((currentData) => ({
       ...currentData,
       [field]: value,
     }));
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`booking_rule.${field}`];
+
+      return nextErrors;
+    });
   }
 
   return (
@@ -155,8 +182,8 @@ export default function BookingRuleForm({
       </div>
 
       {getBaseError(errors) && (
-        <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-          {getBaseError(errors)}
+        <div className="mt-6">
+          <FieldError error={getBaseError(errors)} label="Booking Rules" />
         </div>
       )}
 
@@ -280,7 +307,9 @@ function ToggleCard({
   return (
     <div
       className={`rounded-xl border p-5 transition ${
-        checked ? "border-cyan-200 bg-cyan-50" : "border-slate-200 bg-slate-50"
+        checked
+          ? "border-cyan-200 bg-cyan-50"
+          : "border-slate-200 bg-slate-50"
       }`}
     >
       <div className="flex items-start justify-between gap-6">
@@ -368,4 +397,49 @@ function numericValue(value: string | number): string | number {
   if (value === "") return value;
 
   return Number(value);
+}
+
+function validateBookingRuleForm(data: BookingRuleFormData): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  const maxHoursError = validateIntegerRange(
+    data.max_hours_per_reservation,
+    "Maximum Reservation Duration",
+    {
+      min: 1,
+      max: 12,
+    },
+  );
+
+  if (maxHoursError) {
+    errors.max_hours_per_reservation = maxHoursError;
+  }
+
+  const noticeError = validateIntegerRange(
+    data.min_notice_minutes,
+    "Minimum Notice",
+    {
+      min: 0,
+      max: 10_080,
+    },
+  );
+
+  if (noticeError) {
+    errors.min_notice_minutes = noticeError;
+  }
+
+  const cancellationError = validateIntegerRange(
+    data.cancellation_limit_hours,
+    "Cancellation Limit",
+    {
+      min: 0,
+      max: 168,
+    },
+  );
+
+  if (cancellationError) {
+    errors.cancellation_limit_hours = cancellationError;
+  }
+
+  return errors;
 }

@@ -15,6 +15,7 @@ export function FieldError({ error, label = "This field" }: FieldErrorProps) {
   return (
     <div className="mt-2 flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold leading-5 text-red-600">
       <AlertCircle size={15} className="mt-0.5 shrink-0" />
+
       <span>{message}</span>
     </div>
   );
@@ -30,6 +31,7 @@ export function FieldHint({ children }: FieldHintProps) {
   return (
     <p className="mt-2 flex items-start gap-2 text-xs font-semibold leading-5 text-slate-400">
       <Info size={14} className="mt-0.5 shrink-0" />
+
       <span>{children}</span>
     </p>
   );
@@ -57,7 +59,7 @@ export function errorMessage(
 
   if (!rawMessage) return null;
 
-  return humanizeRailsMessage(rawMessage, label);
+  return humanizeRailsMessage(rawMessage.trim(), label);
 }
 
 export function hasFieldError(error?: FormErrorValue): boolean {
@@ -80,6 +82,10 @@ export function formInputClassName(hasError: boolean, paddingLeft = true) {
 function humanizeRailsMessage(message: string, label: string): string {
   const field = label.trim() || "This field";
   const lowerField = field.toLowerCase();
+
+  if (messageAlreadyIncludesField(message, field)) {
+    return ensurePeriod(message);
+  }
 
   if (message.includes("can't be blank")) {
     return `${field} is required.`;
@@ -106,15 +112,15 @@ function humanizeRailsMessage(message: string, label: string): string {
   }
 
   if (message.includes("must be less than or equal to")) {
-    return `${field} ${message}.`;
+    return `${field} ${message}`;
   }
 
   if (message.includes("is too short")) {
-    return `${field} ${message}.`;
+    return `${field} ${message}`;
   }
 
   if (message.includes("is too long")) {
-    return `${field} ${message}.`;
+    return `${field} ${message}`;
   }
 
   if (message.includes("has already been taken")) {
@@ -145,5 +151,13 @@ function humanizeRailsMessage(message: string, label: string): string {
     return "This email already has a pending invitation.";
   }
 
+  return ensurePeriod(message);
+}
+
+function messageAlreadyIncludesField(message: string, field: string): boolean {
+  return message.toLowerCase().startsWith(field.toLowerCase());
+}
+
+function ensurePeriod(message: string): string {
   return message.endsWith(".") ? message : `${message}.`;
 }

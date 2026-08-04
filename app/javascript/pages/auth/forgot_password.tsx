@@ -5,6 +5,13 @@ import AuthBrand from "../../components/auth/AuthBrand";
 import AuthFooter from "../../components/auth/AuthFooter";
 import FlashMessages from "../../components/ui/FlashMessages";
 import LoadingButton from "../../components/ui/LoadingButton";
+import {
+  FieldError,
+  FieldHint,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../../components/ui/FormFeedback";
 
 type ForgotPasswordProps = {
   errors?: Partial<Record<string, string | string[]>>;
@@ -17,18 +24,28 @@ type ForgotPasswordFormData = {
   };
 };
 
-const inputClass =
-  "h-12 w-full rounded-xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
-
 export default function ForgotPassword({
-  errors = {},
+  errors: initialErrors = {},
   status = null,
 }: ForgotPasswordProps) {
-  const { data, setData, post, processing } = useForm<ForgotPasswordFormData>({
+  const {
+    data,
+    setData,
+    post,
+    processing,
+    errors: formErrors,
+  } = useForm<ForgotPasswordFormData>({
     user: {
       email: "",
     },
   });
+
+  const errors: Record<string, string | string[] | undefined> = {
+    ...initialErrors,
+    ...formErrors,
+  };
+
+  const emailError = fieldError(errors, "email");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,15 +76,16 @@ export default function ForgotPassword({
             </div>
 
             {status && (
-              <div className="mt-6 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
+              <div className="mt-6 rounded-xl border border-green-100 bg-green-50 p-4 text-sm font-semibold leading-6 text-green-700">
                 {status}
               </div>
             )}
 
             <form noValidate onSubmit={handleSubmit} className="mt-8 space-y-6">
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">
+                <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
                   Email
+                  <RequiredMark />
                 </span>
 
                 <div className="relative">
@@ -85,15 +103,20 @@ export default function ForgotPassword({
                         email: event.target.value,
                       })
                     }
-                    className={inputClass}
-                    placeholder="name@company.com"
+                    className={`h-12 ${formInputClassName(
+                      hasFieldError(emailError),
+                    )}`}
+                    placeholder="Enter email address"
                     autoComplete="email"
                     disabled={processing}
-                    required
                   />
                 </div>
 
-                <FormError errors={errors} field="email" />
+                <FieldHint>
+                  Use the email associated with your Slotify account.
+                </FieldHint>
+
+                <FieldError error={emailError} label="Email" />
               </label>
 
               <LoadingButton
@@ -123,17 +146,9 @@ export default function ForgotPassword({
   );
 }
 
-type FormErrorProps = {
-  errors: Partial<Record<string, string | string[]>>;
-  field: string;
-};
-
-function FormError({ errors, field }: FormErrorProps) {
-  const error = errors[field];
-
-  if (!error) return null;
-
-  const message = Array.isArray(error) ? error.join(", ") : error;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
+function fieldError(
+  errors: Record<string, string | string[] | undefined>,
+  field: string,
+): string | string[] | undefined {
+  return errors[field] || errors[`user.${field}`];
 }

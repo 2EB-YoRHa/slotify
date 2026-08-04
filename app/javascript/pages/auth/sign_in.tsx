@@ -3,8 +3,15 @@ import type { FormEvent } from "react";
 import { LockKeyhole, Mail } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
 import AuthFooter from "../../components/auth/AuthFooter";
-import LoadingButton from "../../components/ui/LoadingButton";
 import FlashMessages from "../../components/ui/FlashMessages";
+import LoadingButton from "../../components/ui/LoadingButton";
+import {
+  FieldError,
+  FieldHint,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../../components/ui/FormFeedback";
 
 type SignInProps = {
   invitation_token?: string | null;
@@ -19,20 +26,31 @@ type SignInFormData = {
   };
 };
 
-const inputClass =
-  "h-12 w-full rounded-xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
-
 export default function SignIn({
   invitation_token = null,
-  errors = {},
+  errors: initialErrors = {},
 }: SignInProps) {
-  const { data, setData, post, processing } = useForm<SignInFormData>({
+  const {
+    data,
+    setData,
+    post,
+    processing,
+    errors: formErrors,
+  } = useForm<SignInFormData>({
     user: {
       email: "",
       password: "",
       invitation_token: invitation_token || "",
     },
   });
+
+  const errors: Record<string, string | string[] | undefined> = {
+    ...initialErrors,
+    ...formErrors,
+  };
+
+  const emailError = fieldError(errors, "email");
+  const passwordError = fieldError(errors, "password");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,6 +68,7 @@ export default function SignIn({
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">
       <FlashMessages />
+
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
         <header className="mb-10 flex justify-center">
           <AuthBrand />
@@ -69,15 +88,16 @@ export default function SignIn({
             </div>
 
             {invitation_token && (
-              <div className="mt-6 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm text-cyan-700">
+              <div className="mt-6 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm font-semibold leading-6 text-cyan-700">
                 Sign in to continue accepting your organization invitation.
               </div>
             )}
 
             <form noValidate onSubmit={handleSubmit} className="mt-8 space-y-5">
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">
+                <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
                   Email
+                  <RequiredMark />
                 </span>
 
                 <div className="relative">
@@ -92,21 +112,24 @@ export default function SignIn({
                     onChange={(event) =>
                       updateField("email", event.target.value)
                     }
-                    className={inputClass}
-                    placeholder="manager@company.com"
+                    className={`h-12 ${formInputClassName(
+                      hasFieldError(emailError),
+                    )}`}
+                    placeholder="Enter email address"
                     autoComplete="email"
                     disabled={processing}
-                    required
                   />
                 </div>
 
-                <FormError errors={errors} field="email" />
+                <FieldHint>Use the email registered for your account.</FieldHint>
+                <FieldError error={emailError} label="Email" />
               </label>
 
               <label className="block">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="block text-sm font-bold text-slate-700">
+                  <span className="flex items-center gap-1 text-sm font-bold text-slate-700">
                     Password
+                    <RequiredMark />
                   </span>
 
                   <Link
@@ -129,15 +152,16 @@ export default function SignIn({
                     onChange={(event) =>
                       updateField("password", event.target.value)
                     }
-                    className={inputClass}
+                    className={`h-12 ${formInputClassName(
+                      hasFieldError(passwordError),
+                    )}`}
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     disabled={processing}
-                    required
                   />
                 </div>
 
-                <FormError errors={errors} field="password" />
+                <FieldError error={passwordError} label="Password" />
               </label>
 
               <input
@@ -178,17 +202,9 @@ export default function SignIn({
   );
 }
 
-type FormErrorProps = {
-  errors: Partial<Record<string, string | string[]>>;
-  field: string;
-};
-
-function FormError({ errors, field }: FormErrorProps) {
-  const error = errors[field];
-
-  if (!error) return null;
-
-  const message = Array.isArray(error) ? error.join(", ") : error;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
+function fieldError(
+  errors: Record<string, string | string[] | undefined>,
+  field: string,
+): string | string[] | undefined {
+  return errors[field] || errors[`user.${field}`];
 }

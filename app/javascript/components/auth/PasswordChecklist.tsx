@@ -1,3 +1,5 @@
+import { CheckCircle2, Circle } from "lucide-react";
+
 type PasswordChecklistProps = {
   password: string;
   passwordConfirmation: string;
@@ -52,13 +54,17 @@ export default function PasswordChecklist({
   const ready = checks.every((check) => check.checked);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
-      <div className="mb-3 flex items-center justify-between">
+    <div
+      className={`rounded-xl border p-4 text-sm transition ${
+        ready ? "border-green-100 bg-green-50" : "border-slate-200 bg-slate-50"
+      }`}
+    >
+      <div className="mb-3 flex items-center justify-between gap-4">
         <span className="font-bold text-slate-700">Password requirements</span>
 
         <span
-          className={`font-bold ${
-            ready ? "text-green-600" : "text-slate-500"
+          className={`rounded-full px-3 py-1 text-xs font-bold ${
+            ready ? "bg-green-100 text-green-700" : "bg-white text-slate-500"
           }`}
         >
           {ready ? "Ready" : "Incomplete"}
@@ -85,18 +91,18 @@ type CheckItemProps = {
 
 function CheckItem({ checked, label }: CheckItemProps) {
   return (
-    <div className="flex items-center gap-2">
-      <span
-        className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] ${
-          checked
-            ? "bg-green-100 text-green-600"
-            : "bg-slate-200 text-slate-400"
-        }`}
-      >
-        {checked ? "✓" : "×"}
-      </span>
+    <div
+      className={`flex items-center gap-2 rounded-lg px-2 py-1.5 ${
+        checked ? "bg-white/70 text-green-700" : "text-slate-500"
+      }`}
+    >
+      {checked ? (
+        <CheckCircle2 size={15} className="shrink-0" />
+      ) : (
+        <Circle size={15} className="shrink-0" />
+      )}
 
-      <span>{label}</span>
+      <span className="font-semibold">{label}</span>
     </div>
   );
 }

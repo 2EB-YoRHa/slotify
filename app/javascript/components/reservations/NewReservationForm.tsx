@@ -18,6 +18,12 @@ import {
   violatesMinimumNotice,
   violatesWeekendRule,
 } from "../../utils/reservationFormUtils";
+import {
+  hasValidationErrors,
+  validateIntegerRange,
+  validateTextLength,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 
 type NewReservationFormProps = {
   workspaces: Workspace[];
@@ -71,6 +77,7 @@ export default function NewReservationForm({
   const [search, setSearch] = useState("");
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [availabilityChecked, setAvailabilityChecked] = useState(true);
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
   const [unavailableWorkspaceIds, setUnavailableWorkspaceIds] = useState<
     number[]
   >(initialUnavailableWorkspaceIds);
@@ -95,9 +102,14 @@ export default function NewReservationForm({
       },
     });
 
+  const selectedWorkspace = workspaces.find(
+    (workspace) => workspace.id === Number(data.reservation.workspace_id),
+  );
+
   const allErrors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...(errors as Record<string, string | string[] | undefined>),
+    ...clientErrors,
   };
 
   const baseErrors = [
@@ -119,18 +131,22 @@ export default function NewReservationForm({
   const ruleViolation = minNoticeViolation || weekendViolation;
   const filteredWorkspaces = filterWorkspaces(workspaces, search);
 
-  const selectedWorkspace = workspaces.find(
-    (workspace) => workspace.id === Number(data.reservation.workspace_id),
-  );
-
   const selectedWorkspaceUnavailable = Boolean(
     selectedWorkspace && unavailableWorkspaceIds.includes(selectedWorkspace.id),
   );
 
   const attendeesExceedCapacity = Boolean(
     selectedWorkspace &&
-    Number(data.reservation.attendees_count) > selectedWorkspace.capacity,
+      Number(data.reservation.attendees_count) > selectedWorkspace.capacity,
   );
+
+  const estimatedTotal = selectedWorkspace
+    ? calculateEstimatedTotal(
+        Number(selectedWorkspace.hourly_rate || 0),
+        data.reservation.start_time,
+        data.reservation.end_time,
+      )
+    : 0;
 
   const canSubmit =
     Boolean(data.reservation.workspace_id) &&
@@ -140,14 +156,6 @@ export default function NewReservationForm({
     !ruleViolation &&
     !selectedWorkspaceUnavailable &&
     !attendeesExceedCapacity;
-
-  const estimatedTotal = selectedWorkspace
-    ? calculateEstimatedTotal(
-        Number(selectedWorkspace.hourly_rate || 0),
-        data.reservation.start_time,
-        data.reservation.end_time,
-      )
-    : 0;
 
   function handleDateChange(date: string) {
     const nextStartTime = buildDateTime(date, selectedSlot.start);
@@ -182,6 +190,8 @@ export default function NewReservationForm({
   }
 
   function selectWorkspace(workspaceId: number) {
+    clearClientError("workspace_id");
+
     updateReservation({
       workspace_id: workspaceId,
     });
@@ -197,6 +207,8 @@ export default function NewReservationForm({
   function updateReservation(
     values: Partial<ReservationFormData["reservation"]>,
   ) {
+    Object.keys(values).forEach((field) => clearClientError(field));
+
     setData("reservation", {
       ...data.reservation,
       ...values,
@@ -242,9 +254,31 @@ export default function NewReservationForm({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const validationErrors = validateReservationForm(
+      data,
+      selectedWorkspace,
+      selectedWorkspaceUnavailable,
+      minNoticeViolation,
+      weekendViolation,
+    );
+
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
     if (!canSubmit) return;
 
     post("/reservations");
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`reservation.${field}`];
+
+      return nextErrors;
+    });
   }
 
   return (
@@ -318,6 +352,63 @@ export default function NewReservationForm({
       </motion.aside>
     </form>
   );
+}
+
+function validateReservationForm(
+  data: ReservationFormData,
+  selectedWorkspace: Workspace | undefined,
+  selectedWorkspaceUnavailable: boolean,
+  minNoticeViolation: boolean,
+  weekendViolation: boolean,
+): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  if (!data.reservation.workspace_id) {
+    errors.base = "Select a workspace before creating the reservation.";
+  }
+
+  const attendeesError = validateIntegerRange(
+    data.reservation.attendees_count,
+    "Attendees",
+    {
+      min: 1,
+    },
+  );
+
+  if (attendeesError) {
+    errors.attendees_count = attendeesError;
+  }
+
+  if (
+    selectedWorkspace &&
+    Number(data.reservation.attendees_count) > selectedWorkspace.capacity
+  ) {
+    errors.attendees_count = "Attendees cannot exceed workspace capacity.";
+  }
+
+  const notesError = validateTextLength(data.reservation.notes, "Notes", {
+    max: 500,
+    required: false,
+  });
+
+  if (notesError) {
+    errors.notes = notesError;
+  }
+
+  if (selectedWorkspaceUnavailable) {
+    errors.base = "The selected workspace is unavailable for this time slot.";
+  }
+
+  if (minNoticeViolation) {
+    errors.base =
+      "This reservation does not meet the minimum notice requirement.";
+  }
+
+  if (weekendViolation) {
+    errors.base = "Weekend bookings are blocked for this organization.";
+  }
+
+  return errors;
 }
 
 function filterWorkspaces(workspaces: Workspace[], search: string) {

@@ -1,4 +1,5 @@
 import { useForm } from "@inertiajs/react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { Building2, Hash, Mail, MapPin, Phone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -10,11 +11,20 @@ import {
   formInputClassName,
   hasFieldError,
 } from "../ui/FormFeedback";
+import {
+  hasValidationErrors,
+  validateEmail,
+  validatePhone,
+  validateTextLength,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 import type {
   Organization,
   OrganizationErrors,
   OrganizationFormData,
 } from "../../types/organization";
+
+const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 type OrganizationFormProps = {
   organization: Organization;
@@ -25,6 +35,8 @@ export default function OrganizationForm({
   organization,
   errors: initialErrors = {},
 }: OrganizationFormProps) {
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
+
   const {
     data,
     setData,
@@ -43,10 +55,16 @@ export default function OrganizationForm({
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
+    ...clientErrors,
   };
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const validationErrors = validateOrganizationForm(data);
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
 
     transform((formData) => ({
       organization: formData,
@@ -56,7 +74,23 @@ export default function OrganizationForm({
   }
 
   function updateField(field: keyof OrganizationFormData, value: string) {
-    setData(field, value);
+    clearClientError(field);
+
+    setData((currentData) => ({
+      ...currentData,
+      [field]: value,
+    }));
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`organization.${field}`];
+
+      return nextErrors;
+    });
   }
 
   return (
@@ -101,7 +135,7 @@ export default function OrganizationForm({
           placeholder="Generated automatically from the name"
           disabled={processing}
           required
-          helper="Used as a unique URL-friendly identifier."
+          helper="Use lowercase letters, numbers, and hyphens only."
           error={errors.slug}
           onChange={(value) => updateField("slug", value)}
         />
@@ -142,27 +176,31 @@ export default function OrganizationForm({
               value={data.address}
               maxLength={200}
               onChange={(event) => updateField("address", event.target.value)}
-              className={`${fieldClassName(hasFieldError(errors.address))} min-h-32 resize-y`}
+              className={`${formInputClassName(
+                hasFieldError(errors.address),
+              )} min-h-32 resize-y`}
               placeholder="Enter organization address"
               disabled={processing}
             />
           </div>
 
           <div className="mt-2 flex items-center justify-between gap-4">
-            <FormHelper helper="Optional. Add the main physical location or business address." />
+            <FieldHint>
+              Optional. Add the main physical location or business address.
+            </FieldHint>
 
             <span className="text-xs font-semibold text-slate-400">
               {data.address.length}/200
             </span>
           </div>
 
-          <FormError error={errors.address} label="Address" />
+          <FieldError error={errors.address} label="Address" />
         </label>
       </div>
 
       {getBaseError(errors) && (
-        <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-          {getBaseError(errors)}
+        <div className="mt-6">
+          <FieldError error={getBaseError(errors)} label="Organization" />
         </div>
       )}
 
@@ -207,6 +245,7 @@ function TextInput({
   placeholder,
   disabled,
   helper,
+  required = false,
   error,
   onChange,
 }: TextInputProps) {
@@ -214,7 +253,7 @@ function TextInput({
 
   return (
     <label className="block">
-      <FieldLabel label={label}/>
+      <FieldLabel label={label} required={required} />
 
       <div className="relative">
         <Icon
@@ -227,14 +266,14 @@ function TextInput({
           value={value}
           aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
-          className={fieldClassName(hasError)}
+          className={formInputClassName(hasError)}
           placeholder={placeholder}
           disabled={disabled}
         />
       </div>
 
-      <FormHelper helper={helper} />
-      <FormError error={error} label={label} />
+      <FieldHint>{helper}</FieldHint>
+      <FieldError error={error} label={label} />
     </label>
   );
 }
@@ -253,33 +292,55 @@ function FieldLabel({ label, required = false }: FieldLabelProps) {
   );
 }
 
-type FormHelperProps = {
-  helper?: string;
-};
-
-function FormHelper({ helper }: FormHelperProps) {
-  return <FieldHint>{helper}</FieldHint>;
-}
-
-type FormErrorProps = {
-  error?: string | string[];
-  label?: string;
-};
-
-function FormError({ error, label }: FormErrorProps) {
-  return <FieldError error={error} label={label} />;
-}
-
-function fieldClassName(hasError: boolean): string {
-  return formInputClassName(hasError);
-}
-
 function getBaseError(
   errors: Record<string, string | string[] | undefined>,
 ): string | null {
-  const error = errors.base;
+  const error = errors.base || errors["organization.base"];
 
   if (!error) return null;
 
   return Array.isArray(error) ? error.join(", ") : error;
+}
+
+function validateOrganizationForm(
+  data: OrganizationFormData,
+): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  const nameError = validateTextLength(data.name, "Organization Name", {
+    min: 3,
+    max: 100,
+  });
+
+  if (nameError) errors.name = nameError;
+
+  const slugError = validateTextLength(data.slug, "Slug", {
+    min: 3,
+    max: 120,
+  });
+
+  if (slugError) {
+    errors.slug = slugError;
+  } else if (!SLUG_REGEX.test(data.slug.trim())) {
+    errors.slug = "Slug can only include lowercase letters, numbers, and hyphens.";
+  }
+
+  const emailError = validateEmail(data.email, "Email", {
+    required: false,
+  });
+
+  if (emailError) errors.email = emailError;
+
+  const phoneError = validatePhone(data.phone, "Phone");
+
+  if (phoneError) errors.phone = phoneError;
+
+  const addressError = validateTextLength(data.address, "Address", {
+    max: 200,
+    required: false,
+  });
+
+  if (addressError) errors.address = addressError;
+
+  return errors;
 }

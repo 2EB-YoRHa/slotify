@@ -1,11 +1,28 @@
 import { useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import type { Amenity } from "../../types/amenity";
 import type { Workspace, WorkspaceFormData } from "../../types/workspace";
+import {
+  hasValidationErrors,
+  validateIntegerRange,
+  validateNumberRange,
+  validateRequired,
+  validateTextLength,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 import WorkspaceAmenitiesSection from "./form/WorkspaceAmenitiesSection";
 import WorkspaceInformationSection from "./form/WorkspaceInformationSection";
 import WorkspaceSummaryPanel from "./form/WorkspaceSummaryPanel";
+
+const WORKSPACE_TYPES = [
+  "meeting_room",
+  "private_office",
+  "open_desk",
+  "training_room",
+  "phone_booth",
+];
 
 type WorkspaceFormProps = {
   workspace?: Workspace | null;
@@ -23,6 +40,7 @@ export default function WorkspaceForm({
   errors: initialErrors = {},
 }: WorkspaceFormProps) {
   const isEditing = Boolean(workspace?.id);
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
 
   const initialAmenityIds =
     selectedAmenityIds.length > 0 ? selectedAmenityIds : selected_amenity_ids;
@@ -52,10 +70,16 @@ export default function WorkspaceForm({
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
+    ...clientErrors,
   };
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const validationErrors = validateWorkspaceForm(data);
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
 
     transform((formData) => ({
       workspace: {
@@ -82,6 +106,8 @@ export default function WorkspaceForm({
     field: K,
     value: WorkspaceFormData[K],
   ) {
+    clearClientError(String(field));
+
     setData((currentData) => ({
       ...currentData,
       [field]: value,
@@ -89,6 +115,8 @@ export default function WorkspaceForm({
   }
 
   function toggleAmenity(amenityId: number) {
+    clearClientError("amenity_ids");
+
     const alreadySelected = data.amenity_ids.includes(amenityId);
 
     const nextAmenityIds = alreadySelected
@@ -96,6 +124,17 @@ export default function WorkspaceForm({
       : [...data.amenity_ids, amenityId];
 
     setData("amenity_ids", nextAmenityIds);
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`workspace.${field}`];
+
+      return nextErrors;
+    });
   }
 
   return (
@@ -151,4 +190,69 @@ export default function WorkspaceForm({
       </motion.aside>
     </form>
   );
+}
+
+function validateWorkspaceForm(data: WorkspaceFormData): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  const nameError = validateTextLength(data.name, "Workspace Name", {
+    min: 3,
+    max: 80,
+  });
+
+  if (nameError) errors.name = nameError;
+
+  if (!WORKSPACE_TYPES.includes(String(data.workspace_type))) {
+    errors.workspace_type = "Select a valid Workspace Type.";
+  }
+
+  const capacityError = validateIntegerRange(data.capacity, "Capacity", {
+    min: 1,
+    max: 200,
+  });
+
+  if (capacityError) errors.capacity = capacityError;
+
+  const hourlyRateError = validateNumberRange(data.hourly_rate, "Hourly Rate", {
+    min: 0,
+    max: 10_000,
+  });
+
+  if (hourlyRateError) errors.hourly_rate = hourlyRateError;
+
+  const floorError = validateTextLength(data.floor, "Floor", {
+    max: 30,
+    required: false,
+  });
+
+  if (floorError) errors.floor = floorError;
+
+  const zoneError = validateTextLength(data.zone, "Zone", {
+    max: 80,
+    required: false,
+  });
+
+  if (zoneError) errors.zone = zoneError;
+
+  const locationRequiredError = validateRequired(data.location, "Location");
+
+  if (locationRequiredError) {
+    errors.location = locationRequiredError;
+  } else {
+    const locationLengthError = validateTextLength(data.location, "Location", {
+      max: 120,
+      required: true,
+    });
+
+    if (locationLengthError) errors.location = locationLengthError;
+  }
+
+  const descriptionError = validateTextLength(data.description, "Description", {
+    max: 500,
+    required: false,
+  });
+
+  if (descriptionError) errors.description = descriptionError;
+
+  return errors;
 }

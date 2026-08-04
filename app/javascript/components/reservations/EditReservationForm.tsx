@@ -10,6 +10,12 @@ import {
   violatesMinimumNotice,
   violatesWeekendRule,
 } from "../../utils/reservationFormUtils";
+import {
+  hasValidationErrors,
+  validateIntegerRange,
+  validateTextLength,
+  type ValidationErrors,
+} from "../../utils/clientValidation";
 import type { Reservation } from "../../types/reservation";
 import type { Workspace } from "../../types/workspace";
 import EditReservationScheduleSection from "./edit/EditReservationScheduleSection";
@@ -36,6 +42,8 @@ type EditReservationFormData = {
   notes: string;
 };
 
+const RESERVATION_STATUSES = ["confirmed", "cancelled"];
+
 export default function EditReservationForm({
   reservation,
   workspaces,
@@ -47,6 +55,7 @@ export default function EditReservationForm({
   initialUnavailableWorkspaceIds = [],
 }: EditReservationFormProps) {
   const timeSlots = generateTimeSlots(maxReservationHours);
+  const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
 
   const initialDate = extractDate(reservation.start_time);
   const initialSlot = findSlotByDateTimes(
@@ -74,6 +83,7 @@ export default function EditReservationForm({
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
+    ...clientErrors,
   };
 
   const selectedWorkspace = workspaces.find(
@@ -82,7 +92,7 @@ export default function EditReservationForm({
 
   const attendeesExceedCapacity = Boolean(
     selectedWorkspace &&
-    Number(data.attendees_count) > Number(selectedWorkspace.capacity || 0),
+      Number(data.attendees_count) > Number(selectedWorkspace.capacity || 0),
   );
 
   const selectedSlot = findSlotByDateTimes(
@@ -92,7 +102,6 @@ export default function EditReservationForm({
   );
 
   const [checkingAvailability, setCheckingAvailability] = useState(false);
-
   const [availabilityChecked, setAvailabilityChecked] = useState(true);
   const [unavailableWorkspaceIds, setUnavailableWorkspaceIds] = useState<
     number[]
@@ -159,6 +168,18 @@ export default function EditReservationForm({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const validationErrors = validateEditReservationForm(
+      data,
+      selectedWorkspace,
+      selectedWorkspaceUnavailable,
+      minNoticeViolation,
+      weekendViolation,
+      canManageStatus,
+    );
+
+    setClientErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) return;
     if (!canSubmit) return;
 
     transform((formData) => ({
@@ -176,10 +197,18 @@ export default function EditReservationForm({
     field: keyof EditReservationFormData,
     value: string | number,
   ) {
-    setData(field, value);
+    clearClientError(field);
+
+    setData((currentData) => ({
+      ...currentData,
+      [field]: value,
+    }));
   }
 
   function handleDateChange(date: string) {
+    clearClientError("start_time");
+    clearClientError("end_time");
+
     const currentSlot = findSlotByDateTimes(
       data.start_time,
       data.end_time,
@@ -199,6 +228,9 @@ export default function EditReservationForm({
   }
 
   function handleSlotChange(slotLabel: string) {
+    clearClientError("start_time");
+    clearClientError("end_time");
+
     const slot = timeSlots.find((item) => item.label === slotLabel);
 
     if (!slot) return;
@@ -214,6 +246,17 @@ export default function EditReservationForm({
     });
 
     void checkAvailabilityFor(nextStartTime, nextEndTime);
+  }
+
+  function clearClientError(field: string) {
+    setClientErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      delete nextErrors[field];
+      delete nextErrors[`reservation.${field}`];
+
+      return nextErrors;
+    });
   }
 
   return (
@@ -277,4 +320,66 @@ export default function EditReservationForm({
       </motion.aside>
     </form>
   );
+}
+
+function validateEditReservationForm(
+  data: EditReservationFormData,
+  selectedWorkspace: Workspace | undefined,
+  selectedWorkspaceUnavailable: boolean,
+  minNoticeViolation: boolean,
+  weekendViolation: boolean,
+  canManageStatus: boolean,
+): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  if (!data.workspace_id) {
+    errors.workspace_id = "Select a workspace.";
+  }
+
+  if (canManageStatus && !RESERVATION_STATUSES.includes(data.status)) {
+    errors.status = "Select a valid reservation status.";
+  }
+
+  const attendeesError = validateIntegerRange(
+    data.attendees_count,
+    "Attendees",
+    {
+      min: 1,
+    },
+  );
+
+  if (attendeesError) {
+    errors.attendees_count = attendeesError;
+  }
+
+  if (
+    selectedWorkspace &&
+    Number(data.attendees_count) > Number(selectedWorkspace.capacity || 0)
+  ) {
+    errors.attendees_count = "Attendees cannot exceed workspace capacity.";
+  }
+
+  const notesError = validateTextLength(data.notes, "Notes", {
+    max: 500,
+    required: false,
+  });
+
+  if (notesError) {
+    errors.notes = notesError;
+  }
+
+  if (selectedWorkspaceUnavailable) {
+    errors.base = "The selected workspace is unavailable for this time slot.";
+  }
+
+  if (minNoticeViolation) {
+    errors.base =
+      "This reservation does not meet the minimum notice requirement.";
+  }
+
+  if (weekendViolation) {
+    errors.base = "Weekend bookings are blocked for this organization.";
+  }
+
+  return errors;
 }

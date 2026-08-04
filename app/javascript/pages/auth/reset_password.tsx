@@ -8,6 +8,12 @@ import PasswordChecklist, {
 } from "../../components/auth/PasswordChecklist";
 import FlashMessages from "../../components/ui/FlashMessages";
 import LoadingButton from "../../components/ui/LoadingButton";
+import {
+  FieldError,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../../components/ui/FormFeedback";
 
 type ResetPasswordProps = {
   reset_password_token?: string | null;
@@ -22,20 +28,35 @@ type ResetPasswordFormData = {
   };
 };
 
-const inputClass =
-  "h-12 w-full rounded-xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
-
 export default function ResetPassword({
   reset_password_token = null,
-  errors = {},
+  errors: initialErrors = {},
 }: ResetPasswordProps) {
-  const { data, setData, patch, processing } = useForm<ResetPasswordFormData>({
+  const {
+    data,
+    setData,
+    patch,
+    processing,
+    errors: formErrors,
+  } = useForm<ResetPasswordFormData>({
     user: {
       reset_password_token: reset_password_token || "",
       password: "",
       password_confirmation: "",
     },
   });
+
+  const errors: Record<string, string | string[] | undefined> = {
+    ...initialErrors,
+    ...formErrors,
+  };
+
+  const passwordError = fieldError(errors, "password");
+  const passwordConfirmationError = fieldError(
+    errors,
+    "password_confirmation",
+  );
+  const tokenError = fieldError(errors, "reset_password_token");
 
   const passwordReady = isStrongPassword(
     data.user.password,
@@ -52,7 +73,7 @@ export default function ResetPassword({
 
   function updateField(
     field: keyof ResetPasswordFormData["user"],
-    value: string
+    value: string,
   ) {
     setData("user", {
       ...data.user,
@@ -88,11 +109,12 @@ export default function ResetPassword({
                 readOnly
               />
 
-              <FormError errors={errors} field="reset_password_token" />
+              <FieldError error={tokenError} label="Reset Token" />
 
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">
+                <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
                   New Password
+                  <RequiredMark />
                 </span>
 
                 <div className="relative">
@@ -107,20 +129,22 @@ export default function ResetPassword({
                     onChange={(event) =>
                       updateField("password", event.target.value)
                     }
-                    className={inputClass}
+                    className={`h-12 ${formInputClassName(
+                      hasFieldError(passwordError),
+                    )}`}
                     placeholder="Create a strong password"
                     autoComplete="new-password"
                     disabled={processing}
-                    required
                   />
                 </div>
 
-                <FormError errors={errors} field="password" />
+                <FieldError error={passwordError} label="New Password" />
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">
+                <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
                   Confirm Password
+                  <RequiredMark />
                 </span>
 
                 <div className="relative">
@@ -135,15 +159,19 @@ export default function ResetPassword({
                     onChange={(event) =>
                       updateField("password_confirmation", event.target.value)
                     }
-                    className={inputClass}
+                    className={`h-12 ${formInputClassName(
+                      hasFieldError(passwordConfirmationError),
+                    )}`}
                     placeholder="Confirm your password"
                     autoComplete="new-password"
                     disabled={processing}
-                    required
                   />
                 </div>
 
-                <FormError errors={errors} field="password_confirmation" />
+                <FieldError
+                  error={passwordConfirmationError}
+                  label="Confirm Password"
+                />
               </label>
 
               <PasswordChecklist
@@ -179,17 +207,9 @@ export default function ResetPassword({
   );
 }
 
-type FormErrorProps = {
-  errors: Partial<Record<string, string | string[]>>;
-  field: string;
-};
-
-function FormError({ errors, field }: FormErrorProps) {
-  const error = errors[field];
-
-  if (!error) return null;
-
-  const message = Array.isArray(error) ? error.join(", ") : error;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
+function fieldError(
+  errors: Record<string, string | string[] | undefined>,
+  field: string,
+): string | string[] | undefined {
+  return errors[field] || errors[`user.${field}`];
 }
