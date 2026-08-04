@@ -1,4 +1,11 @@
 import { StickyNote, UsersRound } from "lucide-react";
+import {
+  FieldError,
+  FieldHint,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../../ui/FormFeedback";
 import type { Workspace } from "../../../types/workspace";
 import WorkspacePreview from "./WorkspacePreview";
 
@@ -37,6 +44,7 @@ export default function EditReservationDetailsSection({
       : undefined);
 
   const notesError = fieldError(errors, "notes");
+  const baseError = getBaseError(errors);
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -71,21 +79,18 @@ export default function EditReservationDetailsSection({
               min="1"
               value={data.attendees_count}
               onChange={(event) => onAttendeesChange(event.target.value)}
-              className={fieldClassName(Boolean(attendeesError))}
+              className={formInputClassName(hasFieldError(attendeesError))}
               disabled={processing}
-              required
             />
           </div>
 
-          <FormHelper
-            helper={
-              selectedWorkspace
-                ? `Maximum capacity for this workspace: ${selectedWorkspace.capacity} people.`
-                : "Select a workspace to validate its maximum capacity."
-            }
-          />
+          <FieldHint>
+            {selectedWorkspace
+              ? `Maximum capacity for this workspace: ${selectedWorkspace.capacity} people.`
+              : "Select a workspace to validate its maximum capacity."}
+          </FieldHint>
 
-          <FormError error={attendeesError} />
+          <FieldError error={attendeesError} label="Attendees" />
         </label>
 
         <WorkspacePreview workspace={selectedWorkspace} />
@@ -103,27 +108,31 @@ export default function EditReservationDetailsSection({
               value={data.notes}
               maxLength={500}
               onChange={(event) => onNotesChange(event.target.value)}
-              className={`${fieldClassName(Boolean(notesError))} min-h-32 resize-y`}
+              className={`${formInputClassName(
+                hasFieldError(notesError),
+              )} min-h-32 resize-y`}
               placeholder="Add reservation notes, setup details, or special instructions."
               disabled={processing}
             />
           </div>
 
           <div className="mt-2 flex items-center justify-between gap-4">
-            <FormHelper helper="Optional. Keep notes short and relevant for the booking." />
+            <FieldHint>
+              Optional. Keep notes short and relevant for the booking.
+            </FieldHint>
 
             <span className="text-xs font-semibold text-slate-400">
               {data.notes.length}/500
             </span>
           </div>
 
-          <FormError error={notesError} />
+          <FieldError error={notesError} label="Notes" />
         </label>
       </div>
 
-      {getBaseError(errors) && (
-        <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
-          {getBaseError(errors)}
+      {baseError && (
+        <div className="mt-6">
+          <FieldError error={baseError} label="Reservation" />
         </div>
       )}
     </div>
@@ -139,43 +148,9 @@ function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
     <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
       {label}
-
-      {required && <span className="text-red-500">*</span>}
+      <RequiredMark show={required} />
     </span>
   );
-}
-
-type FormHelperProps = {
-  helper?: string;
-};
-
-function FormHelper({ helper }: FormHelperProps) {
-  if (!helper) return null;
-
-  return <p className="mt-2 text-xs font-semibold text-slate-400">{helper}</p>;
-}
-
-type FormErrorProps = {
-  error?: string | string[];
-};
-
-function FormError({ error }: FormErrorProps) {
-  if (!error) return null;
-
-  const message = Array.isArray(error) ? error.join(", ") : error;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
-}
-
-function fieldClassName(hasError: boolean): string {
-  const baseClass =
-    "w-full rounded-xl border py-3 pl-11 pr-4 text-sm font-medium outline-none transition disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
-
-  if (hasError) {
-    return `${baseClass} border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-4 focus:ring-red-50`;
-  }
-
-  return `${baseClass} border-slate-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50`;
 }
 
 function fieldError(

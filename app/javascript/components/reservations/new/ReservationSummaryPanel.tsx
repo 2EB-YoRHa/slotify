@@ -1,5 +1,12 @@
 import { StickyNote, UsersRound } from "lucide-react";
 import LoadingButton from "../../ui/LoadingButton";
+import {
+  FieldError,
+  FieldHint,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../../ui/FormFeedback";
 import type { Workspace } from "../../../types/workspace";
 import { SelectedWorkspaceSummary } from "../new/WorkspaceInfoBlocks";
 import { ValidationNotice } from "../new/ReservationNotices";
@@ -81,21 +88,18 @@ export default function ReservationSummaryPanel({
               min="1"
               value={attendeesCount}
               onChange={(event) => onAttendeesChange(event.target.value)}
-              className={fieldClassName(Boolean(attendeesError))}
+              className={formInputClassName(hasFieldError(attendeesError))}
               disabled={processing}
-              required
             />
           </div>
 
-          <FormHelper
-            helper={
-              selectedWorkspace
-                ? `Maximum capacity for this workspace: ${selectedWorkspace.capacity} people.`
-                : "Select a workspace to validate its maximum capacity."
-            }
-          />
+          <FieldHint>
+            {selectedWorkspace
+              ? `Maximum capacity for this workspace: ${selectedWorkspace.capacity} people.`
+              : "Select a workspace to validate its maximum capacity."}
+          </FieldHint>
 
-          <FormError error={attendeesError} />
+          <FieldError error={attendeesError} label="Attendees" />
         </label>
 
         <label className="block">
@@ -111,21 +115,25 @@ export default function ReservationSummaryPanel({
               value={notes}
               maxLength={500}
               onChange={(event) => onNotesChange(event.target.value)}
-              className={`${fieldClassName(Boolean(notesError))} min-h-32 resize-y`}
+              className={`${formInputClassName(
+                hasFieldError(notesError),
+              )} min-h-32 resize-y`}
               placeholder="Add reservation notes, setup details, or special instructions."
               disabled={processing}
             />
           </div>
 
           <div className="mt-2 flex items-center justify-between gap-4">
-            <FormHelper helper="Optional. Keep notes short and relevant for the booking." />
+            <FieldHint>
+              Optional. Keep notes short and relevant for the booking.
+            </FieldHint>
 
             <span className="text-xs font-semibold text-slate-400">
               {notes.length}/500
             </span>
           </div>
 
-          <FormError error={notesError} />
+          <FieldError error={notesError} label="Notes" />
         </label>
       </div>
 
@@ -205,43 +213,9 @@ function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
     <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
       {label}
-
-      {required && <span className="text-red-500">*</span>}
+      <RequiredMark show={required} />
     </span>
   );
-}
-
-type FormHelperProps = {
-  helper?: string;
-};
-
-function FormHelper({ helper }: FormHelperProps) {
-  if (!helper) return null;
-
-  return <p className="mt-2 text-xs font-semibold text-slate-400">{helper}</p>;
-}
-
-type FormErrorProps = {
-  error?: string | string[];
-};
-
-function FormError({ error }: FormErrorProps) {
-  if (!error) return null;
-
-  const message = Array.isArray(error) ? error.join(", ") : error;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
-}
-
-function fieldClassName(hasError: boolean): string {
-  const baseClass =
-    "w-full rounded-xl border py-3 pl-11 pr-4 text-sm font-medium outline-none transition disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400";
-
-  if (hasError) {
-    return `${baseClass} border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-4 focus:ring-red-50`;
-  }
-
-  return `${baseClass} border-slate-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50`;
 }
 
 function fieldError(

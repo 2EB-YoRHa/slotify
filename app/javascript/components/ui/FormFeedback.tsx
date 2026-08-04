@@ -121,12 +121,28 @@ function humanizeRailsMessage(message: string, label: string): string {
     return `${field} is already in use.`;
   }
 
+  if (message.includes("must include at least one uppercase letter")) {
+    return `${field} must include at least one uppercase letter.`;
+  }
+
+  if (message.includes("must include at least one lowercase letter")) {
+    return `${field} must include at least one lowercase letter.`;
+  }
+
+  if (message.includes("must include at least one number")) {
+    return `${field} must include at least one number.`;
+  }
+
+  if (message.includes("must include at least one symbol")) {
+    return `${field} must include at least one symbol.`;
+  }
+
   if (message.includes("already belongs to this organization")) {
-    return `This email already belongs to this organization.`;
+    return "This email already belongs to this organization.";
   }
 
   if (message.includes("already has a pending invitation")) {
-    return `This email already has a pending invitation.`;
+    return "This email already has a pending invitation.";
   }
 
   return message.endsWith(".") ? message : `${message}.`;

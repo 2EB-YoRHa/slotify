@@ -2,6 +2,13 @@ import { useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
 import { PlusCircle, Sparkles } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
+import {
+  FieldError,
+  FieldHint,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../ui/FormFeedback";
 
 type AmenityFormProps = {
   errors?: Partial<Record<string, string | string[]>>;
@@ -33,6 +40,8 @@ export default function AmenityForm({
     ...initialErrors,
     ...formErrors,
   };
+
+  const nameError = errors.name || errors["amenity.name"];
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -70,8 +79,9 @@ export default function AmenityForm({
 
         <div>
           <label className="block">
-            <span className="mb-2 block text-sm font-bold text-slate-700">
+            <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
               Amenity Name
+              <RequiredMark />
             </span>
 
             <div className="grid grid-cols-[1fr_auto] gap-4">
@@ -91,14 +101,20 @@ export default function AmenityForm({
                         name: event.target.value,
                       })
                     }
-                    className="h-12 w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
-                    placeholder="Projector, Wi-Fi, Whiteboard..."
+                    className={`h-12 ${formInputClassName(
+                      hasFieldError(nameError),
+                    )}`}
+                    placeholder="Enter amenity name"
                     disabled={processing}
-                    required
                   />
                 </div>
 
-                <FormError error={errors.name || errors["amenity.name"]} />
+                <FieldHint>
+                  Use a short reusable name, such as Projector, Wi-Fi, or
+                  Whiteboard.
+                </FieldHint>
+
+                <FieldError error={nameError} label="Amenity Name" />
               </div>
 
               <LoadingButton
@@ -115,16 +131,4 @@ export default function AmenityForm({
       </div>
     </form>
   );
-}
-
-type FormErrorProps = {
-  error?: string | string[];
-};
-
-function FormError({ error }: FormErrorProps) {
-  if (!error) return null;
-
-  const message = Array.isArray(error) ? error.join(", ") : error;
-
-  return <p className="mt-2 text-xs font-semibold text-red-500">{message}</p>;
 }

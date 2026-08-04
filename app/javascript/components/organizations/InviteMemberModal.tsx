@@ -1,6 +1,14 @@
 import { useForm } from "@inertiajs/react";
 import type { FormEvent } from "react";
+import { Mail, ShieldCheck } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
+import {
+  FieldError,
+  FieldHint,
+  RequiredMark,
+  formInputClassName,
+  hasFieldError,
+} from "../ui/FormFeedback";
 import type { Role } from "../../types/organization";
 
 type InviteMemberModalProps = {
@@ -23,13 +31,23 @@ export default function InviteMemberModal({
 }: InviteMemberModalProps) {
   const defaultRole = roles.find((role) => role.name === "member") || roles[0];
 
-  const { data, setData, post, processing, reset } =
-    useForm<InvitationFormData>({
-      organization_invitation: {
-        email: "",
-        role_id: defaultRole?.id || "",
-      },
-    });
+  const {
+    data,
+    setData,
+    post,
+    processing,
+    reset,
+    errors: formErrors,
+  } = useForm<InvitationFormData>({
+    organization_invitation: {
+      email: "",
+      role_id: defaultRole?.id || "",
+    },
+  });
+
+  const errors: Record<string, string | string[] | undefined> = formErrors;
+  const emailError = errors.email || errors["organization_invitation.email"];
+  const roleError = errors.role_id || errors["organization_invitation.role_id"];
 
   if (!open) return null;
 
@@ -37,6 +55,7 @@ export default function InviteMemberModal({
     event.preventDefault();
 
     post("/organization_invitations", {
+      preserveScroll: true,
       onSuccess: () => {
         reset();
         onClose();
@@ -117,39 +136,68 @@ export default function InviteMemberModal({
             </div>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold text-slate-700">
+              <span className="mb-2 flex items-center gap-1 text-sm font-semibold text-slate-700">
                 Email Address
+                <RequiredMark />
               </span>
 
-              <input
-                type="email"
-                value={data.organization_invitation.email}
-                onChange={(event) => updateEmail(event.target.value)}
-                className="input"
-                placeholder="Enter member email"
-                disabled={processing}
-                required
-              />
+              <div className="relative">
+                <Mail
+                  size={17}
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+
+                <input
+                  type="email"
+                  value={data.organization_invitation.email}
+                  onChange={(event) => updateEmail(event.target.value)}
+                  className={formInputClassName(hasFieldError(emailError))}
+                  placeholder="Enter member email"
+                  disabled={processing}
+                />
+              </div>
+
+              <FieldHint>
+                The invitation will be linked to this exact email address.
+              </FieldHint>
+
+              <FieldError error={emailError} label="Email Address" />
             </label>
 
             <label className="mt-5 block">
-              <span className="mb-2 block text-sm font-semibold text-slate-700">
+              <span className="mb-2 flex items-center gap-1 text-sm font-semibold text-slate-700">
                 Initial Role
+                <RequiredMark />
               </span>
 
-              <select
-                value={data.organization_invitation.role_id}
-                onChange={(event) => updateRole(event.target.value)}
-                className="input"
-                disabled={processing}
-                required
-              >
-                {roles.map((role) => (
-                  <option key={role.id} value={role.id}>
-                    {formatRole(role.name)}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <ShieldCheck
+                  size={17}
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+
+                <select
+                  value={data.organization_invitation.role_id}
+                  onChange={(event) => updateRole(event.target.value)}
+                  className={`${formInputClassName(
+                    hasFieldError(roleError),
+                  )} appearance-none bg-white pr-10`}
+                  disabled={processing}
+                >
+                  {roles.map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {formatRole(role.name)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <FieldHint>
+                Members can book spaces. Managers can also administer the
+                organization.
+              </FieldHint>
+
+              <FieldError error={roleError} label="Initial Role" />
             </label>
 
             <div className="mt-8 flex gap-3">
