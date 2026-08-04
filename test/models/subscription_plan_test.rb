@@ -21,8 +21,8 @@ class SubscriptionPlanTest < ActiveSupport::TestCase
     assert subscription.persisted?
     assert_equal "starter", subscription.plan_name
     assert_equal "active", subscription.status
-    assert_equal 10, subscription.workspace_limit
-    assert_equal 20, subscription.user_limit
+    assert_equal 6, subscription.workspace_limit
+    assert_equal 12, subscription.user_limit
     assert_equal "sub_starter_test", subscription.stripe_subscription_id
   end
 
@@ -45,6 +45,33 @@ class SubscriptionPlanTest < ActiveSupport::TestCase
     assert_nil subscription.workspace_limit
     assert_nil subscription.user_limit
     assert_equal "sub_pro_test", subscription.stripe_subscription_id
+  end
+
+  test "starter plan includes richer frontend metadata" do
+    starter = SubscriptionPlan.find!("starter")
+
+    assert_equal "Starter", starter[:name]
+    assert_equal "Essential", starter[:badge]
+    assert_equal 6, starter[:workspace_limit]
+    assert_equal 12, starter[:user_limit]
+    assert starter[:best_for].present?
+    assert starter[:highlights].any?
+    assert starter[:limits].any?
+    assert starter[:feature_groups].any?
+  end
+
+  test "pro plan includes richer frontend metadata" do
+    pro = SubscriptionPlan.find!("pro")
+
+    assert_equal "Pro", pro[:name]
+    assert_equal "Recommended", pro[:badge]
+    assert_nil pro[:workspace_limit]
+    assert_nil pro[:user_limit]
+    assert pro[:highlighted]
+    assert pro[:best_for].present?
+    assert pro[:highlights].any?
+    assert pro[:limits].any?
+    assert pro[:feature_groups].any?
   end
 
   test "raises error for invalid plan key" do

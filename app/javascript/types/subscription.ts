@@ -10,7 +10,6 @@ export type OrganizationSummary = {
 export type Subscription = {
   id: number;
 
-  // New Stripe-ready fields
   plan_name?: string | null;
   starts_at?: string | null;
   ends_at?: string | null;
@@ -20,12 +19,16 @@ export type Subscription = {
   stripe_price_id?: string | null;
   stripe_checkout_session_id?: string | null;
 
-  // Legacy fields already used by the app before Stripe
   plan?: string | null;
   started_at?: string | null;
   expires_at?: string | null;
 
   status?: string | null;
+};
+
+export type SubscriptionFeatureGroup = {
+  title: string;
+  items: string[];
 };
 
 export type SubscriptionPlan = {
@@ -34,8 +37,13 @@ export type SubscriptionPlan = {
   price: string;
   amount_cents: number;
   description: string;
+  best_for?: string;
+  badge?: string;
   workspace_limit?: number | null;
   user_limit?: number | null;
+  limits?: string[];
+  highlights?: string[];
+  feature_groups?: SubscriptionFeatureGroup[];
   features: string[];
   highlighted?: boolean;
   checkout_ready?: boolean;

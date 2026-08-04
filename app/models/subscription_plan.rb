@@ -5,16 +5,57 @@ module SubscriptionPlan
       name: "Starter",
       price: "$19",
       amount_cents: 1900,
-      description: "For small coworking spaces that need basic booking control.",
-      workspace_limit: 10,
-      user_limit: 20,
+      description: "Essential booking tools for small coworking spaces getting organized.",
+      best_for: "Small coworkings, private studios, and teams starting with online reservations.",
+      workspace_limit: 6,
+      user_limit: 12,
       stripe_price_env: "STRIPE_STARTER_PRICE_ID",
+      badge: "Essential",
+      highlights: [
+        "Reservation essentials",
+        "Small team controls",
+        "Simple booking rules"
+      ],
+      limits: [
+        "Up to 6 workspaces",
+        "Up to 12 member slots",
+        "1 organization workspace directory"
+      ],
+      feature_groups: [
+        {
+          title: "Booking Core",
+          items: [
+            "Create and manage workspace reservations",
+            "Prevent overlapping confirmed reservations",
+            "Allow members to book available spaces",
+            "Reservation history with confirmed, cancelled, and concluded states"
+          ]
+        },
+        {
+          title: "Workspace Management",
+          items: [
+            "Workspace photos, descriptions, capacity, rates, and amenities",
+            "Activate or deactivate workspaces without deleting history",
+            "Basic workspace availability checks"
+          ]
+        },
+        {
+          title: "Team Access",
+          items: [
+            "Invite members by email",
+            "Manager and member roles",
+            "Basic organization profile management"
+          ]
+        }
+      ],
       features: [
-        "Up to 10 workspaces",
-        "Up to 20 members",
+        "Up to 6 workspaces",
+        "Up to 12 member slots",
         "Reservation management",
+        "Workspace photos and amenities",
         "Member invitations",
-        "Basic booking rules"
+        "Basic booking rules",
+        "Overlap protection"
       ]
     },
     "pro" => {
@@ -22,18 +63,60 @@ module SubscriptionPlan
       name: "Pro",
       price: "$49",
       amount_cents: 4900,
-      description: "For growing teams that need stronger workspace management.",
+      description: "Advanced operations for growing coworking spaces that need more control.",
+      best_for: "Growing coworkings, multi-room operations, and managers who need stronger visibility.",
       workspace_limit: nil,
       user_limit: nil,
       stripe_price_env: "STRIPE_PRO_PRICE_ID",
+      badge: "Recommended",
       highlighted: true,
+      highlights: [
+        "Unlimited scale",
+        "Advanced operations",
+        "Management insights"
+      ],
+      limits: [
+        "Unlimited workspaces",
+        "Unlimited member slots",
+        "Built for growing operations"
+      ],
+      feature_groups: [
+        {
+          title: "Everything in Starter",
+          items: [
+            "All reservation, workspace, amenity, invitation, and role features",
+            "All booking validation and overlap protection",
+            "Full member booking experience"
+          ]
+        },
+        {
+          title: "Operational Control",
+          items: [
+            "Unlimited workspaces and member slots",
+            "Stronger availability management for busy teams",
+            "Better visibility into workspace usage and booking activity",
+            "Manager tools for larger organizations"
+          ]
+        },
+        {
+          title: "Growth Features",
+          items: [
+            "Ready for advanced reporting",
+            "Ready for custom time slots",
+            "Ready for availability command center",
+            "Designed for future premium controls"
+          ]
+        }
+      ],
       features: [
         "Unlimited workspaces",
-        "Unlimited members",
-        "Availability checks",
-        "Member access control",
-        "Organization management",
-        "Dashboard insights"
+        "Unlimited member slots",
+        "Everything in Starter",
+        "Advanced availability management",
+        "Workspace usage insights",
+        "Manager-level operational controls",
+        "Ready for custom time slots",
+        "Ready for availability command center"
       ]
     }
   }.freeze

@@ -7,12 +7,12 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
 
   test "uses starter limits when organization has no active subscription" do
     assert_equal "starter", @organization.current_plan
-    assert_equal 10, @organization.workspace_limit
-    assert_equal 20, @organization.user_limit
+    assert_equal 6, @organization.workspace_limit
+    assert_equal 12, @organization.user_limit
     assert @organization.can_start_subscription_checkout?
   end
 
-  test "starter reaches workspace limit at ten workspaces" do
+  test "starter reaches workspace limit at six workspaces" do
     create_subscription(
       organization: @organization,
       plan_name: "starter",
@@ -20,12 +20,12 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       stripe_subscription_id: "sub_starter_active"
     )
 
-    10.times do
+    6.times do
       create_workspace(organization: @organization)
     end
 
-    assert_equal 10, @organization.workspace_limit
-    assert_equal 10, @organization.workspaces_used
+    assert_equal 6, @organization.workspace_limit
+    assert_equal 6, @organization.workspaces_used
     assert @organization.workspace_limit_reached?
   end
 
@@ -61,8 +61,8 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
     )
 
     assert_equal "starter", @organization.current_plan
-    assert_equal 10, @organization.workspace_limit
-    assert_equal 20, @organization.user_limit
+    assert_equal 6, @organization.workspace_limit
+    assert_equal 12, @organization.user_limit
     assert @organization.can_start_subscription_checkout?
   end
 
@@ -90,7 +90,7 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       role_name: "manager"
     )
 
-    18.times do
+    10.times do
       create_user(
         organization: @organization,
         role_name: "member"
@@ -103,9 +103,9 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       role_name: "member"
     )
 
-    assert_equal 19, @organization.users_used
+    assert_equal 11, @organization.users_used
     assert_equal 1, @organization.pending_invitation_slots
-    assert_equal 20, @organization.member_slots_used
+    assert_equal 12, @organization.member_slots_used
     assert @organization.user_limit_reached?
   end
 end
