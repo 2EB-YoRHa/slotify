@@ -7,6 +7,13 @@ class AuthorizationTest < ActionDispatch::IntegrationTest
     create_role(name: "member")
     create_role(name: "manager")
 
+    create_subscription(
+      organization: @organization,
+      plan_name: "starter",
+      status: "active",
+      stripe_subscription_id: "sub_authorization_starter"
+    )
+
     @manager = create_user(
       organization: @organization,
       role_name: "manager"

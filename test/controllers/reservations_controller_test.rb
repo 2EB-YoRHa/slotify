@@ -4,6 +4,13 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @organization = create_organization
 
+    create_subscription(
+      organization: @organization,
+      plan_name: "starter",
+      status: "active",
+      stripe_subscription_id: "sub_reservations_starter"
+    )
+
     @manager = create_user(
       organization: @organization,
       role_name: "manager"

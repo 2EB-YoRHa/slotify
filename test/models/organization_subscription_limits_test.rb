@@ -5,16 +5,72 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
     @organization = create_organization
   end
 
-  test "uses starter limits when organization has no active subscription" do
-    assert_equal "starter", @organization.current_plan
-    assert_equal 6, @organization.workspace_limit
-    assert_equal 12, @organization.user_limit
-    assert_equal 6, @organization.workspace_slots_remaining
-    assert_equal 12, @organization.member_slots_remaining
+  test "uses billing required limits when organization has no active subscription" do
+    assert @organization.billing_required?
+    assert_not @organization.subscription_active?
+    assert_equal "billing_required", @organization.current_plan
+    assert_nil @organization.current_plan_definition
+
+    assert_equal 0, @organization.workspace_limit
+    assert_equal 1, @organization.user_limit
+
+    assert_equal 0, @organization.workspaces_used
+    assert_equal 0, @organization.users_used
+    assert_equal 0, @organization.pending_invitation_slots
+    assert_equal 0, @organization.member_slots_used
+
+    assert_equal 0, @organization.workspace_slots_remaining
+    assert_equal 1, @organization.member_slots_remaining
+
+    assert @organization.workspace_limit_reached?
+    assert_not @organization.user_limit_reached?
+
     assert_not @organization.workspace_over_limit?
     assert_not @organization.user_over_limit?
     assert_not @organization.over_plan_limits?
+
     assert @organization.can_start_subscription_checkout?
+  end
+
+  test "billing required manager consumes the only allowed user slot" do
+    create_user(
+      organization: @organization,
+      role_name: "manager"
+    )
+
+    assert @organization.billing_required?
+    assert_equal 1, @organization.user_limit
+    assert_equal 1, @organization.users_used
+    assert_equal 1, @organization.member_slots_used
+    assert_equal 0, @organization.member_slots_remaining
+    assert @organization.user_limit_reached?
+    assert_not @organization.user_over_limit?
+  end
+
+  test "billing required detects member over limit" do
+    2.times do
+      create_user(
+        organization: @organization,
+        role_name: "member"
+      )
+    end
+
+    assert @organization.billing_required?
+    assert_equal 1, @organization.user_limit
+    assert_equal 2, @organization.member_slots_used
+    assert_equal 0, @organization.member_slots_remaining
+    assert @organization.user_limit_reached?
+    assert @organization.user_over_limit?
+    assert @organization.over_plan_limits?
+
+    usage = @organization.plan_usage
+
+    assert_equal "billing_required", usage[:current_plan]
+    assert_equal true, usage[:billing_required]
+    assert_equal true, usage[:user_over_limit]
+    assert_equal true, usage[:over_plan_limits]
+    assert_equal 2, usage[:member_slots_used]
+    assert_equal 1, usage[:user_limit]
   end
 
   test "starter reaches workspace limit at six workspaces" do
@@ -29,6 +85,9 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       create_workspace(organization: @organization)
     end
 
+    assert_not @organization.billing_required?
+    assert @organization.subscription_active?
+    assert_equal "starter", @organization.current_plan
     assert_equal 6, @organization.workspace_limit
     assert_equal 6, @organization.workspaces_used
     assert_equal 0, @organization.workspace_slots_remaining
@@ -58,6 +117,7 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
 
     usage = @organization.plan_usage
 
+    assert_equal false, usage[:billing_required]
     assert_equal true, usage[:workspace_over_limit]
     assert_equal true, usage[:over_plan_limits]
     assert_equal 8, usage[:workspaces_used]
@@ -89,6 +149,7 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
 
     usage = @organization.plan_usage
 
+    assert_equal false, usage[:billing_required]
     assert_equal true, usage[:user_over_limit]
     assert_equal true, usage[:over_plan_limits]
     assert_equal 13, usage[:member_slots_used]
@@ -106,6 +167,7 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       user_limit: nil
     )
 
+    assert_equal "starter", @organization.current_plan
     assert_equal 6, @organization.workspace_limit
     assert_equal 12, @organization.user_limit
   end
@@ -124,6 +186,8 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       create_workspace(organization: @organization)
     end
 
+    assert_not @organization.billing_required?
+    assert @organization.subscription_active?
     assert_equal "pro", @organization.current_plan
     assert_nil @organization.workspace_limit
     assert_nil @organization.user_limit
@@ -136,7 +200,7 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
     assert_not @organization.over_plan_limits?
   end
 
-  test "cancelled pro subscription does not grant unlimited limits" do
+  test "cancelled pro subscription returns to billing required" do
     create_subscription(
       organization: @organization,
       plan_name: "pro",
@@ -146,9 +210,11 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       user_limit: nil
     )
 
-    assert_equal "starter", @organization.current_plan
-    assert_equal 6, @organization.workspace_limit
-    assert_equal 12, @organization.user_limit
+    assert @organization.billing_required?
+    assert_not @organization.subscription_active?
+    assert_equal "billing_required", @organization.current_plan
+    assert_equal 0, @organization.workspace_limit
+    assert_equal 1, @organization.user_limit
     assert @organization.can_start_subscription_checkout?
   end
 
@@ -163,7 +229,7 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
     assert_not @organization.can_start_subscription_checkout?
   end
 
-  test "pending invitations count as member slots" do
+  test "pending invitations count as member slots on starter" do
     create_subscription(
       organization: @organization,
       plan_name: "starter",
