@@ -47,8 +47,20 @@ module ActiveSupport
       max_hours_per_reservation: 4,
       min_notice_minutes: 0,
       cancellation_limit_hours: 1,
-      allow_weekend_bookings: true
+      allow_weekend_bookings: true,
+      ensure_active_subscription: true
     )
+      if ensure_active_subscription && organization.active_subscription.blank?
+        create_subscription(
+          organization: organization,
+          plan_name: "starter",
+          status: "active",
+          stripe_subscription_id: "sub_test_#{SecureRandom.hex(8)}"
+        )
+
+        organization.reload
+      end
+
       organization.booking_rule&.destroy!
 
       organization.create_booking_rule!(

@@ -156,7 +156,7 @@ class SubscriptionAccessTest < ActionDispatch::IntegrationTest
       stripe_subscription_id: "sub_starter_workspace_limit"
     )
 
-    6.times do
+    10.times do
       create_workspace(organization: @organization)
     end
 
@@ -179,7 +179,7 @@ class SubscriptionAccessTest < ActionDispatch::IntegrationTest
       stripe_subscription_id: "sub_starter_workspace_json_limit"
     )
 
-    6.times do
+    10.times do
       create_workspace(organization: @organization)
     end
 
@@ -208,7 +208,7 @@ class SubscriptionAccessTest < ActionDispatch::IntegrationTest
       stripe_subscription_id: "sub_starter_member_json_limit"
     )
 
-    10.times do
+    12.times do
       create_user(
         organization: @organization,
         role_name: "member"

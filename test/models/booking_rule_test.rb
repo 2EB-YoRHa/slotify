@@ -3,6 +3,13 @@ require "test_helper"
 class BookingRuleTest < ActiveSupport::TestCase
   setup do
     @organization = create_organization
+
+    create_subscription(
+      organization: @organization,
+      plan_name: "starter",
+      status: "active",
+      stripe_subscription_id: "sub_booking_rule_test"
+    )
   end
 
   test "requires valid booking rule values" do

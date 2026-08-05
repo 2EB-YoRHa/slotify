@@ -73,7 +73,7 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
     assert_equal 1, usage[:user_limit]
   end
 
-  test "starter reaches workspace limit at six workspaces" do
+  test "starter reaches workspace limit at ten workspaces" do
     create_subscription(
       organization: @organization,
       plan_name: "starter",
@@ -81,15 +81,15 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       stripe_subscription_id: "sub_starter_active"
     )
 
-    6.times do
+    10.times do
       create_workspace(organization: @organization)
     end
 
     assert_not @organization.billing_required?
     assert @organization.subscription_active?
     assert_equal "starter", @organization.current_plan
-    assert_equal 6, @organization.workspace_limit
-    assert_equal 6, @organization.workspaces_used
+    assert_equal 10, @organization.workspace_limit
+    assert_equal 10, @organization.workspaces_used
     assert_equal 0, @organization.workspace_slots_remaining
     assert @organization.workspace_limit_reached?
     assert_not @organization.workspace_over_limit?
@@ -103,13 +103,13 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       stripe_subscription_id: "sub_starter_downgraded"
     )
 
-    8.times do
+    12.times do
       create_workspace(organization: @organization)
     end
 
     assert_equal "starter", @organization.current_plan
-    assert_equal 6, @organization.workspace_limit
-    assert_equal 8, @organization.workspaces_used
+    assert_equal 10, @organization.workspace_limit
+    assert_equal 12, @organization.workspaces_used
     assert_equal 0, @organization.workspace_slots_remaining
     assert @organization.workspace_limit_reached?
     assert @organization.workspace_over_limit?
@@ -120,8 +120,8 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
     assert_equal false, usage[:billing_required]
     assert_equal true, usage[:workspace_over_limit]
     assert_equal true, usage[:over_plan_limits]
-    assert_equal 8, usage[:workspaces_used]
-    assert_equal 6, usage[:workspace_limit]
+    assert_equal 12, usage[:workspaces_used]
+    assert_equal 10, usage[:workspace_limit]
     assert_equal 0, usage[:workspace_slots_remaining]
   end
 
@@ -133,15 +133,15 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       stripe_subscription_id: "sub_starter_member_downgraded"
     )
 
-    13.times do
+    16.times do
       create_user(
         organization: @organization,
         role_name: "member"
       )
     end
 
-    assert_equal 12, @organization.user_limit
-    assert_equal 13, @organization.member_slots_used
+    assert_equal 15, @organization.user_limit
+    assert_equal 16, @organization.member_slots_used
     assert_equal 0, @organization.member_slots_remaining
     assert @organization.user_limit_reached?
     assert @organization.user_over_limit?
@@ -152,8 +152,8 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
     assert_equal false, usage[:billing_required]
     assert_equal true, usage[:user_over_limit]
     assert_equal true, usage[:over_plan_limits]
-    assert_equal 13, usage[:member_slots_used]
-    assert_equal 12, usage[:user_limit]
+    assert_equal 16, usage[:member_slots_used]
+    assert_equal 15, usage[:user_limit]
     assert_equal 0, usage[:member_slots_remaining]
   end
 
@@ -168,8 +168,8 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
     )
 
     assert_equal "starter", @organization.current_plan
-    assert_equal 6, @organization.workspace_limit
-    assert_equal 12, @organization.user_limit
+    assert_equal 10, @organization.workspace_limit
+    assert_equal 15, @organization.user_limit
   end
 
   test "pro has unlimited workspace and user limits" do
@@ -242,7 +242,7 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       role_name: "manager"
     )
 
-    10.times do
+    13.times do
       create_user(
         organization: @organization,
         role_name: "member"
@@ -255,9 +255,9 @@ class OrganizationSubscriptionLimitsTest < ActiveSupport::TestCase
       role_name: "member"
     )
 
-    assert_equal 11, @organization.users_used
+    assert_equal 14, @organization.users_used
     assert_equal 1, @organization.pending_invitation_slots
-    assert_equal 12, @organization.member_slots_used
+    assert_equal 15, @organization.member_slots_used
     assert_equal 0, @organization.member_slots_remaining
     assert @organization.user_limit_reached?
     assert_not @organization.user_over_limit?

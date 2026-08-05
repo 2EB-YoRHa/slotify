@@ -21,8 +21,8 @@ class SubscriptionPlanTest < ActiveSupport::TestCase
     assert subscription.persisted?
     assert_equal "starter", subscription.plan_name
     assert_equal "active", subscription.status
-    assert_equal 6, subscription.workspace_limit
-    assert_equal 12, subscription.user_limit
+    assert_equal 10, subscription.workspace_limit
+    assert_equal 15, subscription.user_limit
     assert_equal "sub_starter_test", subscription.stripe_subscription_id
   end
 
@@ -52,8 +52,8 @@ class SubscriptionPlanTest < ActiveSupport::TestCase
 
     assert_equal "Starter", starter[:name]
     assert_equal "Essential", starter[:badge]
-    assert_equal 6, starter[:workspace_limit]
-    assert_equal 12, starter[:user_limit]
+    assert_equal 10, starter[:workspace_limit]
+    assert_equal 15, starter[:user_limit]
     assert starter[:best_for].present?
     assert starter[:highlights].any?
     assert starter[:limits].any?
