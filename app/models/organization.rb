@@ -1,5 +1,9 @@
 class Organization < ApplicationRecord
   ACTIVE_SUBSCRIPTION_STATUSES = Subscription::ACTIVE_STATUSES
+  BILLING_REQUIRED_PLAN = "billing_required"
+  BILLING_REQUIRED_WORKSPACE_LIMIT = 0
+  BILLING_REQUIRED_USER_LIMIT = 1
+
   SLUG_FORMAT = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
   EMAIL_FORMAT = URI::MailTo::EMAIL_REGEXP
   PHONE_FORMAT = /\A[\d\s+\-().]+\z/
@@ -94,19 +98,35 @@ class Organization < ApplicationRecord
     active_subscription || subscriptions.order(created_at: :desc).first
   end
 
+  def subscription_active?
+    active_subscription.present?
+  end
+
+  def billing_required?
+    active_subscription.blank?
+  end
+
   def current_plan
-    active_subscription&.plan_name || "starter"
+    return BILLING_REQUIRED_PLAN if billing_required?
+
+    active_subscription.plan_name
   end
 
   def current_plan_definition
+    return nil if billing_required?
+
     SubscriptionPlan.find(current_plan) || SubscriptionPlan.find!("starter")
   end
 
   def workspace_limit
+    return BILLING_REQUIRED_WORKSPACE_LIMIT if billing_required?
+
     plan_limit_for(:workspace_limit)
   end
 
   def user_limit
+    return BILLING_REQUIRED_USER_LIMIT if billing_required?
+
     plan_limit_for(:user_limit)
   end
 
@@ -189,6 +209,7 @@ class Organization < ApplicationRecord
   def plan_usage
     {
       current_plan: current_plan,
+      billing_required: billing_required?,
       workspaces_used: workspaces_used,
       workspace_limit: workspace_limit,
       workspace_slots_remaining: workspace_slots_remaining,
@@ -208,7 +229,7 @@ class Organization < ApplicationRecord
   def plan_limit_for(limit_key)
     subscription = active_subscription
 
-    return SubscriptionPlan.find!("starter")[limit_key] if subscription.blank?
+    return nil if subscription.blank?
 
     plan = SubscriptionPlan.find(subscription.plan_name) ||
            SubscriptionPlan.find!("starter")

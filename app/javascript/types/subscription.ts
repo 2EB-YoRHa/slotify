@@ -51,6 +51,7 @@ export type SubscriptionPlan = {
 
 export type SubscriptionUsage = {
   current_plan?: string;
+  billing_required?: boolean;
   workspaces_used: number;
   workspace_limit?: number | null;
   workspace_slots_remaining?: number | null;

@@ -1,18 +1,31 @@
 import { motion } from "motion/react";
-import { CreditCard, Info, ShieldCheck } from "lucide-react";
+import { CreditCard, Info, LockKeyhole, ShieldCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 type BillingModeNoticeProps = {
   currentPlanLabel: string;
+  billingRequired?: boolean;
   canStartCheckout: boolean;
   canManageBilling: boolean;
 };
 
 export default function BillingModeNotice({
   currentPlanLabel,
+  billingRequired = false,
   canStartCheckout,
   canManageBilling,
 }: BillingModeNoticeProps) {
+  if (billingRequired) {
+    return (
+      <NoticeContainer
+        icon={LockKeyhole}
+        tone="amber"
+        title="Subscription required"
+        description="The organization exists, but management features are locked until a subscription is active. Choose Starter or Pro below to continue."
+      />
+    );
+  }
+
   if (canStartCheckout) {
     return (
       <NoticeContainer

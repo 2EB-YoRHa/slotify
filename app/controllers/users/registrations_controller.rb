@@ -123,7 +123,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
       sign_in(:user, user)
 
-      redirect_to root_path, notice: "Organization account created successfully"
+      redirect_to subscription_path,
+                  notice: "Organization account created successfully. Choose a plan to unlock Slotify."
     else
       errors = user.errors.to_hash
 

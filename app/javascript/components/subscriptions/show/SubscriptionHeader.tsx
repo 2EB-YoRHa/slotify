@@ -1,28 +1,40 @@
 import { motion } from "motion/react";
-import { CreditCard, Sparkles } from "lucide-react";
+import { CreditCard, LockKeyhole, Sparkles } from "lucide-react";
 import type { SubscriptionPlan } from "../../../types/subscription";
 
 type SubscriptionHeaderProps = {
   currentPlanLabel: string;
   status: string;
   activePlan?: SubscriptionPlan;
+  billingRequired?: boolean;
 };
 
 export default function SubscriptionHeader({
   currentPlanLabel,
   status,
   activePlan,
+  billingRequired = false,
 }: SubscriptionHeaderProps) {
   return (
-    <section className="mb-8 overflow-hidden rounded-3xl border border-cyan-100 bg-linear-to-br from-cyan-50 via-white to-slate-50 p-8 shadow-sm">
+    <section
+      className={`mb-8 overflow-hidden rounded-3xl border p-8 shadow-sm ${
+        billingRequired
+          ? "border-amber-100 bg-linear-to-br from-amber-50 via-white to-slate-50"
+          : "border-cyan-100 bg-linear-to-br from-cyan-50 via-white to-slate-50"
+      }`}
+    >
       <div className="grid grid-cols-[1.3fr_0.7fr] gap-8">
         <div>
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-100 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-cyan-600 shadow-sm"
+            className={`mb-5 inline-flex items-center gap-2 rounded-full border bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide shadow-sm ${
+              billingRequired
+                ? "border-amber-100 text-amber-600"
+                : "border-cyan-100 text-cyan-600"
+            }`}
           >
-            <Sparkles size={14} />
+            {billingRequired ? <LockKeyhole size={14} /> : <Sparkles size={14} />}
             Subscription Center
           </motion.div>
 
@@ -32,7 +44,9 @@ export default function SubscriptionHeader({
             transition={{ delay: 0.04 }}
             className="max-w-3xl text-4xl font-extrabold tracking-tight text-slate-950"
           >
-            Manage the plan that powers your coworking operation.
+            {billingRequired
+              ? "Choose a plan to unlock your coworking operation."
+              : "Manage the plan that powers your coworking operation."}
           </motion.h1>
 
           <motion.p
@@ -41,8 +55,9 @@ export default function SubscriptionHeader({
             transition={{ delay: 0.08 }}
             className="mt-4 max-w-3xl text-base leading-7 text-slate-600"
           >
-            Compare Starter and Pro, review current usage, and keep billing
-            aligned with the size of your organization.
+            {billingRequired
+              ? "Your organization has been created, but access to management features is locked until a Starter or Pro subscription is active."
+              : "Compare Starter and Pro, review current usage, and keep billing aligned with the size of your organization."}
           </motion.p>
 
           {activePlan?.best_for && (
@@ -66,8 +81,18 @@ export default function SubscriptionHeader({
           transition={{ delay: 0.14 }}
           className="rounded-3xl border border-white bg-white/85 p-6 shadow-sm"
         >
-          <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400 text-white shadow-sm shadow-cyan-100">
-            <CreditCard size={26} strokeWidth={2.4} />
+          <div
+            className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-sm ${
+              billingRequired
+                ? "bg-amber-400 shadow-amber-100"
+                : "bg-cyan-400 shadow-cyan-100"
+            }`}
+          >
+            {billingRequired ? (
+              <LockKeyhole size={26} strokeWidth={2.4} />
+            ) : (
+              <CreditCard size={26} strokeWidth={2.4} />
+            )}
           </div>
 
           <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
@@ -78,14 +103,27 @@ export default function SubscriptionHeader({
             {currentPlanLabel}
           </h2>
 
-          <div className="mt-4 inline-flex rounded-full bg-green-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-green-600">
+          <div
+            className={`mt-4 inline-flex rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-wide ${
+              billingRequired
+                ? "bg-amber-50 text-amber-600"
+                : "bg-green-50 text-green-600"
+            }`}
+          >
             {status}
           </div>
 
-          {activePlan?.description && (
+          {billingRequired ? (
             <p className="mt-5 text-sm leading-6 text-slate-500">
-              {activePlan.description}
+              Select Starter or Pro below to activate the organization and
+              unlock workspace, reservation, and member management.
             </p>
+          ) : (
+            activePlan?.description && (
+              <p className="mt-5 text-sm leading-6 text-slate-500">
+                {activePlan.description}
+              </p>
+            )
           )}
         </motion.aside>
       </div>

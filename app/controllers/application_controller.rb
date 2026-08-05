@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   before_action :authenticate_user!
+  before_action :require_active_subscription!
 
   rescue_from ActionController::InvalidAuthenticityToken,
               with: :handle_invalid_authenticity_token
@@ -40,6 +41,8 @@ class ApplicationController < ActionController::Base
     if invitation_token.present? &&
        OrganizationInvitation.exists?(token: invitation_token, status: "pending")
       accept_organization_invitations_path(token: invitation_token)
+    elsif billing_required_after_sign_in?
+      subscription_path
     elsif current_user&.role&.name == "member"
       workspaces_path
     else
@@ -52,6 +55,37 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def require_active_subscription!
+    return unless user_signed_in?
+    return unless subscription_required_for_user?
+    return if subscription_access_allowed?
+    return unless current_organization&.billing_required?
+
+    redirect_to subscription_path,
+                alert: "Choose a subscription plan to unlock Slotify."
+  end
+
+  def subscription_required_for_user?
+    manager? || admin?
+  end
+
+  def subscription_access_allowed?
+    return true if devise_controller?
+    return true if controller_path == "subscriptions"
+    return true if controller_path == "errors"
+    return true if controller_path.start_with?("users/")
+    return true if request.path == "/up"
+
+    false
+  end
+
+  def billing_required_after_sign_in?
+    return false unless current_user&.organization
+    return false unless current_user.role&.name.in?(%w[manager admin])
+
+    current_user.organization.billing_required?
+  end
 
   def handle_invalid_authenticity_token
     reset_session

@@ -29,13 +29,23 @@ export default function SubscriptionShow({
   can_manage_billing = false,
   can_start_checkout = true,
 }: SubscriptionShowProps) {
-  const currentPlan = normalizePlan(
-    subscription?.plan_name || subscription?.plan,
-  );
+  const billingRequired = Boolean(usage?.billing_required);
 
-  const currentPlanLabel = formatPlan(currentPlan);
-  const status = formatStatus(subscription?.status);
-  const activePlan = plans.find((plan) => plan.key === currentPlan);
+  const currentPlan = billingRequired
+    ? "billing_required"
+    : normalizePlan(subscription?.plan_name || subscription?.plan);
+
+  const currentPlanLabel = billingRequired
+    ? "Billing Required"
+    : formatPlan(currentPlan);
+
+  const status = billingRequired
+    ? "Plan Required"
+    : formatStatus(subscription?.status);
+
+  const activePlan = billingRequired
+    ? undefined
+    : plans.find((plan) => plan.key === currentPlan);
 
   const referenceDate =
     subscription?.expires_at ||
@@ -50,10 +60,12 @@ export default function SubscriptionShow({
         currentPlanLabel={currentPlanLabel}
         status={status}
         activePlan={activePlan}
+        billingRequired={billingRequired}
       />
 
       <BillingModeNotice
         currentPlanLabel={currentPlanLabel}
+        billingRequired={billingRequired}
         canStartCheckout={can_start_checkout}
         canManageBilling={can_manage_billing}
       />
