@@ -1,11 +1,16 @@
 import { usePage } from "@inertiajs/react";
-import { Moon } from "lucide-react";
+import { LockKeyhole, Moon } from "lucide-react";
 
 type SharedCurrentUser = {
   id: number;
   name: string;
   email: string;
   role?: string | null;
+  organization_id?: number | null;
+  organization_name?: string | null;
+  current_plan?: string | null;
+  billing_required?: boolean;
+  subscription_active?: boolean;
 };
 
 type SharedPageProps = {
@@ -15,32 +20,62 @@ type SharedPageProps = {
 export default function Header() {
   const { current_user } = usePage<SharedPageProps>().props;
   const role = current_user?.role;
+  const isMember = role === "member";
+  const isManagerOrAdmin = role === "manager" || role === "admin";
+  const billingRequired = Boolean(
+    current_user?.billing_required && isManagerOrAdmin,
+  );
 
-  const headerContent =
-    role === "member"
+  const headerContent = billingRequired
+    ? {
+        title: "Billing Required",
+        description:
+          "Choose Starter or Pro to unlock your organization workspace.",
+      }
+    : isMember
       ? {
           title: "Member Workspace",
-          description: "Browse spaces, create bookings, and manage your reservations.",
+          description:
+            "Browse spaces, create bookings, and manage your reservations.",
         }
       : {
           title: "Workspace Operations",
-          description: "Manage reservations, spaces, members, and organization settings.",
+          description:
+            "Manage reservations, spaces, members, and organization settings.",
         };
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="flex h-16 items-center justify-between px-8">
-        <div>
-          <h2 className="text-sm font-extrabold uppercase tracking-wide text-slate-400">
-            {headerContent.title}
-          </h2>
+        <div className="flex items-center gap-4">
+          {billingRequired && (
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+              <LockKeyhole size={19} strokeWidth={2.4} />
+            </div>
+          )}
 
-          <p className="text-sm text-slate-500">
-            {headerContent.description}
-          </p>
+          <div>
+            <h2
+              className={`text-sm font-extrabold uppercase tracking-wide ${
+                billingRequired ? "text-amber-500" : "text-slate-400"
+              }`}
+            >
+              {headerContent.title}
+            </h2>
+
+            <p className="text-sm text-slate-500">
+              {headerContent.description}
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
+          {billingRequired && (
+            <span className="rounded-full bg-amber-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-amber-600">
+              Plan Required
+            </span>
+          )}
+
           <button
             type="button"
             disabled
@@ -56,7 +91,13 @@ export default function Header() {
             </span>
           </button>
 
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-50 text-sm font-extrabold text-cyan-500">
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-extrabold ${
+              billingRequired
+                ? "bg-amber-50 text-amber-500"
+                : "bg-cyan-50 text-cyan-500"
+            }`}
+          >
             {initials(current_user?.name)}
           </div>
         </div>

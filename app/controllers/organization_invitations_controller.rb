@@ -1,17 +1,11 @@
 class OrganizationInvitationsController < InertiaController
   skip_before_action :authenticate_user!, only: [ :accept ]
   before_action :require_manager_or_admin!, only: [ :create, :destroy ]
+  before_action :ensure_member_slot_available!, only: [ :create ]
   before_action :set_invitation, only: [ :destroy ]
   before_action :set_invitation_by_token, only: [ :accept, :confirm_accept ]
 
   def create
-    if current_organization.user_limit_reached?
-      redirect_to organization_path,
-                  alert: "Your current plan has reached the member limit. Upgrade to Pro to invite more members."
-
-      return
-    end
-
     invitation = current_organization.organization_invitations.build(
       invitation_params.merge(invited_by: current_user)
     )
@@ -37,8 +31,9 @@ class OrganizationInvitationsController < InertiaController
         end
 
         format.json do
-          render json: { errors: invitation.errors.full_messages },
-                 status: :unprocessable_entity
+          render json: {
+            errors: invitation.errors.full_messages
+          }, status: :unprocessable_entity
         end
       end
     end
@@ -125,12 +120,43 @@ class OrganizationInvitationsController < InertiaController
       end
 
       format.json do
-        render json: { message: "Invitation deleted successfully" }
+        render json: {
+          message: "Invitation deleted successfully"
+        }
       end
     end
   end
 
   private
+
+  def ensure_member_slot_available!
+    return unless current_organization.user_limit_reached?
+
+    message = member_limit_message
+
+    respond_to do |format|
+      format.html do
+        redirect_to organization_path, alert: message
+      end
+
+      format.json do
+        render json: {
+          error: message,
+          code: "member_limit_reached"
+        }, status: :unprocessable_entity
+      end
+    end
+  end
+
+  def member_limit_message
+    if current_organization.billing_required?
+      "Choose a subscription plan before inviting members."
+    elsif current_organization.user_over_limit?
+      "This organization is over the current member limit. Upgrade to Pro or reduce usage before inviting more members."
+    else
+      "Your current plan has reached the member limit. Upgrade to Pro to invite more members."
+    end
+  end
 
   def set_invitation
     @invitation = current_organization.organization_invitations.find(params[:id])

@@ -1,5 +1,6 @@
 class WorkspacesController < InertiaController
   before_action :require_manager_or_admin!, except: %i[index show]
+  before_action :ensure_workspace_slot_available!, only: %i[new create]
   before_action :set_workspace, only: %i[show edit update destroy delete_confirmation]
 
   def index
@@ -69,20 +70,6 @@ class WorkspacesController < InertiaController
   end
 
   def create
-      if current_organization.workspace_limit_reached?
-    render inertia: "workspaces/new",
-           props: {
-             amenities: amenities_for_form,
-             errors: {
-               base: [
-                 "Your current plan has reached the workspace limit. Upgrade to Pro to add more workspaces."
-               ]
-             }
-           },
-           status: :unprocessable_entity
-
-    return
-      end
     workspace = current_organization.workspaces.build(workspace_params)
 
     respond_to do |format|
@@ -210,6 +197,48 @@ class WorkspacesController < InertiaController
   end
 
   private
+
+  def ensure_workspace_slot_available!
+    return unless current_organization.workspace_limit_reached?
+
+    message = workspace_limit_message
+
+    respond_to do |format|
+      format.html do
+        if action_name == "create"
+          render inertia: "workspaces/new",
+                 props: {
+                   amenities: amenities_for_form,
+                   errors: {
+                     base: [
+                       message
+                     ]
+                   }
+                 },
+                 status: :unprocessable_entity
+        else
+          redirect_to subscription_path, alert: message
+        end
+      end
+
+      format.json do
+        render json: {
+          error: message,
+          code: "workspace_limit_reached"
+        }, status: :unprocessable_entity
+      end
+    end
+  end
+
+  def workspace_limit_message
+    if current_organization.billing_required?
+      "Choose a subscription plan before creating workspaces."
+    elsif current_organization.workspace_over_limit?
+      "This organization is over the current workspace limit. Upgrade to Pro or reduce usage before creating more workspaces."
+    else
+      "Your current plan has reached the workspace limit. Upgrade to Pro to add more workspaces."
+    end
+  end
 
   def workspace_scope
     current_organization

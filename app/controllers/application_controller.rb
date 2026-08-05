@@ -27,11 +27,18 @@ class ApplicationController < ActionController::Base
   inertia_share current_user: -> {
     next nil unless user_signed_in?
 
+    organization = current_user.organization
+
     {
       id: current_user.id,
       name: current_user.name,
       email: current_user.email,
-      role: current_user.role&.name
+      role: current_user.role&.name,
+      organization_id: organization&.id,
+      organization_name: organization&.name,
+      current_plan: organization&.current_plan,
+      billing_required: organization&.billing_required? || false,
+      subscription_active: organization&.subscription_active? || false
     }
   }
 
@@ -62,8 +69,7 @@ class ApplicationController < ActionController::Base
     return if subscription_access_allowed?
     return unless current_organization&.billing_required?
 
-    redirect_to subscription_path,
-                alert: "Choose a subscription plan to unlock Slotify."
+    render_subscription_required_response
   end
 
   def subscription_required_for_user?
@@ -75,9 +81,15 @@ class ApplicationController < ActionController::Base
     return true if controller_path == "subscriptions"
     return true if controller_path == "errors"
     return true if controller_path.start_with?("users/")
+    return true if invitation_acceptance_action?
     return true if request.path == "/up"
 
     false
+  end
+
+  def invitation_acceptance_action?
+    controller_path == "organization_invitations" &&
+      action_name.in?(%w[accept confirm_accept])
   end
 
   def billing_required_after_sign_in?
@@ -85,6 +97,23 @@ class ApplicationController < ActionController::Base
     return false unless current_user.role&.name.in?(%w[manager admin])
 
     current_user.organization.billing_required?
+  end
+
+  def render_subscription_required_response
+    message = "Choose a subscription plan to unlock Slotify."
+
+    respond_to do |format|
+      format.html do
+        redirect_to subscription_path, alert: message
+      end
+
+      format.json do
+        render json: {
+          error: message,
+          code: "billing_required"
+        }, status: :payment_required
+      end
+    end
   end
 
   def handle_invalid_authenticity_token
