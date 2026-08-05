@@ -1,6 +1,7 @@
 import { router } from "@inertiajs/react";
 import { motion } from "motion/react";
 import {
+  AlertTriangle,
   ArrowRight,
   CalendarClock,
   CreditCard,
@@ -8,6 +9,7 @@ import {
   ShieldCheck,
   UsersRound,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type {
   SubscriptionPlan,
   SubscriptionUsage,
@@ -17,6 +19,7 @@ import {
   formatDate,
   formatLimit,
   formatUsage,
+  overLimitAmount,
   usagePercentage,
   usageTone,
 } from "../../../helpers/subscriptionShowHelpers";
@@ -44,6 +47,7 @@ export default function CurrentPlanPanel({
   );
 
   const memberUsage = formatUsage(usage?.member_slots_used, usage?.user_limit);
+  const overPlanLimits = Boolean(usage?.over_plan_limits);
 
   function openBillingPortal() {
     if (!canManageBilling) return;
@@ -78,6 +82,8 @@ export default function CurrentPlanPanel({
 
           <StatusPill status={status} />
         </div>
+
+        {overPlanLimits && <OverLimitNotice usage={usage} />}
 
         <div className="grid grid-cols-2 gap-4">
           <InfoCard
@@ -160,6 +166,7 @@ export default function CurrentPlanPanel({
               usage?.workspace_limit,
             )}
             tone={usageTone(usage?.workspaces_used, usage?.workspace_limit)}
+            overLimit={Boolean(usage?.workspace_over_limit)}
             helper="Registered workspaces compared with plan limit."
           />
 
@@ -171,6 +178,7 @@ export default function CurrentPlanPanel({
               usage?.user_limit,
             )}
             tone={usageTone(usage?.member_slots_used, usage?.user_limit)}
+            overLimit={Boolean(usage?.user_over_limit)}
             helper="Users plus pending invitations compared with plan limit."
           />
         </div>
@@ -193,8 +201,91 @@ export default function CurrentPlanPanel({
   );
 }
 
+type OverLimitNoticeProps = {
+  usage?: SubscriptionUsage | null;
+};
+
+function OverLimitNotice({ usage }: OverLimitNoticeProps) {
+  const workspaceOverBy = overLimitAmount(
+    usage?.workspaces_used,
+    usage?.workspace_limit,
+  );
+
+  const memberOverBy = overLimitAmount(
+    usage?.member_slots_used,
+    usage?.user_limit,
+  );
+
+  return (
+    <div className="mb-7 rounded-2xl border border-red-100 bg-red-50 p-5">
+      <div className="flex items-start gap-4">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm">
+          <AlertTriangle size={22} strokeWidth={2.4} />
+        </div>
+
+        <div>
+          <h3 className="text-base font-extrabold text-red-700">
+            This organization is over the current plan limit
+          </h3>
+
+          <p className="mt-2 text-sm leading-6 text-red-600">
+            Existing data stays available, but creating new workspaces or
+            inviting more members is blocked until usage fits the plan or the
+            organization upgrades to Pro.
+          </p>
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {Boolean(usage?.workspace_over_limit) && (
+              <OverLimitItem
+                label="Workspaces"
+                used={usage?.workspaces_used || 0}
+                limit={usage?.workspace_limit || 0}
+                overBy={workspaceOverBy}
+              />
+            )}
+
+            {Boolean(usage?.user_over_limit) && (
+              <OverLimitItem
+                label="Member Slots"
+                used={usage?.member_slots_used || 0}
+                limit={usage?.user_limit || 0}
+                overBy={memberOverBy}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type OverLimitItemProps = {
+  label: string;
+  used: number;
+  limit: number;
+  overBy: number;
+};
+
+function OverLimitItem({ label, used, limit, overBy }: OverLimitItemProps) {
+  return (
+    <div className="rounded-xl border border-red-100 bg-white p-4">
+      <p className="text-xs font-extrabold uppercase tracking-wide text-red-400">
+        {label}
+      </p>
+
+      <p className="mt-2 text-lg font-extrabold text-slate-950">
+        {used} / {limit}
+      </p>
+
+      <p className="mt-1 text-xs font-bold text-red-600">
+        {overBy} over limit
+      </p>
+    </div>
+  );
+}
+
 type InfoCardProps = {
-  icon: typeof Database;
+  icon: LucideIcon;
   label: string;
   value: string;
   helper: string;

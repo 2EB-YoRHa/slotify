@@ -79,6 +79,7 @@ type UsageMeterProps = {
   percentage: number;
   helper: string;
   tone?: UsageTone;
+  overLimit?: boolean;
 };
 
 export function UsageMeter({
@@ -87,6 +88,7 @@ export function UsageMeter({
   percentage,
   helper,
   tone = "safe",
+  overLimit = false,
 }: UsageMeterProps) {
   const toneClasses = usageToneClasses(tone);
 
@@ -110,7 +112,7 @@ export function UsageMeter({
       </div>
 
       <p className={`mt-3 text-xs font-bold ${toneClasses.text}`}>
-        {usageHelperText(tone, percentage)}
+        {usageHelperText(tone, percentage, overLimit)}
       </p>
     </div>
   );
@@ -148,9 +150,17 @@ function usageToneClasses(tone: UsageTone) {
   };
 }
 
-function usageHelperText(tone: UsageTone, percentage: number): string {
+function usageHelperText(
+  tone: UsageTone,
+  percentage: number,
+  overLimit: boolean,
+): string {
   if (tone === "unlimited") {
     return "Unlimited on this plan.";
+  }
+
+  if (overLimit) {
+    return "This usage is above the current plan limit.";
   }
 
   if (tone === "danger") {

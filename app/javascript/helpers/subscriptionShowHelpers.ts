@@ -47,7 +47,7 @@ export function usagePercentage(
   used?: number | null,
   limit?: number | null,
 ): number {
-  if (!limit) return 100;
+  if (limit === null || limit === undefined) return 100;
 
   return Math.min(100, Math.round(((used || 0) / limit) * 100));
 }
@@ -56,7 +56,9 @@ export function usageTone(
   used?: number | null,
   limit?: number | null,
 ): UsageTone {
-  if (!limit) return "unlimited";
+  if (limit === null || limit === undefined) return "unlimited";
+
+  if ((used || 0) > limit) return "danger";
 
   const percentage = usagePercentage(used, limit);
 
@@ -64,4 +66,13 @@ export function usageTone(
   if (percentage >= 75) return "warning";
 
   return "safe";
+}
+
+export function overLimitAmount(
+  used?: number | null,
+  limit?: number | null,
+): number {
+  if (limit === null || limit === undefined) return 0;
+
+  return Math.max((used || 0) - limit, 0);
 }

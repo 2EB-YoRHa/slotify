@@ -16,34 +16,34 @@ class Organization < ApplicationRecord
   before_validation :assign_unique_slug,
                     if: :should_assign_unique_slug?
 
-validates :name,
-          presence: true,
-          length: {
-            minimum: 3,
-            maximum: 100
-          }
+  validates :name,
+            presence: true,
+            length: {
+              minimum: 3,
+              maximum: 100
+            }
 
-validates :email,
-          format: {
-            with: EMAIL_FORMAT
-          },
-          allow_blank: true
+  validates :email,
+            format: {
+              with: EMAIL_FORMAT
+            },
+            allow_blank: true
 
-validates :phone,
-          length: {
-            maximum: 30
-          },
-          format: {
-            with: PHONE_FORMAT,
-            message: "can only include numbers, spaces, +, -, parentheses, and dots"
-          },
-          allow_blank: true
+  validates :phone,
+            length: {
+              maximum: 30
+            },
+            format: {
+              with: PHONE_FORMAT,
+              message: "can only include numbers, spaces, +, -, parentheses, and dots"
+            },
+            allow_blank: true
 
-validates :address,
-          length: {
-            maximum: 200
-          },
-          allow_blank: true
+  validates :address,
+            length: {
+              maximum: 200
+            },
+            allow_blank: true
 
   validates :slug,
             presence: true,
@@ -98,20 +98,16 @@ validates :address,
     active_subscription&.plan_name || "starter"
   end
 
+  def current_plan_definition
+    SubscriptionPlan.find(current_plan) || SubscriptionPlan.find!("starter")
+  end
+
   def workspace_limit
-    subscription = active_subscription
-
-    return SubscriptionPlan.find!("starter")[:workspace_limit] if subscription.blank?
-
-    subscription.workspace_limit
+    plan_limit_for(:workspace_limit)
   end
 
   def user_limit
-    subscription = active_subscription
-
-    return SubscriptionPlan.find!("starter")[:user_limit] if subscription.blank?
-
-    subscription.user_limit
+    plan_limit_for(:user_limit)
   end
 
   def workspaces_used
@@ -139,13 +135,13 @@ validates :address,
   end
 
   def workspace_limit_reached?
-    return false if workspace_limit.blank?
+    return false if workspace_limit.nil?
 
     workspaces_used >= workspace_limit
   end
 
   def user_limit_reached?(excluding_invitation: nil)
-    return false if user_limit.blank?
+    return false if user_limit.nil?
 
     member_slots_used(
       excluding_invitation: excluding_invitation
@@ -158,22 +154,73 @@ validates :address,
     )
   end
 
+  def workspace_over_limit?
+    return false if workspace_limit.nil?
+
+    workspaces_used > workspace_limit
+  end
+
+  def user_over_limit?
+    return false if user_limit.nil?
+
+    member_slots_used > user_limit
+  end
+
+  def over_plan_limits?
+    workspace_over_limit? || user_over_limit?
+  end
+
+  def workspace_slots_remaining
+    return nil if workspace_limit.nil?
+
+    [ workspace_limit - workspaces_used, 0 ].max
+  end
+
+  def member_slots_remaining
+    return nil if user_limit.nil?
+
+    [ user_limit - member_slots_used, 0 ].max
+  end
+
   def can_start_subscription_checkout?
     active_stripe_subscription.blank?
   end
 
   def plan_usage
     {
+      current_plan: current_plan,
       workspaces_used: workspaces_used,
       workspace_limit: workspace_limit,
+      workspace_slots_remaining: workspace_slots_remaining,
+      workspace_over_limit: workspace_over_limit?,
       users_used: users_used,
       pending_invitations: pending_invitation_slots,
       member_slots_used: member_slots_used,
-      user_limit: user_limit
+      user_limit: user_limit,
+      member_slots_remaining: member_slots_remaining,
+      user_over_limit: user_over_limit?,
+      over_plan_limits: over_plan_limits?
     }
   end
 
   private
+
+  def plan_limit_for(limit_key)
+    subscription = active_subscription
+
+    return SubscriptionPlan.find!("starter")[limit_key] if subscription.blank?
+
+    plan = SubscriptionPlan.find(subscription.plan_name) ||
+           SubscriptionPlan.find!("starter")
+
+    catalog_limit = plan[limit_key]
+
+    return nil if catalog_limit.nil?
+
+    stored_limit = subscription.public_send(limit_key)
+
+    stored_limit.nil? ? catalog_limit : stored_limit
+  end
 
   def normalize_contact_fields
     self.name = name.to_s.strip

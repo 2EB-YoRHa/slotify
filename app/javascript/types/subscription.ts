@@ -50,10 +50,16 @@ export type SubscriptionPlan = {
 };
 
 export type SubscriptionUsage = {
+  current_plan?: string;
   workspaces_used: number;
   workspace_limit?: number | null;
+  workspace_slots_remaining?: number | null;
+  workspace_over_limit?: boolean;
   users_used: number;
   pending_invitations: number;
   member_slots_used: number;
   user_limit?: number | null;
+  member_slots_remaining?: number | null;
+  user_over_limit?: boolean;
+  over_plan_limits?: boolean;
 };
