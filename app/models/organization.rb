@@ -118,6 +118,50 @@ class Organization < ApplicationRecord
     SubscriptionPlan.find(current_plan) || SubscriptionPlan.find!("starter")
   end
 
+  def plan_entitlements
+    SubscriptionPlan.entitlements_for(current_plan)
+  end
+
+  def booking_rule_constraints
+    SubscriptionPlan.booking_rule_constraints_for(current_plan)
+  end
+
+  def feature_enabled?(feature_key)
+    plan_entitlements[feature_key.to_sym] == true
+  end
+
+  def pro_plan?
+    current_plan == "pro"
+  end
+
+  def starter_plan?
+    current_plan == "starter"
+  end
+
+  def advanced_booking_rules_enabled?
+    feature_enabled?(:advanced_booking_rules)
+  end
+
+  def custom_time_slots_enabled?
+    feature_enabled?(:custom_time_slots)
+  end
+
+  def usage_insights_enabled?
+    feature_enabled?(:usage_insights)
+  end
+
+  def availability_command_center_enabled?
+    feature_enabled?(:availability_command_center)
+  end
+
+  def multiple_workspace_photos_enabled?
+    feature_enabled?(:multiple_workspace_photos)
+  end
+
+  def priority_support_enabled?
+    feature_enabled?(:priority_support)
+  end
+
   def workspace_limit
     return BILLING_REQUIRED_WORKSPACE_LIMIT if billing_required?
 
@@ -220,7 +264,9 @@ class Organization < ApplicationRecord
       user_limit: user_limit,
       member_slots_remaining: member_slots_remaining,
       user_over_limit: user_over_limit?,
-      over_plan_limits: over_plan_limits?
+      over_plan_limits: over_plan_limits?,
+      entitlements: plan_entitlements,
+      booking_rule_constraints: booking_rule_constraints
     }
   end
 

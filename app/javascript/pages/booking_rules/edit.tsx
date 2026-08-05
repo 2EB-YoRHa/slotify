@@ -3,22 +3,32 @@ import { motion } from "motion/react";
 import { ArrowLeft } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import BookingRuleForm from "../../components/booking_rules/BookingRuleForm";
-import type { BookingRule } from "../../types/bookingRule";
+import type {
+  BookingRule,
+  BookingRuleConstraints,
+  PlanEntitlements,
+} from "../../types/bookingRule";
 
 type BookingRuleEditProps = {
   booking_rule?: BookingRule;
   bookingRule?: BookingRule;
+  current_plan?: string;
+  plan_entitlements?: PlanEntitlements;
+  booking_rule_constraints?: BookingRuleConstraints;
   errors?: Partial<Record<string, string | string[]>>;
 };
 
 export default function BookingRuleEdit({
   booking_rule,
   bookingRule,
+  current_plan = "starter",
+  plan_entitlements,
+  booking_rule_constraints,
   errors = {},
 }: BookingRuleEditProps) {
   const rule = booking_rule || bookingRule;
 
-  if (!rule) {
+  if (!rule || !plan_entitlements || !booking_rule_constraints) {
     return (
       <AppLayout>
         <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-sm text-red-600">
@@ -59,12 +69,18 @@ export default function BookingRuleEdit({
           transition={{ delay: 0.08 }}
           className="mt-2 max-w-2xl text-slate-500"
         >
-          Change reservation duration, advance notice, cancellation limits, and
-          weekend booking availability.
+          Your current plan controls how flexible these booking rules can be.
+          Pro unlocks wider limits and advanced scheduling controls.
         </motion.p>
       </div>
 
-      <BookingRuleForm bookingRule={rule} errors={errors} />
+      <BookingRuleForm
+        bookingRule={rule}
+        currentPlan={current_plan}
+        planEntitlements={plan_entitlements}
+        bookingRuleConstraints={booking_rule_constraints}
+        errors={errors}
+      />
     </AppLayout>
   );
 }

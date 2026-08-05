@@ -1,29 +1,64 @@
 module SubscriptionPlan
+  BILLING_REQUIRED_ENTITLEMENTS = {
+    advanced_booking_rules: false,
+    custom_time_slots: false,
+    usage_insights: false,
+    availability_command_center: false,
+    multiple_workspace_photos: false,
+    priority_support: false
+  }.freeze
+
+  BILLING_REQUIRED_BOOKING_RULE_CONSTRAINTS = {
+    max_hours_per_reservation_min: 1,
+    max_hours_per_reservation_max: 1,
+    min_notice_minutes_min: 60,
+    min_notice_minutes_max: 60,
+    cancellation_limit_hours_min: 24,
+    cancellation_limit_hours_max: 24
+  }.freeze
+
   CATALOG = {
     "starter" => {
       key: "starter",
       name: "Starter",
       price: "$19",
       amount_cents: 1900,
-      description: "Essential booking tools for small coworking spaces getting organized.",
-      best_for: "Small coworkings, private studios, and teams starting with online reservations.",
-      workspace_limit: 6,
-      user_limit: 12,
+      description: "Essential reservation operations for small coworking spaces.",
+      best_for: "Small coworkings that need reliable workspace booking without advanced operational complexity.",
+      workspace_limit: 10,
+      user_limit: 15,
       stripe_price_env: "STRIPE_STARTER_PRICE_ID",
       badge: "Essential",
+      highlighted: false,
+      entitlements: {
+        advanced_booking_rules: false,
+        custom_time_slots: false,
+        usage_insights: false,
+        availability_command_center: false,
+        multiple_workspace_photos: false,
+        priority_support: false
+      },
+      booking_rule_constraints: {
+        max_hours_per_reservation_min: 1,
+        max_hours_per_reservation_max: 4,
+        min_notice_minutes_min: 0,
+        min_notice_minutes_max: 1_440,
+        cancellation_limit_hours_min: 0,
+        cancellation_limit_hours_max: 72
+      },
       highlights: [
-        "Reservation essentials",
-        "Small team controls",
-        "Simple booking rules"
+        "Core reservations",
+        "Small team access",
+        "Standard booking rules"
       ],
       limits: [
-        "Up to 6 workspaces",
-        "Up to 12 member slots",
-        "1 organization workspace directory"
+        "Up to 10 workspaces",
+        "Up to 15 member slots",
+        "Standard booking rule limits"
       ],
       feature_groups: [
         {
-          title: "Booking Core",
+          title: "Reservation Core",
           items: [
             "Create and manage workspace reservations",
             "Prevent overlapping confirmed reservations",
@@ -34,28 +69,28 @@ module SubscriptionPlan
         {
           title: "Workspace Management",
           items: [
-            "Workspace photos, descriptions, capacity, rates, and amenities",
-            "Activate or deactivate workspaces without deleting history",
-            "Basic workspace availability checks"
+            "Create up to 10 workspaces",
+            "Add capacity, rates, descriptions, amenities, and one workspace photo",
+            "Activate or deactivate workspaces without deleting reservation history"
           ]
         },
         {
-          title: "Team Access",
+          title: "Standard Controls",
           items: [
-            "Invite members by email",
-            "Manager and member roles",
-            "Basic organization profile management"
+            "Invite up to 15 member slots",
+            "Use manager and member roles",
+            "Configure standard booking rules up to 4 hours per reservation"
           ]
         }
       ],
       features: [
-        "Up to 6 workspaces",
-        "Up to 12 member slots",
+        "Up to 10 workspaces",
+        "Up to 15 member slots",
         "Reservation management",
+        "Overlap protection",
         "Workspace photos and amenities",
         "Member invitations",
-        "Basic booking rules",
-        "Overlap protection"
+        "Standard booking rules"
       ]
     },
     "pro" => {
@@ -63,22 +98,38 @@ module SubscriptionPlan
       name: "Pro",
       price: "$49",
       amount_cents: 4900,
-      description: "Advanced operations for growing coworking spaces that need more control.",
-      best_for: "Growing coworkings, multi-room operations, and managers who need stronger visibility.",
+      description: "Advanced coworking operations for teams that need scale, visibility, and stronger control.",
+      best_for: "Growing coworkings with more rooms, more members, and a need for advanced scheduling control.",
       workspace_limit: nil,
       user_limit: nil,
       stripe_price_env: "STRIPE_PRO_PRICE_ID",
       badge: "Recommended",
       highlighted: true,
+      entitlements: {
+        advanced_booking_rules: true,
+        custom_time_slots: true,
+        usage_insights: true,
+        availability_command_center: true,
+        multiple_workspace_photos: true,
+        priority_support: true
+      },
+      booking_rule_constraints: {
+        max_hours_per_reservation_min: 1,
+        max_hours_per_reservation_max: 12,
+        min_notice_minutes_min: 0,
+        min_notice_minutes_max: 10_080,
+        cancellation_limit_hours_min: 0,
+        cancellation_limit_hours_max: 168
+      },
       highlights: [
         "Unlimited scale",
-        "Advanced operations",
-        "Management insights"
+        "Advanced rules",
+        "Operational insights"
       ],
       limits: [
         "Unlimited workspaces",
         "Unlimited member slots",
-        "Built for growing operations"
+        "Advanced booking rule limits"
       ],
       feature_groups: [
         {
@@ -90,21 +141,21 @@ module SubscriptionPlan
           ]
         },
         {
-          title: "Operational Control",
+          title: "Advanced Operations",
           items: [
             "Unlimited workspaces and member slots",
-            "Stronger availability management for busy teams",
-            "Better visibility into workspace usage and booking activity",
-            "Manager tools for larger organizations"
+            "Reservations up to 12 hours",
+            "Booking notice and cancellation limits up to 7 days",
+            "Ready for custom time slot configuration"
           ]
         },
         {
-          title: "Growth Features",
+          title: "Premium Visibility",
           items: [
-            "Ready for advanced reporting",
-            "Ready for custom time slots",
-            "Ready for availability command center",
-            "Designed for future premium controls"
+            "Usage insights entitlement",
+            "Availability Command Center entitlement",
+            "Multiple workspace photo entitlement",
+            "Priority support entitlement"
           ]
         }
       ],
@@ -112,11 +163,12 @@ module SubscriptionPlan
         "Unlimited workspaces",
         "Unlimited member slots",
         "Everything in Starter",
-        "Advanced availability management",
-        "Workspace usage insights",
-        "Manager-level operational controls",
-        "Ready for custom time slots",
-        "Ready for availability command center"
+        "Advanced booking rules",
+        "Custom time slots",
+        "Usage insights",
+        "Availability Command Center",
+        "Multiple workspace photos",
+        "Priority support"
       ]
     }
   }.freeze
@@ -137,6 +189,22 @@ module SubscriptionPlan
     raise ArgumentError, "Invalid subscription plan" if plan.blank?
 
     plan
+  end
+
+  def entitlements_for(plan_key)
+    plan = find(plan_key)
+
+    return BILLING_REQUIRED_ENTITLEMENTS if plan.blank?
+
+    plan[:entitlements]
+  end
+
+  def booking_rule_constraints_for(plan_key)
+    plan = find(plan_key)
+
+    return BILLING_REQUIRED_BOOKING_RULE_CONSTRAINTS if plan.blank?
+
+    plan[:booking_rule_constraints]
   end
 
   def stripe_price_id(plan_key)

@@ -3,10 +3,16 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import {
   AlertTriangle,
+  BarChart3,
   CalendarClock,
   CalendarDays,
+  CheckCircle2,
   Clock3,
+  Images,
+  LockKeyhole,
+  ShieldCheck,
   TimerReset,
+  Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
@@ -21,25 +27,48 @@ import {
   validateIntegerRange,
   type ValidationErrors,
 } from "../../utils/clientValidation";
-import type { BookingRule } from "../../types/bookingRule";
+import type {
+  BookingRule,
+  BookingRuleConstraints,
+  BookingRuleFormData,
+  PlanEntitlements,
+} from "../../types/bookingRule";
 
 type BookingRuleFormProps = {
   bookingRule: BookingRule;
+  currentPlan?: string;
+  planEntitlements?: PlanEntitlements;
+  bookingRuleConstraints?: BookingRuleConstraints;
   errors?: Partial<Record<string, string | string[]>>;
 };
 
-type BookingRuleFormData = {
-  max_hours_per_reservation: number | string;
-  min_notice_minutes: number | string;
-  cancellation_limit_hours: number | string;
-  allow_weekend_bookings: boolean;
+const DEFAULT_ENTITLEMENTS: PlanEntitlements = {
+  advanced_booking_rules: false,
+  custom_time_slots: false,
+  usage_insights: false,
+  availability_command_center: false,
+  multiple_workspace_photos: false,
+  priority_support: false,
+};
+
+const DEFAULT_CONSTRAINTS: BookingRuleConstraints = {
+  max_hours_per_reservation_min: 1,
+  max_hours_per_reservation_max: 4,
+  min_notice_minutes_min: 0,
+  min_notice_minutes_max: 1_440,
+  cancellation_limit_hours_min: 0,
+  cancellation_limit_hours_max: 72,
 };
 
 export default function BookingRuleForm({
   bookingRule,
+  currentPlan = "starter",
+  planEntitlements = DEFAULT_ENTITLEMENTS,
+  bookingRuleConstraints = DEFAULT_CONSTRAINTS,
   errors: initialErrors = {},
 }: BookingRuleFormProps) {
   const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
+  const isPro = currentPlan === "pro";
 
   const {
     data,
@@ -64,7 +93,11 @@ export default function BookingRuleForm({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const validationErrors = validateBookingRuleForm(data);
+    const validationErrors = validateBookingRuleForm(
+      data,
+      bookingRuleConstraints,
+    );
+
     setClientErrors(validationErrors);
 
     if (hasValidationErrors(validationErrors)) return;
@@ -123,19 +156,26 @@ export default function BookingRuleForm({
           <h2 className="text-2xl font-bold text-slate-950">Booking Rules</h2>
 
           <p className="mt-2 text-sm leading-6 text-slate-500">
-            Configure how members can create, schedule, and cancel reservations.
+            Configure how members can create, schedule, and cancel
+            reservations. Your current plan controls the allowed rule ranges.
           </p>
         </div>
       </div>
+
+      <PlanRulesBanner currentPlan={currentPlan} isPro={isPro} />
 
       <div className="grid grid-cols-3 gap-5">
         <RuleInput
           icon={Clock3}
           label="Maximum Reservation Duration"
-          helper="Maximum number of hours allowed in a single reservation."
+          helper={
+            isPro
+              ? "Pro allows longer reservations for full-day operations."
+              : "Starter allows standard reservations up to 4 hours."
+          }
           value={data.max_hours_per_reservation}
-          min="1"
-          max="12"
+          min={String(bookingRuleConstraints.max_hours_per_reservation_min)}
+          max={String(bookingRuleConstraints.max_hours_per_reservation_max)}
           placeholder="Enter maximum hours"
           disabled={processing}
           error={fieldError(errors, "max_hours_per_reservation")}
@@ -145,10 +185,14 @@ export default function BookingRuleForm({
         <RuleInput
           icon={CalendarClock}
           label="Minimum Notice"
-          helper="Minimum minutes required before a reservation can start."
+          helper={
+            isPro
+              ? "Pro allows notice rules up to 7 days."
+              : "Starter allows notice rules up to 24 hours."
+          }
           value={data.min_notice_minutes}
-          min="0"
-          max="10080"
+          min={String(bookingRuleConstraints.min_notice_minutes_min)}
+          max={String(bookingRuleConstraints.min_notice_minutes_max)}
           placeholder="Enter notice in minutes"
           disabled={processing}
           error={fieldError(errors, "min_notice_minutes")}
@@ -158,10 +202,14 @@ export default function BookingRuleForm({
         <RuleInput
           icon={TimerReset}
           label="Cancellation Limit"
-          helper="Minimum hours required before a reservation can be cancelled."
+          helper={
+            isPro
+              ? "Pro allows cancellation policies up to 7 days."
+              : "Starter allows cancellation policies up to 72 hours."
+          }
           value={data.cancellation_limit_hours}
-          min="0"
-          max="168"
+          min={String(bookingRuleConstraints.cancellation_limit_hours_min)}
+          max={String(bookingRuleConstraints.cancellation_limit_hours_max)}
           placeholder="Enter limit in hours"
           disabled={processing}
           error={fieldError(errors, "cancellation_limit_hours")}
@@ -180,6 +228,11 @@ export default function BookingRuleForm({
           onChange={(checked) => updateField("allow_weekend_bookings", checked)}
         />
       </div>
+
+      <PlanEntitlementsGrid
+        currentPlan={currentPlan}
+        planEntitlements={planEntitlements}
+      />
 
       {getBaseError(errors) && (
         <div className="mt-6">
@@ -220,6 +273,59 @@ export default function BookingRuleForm({
         </LoadingButton>
       </div>
     </form>
+  );
+}
+
+type PlanRulesBannerProps = {
+  currentPlan: string;
+  isPro: boolean;
+};
+
+function PlanRulesBanner({ currentPlan, isPro }: PlanRulesBannerProps) {
+  return (
+    <div
+      className={`mb-8 rounded-2xl border p-5 ${
+        isPro
+          ? "border-cyan-100 bg-cyan-50"
+          : "border-amber-100 bg-amber-50"
+      }`}
+    >
+      <div className="flex items-start gap-4">
+        <div
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ${
+            isPro ? "text-cyan-500" : "text-amber-500"
+          }`}
+        >
+          {isPro ? (
+            <Zap size={21} strokeWidth={2.4} />
+          ) : (
+            <LockKeyhole size={21} strokeWidth={2.4} />
+          )}
+        </div>
+
+        <div>
+          <p
+            className={`text-sm font-extrabold uppercase tracking-wide ${
+              isPro ? "text-cyan-600" : "text-amber-600"
+            }`}
+          >
+            {formatPlan(currentPlan)} Plan
+          </p>
+
+          <h3 className="mt-1 text-lg font-extrabold text-slate-950">
+            {isPro
+              ? "Advanced booking rules are unlocked"
+              : "Standard booking rule limits are active"}
+          </h3>
+
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            {isPro
+              ? "Pro allows longer reservations, wider notice windows, custom scheduling preparation, and premium operational controls."
+              : "Starter keeps booking rules simple for smaller operations. Upgrade to Pro to unlock wider rule limits and advanced scheduling tools."}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -349,6 +455,133 @@ function ToggleCard({
   );
 }
 
+type PlanEntitlementsGridProps = {
+  currentPlan: string;
+  planEntitlements: PlanEntitlements;
+};
+
+function PlanEntitlementsGrid({
+  currentPlan,
+  planEntitlements,
+}: PlanEntitlementsGridProps) {
+  const isPro = currentPlan === "pro";
+
+  const items = [
+    {
+      label: "Advanced Booking Rules",
+      description: "Wider reservation, notice, and cancellation limits.",
+      enabled: planEntitlements.advanced_booking_rules,
+      icon: ShieldCheck,
+    },
+    {
+      label: "Custom Time Slots",
+      description: "Prepare custom booking schedules for your organization.",
+      enabled: planEntitlements.custom_time_slots,
+      icon: CalendarClock,
+    },
+    {
+      label: "Usage Insights",
+      description: "Unlock operational visibility for workspace usage.",
+      enabled: planEntitlements.usage_insights,
+      icon: BarChart3,
+    },
+    {
+      label: "Availability Command Center",
+      description: "Premium availability controls for busier coworking teams.",
+      enabled: planEntitlements.availability_command_center,
+      icon: Zap,
+    },
+    {
+      label: "Multiple Workspace Photos",
+      description: "Show richer workspace galleries instead of one photo.",
+      enabled: planEntitlements.multiple_workspace_photos,
+      icon: Images,
+    },
+  ];
+
+  return (
+    <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
+      <div className="mb-5 flex items-start justify-between gap-6">
+        <div>
+          <p className="text-sm font-extrabold text-slate-950">
+            Plan Capabilities
+          </p>
+
+          <p className="mt-1 text-sm leading-6 text-slate-500">
+            {isPro
+              ? "These premium capabilities are enabled for this organization."
+              : "These premium capabilities are locked on Starter and can be unlocked with Pro."}
+          </p>
+        </div>
+
+        {!isPro && (
+          <a
+            href="/subscription"
+            className="rounded-xl bg-slate-950 px-4 py-2 text-xs font-extrabold text-white transition hover:bg-slate-800"
+          >
+            Upgrade to Pro
+          </a>
+        )}
+      </div>
+
+      <div className="grid grid-cols-5 gap-3">
+        {items.map((item) => (
+          <CapabilityCard
+            key={item.label}
+            label={item.label}
+            description={item.description}
+            enabled={item.enabled}
+            icon={item.icon}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type CapabilityCardProps = {
+  label: string;
+  description: string;
+  enabled: boolean;
+  icon: LucideIcon;
+};
+
+function CapabilityCard({
+  label,
+  description,
+  enabled,
+}: CapabilityCardProps) {
+  return (
+    <div
+      className={`rounded-xl border p-4 ${
+        enabled
+          ? "border-cyan-100 bg-cyan-50"
+          : "border-slate-200 bg-slate-50"
+      }`}
+    >
+      <div
+        className={`mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm ${
+          enabled ? "text-cyan-500" : "text-slate-400"
+        }`}
+      >
+        {enabled ? (
+          <CheckCircle2 size={17} strokeWidth={2.4} />
+        ) : (
+          <LockKeyhole size={17} strokeWidth={2.4} />
+        )}
+      </div>
+
+      <p className="text-xs font-extrabold leading-5 text-slate-950">
+        {label}
+      </p>
+
+      <p className="mt-1 text-[11px] leading-5 text-slate-500">
+        {description}
+      </p>
+    </div>
+  );
+}
+
 type FieldLabelProps = {
   label: string;
   required?: boolean;
@@ -399,15 +632,18 @@ function numericValue(value: string | number): string | number {
   return Number(value);
 }
 
-function validateBookingRuleForm(data: BookingRuleFormData): ValidationErrors {
+function validateBookingRuleForm(
+  data: BookingRuleFormData,
+  constraints: BookingRuleConstraints,
+): ValidationErrors {
   const errors: ValidationErrors = {};
 
   const maxHoursError = validateIntegerRange(
     data.max_hours_per_reservation,
     "Maximum Reservation Duration",
     {
-      min: 1,
-      max: 12,
+      min: constraints.max_hours_per_reservation_min,
+      max: constraints.max_hours_per_reservation_max,
     },
   );
 
@@ -419,8 +655,8 @@ function validateBookingRuleForm(data: BookingRuleFormData): ValidationErrors {
     data.min_notice_minutes,
     "Minimum Notice",
     {
-      min: 0,
-      max: 10_080,
+      min: constraints.min_notice_minutes_min,
+      max: constraints.min_notice_minutes_max,
     },
   );
 
@@ -432,8 +668,8 @@ function validateBookingRuleForm(data: BookingRuleFormData): ValidationErrors {
     data.cancellation_limit_hours,
     "Cancellation Limit",
     {
-      min: 0,
-      max: 168,
+      min: constraints.cancellation_limit_hours_min,
+      max: constraints.cancellation_limit_hours_max,
     },
   );
 
@@ -442,4 +678,10 @@ function validateBookingRuleForm(data: BookingRuleFormData): ValidationErrors {
   }
 
   return errors;
+}
+
+function formatPlan(plan: string): string {
+  return plan
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }
