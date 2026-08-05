@@ -6,6 +6,7 @@ import type { SubscriptionPlan } from "../../../types/subscription";
 type AvailablePlansSectionProps = {
   plans: SubscriptionPlan[];
   currentPlan: string;
+  billingRequired?: boolean;
   canStartCheckout: boolean;
   canManageBilling: boolean;
 };
@@ -13,6 +14,7 @@ type AvailablePlansSectionProps = {
 export default function AvailablePlansSection({
   plans,
   currentPlan,
+  billingRequired = false,
   canStartCheckout,
   canManageBilling,
 }: AvailablePlansSectionProps) {
@@ -20,18 +22,24 @@ export default function AvailablePlansSection({
     <section>
       <div className="mb-6 flex items-end justify-between gap-6">
         <div>
-          <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500">
-            Subscription Options
+          <p
+            className={`text-sm font-extrabold uppercase tracking-wide ${
+              billingRequired ? "text-amber-500" : "text-cyan-500"
+            }`}
+          >
+            {billingRequired ? "Choose Your Plan" : "Subscription Options"}
           </p>
 
           <h2 className="mt-2 text-2xl font-bold text-slate-950">
-            Choose the operating level that fits your coworking
+            {billingRequired
+              ? "Activate Slotify with Starter or Pro"
+              : "Compare your current plan with available options"}
           </h2>
 
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-            Starter is focused on essential reservation control for smaller
-            spaces. Pro is designed for growing operations that need scale,
-            visibility, and stronger management tools.
+            {billingRequired
+              ? "Starter is built for small operations that need reservation control. Pro is built for growing coworkings that need advanced operations, deeper visibility, and unlimited capacity."
+              : "Starter keeps smaller teams organized. Pro unlocks unlimited scale and advanced operational controls for growing coworking spaces."}
           </p>
         </div>
       </div>
@@ -58,7 +66,7 @@ export default function AvailablePlansSection({
               features={plan.features}
               icon={plan.key === "pro" ? Zap : Building2}
               highlighted={plan.highlighted}
-              current={currentPlan === plan.key}
+              current={!billingRequired && currentPlan === plan.key}
               checkoutReady={plan.checkout_ready}
               canStartCheckout={canStartCheckout}
               canManageBilling={canManageBilling}

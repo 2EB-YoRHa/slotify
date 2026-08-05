@@ -48,6 +48,7 @@ export function usagePercentage(
   limit?: number | null,
 ): number {
   if (limit === null || limit === undefined) return 100;
+  if (limit <= 0) return 0;
 
   return Math.min(100, Math.round(((used || 0) / limit) * 100));
 }
@@ -58,6 +59,7 @@ export function usageTone(
 ): UsageTone {
   if (limit === null || limit === undefined) return "unlimited";
 
+  if (limit <= 0) return "danger";
   if ((used || 0) > limit) return "danger";
 
   const percentage = usagePercentage(used, limit);

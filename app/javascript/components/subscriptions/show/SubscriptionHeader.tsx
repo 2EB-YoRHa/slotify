@@ -34,7 +34,11 @@ export default function SubscriptionHeader({
                 : "border-cyan-100 text-cyan-600"
             }`}
           >
-            {billingRequired ? <LockKeyhole size={14} /> : <Sparkles size={14} />}
+            {billingRequired ? (
+              <LockKeyhole size={14} />
+            ) : (
+              <Sparkles size={14} />
+            )}
             Subscription Center
           </motion.div>
 
@@ -45,7 +49,7 @@ export default function SubscriptionHeader({
             className="max-w-3xl text-4xl font-extrabold tracking-tight text-slate-950"
           >
             {billingRequired
-              ? "Choose a plan to unlock your coworking operation."
+              ? "Activate your organization with the right plan."
               : "Manage the plan that powers your coworking operation."}
           </motion.h1>
 
@@ -56,11 +60,11 @@ export default function SubscriptionHeader({
             className="mt-4 max-w-3xl text-base leading-7 text-slate-600"
           >
             {billingRequired
-              ? "Your organization has been created, but access to management features is locked until a Starter or Pro subscription is active."
-              : "Compare Starter and Pro, review current usage, and keep billing aligned with the size of your organization."}
+              ? "Choose Starter for essential reservation operations or Pro for advanced control, stronger visibility, and unlimited growth."
+              : "Review your current subscription, monitor usage, manage billing, and compare available plan options."}
           </motion.p>
 
-          {activePlan?.best_for && (
+          {!billingRequired && activePlan?.best_for && (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -96,7 +100,7 @@ export default function SubscriptionHeader({
           </div>
 
           <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
-            Current Plan
+            {billingRequired ? "Organization Access" : "Current Plan"}
           </p>
 
           <h2 className="mt-2 text-3xl font-extrabold text-slate-950">
@@ -113,18 +117,12 @@ export default function SubscriptionHeader({
             {status}
           </div>
 
-          {billingRequired ? (
-            <p className="mt-5 text-sm leading-6 text-slate-500">
-              Select Starter or Pro below to activate the organization and
-              unlock workspace, reservation, and member management.
-            </p>
-          ) : (
-            activePlan?.description && (
-              <p className="mt-5 text-sm leading-6 text-slate-500">
-                {activePlan.description}
-              </p>
-            )
-          )}
+          <p className="mt-5 text-sm leading-6 text-slate-500">
+            {billingRequired
+              ? "Select a plan below to unlock dashboards, workspaces, reservations, members, and booking rules."
+              : activePlan?.description ||
+                "Your subscription controls plan limits and billing access."}
+          </p>
         </motion.aside>
       </div>
     </section>

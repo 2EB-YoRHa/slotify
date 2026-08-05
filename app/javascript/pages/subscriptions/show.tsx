@@ -1,6 +1,7 @@
 import AppLayout from "../../components/AppLayout";
 import AvailablePlansSection from "../../components/subscriptions/show/AvailablePlansSection";
 import BillingModeNotice from "../../components/subscriptions/show/BillingModeNotice";
+import BillingRequiredActivationPanel from "../../components/subscriptions/show/BillingRequiredActivationPanel";
 import CurrentPlanPanel from "../../components/subscriptions/show/CurrentPlanPanel";
 import SubscriptionHeader from "../../components/subscriptions/show/SubscriptionHeader";
 import {
@@ -36,11 +37,11 @@ export default function SubscriptionShow({
     : normalizePlan(subscription?.plan_name || subscription?.plan);
 
   const currentPlanLabel = billingRequired
-    ? "Billing Required"
+    ? "Plan Required"
     : formatPlan(currentPlan);
 
   const status = billingRequired
-    ? "Plan Required"
+    ? "Activation Needed"
     : formatStatus(subscription?.status);
 
   const activePlan = billingRequired
@@ -63,25 +64,31 @@ export default function SubscriptionShow({
         billingRequired={billingRequired}
       />
 
-      <BillingModeNotice
-        currentPlanLabel={currentPlanLabel}
-        billingRequired={billingRequired}
-        canStartCheckout={can_start_checkout}
-        canManageBilling={can_manage_billing}
-      />
+      {billingRequired ? (
+        <BillingRequiredActivationPanel />
+      ) : (
+        <>
+          <BillingModeNotice
+            currentPlanLabel={currentPlanLabel}
+            canStartCheckout={can_start_checkout}
+            canManageBilling={can_manage_billing}
+          />
 
-      <CurrentPlanPanel
-        currentPlanLabel={currentPlanLabel}
-        status={status}
-        referenceDate={referenceDate}
-        usage={usage}
-        activePlan={activePlan}
-        canManageBilling={can_manage_billing}
-      />
+          <CurrentPlanPanel
+            currentPlanLabel={currentPlanLabel}
+            status={status}
+            referenceDate={referenceDate}
+            usage={usage}
+            activePlan={activePlan}
+            canManageBilling={can_manage_billing}
+          />
+        </>
+      )}
 
       <AvailablePlansSection
         plans={plans}
         currentPlan={currentPlan}
+        billingRequired={billingRequired}
         canStartCheckout={can_start_checkout}
         canManageBilling={can_manage_billing}
       />
