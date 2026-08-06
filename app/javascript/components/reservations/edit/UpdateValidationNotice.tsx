@@ -9,6 +9,8 @@ type UpdateValidationNoticeProps = {
   minNoticeViolation: boolean;
   minNoticeMinutes: number;
   weekendViolation: boolean;
+  noCustomSlotsForSelectedDate: boolean;
+  customTimeSlotViolation: boolean;
 };
 
 export default function UpdateValidationNotice({
@@ -20,6 +22,8 @@ export default function UpdateValidationNotice({
   minNoticeViolation,
   minNoticeMinutes,
   weekendViolation,
+  noCustomSlotsForSelectedDate,
+  customTimeSlotViolation,
 }: UpdateValidationNoticeProps) {
   if (checkingAvailability) {
     return (
@@ -33,6 +37,23 @@ export default function UpdateValidationNotice({
     return (
       <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
         {availabilityError}
+      </div>
+    );
+  }
+
+  if (noCustomSlotsForSelectedDate) {
+    return (
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        There are no active custom time slots available for the selected date.
+      </div>
+    );
+  }
+
+  if (customTimeSlotViolation) {
+    return (
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        This reservation must use one of the organization's active custom time
+        slots before it can be saved.
       </div>
     );
   }

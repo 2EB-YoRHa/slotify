@@ -19,6 +19,8 @@ type EditReservationSummaryPanelProps = {
   minNoticeViolation: boolean;
   minNoticeMinutes: number;
   weekendViolation: boolean;
+  noCustomSlotsForSelectedDate: boolean;
+  customTimeSlotViolation: boolean;
   processing: boolean;
   canSubmit: boolean;
 };
@@ -39,6 +41,8 @@ export default function EditReservationSummaryPanel({
   minNoticeViolation,
   minNoticeMinutes,
   weekendViolation,
+  noCustomSlotsForSelectedDate,
+  customTimeSlotViolation,
   processing,
   canSubmit,
 }: EditReservationSummaryPanelProps) {
@@ -81,6 +85,8 @@ export default function EditReservationSummaryPanel({
         minNoticeViolation={minNoticeViolation}
         minNoticeMinutes={minNoticeMinutes}
         weekendViolation={weekendViolation}
+        noCustomSlotsForSelectedDate={noCustomSlotsForSelectedDate}
+        customTimeSlotViolation={customTimeSlotViolation}
       />
 
       <div className="mt-8 flex flex-col gap-3">

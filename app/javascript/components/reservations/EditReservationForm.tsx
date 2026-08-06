@@ -2,24 +2,29 @@ import { useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { generateTimeSlots } from "../../utils/timeSlots";
+import type { BookingTimeSlot } from "../../types/bookingTimeSlot";
+import type { Reservation } from "../../types/reservation";
+import type { Workspace } from "../../types/workspace";
 import {
   buildDateTime,
   extractDate,
-  findSlotByDateTimes,
+  extractTime,
   violatesMinimumNotice,
   violatesWeekendRule,
 } from "../../utils/reservationFormUtils";
+import {
+  hasActiveCustomTimeSlots,
+  reservationTimeSlotsForDate,
+} from "../../utils/timeSlots";
+import type { TimeSlot } from "../../utils/timeSlots";
 import {
   hasValidationErrors,
   validateIntegerRange,
   validateTextLength,
   type ValidationErrors,
 } from "../../utils/clientValidation";
-import type { Reservation } from "../../types/reservation";
-import type { Workspace } from "../../types/workspace";
-import EditReservationScheduleSection from "./edit/EditReservationScheduleSection";
 import EditReservationDetailsSection from "./edit/EditReservationDetailsSection";
+import EditReservationScheduleSection from "./edit/EditReservationScheduleSection";
 import EditReservationSummaryPanel from "./edit/EditReservationSummaryPanel";
 
 type EditReservationFormProps = {
@@ -29,6 +34,7 @@ type EditReservationFormProps = {
   maxReservationHours?: number | null;
   minNoticeMinutes?: number | null;
   allowWeekendBookings?: boolean | null;
+  bookingTimeSlots?: BookingTimeSlot[];
   canManageStatus?: boolean;
   initialUnavailableWorkspaceIds?: number[];
 };
@@ -51,18 +57,23 @@ export default function EditReservationForm({
   maxReservationHours = 4,
   minNoticeMinutes = 0,
   allowWeekendBookings = true,
+  bookingTimeSlots = [],
   canManageStatus = false,
   initialUnavailableWorkspaceIds = [],
 }: EditReservationFormProps) {
-  const timeSlots = generateTimeSlots(maxReservationHours);
   const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
 
   const initialDate = extractDate(reservation.start_time);
-  const initialSlot = findSlotByDateTimes(
-    reservation.start_time,
-    reservation.end_time,
-    timeSlots,
-  );
+
+  const initialTimeSlots = reservationTimeSlotsForDate({
+    selectedDate: initialDate,
+    maxReservationHours,
+    bookingTimeSlots,
+  });
+
+  const initialSlot =
+    findMatchingSlot(reservation.start_time, reservation.end_time, initialTimeSlots) ||
+    buildSlotFromDateTimes(reservation.start_time, reservation.end_time);
 
   const {
     data,
@@ -80,6 +91,37 @@ export default function EditReservationForm({
     notes: reservation.notes || "",
   });
 
+  const selectedDate = extractDate(data.start_time);
+  const hasCustomSlots = hasActiveCustomTimeSlots(bookingTimeSlots);
+
+  const availableTimeSlots = reservationTimeSlotsForDate({
+    selectedDate,
+    maxReservationHours,
+    bookingTimeSlots,
+  });
+
+  const selectedMatchingSlot = findMatchingSlot(
+    data.start_time,
+    data.end_time,
+    availableTimeSlots,
+  );
+
+  const selectedSlot =
+    selectedMatchingSlot || buildSlotFromDateTimes(data.start_time, data.end_time);
+
+  const timeSlots = selectedMatchingSlot
+    ? availableTimeSlots
+    : [selectedSlot, ...availableTimeSlots];
+
+  const noCustomSlotsForSelectedDate =
+    hasCustomSlots && availableTimeSlots.length === 0;
+
+  const customTimeSlotViolation =
+    hasCustomSlots &&
+    availableTimeSlots.length > 0 &&
+    !selectedMatchingSlot &&
+    data.status === "confirmed";
+
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
@@ -93,12 +135,6 @@ export default function EditReservationForm({
   const attendeesExceedCapacity = Boolean(
     selectedWorkspace &&
       Number(data.attendees_count) > Number(selectedWorkspace.capacity || 0),
-  );
-
-  const selectedSlot = findSlotByDateTimes(
-    data.start_time,
-    data.end_time,
-    timeSlots,
   );
 
   const [checkingAvailability, setCheckingAvailability] = useState(false);
@@ -124,10 +160,16 @@ export default function EditReservationForm({
     allowWeekendBookings,
   );
 
-  const ruleViolation = minNoticeViolation || weekendViolation;
+  const ruleViolation =
+    minNoticeViolation ||
+    weekendViolation ||
+    noCustomSlotsForSelectedDate ||
+    customTimeSlotViolation;
 
   const canSubmit =
     Boolean(data.workspace_id) &&
+    !noCustomSlotsForSelectedDate &&
+    !customTimeSlotViolation &&
     availabilityChecked &&
     !checkingAvailability &&
     !availabilityError &&
@@ -174,6 +216,8 @@ export default function EditReservationForm({
       selectedWorkspaceUnavailable,
       minNoticeViolation,
       weekendViolation,
+      noCustomSlotsForSelectedDate,
+      customTimeSlotViolation,
       canManageStatus,
     );
 
@@ -206,17 +250,23 @@ export default function EditReservationForm({
   }
 
   function handleDateChange(date: string) {
+    clearClientError("base");
     clearClientError("start_time");
     clearClientError("end_time");
 
-    const currentSlot = findSlotByDateTimes(
-      data.start_time,
-      data.end_time,
-      timeSlots,
-    );
+    const nextTimeSlots = reservationTimeSlotsForDate({
+      selectedDate: date,
+      maxReservationHours,
+      bookingTimeSlots,
+    });
 
-    const nextStartTime = buildDateTime(date, currentSlot.start);
-    const nextEndTime = buildDateTime(date, currentSlot.end);
+    const nextSlot =
+      nextTimeSlots.find((slot) => slot.label === selectedSlot.label) ||
+      nextTimeSlots[0] ||
+      selectedSlot;
+
+    const nextStartTime = buildDateTime(date, nextSlot.start);
+    const nextEndTime = buildDateTime(date, nextSlot.end);
 
     setData({
       ...data,
@@ -224,10 +274,15 @@ export default function EditReservationForm({
       end_time: nextEndTime,
     });
 
-    void checkAvailabilityFor(nextStartTime, nextEndTime);
+    if (nextTimeSlots.length > 0 || !hasCustomSlots) {
+      void checkAvailabilityFor(nextStartTime, nextEndTime);
+    } else {
+      setAvailabilityChecked(false);
+    }
   }
 
   function handleSlotChange(slotLabel: string) {
+    clearClientError("base");
     clearClientError("start_time");
     clearClientError("end_time");
 
@@ -275,6 +330,9 @@ export default function EditReservationForm({
           selectedSlot={selectedSlot}
           timeSlots={timeSlots}
           canManageStatus={canManageStatus}
+          hasCustomSlots={hasCustomSlots}
+          noCustomSlotsForSelectedDate={noCustomSlotsForSelectedDate}
+          customTimeSlotViolation={customTimeSlotViolation}
           onWorkspaceChange={(value) => updateField("workspace_id", value)}
           onStatusChange={(value) => updateField("status", value)}
           onDateChange={handleDateChange}
@@ -314,6 +372,8 @@ export default function EditReservationForm({
           minNoticeViolation={minNoticeViolation}
           minNoticeMinutes={minNoticeMinutes || 0}
           weekendViolation={weekendViolation}
+          noCustomSlotsForSelectedDate={noCustomSlotsForSelectedDate}
+          customTimeSlotViolation={customTimeSlotViolation}
           processing={processing}
           canSubmit={canSubmit}
         />
@@ -328,6 +388,8 @@ function validateEditReservationForm(
   selectedWorkspaceUnavailable: boolean,
   minNoticeViolation: boolean,
   weekendViolation: boolean,
+  noCustomSlotsForSelectedDate: boolean,
+  customTimeSlotViolation: boolean,
   canManageStatus: boolean,
 ): ValidationErrors {
   const errors: ValidationErrors = {};
@@ -381,5 +443,48 @@ function validateEditReservationForm(
     errors.base = "Weekend bookings are blocked for this organization.";
   }
 
+  if (noCustomSlotsForSelectedDate) {
+    errors.base =
+      "There are no active custom time slots available for the selected date.";
+  }
+
+  if (customTimeSlotViolation) {
+    errors.base =
+      "This reservation must use one of the organization's active custom time slots.";
+  }
+
   return errors;
+}
+
+function findMatchingSlot(
+  startTime: string,
+  endTime: string,
+  slots: TimeSlot[],
+): TimeSlot | null {
+  const start = extractTime(startTime);
+  const end = extractTime(endTime);
+
+  return slots.find((slot) => slot.start === start && slot.end === end) || null;
+}
+
+function buildSlotFromDateTimes(startTime: string, endTime: string): TimeSlot {
+  const start = extractTime(startTime);
+  const end = extractTime(endTime);
+
+  return {
+    label: `Current · ${start} - ${end}`,
+    start,
+    end,
+    durationHours: durationHoursBetween(startTime, endTime),
+    source: "standard",
+  };
+}
+
+function durationHoursBetween(startTime: string, endTime: string): number {
+  const start = new Date(startTime).getTime();
+  const end = new Date(endTime).getTime();
+
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return 0;
+
+  return Math.max(0, (end - start) / 3600000);
 }

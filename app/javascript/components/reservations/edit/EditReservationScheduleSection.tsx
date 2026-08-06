@@ -1,4 +1,4 @@
-import { Building2, CalendarDays, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Building2, CalendarDays, ShieldCheck } from "lucide-react";
 import DatePickerField from "../../ui/DatePickerField";
 import TimeSlotPicker from "../../ui/TimeSlotPicker";
 import { extractDate } from "../../../utils/reservationFormUtils";
@@ -22,6 +22,9 @@ type EditReservationScheduleSectionProps = {
   selectedSlot: TimeSlot;
   timeSlots: TimeSlot[];
   canManageStatus: boolean;
+  hasCustomSlots: boolean;
+  noCustomSlotsForSelectedDate: boolean;
+  customTimeSlotViolation: boolean;
   onWorkspaceChange: (value: string) => void;
   onStatusChange: (value: string) => void;
   onDateChange: (date: string) => void;
@@ -36,6 +39,9 @@ export default function EditReservationScheduleSection({
   selectedSlot,
   timeSlots,
   canManageStatus,
+  hasCustomSlots,
+  noCustomSlotsForSelectedDate,
+  customTimeSlotViolation,
   onWorkspaceChange,
   onStatusChange,
   onDateChange,
@@ -54,10 +60,46 @@ export default function EditReservationScheduleSection({
           </h2>
 
           <p className="mt-2 text-sm leading-6 text-slate-500">
-            Update the workspace, date, time slot and reservation status.
+            Update the workspace, date, time slot and reservation status. Custom
+            time slots are enforced when they are active for the organization.
           </p>
         </div>
       </div>
+
+      {(noCustomSlotsForSelectedDate || customTimeSlotViolation) && (
+        <div className="mb-6 rounded-xl border border-amber-100 bg-amber-50 p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle
+              size={18}
+              className="mt-0.5 shrink-0 text-amber-500"
+            />
+
+            <div className="text-sm leading-6 text-amber-700">
+              {noCustomSlotsForSelectedDate && (
+                <p className="font-semibold">
+                  There are no active custom time slots available for this date.
+                  Choose another date or create a matching time slot.
+                </p>
+              )}
+
+              {customTimeSlotViolation && (
+                <p className="font-semibold">
+                  This reservation uses a time that is not part of the current
+                  active custom time slots. Choose one of the available slots
+                  before saving.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {hasCustomSlots && (
+        <div className="mb-6 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm font-semibold leading-6 text-cyan-700">
+          Custom time slots are active. Confirmed reservations must match one of
+          the configured slots for the selected date.
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-5">
         <label className="block">
@@ -135,7 +177,7 @@ export default function EditReservationScheduleSection({
             label="Time Slot"
             value={selectedSlot.label}
             options={timeSlots}
-            disabled={processing}
+            disabled={processing || noCustomSlotsForSelectedDate}
             onChange={onSlotChange}
           />
 
