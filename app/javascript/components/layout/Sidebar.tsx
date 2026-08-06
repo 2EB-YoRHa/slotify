@@ -5,6 +5,7 @@ import {
   Building2,
   CalendarCheck,
   CalendarDays,
+  Clock3,
   CreditCard,
   LayoutDashboard,
   LockKeyhole,
@@ -47,6 +48,7 @@ const managerNavItems: NavItem[] = [
   { label: "Organization", href: "/organization", icon: UsersRound },
   { label: "Subscription", href: "/subscription", icon: CreditCard },
   { label: "Booking Rules", href: "/booking_rule", icon: SlidersHorizontal },
+  { label: "Time Slots", href: "/booking_time_slots", icon: Clock3 },
 ];
 
 const memberNavItems: NavItem[] = [
