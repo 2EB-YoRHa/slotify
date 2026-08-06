@@ -3,6 +3,8 @@ import AvailablePlansSection from "../../components/subscriptions/show/Available
 import BillingModeNotice from "../../components/subscriptions/show/BillingModeNotice";
 import BillingRequiredActivationPanel from "../../components/subscriptions/show/BillingRequiredActivationPanel";
 import CurrentPlanPanel from "../../components/subscriptions/show/CurrentPlanPanel";
+import PlanChangePolicyPanel from "../../components/subscriptions/show/PlanChangePolicyPanel";
+import PlanFeatureComparisonPanel from "../../components/subscriptions/show/PlanFeatureComparisonPanel";
 import SubscriptionHeader from "../../components/subscriptions/show/SubscriptionHeader";
 import {
   formatPlan,
@@ -82,6 +84,12 @@ export default function SubscriptionShow({
             activePlan={activePlan}
             canManageBilling={can_manage_billing}
           />
+
+          <PlanChangePolicyPanel
+            currentPlan={currentPlan}
+            canManageBilling={can_manage_billing}
+            overPlanLimits={Boolean(usage?.over_plan_limits)}
+          />
         </>
       )}
 
@@ -92,6 +100,8 @@ export default function SubscriptionShow({
         canStartCheckout={can_start_checkout}
         canManageBilling={can_manage_billing}
       />
+
+      <PlanFeatureComparisonPanel plans={plans} />
     </AppLayout>
   );
 }

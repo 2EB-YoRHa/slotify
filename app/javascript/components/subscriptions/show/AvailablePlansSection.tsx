@@ -55,6 +55,7 @@ export default function AvailablePlansSection({
           >
             <SubscriptionPlanCard
               planKey={plan.key}
+              currentPlan={currentPlan}
               name={plan.name}
               price={plan.price}
               description={plan.description}
@@ -67,6 +68,7 @@ export default function AvailablePlansSection({
               icon={plan.key === "pro" ? Zap : Building2}
               highlighted={plan.highlighted}
               current={!billingRequired && currentPlan === plan.key}
+              billingRequired={billingRequired}
               checkoutReady={plan.checkout_ready}
               canStartCheckout={canStartCheckout}
               canManageBilling={canManageBilling}

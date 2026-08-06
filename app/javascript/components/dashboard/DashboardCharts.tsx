@@ -16,7 +16,7 @@ export default function DashboardCharts({
   workspaceDistribution,
 }: DashboardChartsProps) {
   return (
-    <section className="mt-8 grid grid-cols-2 gap-6">
+    <section className="grid grid-cols-2 gap-6">
       <WeeklyOccupancyChart weeklyOccupancy={weeklyOccupancy} />
       <WorkspaceDistributionChart workspaceDistribution={workspaceDistribution} />
     </section>

@@ -31,6 +31,24 @@ export type SubscriptionFeatureGroup = {
   items: string[];
 };
 
+export type PlanEntitlements = {
+  advanced_booking_rules: boolean;
+  custom_time_slots: boolean;
+  usage_insights: boolean;
+  availability_command_center: boolean;
+  multiple_workspace_photos: boolean;
+  priority_support: boolean;
+};
+
+export type BookingRuleConstraints = {
+  max_hours_per_reservation_min: number;
+  max_hours_per_reservation_max: number;
+  min_notice_minutes_min: number;
+  min_notice_minutes_max: number;
+  cancellation_limit_hours_min: number;
+  cancellation_limit_hours_max: number;
+};
+
 export type SubscriptionPlan = {
   key: string;
   name: string;
@@ -47,6 +65,8 @@ export type SubscriptionPlan = {
   features: string[];
   highlighted?: boolean;
   checkout_ready?: boolean;
+  entitlements?: PlanEntitlements;
+  booking_rule_constraints?: BookingRuleConstraints;
 };
 
 export type SubscriptionUsage = {
@@ -63,4 +83,6 @@ export type SubscriptionUsage = {
   member_slots_remaining?: number | null;
   user_over_limit?: boolean;
   over_plan_limits?: boolean;
+  entitlements?: PlanEntitlements;
+  booking_rule_constraints?: BookingRuleConstraints;
 };

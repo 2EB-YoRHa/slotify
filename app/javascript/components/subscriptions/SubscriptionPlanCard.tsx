@@ -1,7 +1,9 @@
 import { router } from "@inertiajs/react";
 import { useState } from "react";
 import {
+  ArrowDownCircle,
   ArrowRight,
+  ArrowUpCircle,
   CheckCircle2,
   CreditCard,
   Sparkles,
@@ -12,6 +14,7 @@ import type { SubscriptionFeatureGroup } from "../../types/subscription";
 
 type SubscriptionPlanCardProps = {
   planKey: string;
+  currentPlan?: string;
   name: string;
   price: string;
   description: string;
@@ -24,6 +27,7 @@ type SubscriptionPlanCardProps = {
   icon: LucideIcon;
   current?: boolean;
   highlighted?: boolean;
+  billingRequired?: boolean;
   checkoutReady?: boolean;
   canStartCheckout?: boolean;
   canManageBilling?: boolean;
@@ -31,6 +35,7 @@ type SubscriptionPlanCardProps = {
 
 export default function SubscriptionPlanCard({
   planKey,
+  currentPlan = "starter",
   name,
   price,
   description,
@@ -43,27 +48,43 @@ export default function SubscriptionPlanCard({
   icon: Icon,
   current = false,
   highlighted = false,
+  billingRequired = false,
   checkoutReady = true,
   canStartCheckout = true,
   canManageBilling = false,
 }: SubscriptionPlanCardProps) {
   const [processing, setProcessing] = useState(false);
-  const canSubmit = checkoutReady && (canStartCheckout || canManageBilling);
-  const visibleFeatureGroups = featureGroups.length > 0
-    ? featureGroups
-    : [
-        {
-          title: "Included",
-          items: features,
-        },
-      ];
 
-  function handleCheckout() {
+  const canChooseNewPlan = billingRequired && checkoutReady && canStartCheckout;
+  const canManagePlanChange = !billingRequired && !current && canManageBilling;
+  const canSubmit = canChooseNewPlan || canManagePlanChange;
+
+  const visibleFeatureGroups =
+    featureGroups.length > 0
+      ? featureGroups
+      : [
+          {
+            title: "Included",
+            items: features,
+          },
+        ];
+
+  const action = actionForPlan({
+    planKey,
+    currentPlan,
+    current,
+    billingRequired,
+    canChooseNewPlan,
+    canManagePlanChange,
+    checkoutReady,
+  });
+
+  function handleAction() {
     if (current || !canSubmit || processing) return;
 
     setProcessing(true);
 
-    const path = canStartCheckout
+    const path = canChooseNewPlan
       ? `/subscription/checkout/${planKey}`
       : "/subscription/portal";
 
@@ -212,10 +233,18 @@ export default function SubscriptionPlanCard({
           </div>
         )}
 
+        {action.helper && (
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-bold leading-5 text-slate-500">
+              {action.helper}
+            </p>
+          </div>
+        )}
+
         <button
           type="button"
           disabled={current || processing || !canSubmit}
-          onClick={handleCheckout}
+          onClick={handleAction}
           className={`mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition ${
             current
               ? "bg-green-50 text-green-600"
@@ -236,22 +265,100 @@ export default function SubscriptionPlanCard({
               {processing ? (
                 <CreditCard size={16} />
               ) : (
-                <ArrowRight size={16} />
+                <action.icon size={16} />
               )}
 
-              {processing
-                ? "Redirecting..."
-                : canSubmit
-                  ? canStartCheckout
-                    ? `Choose ${name}`
-                    : canManageBilling
-                      ? "Manage in Stripe"
-                      : "Billing Not Available"
-                  : "Stripe Not Configured"}
+              {processing ? "Redirecting..." : action.label}
             </>
           )}
         </button>
       </div>
     </div>
   );
+}
+
+type PlanActionInput = {
+  planKey: string;
+  currentPlan: string;
+  current: boolean;
+  billingRequired: boolean;
+  canChooseNewPlan: boolean;
+  canManagePlanChange: boolean;
+  checkoutReady: boolean;
+};
+
+function actionForPlan({
+  planKey,
+  currentPlan,
+  current,
+  billingRequired,
+  canChooseNewPlan,
+  canManagePlanChange,
+  checkoutReady,
+}: PlanActionInput) {
+  if (current) {
+    return {
+      label: "Active Plan",
+      icon: Sparkles,
+      helper: null,
+    };
+  }
+
+  if (!checkoutReady) {
+    return {
+      label: "Stripe Not Configured",
+      icon: XCircle,
+      helper:
+        "Configure this plan's Stripe Price ID before it can be selected.",
+    };
+  }
+
+  if (billingRequired && canChooseNewPlan) {
+    return {
+      label: `Choose ${planName(planKey)}`,
+      icon: ArrowRight,
+      helper:
+        "This starts Stripe Checkout and activates the organization after payment succeeds.",
+    };
+  }
+
+  if (canManagePlanChange && currentPlan === "starter" && planKey === "pro") {
+    return {
+      label: "Upgrade in Billing Portal",
+      icon: ArrowUpCircle,
+      helper:
+        "Upgrades are managed in Stripe so billing, invoices, and payment methods stay consistent.",
+    };
+  }
+
+  if (canManagePlanChange && currentPlan === "pro" && planKey === "starter") {
+    return {
+      label: "Schedule Downgrade",
+      icon: ArrowDownCircle,
+      helper:
+        "Downgrades should be scheduled from Stripe and take effect at the end of the billing cycle. Existing data is not deleted.",
+    };
+  }
+
+  if (canManagePlanChange) {
+    return {
+      label: "Manage in Billing Portal",
+      icon: CreditCard,
+      helper:
+        "Plan changes are managed through the Stripe Customer Portal.",
+    };
+  }
+
+  return {
+    label: "Billing Not Available",
+    icon: XCircle,
+    helper:
+      "Billing portal access is not available for this organization yet.",
+  };
+}
+
+function planName(planKey: string): string {
+  return planKey
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }
