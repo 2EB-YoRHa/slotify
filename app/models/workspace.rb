@@ -15,6 +15,7 @@ class Workspace < ApplicationRecord
   ].freeze
 
   MAX_PHOTO_SIZE = 5.megabytes
+  MAX_EXTRA_PHOTOS = 5
 
   belongs_to :organization
 
@@ -80,6 +81,7 @@ class Workspace < ApplicationRecord
 
   validate :acceptable_photo
   validate :extra_photos_allowed_by_plan
+  validate :extra_photos_limit
   validate :acceptable_extra_photos
 
   def gallery_photos
@@ -110,6 +112,17 @@ class Workspace < ApplicationRecord
       :extra_photos,
       "are only available on the Pro plan"
     )
+  end
+
+  def extra_photos_limit
+    return unless extra_photos.attached?
+
+    if extra_photos.attachments.size > MAX_EXTRA_PHOTOS
+      errors.add(
+        :extra_photos,
+        "cannot include more than #{MAX_EXTRA_PHOTOS} photos"
+      )
+    end
   end
 
   def acceptable_extra_photos

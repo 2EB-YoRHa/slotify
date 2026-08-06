@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import type { WorkspaceFormData } from "../../../types/workspace";
 import { fieldError, workspaceTypes } from "../../../utils/workspaceFormUtils";
+import WorkspaceExtraPhotosUpload from "./WorkspaceExtraPhotosUpload";
 import WorkspacePhotoUpload from "./WorkspacePhotoUpload";
 import {
   IconBox,
@@ -23,6 +24,8 @@ type WorkspaceInformationSectionProps = {
   processing: boolean;
   currentPhotoUrl?: string | null;
   currentPhotoFilename?: string | null;
+  existingExtraPhotoCount?: number;
+  multipleWorkspacePhotosEnabled?: boolean;
   onNameChange: (value: string) => void;
   onWorkspaceTypeChange: (value: string) => void;
   onCapacityChange: (value: string) => void;
@@ -32,6 +35,7 @@ type WorkspaceInformationSectionProps = {
   onLocationChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onPhotoChange: (file: File | null) => void;
+  onExtraPhotosChange: (files: File[]) => void;
 };
 
 export default function WorkspaceInformationSection({
@@ -40,6 +44,8 @@ export default function WorkspaceInformationSection({
   processing,
   currentPhotoUrl = null,
   currentPhotoFilename = null,
+  existingExtraPhotoCount = 0,
+  multipleWorkspacePhotosEnabled = false,
   onNameChange,
   onWorkspaceTypeChange,
   onCapacityChange,
@@ -49,6 +55,7 @@ export default function WorkspaceInformationSection({
   onLocationChange,
   onDescriptionChange,
   onPhotoChange,
+  onExtraPhotosChange,
 }: WorkspaceInformationSectionProps) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -98,7 +105,7 @@ export default function WorkspaceInformationSection({
           min="1"
           placeholder="Enter capacity"
           disabled={processing}
-          helper="Maximum number of people allowed in the space."
+          helper="Maximum number of people allowed in this workspace."
           error={fieldError(errors, "capacity")}
           onChange={onCapacityChange}
         />
@@ -163,7 +170,7 @@ export default function WorkspaceInformationSection({
             placeholder="Describe the workspace, equipment, and recommended use."
             disabled={processing}
             maxLength={500}
-            helper="Briefly describe what this space is best used for."
+            helper="Briefly describe the use case, equipment, and best fit for this space."
             error={fieldError(errors, "description")}
             onChange={onDescriptionChange}
           />
@@ -177,6 +184,17 @@ export default function WorkspaceInformationSection({
             disabled={processing}
             error={fieldError(errors, "photo")}
             onPhotoChange={onPhotoChange}
+          />
+        </div>
+
+        <div className="col-span-2">
+          <WorkspaceExtraPhotosUpload
+            enabled={multipleWorkspacePhotosEnabled}
+            selectedFiles={data.extra_photos}
+            existingPhotoCount={existingExtraPhotoCount}
+            disabled={processing}
+            error={fieldError(errors, "extra_photos")}
+            onPhotosChange={onExtraPhotosChange}
           />
         </div>
       </div>
