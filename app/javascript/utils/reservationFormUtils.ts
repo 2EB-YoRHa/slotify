@@ -31,7 +31,15 @@ export function findSlotByDateTimes(
   const end = extractTime(endTime);
 
   return (
-    slots.find((slot) => slot.start === start && slot.end === end) || slots[0]
+    slots.find((slot) => slot.start === start && slot.end === end) ||
+    slots[0] ||
+    {
+      label: "No time slot available",
+      start: "00:00",
+      end: "00:00",
+      durationHours: 0,
+      source: "standard",
+    }
   );
 }
 

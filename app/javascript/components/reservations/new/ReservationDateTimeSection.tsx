@@ -57,8 +57,9 @@ export default function ReservationDateTimeSection({
           <h2 className="text-2xl font-bold text-slate-950">Date & Time</h2>
 
           <p className="mt-2 text-sm leading-6 text-slate-500">
-            Choose when the workspace will be reserved. Availability must be
-            checked before creating the reservation.
+            Choose when the workspace will be reserved. If your organization has
+            active custom time slots, reservations must use one of those
+            configured blocks.
           </p>
         </div>
       </div>

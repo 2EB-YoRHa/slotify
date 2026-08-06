@@ -44,17 +44,18 @@ class ReservationsController < InertiaController
     default_start_time = Time.zone.parse("#{Time.zone.today} 09:00")
     default_end_time = Time.zone.parse("#{Time.zone.today} 10:00")
 
-    render inertia: "reservations/new", props: {
-      workspaces: serialize_workspaces(active_workspaces),
-      selected_workspace_id: params[:workspace_id],
-      initial_start_time: default_start_time.strftime("%Y-%m-%dT%H:%M"),
-      initial_end_time: default_end_time.strftime("%Y-%m-%dT%H:%M"),
-      initial_unavailable_workspace_ids: unavailable_workspace_ids_for(
-        default_start_time,
-        default_end_time
-      ),
-      booking_rule: current_organization.booking_rule
-    }
+      render inertia: "reservations/new", props: {
+        workspaces: serialize_workspaces(active_workspaces),
+        selected_workspace_id: params[:workspace_id],
+        initial_start_time: default_start_time.strftime("%Y-%m-%dT%H:%M"),
+        initial_end_time: default_end_time.strftime("%Y-%m-%dT%H:%M"),
+        initial_unavailable_workspace_ids: unavailable_workspace_ids_for(
+          default_start_time,
+          default_end_time
+        ),
+        booking_rule: current_organization.booking_rule,
+        booking_time_slots: reservation_time_slots
+      }
   end
 
   def create
@@ -85,7 +86,8 @@ class ReservationsController < InertiaController
                    errors: {
                      base: result.errors
                    },
-                   booking_rule: current_organization.booking_rule
+                   booking_rule: current_organization.booking_rule,
+                   booking_time_slots: reservation_time_slots
                  },
                  status: :unprocessable_entity
         end
@@ -101,12 +103,13 @@ class ReservationsController < InertiaController
 
   def edit
     render inertia: "reservations/edit", props: {
-      reservation: serialize_reservation(@reservation),
-      workspaces: serialize_workspaces(editable_workspaces),
-      booking_rule: current_organization.booking_rule,
-      can_manage_status: admin? || manager?,
-      initial_unavailable_workspace_ids: initial_unavailable_workspace_ids_for(@reservation)
-    }
+        reservation: serialize_reservation(@reservation),
+        workspaces: serialize_workspaces(editable_workspaces),
+        booking_rule: current_organization.booking_rule,
+        booking_time_slots: reservation_time_slots,
+        can_manage_status: admin? || manager?,
+        initial_unavailable_workspace_ids: initial_unavailable_workspace_ids_for(@reservation)
+      }
   end
 
   def update
@@ -134,6 +137,7 @@ class ReservationsController < InertiaController
                    workspaces: serialize_workspaces(editable_workspaces),
                    errors: @reservation.errors.to_hash,
                    booking_rule: current_organization.booking_rule,
+                   booking_time_slots: reservation_time_slots,
                    can_manage_status: admin? || manager?,
                    initial_unavailable_workspace_ids: initial_unavailable_workspace_ids_for(@reservation)
                  },
@@ -362,6 +366,16 @@ class ReservationsController < InertiaController
         }, status: :unprocessable_entity
       end
     end
+  end
+
+  def reservation_time_slots
+    return [] unless current_organization.custom_time_slots_enabled?
+
+    current_organization
+      .booking_time_slots
+      .where(active: true)
+      .order(:start_minute, :name)
+      .as_json
   end
 
   def serialize_reservations(reservations)

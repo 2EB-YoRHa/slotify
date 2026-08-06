@@ -3,6 +3,7 @@ import AppLayout from "../../components/AppLayout";
 import NewReservationForm from "../../components/reservations/NewReservationForm";
 import type { Workspace } from "../../types/workspace";
 import type { BookingRule } from "../../types/bookingRule";
+import type { BookingTimeSlot } from "../../types/bookingTimeSlot";
 
 type NewReservationProps = {
   workspaces?: Workspace[];
@@ -12,6 +13,7 @@ type NewReservationProps = {
   initial_unavailable_workspace_ids?: number[];
   errors?: Record<string, string | string[]>;
   booking_rule?: BookingRule | null;
+  booking_time_slots?: BookingTimeSlot[];
 };
 
 export default function NewReservation({
@@ -22,6 +24,7 @@ export default function NewReservation({
   initial_unavailable_workspace_ids = [],
   errors = {},
   booking_rule = null,
+  booking_time_slots = [],
 }: NewReservationProps) {
   return (
     <AppLayout>
@@ -55,6 +58,7 @@ export default function NewReservation({
         maxReservationHours={booking_rule?.max_hours_per_reservation}
         minNoticeMinutes={booking_rule?.min_notice_minutes}
         allowWeekendBookings={booking_rule?.allow_weekend_bookings}
+        bookingTimeSlots={booking_time_slots}
       />
     </AppLayout>
   );

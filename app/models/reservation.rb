@@ -25,9 +25,11 @@ class Reservation < ApplicationRecord
             allow_blank: true
 
   validate :end_time_after_start_time
+
   validate :workspace_available
   validate :attendees_count_within_workspace_capacity
   validate :within_booking_rules
+  validate :within_custom_time_slots
 
   def cancelled?
     status == "cancelled"
@@ -147,5 +149,35 @@ class Reservation < ApplicationRecord
     else
       false
     end
+  end
+
+  def within_custom_time_slots
+      return unless status == "confirmed"
+      return if organization.blank?
+      return unless organization.custom_time_slots_enabled?
+      return if start_time.blank? || end_time.blank?
+
+      active_slots = organization.booking_time_slots.where(active: true)
+
+      return if active_slots.blank?
+
+      matching_slot = active_slots.any? do |slot|
+        slot.available_on?(start_time.to_date) &&
+          slot.start_minute == minutes_from_midnight(start_time) &&
+          slot.end_minute == minutes_from_midnight(end_time)
+      end
+
+      return if matching_slot
+
+      errors.add(
+        :base,
+        "Reservation must use one of the organization's active custom time slots."
+      )
+  end
+
+  def minutes_from_midnight(value)
+    time = value.in_time_zone
+
+    time.hour * 60 + time.min
   end
 end
