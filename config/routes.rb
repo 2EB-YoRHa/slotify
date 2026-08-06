@@ -1,9 +1,9 @@
 Rails.application.routes.draw do
-    devise_for :users, controllers: {
-        sessions: "users/sessions",
-        registrations: "users/registrations",
-        passwords: "users/passwords"
-    }
+  devise_for :users, controllers: {
+    sessions: "users/sessions",
+    registrations: "users/registrations",
+    passwords: "users/passwords"
+  }
 
   constraints(host: "127.0.0.1") do
     get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
@@ -14,23 +14,25 @@ Rails.application.routes.draw do
   resource :organization, only: [ :show, :edit, :update ]
 
   get "organization/members/:id",
-    to: "organization_members#show",
-    as: :organization_member
+      to: "organization_members#show",
+      as: :organization_member
 
   patch "organization/members/:id/toggle_active",
-    to: "organization_members#toggle_active",
-    as: :toggle_active_organization_member
+        to: "organization_members#toggle_active",
+        as: :toggle_active_organization_member
 
   resource :booking_rule, only: [ :show, :edit, :update ]
 
+  resources :booking_time_slots, except: [ :new, :edit ]
+
   resource :subscription, only: [ :show ] do
     post "checkout/:plan",
-        to: "subscriptions#checkout",
-        as: :checkout
+         to: "subscriptions#checkout",
+         as: :checkout
 
     post "portal",
-     to: "subscriptions#portal",
-     as: :portal
+         to: "subscriptions#portal",
+         as: :portal
 
     get "success",
         to: "subscriptions#success",
@@ -42,7 +44,7 @@ Rails.application.routes.draw do
   end
 
   post "stripe/webhooks",
-     to: "stripe_webhooks#create"
+       to: "stripe_webhooks#create"
 
   get "workspaces/:id/delete",
       to: "workspaces#delete_confirmation",
@@ -66,24 +68,29 @@ Rails.application.routes.draw do
   resources :amenities, only: [ :index, :create, :destroy ]
 
   resources :organization_invitations, only: [ :create, :destroy ] do
-        collection do
-            get "accept/:token", to: "organization_invitations#accept", as: :accept
-            patch "accept/:token", to: "organization_invitations#confirm_accept", as: :confirm_accept
-        end
+    collection do
+      get "accept/:token",
+          to: "organization_invitations#accept",
+          as: :accept
+
+      patch "accept/:token",
+            to: "organization_invitations#confirm_accept",
+            as: :confirm_accept
     end
+  end
 
-    get "up" => "rails/health#show", as: :rails_health_check
+  get "up" => "rails/health#show", as: :rails_health_check
 
-    get "errors/403", to: "errors#forbidden"
-    get "errors/404", to: "errors#not_found"
-    get "errors/422", to: "errors#unprocessable"
-    get "errors/500", to: "errors#internal_server_error"
+  get "errors/403", to: "errors#forbidden"
+  get "errors/404", to: "errors#not_found"
+  get "errors/422", to: "errors#unprocessable"
+  get "errors/500", to: "errors#internal_server_error"
 
-    match "*unmatched",
+  match "*unmatched",
         to: "errors#not_found",
         via: :all,
         constraints: lambda { |request|
-            request.format.html? &&
+          request.format.html? &&
             !request.path.start_with?("/rails/", "/assets/", "/vite/", "/favicon")
         }
 end

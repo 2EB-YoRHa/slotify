@@ -13,6 +13,7 @@ class Organization < ApplicationRecord
   has_many :reservations, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :organization_invitations, dependent: :destroy
+  has_many :booking_time_slots, dependent: :destroy
   has_one :booking_rule, dependent: :destroy
 
   before_validation :normalize_slug

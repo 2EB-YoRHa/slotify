@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_170518) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_140709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,6 +57,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_170518) do
     t.bigint "organization_id", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_booking_rules_on_organization_id"
+  end
+
+  create_table "booking_time_slots", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "days_of_week", default: "monday,tuesday,wednesday,thursday,friday", null: false
+    t.integer "end_minute", null: false
+    t.string "name", null: false
+    t.bigint "organization_id", null: false
+    t.integer "start_minute", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id", "active"], name: "index_booking_time_slots_on_organization_id_and_active"
+    t.index ["organization_id", "name"], name: "index_booking_time_slots_on_organization_id_and_name", unique: true
+    t.index ["organization_id"], name: "index_booking_time_slots_on_organization_id"
   end
 
   create_table "organization_invitations", force: :cascade do |t|
@@ -136,7 +150,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_170518) do
     t.integer "user_limit"
     t.integer "workspace_limit"
     t.index ["organization_id"], name: "index_subscriptions_on_organization_id"
-    t.index ["organization_id"], name: "index_subscriptions_one_active_per_organization", unique: true, where: "((status)::text = ANY ((ARRAY['active'::character varying, 'trialing'::character varying])::text[]))"
+    t.index ["organization_id"], name: "index_subscriptions_one_active_per_organization", unique: true, where: "((status)::text = ANY (ARRAY[('active'::character varying)::text, ('trialing'::character varying)::text]))"
     t.index ["stripe_checkout_session_id"], name: "index_subscriptions_on_unique_stripe_checkout_session_id", unique: true, where: "((stripe_checkout_session_id IS NOT NULL) AND ((stripe_checkout_session_id)::text <> ''::text))"
     t.index ["stripe_subscription_id"], name: "index_subscriptions_on_unique_stripe_subscription_id", unique: true, where: "((stripe_subscription_id IS NOT NULL) AND ((stripe_subscription_id)::text <> ''::text))"
   end
@@ -187,6 +201,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_170518) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "booking_rules", "organizations"
+  add_foreign_key "booking_time_slots", "organizations"
   add_foreign_key "organization_invitations", "organizations"
   add_foreign_key "organization_invitations", "roles"
   add_foreign_key "organization_invitations", "users", column: "invited_by_id"
