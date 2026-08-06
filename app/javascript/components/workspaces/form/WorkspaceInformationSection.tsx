@@ -6,7 +6,10 @@ import {
   StickyNote,
   UsersRound,
 } from "lucide-react";
-import type { WorkspaceFormData } from "../../../types/workspace";
+import type {
+  WorkspaceFormData,
+  WorkspacePhotoItem,
+} from "../../../types/workspace";
 import { fieldError, workspaceTypes } from "../../../utils/workspaceFormUtils";
 import WorkspaceExtraPhotosUpload from "./WorkspaceExtraPhotosUpload";
 import WorkspacePhotoUpload from "./WorkspacePhotoUpload";
@@ -25,6 +28,7 @@ type WorkspaceInformationSectionProps = {
   currentPhotoUrl?: string | null;
   currentPhotoFilename?: string | null;
   existingExtraPhotoCount?: number;
+  existingExtraPhotos?: WorkspacePhotoItem[];
   multipleWorkspacePhotosEnabled?: boolean;
   onNameChange: (value: string) => void;
   onWorkspaceTypeChange: (value: string) => void;
@@ -45,6 +49,7 @@ export default function WorkspaceInformationSection({
   currentPhotoUrl = null,
   currentPhotoFilename = null,
   existingExtraPhotoCount = 0,
+  existingExtraPhotos = [],
   multipleWorkspacePhotosEnabled = false,
   onNameChange,
   onWorkspaceTypeChange,
@@ -191,6 +196,7 @@ export default function WorkspaceInformationSection({
           <WorkspaceExtraPhotosUpload
             enabled={multipleWorkspacePhotosEnabled}
             selectedFiles={data.extra_photos}
+            existingPhotos={existingExtraPhotos}
             existingPhotoCount={existingExtraPhotoCount}
             disabled={processing}
             error={fieldError(errors, "extra_photos")}

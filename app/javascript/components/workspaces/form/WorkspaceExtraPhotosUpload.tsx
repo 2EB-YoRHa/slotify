@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { FileImage, ImagePlus, LockKeyhole, X } from "lucide-react";
+import type { WorkspacePhotoItem } from "../../../types/workspace";
 import { FormError } from "./WorkspaceFormFields";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -15,6 +16,7 @@ const ALLOWED_FILE_TYPES = [
 type WorkspaceExtraPhotosUploadProps = {
   enabled: boolean;
   selectedFiles: File[];
+  existingPhotos?: WorkspacePhotoItem[];
   existingPhotoCount: number;
   disabled: boolean;
   error?: string | string[];
@@ -24,6 +26,7 @@ type WorkspaceExtraPhotosUploadProps = {
 export default function WorkspaceExtraPhotosUpload({
   enabled,
   selectedFiles,
+  existingPhotos = [],
   existingPhotoCount,
   disabled,
   error,
@@ -86,6 +89,7 @@ export default function WorkspaceExtraPhotosUpload({
     const nextFiles = [...selectedFiles, ...filesToAdd];
 
     onPhotosChange(nextFiles);
+
     setClientError(
       validFiles.length > filesToAdd.length
         ? `Only ${availableSlots} more photo${
@@ -93,11 +97,14 @@ export default function WorkspaceExtraPhotosUpload({
           } can be added. The limit is ${MAX_EXTRA_PHOTOS}.`
         : null,
     );
+
     setInputKey((currentKey) => currentKey + 1);
   }
 
   function removeSelectedPhoto(index: number) {
-    onPhotosChange(selectedFiles.filter((_file, fileIndex) => fileIndex !== index));
+    onPhotosChange(
+      selectedFiles.filter((_file, fileIndex) => fileIndex !== index),
+    );
     setClientError(null);
   }
 
@@ -164,6 +171,31 @@ export default function WorkspaceExtraPhotosUpload({
           </p>
         )}
 
+        {existingPhotos.length > 0 && (
+          <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+            <p className="mb-4 text-xs font-extrabold uppercase tracking-wide text-slate-500">
+              Current saved extra photos
+            </p>
+
+            <div className="grid grid-cols-5 gap-3">
+              {existingPhotos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
+                >
+                  <div className="flex h-28 items-center justify-center bg-slate-50">
+                    <img
+                      src={photo.url}
+                      alt={photo.filename}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {previews.length > 0 && (
           <div className="mt-5 rounded-xl border border-cyan-100 bg-white p-4">
             <div className="mb-4 flex items-center justify-between gap-4">
@@ -211,7 +243,7 @@ export default function WorkspaceExtraPhotosUpload({
           </div>
         )}
 
-        {enabled && previews.length === 0 && (
+        {enabled && existingPhotos.length === 0 && previews.length === 0 && (
           <div className="mt-5 flex h-28 flex-col items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400">
             <ImagePlus size={28} strokeWidth={2.4} />
 

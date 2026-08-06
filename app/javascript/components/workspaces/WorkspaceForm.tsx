@@ -89,16 +89,32 @@ export default function WorkspaceForm({
 
     if (hasValidationErrors(validationErrors)) return;
 
-    transform((formData) => ({
-      workspace: {
-        ...formData,
+    transform((formData) => {
+      const payload: Record<string, unknown> = {
+        name: formData.name,
+        workspace_type: formData.workspace_type,
         capacity: Number(formData.capacity),
+        floor: formData.floor,
+        zone: formData.zone,
+        location: formData.location,
+        description: formData.description,
         hourly_rate: Number(formData.hourly_rate),
+        active: formData.active,
         amenity_ids: formData.amenity_ids,
-        photo: formData.photo,
-        extra_photos: formData.extra_photos,
-      },
-    }));
+      };
+
+      if (formData.photo instanceof File) {
+        payload.photo = formData.photo;
+      }
+
+      if (formData.extra_photos.length > 0) {
+        payload.extra_photos = formData.extra_photos;
+      }
+
+      return {
+        workspace: payload,
+      };
+    });
 
     if (isEditing && workspace?.id) {
       patch(`/workspaces/${workspace.id}`, {
@@ -161,6 +177,7 @@ export default function WorkspaceForm({
           currentPhotoUrl={workspace?.photo_url}
           currentPhotoFilename={workspace?.photo_filename}
           existingExtraPhotoCount={workspace?.extra_photos?.length || 0}
+          existingExtraPhotos={workspace?.extra_photos || []}
           multipleWorkspacePhotosEnabled={extraPhotosEnabled}
           onNameChange={(value) => updateField("name", value)}
           onWorkspaceTypeChange={(value) =>
