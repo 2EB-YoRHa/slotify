@@ -4,7 +4,6 @@ import {
   Clock3,
   LockKeyhole,
   Plus,
-  Sparkles,
 } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import BookingTimeSlotForm from "../../components/booking_time_slots/BookingTimeSlotForm";
@@ -23,15 +22,6 @@ export default function BookingTimeSlotsIndex({
   return (
     <AppLayout>
       <div className="mb-8">
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 rounded-full border border-cyan-100 bg-cyan-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-cyan-600"
-        >
-          <Sparkles size={14} />
-          Pro Scheduling
-        </motion.div>
-
         <motion.h1
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}

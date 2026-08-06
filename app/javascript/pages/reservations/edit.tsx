@@ -25,21 +25,10 @@ export default function EditReservation({
   can_manage_status = false,
   initial_unavailable_workspace_ids = [],
 }: EditReservationProps) {
-  const reservationsHref = can_manage_status
-    ? "/reservations"
-    : "/my_reservations";
-
   return (
     <AppLayout>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <div className="mb-2 text-sm text-slate-400">
-            <Link href={reservationsHref} className="hover:text-cyan-500">
-              {can_manage_status ? "Reservations" : "My Bookings"}
-            </Link>{" "}
-            / Edit
-          </div>
-
           <h1 className="text-3xl font-bold text-slate-900">
             Edit Reservation
           </h1>

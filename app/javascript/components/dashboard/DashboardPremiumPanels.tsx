@@ -5,7 +5,6 @@ import {
   ArrowRight,
   BarChart3,
   CalendarCheck,
-  Crown,
   DoorOpen,
   LockKeyhole,
   Sparkles,
@@ -217,21 +216,17 @@ function AvailabilityCommandCenterPreview({
     >
       <div className="mb-6 flex items-start justify-between gap-6">
         <div className="flex items-center gap-3">
-          <IconBox icon={Crown} />
+          <IconBox icon={Zap} />
 
           <div>
             <div className="flex items-center gap-3">
               <h3 className="text-xl font-extrabold text-slate-950">
                 Availability Command Center
               </h3>
-
-              <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-cyan-600">
-                Pro Active
-              </span>
             </div>
 
             <p className="mt-1 text-sm leading-6 text-slate-500">
-              Premium availability overview for busy coworking operations.
+              Monitor availability, occupancy, and the next scheduled booking in real time.
             </p>
           </div>
         </div>

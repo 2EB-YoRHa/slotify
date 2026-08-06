@@ -122,7 +122,7 @@ class ReservationsController < InertiaController
     respond_to do |format|
       if @reservation.errors.blank? && @reservation.save
         format.html do
-          redirect_to member? ? my_reservations_path : reservations_path,
+          redirect_to reservation_path(@reservation),
                       notice: "Reservation updated successfully"
         end
 

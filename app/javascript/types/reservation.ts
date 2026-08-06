@@ -1,4 +1,5 @@
 import type { Amenity } from "./amenity";
+import type { WorkspacePhotoItem } from "./workspace";
 
 export type ReservationWorkspace = {
   id: number;
@@ -13,6 +14,9 @@ export type ReservationWorkspace = {
   photo_attached?: boolean;
   photo_url?: string | null;
   photo_filename?: string | null;
+  extra_photos?: WorkspacePhotoItem[];
+  gallery_photos?: WorkspacePhotoItem[];
+  multiple_workspace_photos_enabled?: boolean;
 };
 
 export type ReservationUser = {

@@ -100,7 +100,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
             }
           }
 
-    assert_redirected_to my_reservations_path
+    assert_redirected_to reservation_path(reservation)
 
     reservation.reload
 
