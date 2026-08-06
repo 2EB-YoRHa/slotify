@@ -31,7 +31,10 @@ class WorkspaceSerializer
     ).merge(
       photo_attached: workspace.photo.attached?,
       photo_url: photo_url,
-      photo_filename: photo_filename
+      photo_filename: photo_filename,
+      extra_photos: extra_photos,
+      gallery_photos: gallery_photos,
+      multiple_workspace_photos_enabled: workspace.organization.multiple_workspace_photos_enabled?
     )
   end
 
@@ -49,5 +52,29 @@ class WorkspaceSerializer
     return nil unless workspace.photo.attached?
 
     workspace.photo.filename.to_s
+  end
+
+  def extra_photos
+    return [] unless workspace.extra_photos.attached?
+
+    workspace.extra_photos.map do |extra_photo|
+      serialize_photo(extra_photo)
+    end
+  end
+
+  def gallery_photos
+    workspace.gallery_photos.map do |gallery_photo|
+      serialize_photo(gallery_photo)
+    end
+  end
+
+  def serialize_photo(attachment)
+    {
+      id: attachment.id,
+      url: view_context.url_for(attachment),
+      filename: attachment.filename.to_s,
+      content_type: attachment.blob.content_type,
+      byte_size: attachment.blob.byte_size
+    }
   end
 end

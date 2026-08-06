@@ -7,11 +7,13 @@ import type { Amenity } from "../../types/amenity";
 
 type NewWorkspaceProps = {
   amenities?: Amenity[];
+  multiple_workspace_photos_enabled?: boolean;
   errors?: Partial<Record<string, string | string[]>>;
 };
 
 export default function NewWorkspace({
   amenities = [],
+  multiple_workspace_photos_enabled = false,
   errors = {},
 }: NewWorkspaceProps) {
   return (
@@ -50,7 +52,11 @@ export default function NewWorkspace({
         </motion.p>
       </div>
 
-      <WorkspaceForm amenities={amenities} errors={errors} />
+      <WorkspaceForm
+        amenities={amenities}
+        multipleWorkspacePhotosEnabled={multiple_workspace_photos_enabled}
+        errors={errors}
+      />
     </AppLayout>
   );
 }

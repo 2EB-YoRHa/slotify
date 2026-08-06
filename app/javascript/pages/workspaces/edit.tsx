@@ -11,6 +11,7 @@ type EditWorkspaceProps = {
   amenities?: Amenity[];
   selected_amenity_ids?: number[];
   selectedAmenityIds?: number[];
+  multiple_workspace_photos_enabled?: boolean;
   errors?: Partial<Record<string, string | string[]>>;
 };
 
@@ -19,6 +20,7 @@ export default function EditWorkspace({
   amenities = [],
   selected_amenity_ids = [],
   selectedAmenityIds = [],
+  multiple_workspace_photos_enabled = false,
   errors = {},
 }: EditWorkspaceProps) {
   const selectedIds =
@@ -55,8 +57,8 @@ export default function EditWorkspace({
           transition={{ delay: 0.08 }}
           className="mt-2 max-w-2xl text-slate-500"
         >
-          Update capacity, pricing, location, amenities, and availability for this
-          workspace.
+          Update capacity, pricing, location, amenities, and availability for
+          this workspace.
         </motion.p>
       </div>
 
@@ -64,6 +66,7 @@ export default function EditWorkspace({
         workspace={workspace}
         amenities={amenities}
         selectedAmenityIds={selectedIds}
+        multipleWorkspacePhotosEnabled={multiple_workspace_photos_enabled}
         errors={errors}
       />
     </AppLayout>

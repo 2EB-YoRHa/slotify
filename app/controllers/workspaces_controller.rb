@@ -1,7 +1,7 @@
 class WorkspacesController < InertiaController
   before_action :require_manager_or_admin!, except: %i[index show]
-  before_action :ensure_workspace_slot_available!, only: %i[new create]
   before_action :set_workspace, only: %i[show edit update destroy delete_confirmation]
+  before_action :ensure_workspace_slot_available!, only: %i[new create]
 
   def index
     workspaces = workspace_scope.order(:name)
@@ -64,9 +64,7 @@ class WorkspacesController < InertiaController
   end
 
   def new
-    render inertia: "workspaces/new", props: {
-      amenities: amenities_for_form
-    }
+    render inertia: "workspaces/new", props: workspace_form_props
   end
 
   def create
@@ -86,10 +84,9 @@ class WorkspacesController < InertiaController
       else
         format.html do
           render inertia: "workspaces/new",
-                 props: {
-                   amenities: amenities_for_form,
+                 props: workspace_form_props.merge(
                    errors: workspace.errors.to_hash
-                 },
+                 ),
                  status: :unprocessable_entity
         end
 
@@ -103,11 +100,9 @@ class WorkspacesController < InertiaController
   end
 
   def edit
-    render inertia: "workspaces/edit", props: {
-      workspace: serialize_workspace(@workspace),
-      amenities: amenities_for_form,
-      selected_amenity_ids: @workspace.amenity_ids
-    }
+    render inertia: "workspaces/edit", props: workspace_form_props(
+      workspace: @workspace
+    )
   end
 
   def update
@@ -124,12 +119,11 @@ class WorkspacesController < InertiaController
       else
         format.html do
           render inertia: "workspaces/edit",
-                 props: {
-                   workspace: serialize_workspace(@workspace),
-                   amenities: amenities_for_form,
-                   selected_amenity_ids: @workspace.amenity_ids,
+                 props: workspace_form_props(
+                   workspace: @workspace
+                 ).merge(
                    errors: @workspace.errors.to_hash
-                 },
+                 ),
                  status: :unprocessable_entity
         end
 
@@ -198,52 +192,11 @@ class WorkspacesController < InertiaController
 
   private
 
-  def ensure_workspace_slot_available!
-    return unless current_organization.workspace_limit_reached?
-
-    message = workspace_limit_message
-
-    respond_to do |format|
-      format.html do
-        if action_name == "create"
-          render inertia: "workspaces/new",
-                 props: {
-                   amenities: amenities_for_form,
-                   errors: {
-                     base: [
-                       message
-                     ]
-                   }
-                 },
-                 status: :unprocessable_entity
-        else
-          redirect_to subscription_path, alert: message
-        end
-      end
-
-      format.json do
-        render json: {
-          error: message,
-          code: "workspace_limit_reached"
-        }, status: :unprocessable_entity
-      end
-    end
-  end
-
-  def workspace_limit_message
-    if current_organization.billing_required?
-      "Choose a subscription plan before creating workspaces."
-    elsif current_organization.workspace_over_limit?
-      "This organization is over the current workspace limit. Upgrade to Pro or reduce usage before creating more workspaces."
-    else
-      "Your current plan has reached the workspace limit. Upgrade to Pro to add more workspaces."
-    end
-  end
-
   def workspace_scope
     current_organization
       .workspaces
       .with_attached_photo
+      .with_attached_extra_photos
       .includes(:amenities)
   end
 
@@ -253,6 +206,22 @@ class WorkspacesController < InertiaController
 
   def amenities_for_form
     Amenity.order(:name)
+  end
+
+  def workspace_form_props(workspace: nil)
+    props = {
+      amenities: amenities_for_form,
+      multiple_workspace_photos_enabled: current_organization.multiple_workspace_photos_enabled?
+    }
+
+    if workspace.present?
+      props.merge!(
+        workspace: serialize_workspace(workspace),
+        selected_amenity_ids: workspace.amenity_ids
+      )
+    end
+
+    props
   end
 
   def workspace_params
@@ -267,8 +236,39 @@ class WorkspacesController < InertiaController
       :hourly_rate,
       :active,
       :photo,
-      amenity_ids: []
+      amenity_ids: [],
+      extra_photos: []
     )
+  end
+
+  def ensure_workspace_slot_available!
+    return unless current_organization.workspace_limit_reached?
+
+    message = "Your current plan has reached the workspace limit. Upgrade to Pro to add more workspaces."
+
+    respond_to do |format|
+      format.html do
+        if action_name == "new"
+          redirect_to subscription_path,
+                      alert: message
+        else
+          render inertia: "workspaces/new",
+                 props: workspace_form_props.merge(
+                   errors: {
+                     base: [ message ]
+                   }
+                 ),
+                 status: :unprocessable_entity
+        end
+      end
+
+      format.json do
+        render json: {
+          error: message,
+          code: "workspace_limit_reached"
+        }, status: :unprocessable_entity
+      end
+    end
   end
 
   def serialize_workspaces(workspaces)
