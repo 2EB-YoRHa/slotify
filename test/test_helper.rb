@@ -3,6 +3,9 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 require "securerandom"
+require "base64"
+require "rack/test"
+require "tempfile"
 
 module ActiveSupport
   class TestCase
@@ -134,6 +137,29 @@ module ActiveSupport
         hourly_rate: hourly_rate,
         active: active
       )
+    end
+
+    def uploaded_test_image(filename: "test-image.png", content_type: "image/png")
+        png_1x1 = Base64.decode64(
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII="
+        )
+
+        file = Tempfile.new(
+          [
+            File.basename(filename, File.extname(filename)),
+            File.extname(filename)
+          ],
+          binmode: true
+        )
+
+        file.write(png_1x1)
+        file.rewind
+
+        Rack::Test::UploadedFile.new(
+          file.path,
+          content_type,
+          original_filename: filename
+        )
     end
 
     def create_reservation(
