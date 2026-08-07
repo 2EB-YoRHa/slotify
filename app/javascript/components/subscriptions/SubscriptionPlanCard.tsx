@@ -56,8 +56,16 @@ export default function SubscriptionPlanCard({
   const [processing, setProcessing] = useState(false);
 
   const canChooseNewPlan = billingRequired && checkoutReady && canStartCheckout;
-  const canManagePlanChange = !billingRequired && !current && canManageBilling;
-  const canSubmit = canChooseNewPlan || canManagePlanChange;
+  const canUpgradeToPro =
+    !billingRequired &&
+    currentPlan === "starter" &&
+    planKey === "pro" &&
+    checkoutReady;
+
+  const canManagePlanChange =
+    !billingRequired && !current && !canUpgradeToPro && canManageBilling;
+
+  const canSubmit = canChooseNewPlan || canUpgradeToPro || canManagePlanChange;
 
   const visibleFeatureGroups =
     featureGroups.length > 0
@@ -75,6 +83,7 @@ export default function SubscriptionPlanCard({
     current,
     billingRequired,
     canChooseNewPlan,
+    canUpgradeToPro,
     canManagePlanChange,
     checkoutReady,
   });
@@ -84,9 +93,10 @@ export default function SubscriptionPlanCard({
 
     setProcessing(true);
 
-    const path = canChooseNewPlan
-      ? `/subscription/checkout/${planKey}`
-      : "/subscription/portal";
+    const path =
+      canChooseNewPlan || canUpgradeToPro
+        ? `/subscription/checkout/${planKey}`
+        : "/subscription/portal";
 
     router.post(
       path,
@@ -100,9 +110,7 @@ export default function SubscriptionPlanCard({
   return (
     <div
       className={`relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
-        highlighted
-          ? "border-cyan-200 ring-4 ring-cyan-50"
-          : "border-slate-200"
+        highlighted ? "border-cyan-200 ring-4 ring-cyan-50" : "border-slate-200"
       }`}
     >
       {highlighted && (
@@ -283,6 +291,7 @@ type PlanActionInput = {
   current: boolean;
   billingRequired: boolean;
   canChooseNewPlan: boolean;
+  canUpgradeToPro: boolean;
   canManagePlanChange: boolean;
   checkoutReady: boolean;
 };
@@ -293,6 +302,7 @@ function actionForPlan({
   current,
   billingRequired,
   canChooseNewPlan,
+  canUpgradeToPro,
   canManagePlanChange,
   checkoutReady,
 }: PlanActionInput) {
@@ -322,14 +332,15 @@ function actionForPlan({
     };
   }
 
-  if (canManagePlanChange && currentPlan === "starter" && planKey === "pro") {
+  if (canUpgradeToPro) {
     return {
-      label: "Upgrade in Billing Portal",
+      label: "Upgrade to Pro",
       icon: ArrowUpCircle,
       helper:
-        "Upgrades are managed in Stripe so billing, invoices, and payment methods stay consistent.",
+        "Upgrade this organization to Pro. Existing workspaces, members, and reservations remain available.",
     };
   }
+
 
   if (canManagePlanChange && currentPlan === "pro" && planKey === "starter") {
     return {
@@ -344,16 +355,14 @@ function actionForPlan({
     return {
       label: "Manage in Billing Portal",
       icon: CreditCard,
-      helper:
-        "Plan changes are managed through the Stripe Customer Portal.",
+      helper: "Plan changes are managed through the Stripe Customer Portal.",
     };
   }
 
   return {
     label: "Billing Not Available",
     icon: XCircle,
-    helper:
-      "Billing portal access is not available for this organization yet.",
+    helper: "Billing portal access is not available for this organization yet.",
   };
 }
 

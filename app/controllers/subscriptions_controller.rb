@@ -6,7 +6,32 @@ class SubscriptionsController < InertiaController
   end
 
   def checkout
+    plan_key = params[:plan].to_s
+    SubscriptionPlan.find!(plan_key)
+
     if current_organization.active_stripe_subscription.present?
+      if direct_upgrade_to_pro?(plan_key)
+        stripe_subscription = Subscriptions::ChangeStripeSubscriptionPlan.new(
+          organization: current_organization,
+          plan_key: plan_key
+        ).call
+
+        Subscriptions::ApplyStripeSubscription.new(
+          organization: current_organization,
+          plan_key: plan_key,
+          status: "active",
+          stripe_subscription_id: current_organization.active_stripe_subscription.stripe_subscription_id,
+          stripe_price_id: SubscriptionPlan.stripe_price_id(plan_key),
+          stripe_checkout_session_id: current_organization.active_stripe_subscription.stripe_checkout_session_id,
+          ends_at: stripe_period_end(stripe_subscription)
+        ).call
+
+        redirect_to subscription_path,
+                    notice: "Subscription upgraded to Pro successfully."
+
+        return
+      end
+
       portal_session = Subscriptions::CreatePortalSession.new(
         organization: current_organization,
         return_url: subscription_url
@@ -21,7 +46,7 @@ class SubscriptionsController < InertiaController
     session = Subscriptions::CreateCheckoutSession.new(
       organization: current_organization,
       user: current_user,
-      plan_key: params[:plan],
+      plan_key: plan_key,
       success_url: success_url,
       cancel_url: cancel_subscription_url
     ).call
@@ -142,5 +167,9 @@ class SubscriptionsController < InertiaController
     return nil if timestamp.blank?
 
     Time.zone.at(timestamp.to_i)
+  end
+
+  def direct_upgrade_to_pro?(plan_key)
+    current_organization.current_plan == "starter" && plan_key == "pro"
   end
 end

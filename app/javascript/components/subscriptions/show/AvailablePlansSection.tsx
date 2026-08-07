@@ -27,19 +27,19 @@ export default function AvailablePlansSection({
               billingRequired ? "text-amber-500" : "text-cyan-500"
             }`}
           >
-            {billingRequired ? "Choose Your Plan" : "Subscription Options"}
+            {billingRequired ? "Available Plans" : "Plan Options"}
           </p>
 
           <h2 className="mt-2 text-2xl font-bold text-slate-950">
             {billingRequired
-              ? "Activate Slotify with Starter or Pro"
-              : "Compare your current plan with available options"}
+              ? "Choose a plan to activate the organization"
+              : "Change or review the organization plan"}
           </h2>
 
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
             {billingRequired
-              ? "Starter is built for small operations that need reservation control. Pro is built for growing coworkings that need advanced operations, deeper visibility, and unlimited capacity."
-              : "Starter keeps smaller teams organized. Pro unlocks unlimited scale and advanced operational controls for growing coworking spaces."}
+              ? "Select Starter or Pro to enable workspaces, reservations, members, and booking rules."
+              : "Review the plans available for this organization. Upgrading to Pro keeps existing data and unlocks higher limits and advanced tools."}
           </p>
         </div>
       </div>

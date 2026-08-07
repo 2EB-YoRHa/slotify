@@ -1,11 +1,10 @@
+import { ChevronDown } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import AvailablePlansSection from "../../components/subscriptions/show/AvailablePlansSection";
-import BillingModeNotice from "../../components/subscriptions/show/BillingModeNotice";
 import BillingRequiredActivationPanel from "../../components/subscriptions/show/BillingRequiredActivationPanel";
-import CurrentPlanPanel from "../../components/subscriptions/show/CurrentPlanPanel";
-import PlanChangePolicyPanel from "../../components/subscriptions/show/PlanChangePolicyPanel";
 import PlanFeatureComparisonPanel from "../../components/subscriptions/show/PlanFeatureComparisonPanel";
 import SubscriptionHeader from "../../components/subscriptions/show/SubscriptionHeader";
+import SubscriptionOverviewPanel from "../../components/subscriptions/show/SubscriptionOverviewPanel";
 import {
   formatPlan,
   formatStatus,
@@ -62,46 +61,84 @@ export default function SubscriptionShow({
       <SubscriptionHeader
         currentPlanLabel={currentPlanLabel}
         status={status}
-        activePlan={activePlan}
         billingRequired={billingRequired}
       />
 
       {billingRequired ? (
         <BillingRequiredActivationPanel />
       ) : (
-        <>
-          <BillingModeNotice
-            currentPlanLabel={currentPlanLabel}
-            canStartCheckout={can_start_checkout}
-            canManageBilling={can_manage_billing}
-          />
-
-          <CurrentPlanPanel
-            currentPlanLabel={currentPlanLabel}
-            status={status}
-            referenceDate={referenceDate}
-            usage={usage}
-            activePlan={activePlan}
-            canManageBilling={can_manage_billing}
-          />
-
-          <PlanChangePolicyPanel
-            currentPlan={currentPlan}
-            canManageBilling={can_manage_billing}
-            overPlanLimits={Boolean(usage?.over_plan_limits)}
-          />
-        </>
+        <SubscriptionOverviewPanel
+          currentPlan={currentPlan}
+          currentPlanLabel={currentPlanLabel}
+          status={status}
+          referenceDate={referenceDate}
+          usage={usage}
+          activePlan={activePlan}
+          canManageBilling={can_manage_billing}
+        />
       )}
 
-      <AvailablePlansSection
-        plans={plans}
-        currentPlan={currentPlan}
-        billingRequired={billingRequired}
-        canStartCheckout={can_start_checkout}
-        canManageBilling={can_manage_billing}
-      />
+      <CollapsibleSection
+        title="Plan options"
+        description={
+          billingRequired
+            ? "Choose the plan that should activate this organization."
+            : "Review available plans or upgrade the current subscription."
+        }
+        defaultOpen={billingRequired}
+      >
+        <AvailablePlansSection
+          plans={plans}
+          currentPlan={currentPlan}
+          billingRequired={billingRequired}
+          canStartCheckout={can_start_checkout}
+          canManageBilling={can_manage_billing}
+        />
+      </CollapsibleSection>
 
-      <PlanFeatureComparisonPanel plans={plans} />
+      <CollapsibleSection
+        title="Plan comparison"
+        description="Compare limits and operational features before changing plans."
+      >
+        <PlanFeatureComparisonPanel plans={plans} />
+      </CollapsibleSection>
     </AppLayout>
+  );
+}
+
+type CollapsibleSectionProps = {
+  title: string;
+  description: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+};
+
+function CollapsibleSection({
+  title,
+  description,
+  defaultOpen = false,
+  children,
+}: CollapsibleSectionProps) {
+  return (
+    <details
+      open={defaultOpen}
+      className="group mb-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-6">
+        <div>
+          <h2 className="text-xl font-extrabold text-slate-950">{title}</h2>
+
+          <p className="mt-1 text-sm leading-6 text-slate-500">
+            {description}
+          </p>
+        </div>
+
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-open:rotate-180">
+          <ChevronDown size={18} strokeWidth={2.4} />
+        </div>
+      </summary>
+
+      <div className="mt-6 border-t border-slate-100 pt-6">{children}</div>
+    </details>
   );
 }

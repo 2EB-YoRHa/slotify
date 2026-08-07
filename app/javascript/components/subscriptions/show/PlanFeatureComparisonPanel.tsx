@@ -5,7 +5,6 @@ import {
   Camera,
   CheckCircle2,
   Clock3,
-  Crown,
   Database,
   ShieldCheck,
   TimerReset,
@@ -115,30 +114,17 @@ export default function PlanFeatureComparisonPanel({
       <div className="mb-7 flex items-start justify-between gap-8">
         <div>
           <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500">
-            Feature Comparison
+            Plan Comparison
           </p>
 
           <h2 className="mt-2 text-2xl font-extrabold text-slate-950">
-            Starter keeps operations simple. Pro unlocks advanced control.
+            Compare limits and features
           </h2>
 
           <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-500">
-            This comparison is based on the same plan limits and entitlements
-            enforced by the backend, so the subscription cards match what the
-            application actually allows.
+            Use this table to confirm which limits and tools are included in
+            each plan.
           </p>
-        </div>
-
-        <div className="hidden shrink-0 rounded-2xl border border-cyan-100 bg-cyan-50 px-5 py-4 text-right lg:block">
-          <div className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
-            <Crown size={20} strokeWidth={2.4} />
-          </div>
-
-          <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
-            Best Value
-          </p>
-
-          <p className="mt-1 text-xl font-extrabold text-slate-950">Pro</p>
         </div>
       </div>
 
@@ -205,12 +191,20 @@ type PlanValueProps = {
   muted?: boolean;
 };
 
-function PlanValue({ value, highlighted = false, muted = false }: PlanValueProps) {
+function PlanValue({
+  value,
+  highlighted = false,
+  muted = false,
+}: PlanValueProps) {
   if (typeof value === "boolean") {
     return (
       <div
         className={`flex items-center gap-2 border-r border-slate-200 px-5 py-4 text-sm font-bold ${
-          highlighted ? "text-cyan-600" : muted ? "text-slate-400" : "text-slate-700"
+          highlighted
+            ? "text-cyan-600"
+            : muted
+              ? "text-slate-400"
+              : "text-slate-700"
         }`}
       >
         {value ? (
@@ -227,7 +221,11 @@ function PlanValue({ value, highlighted = false, muted = false }: PlanValueProps
   return (
     <div
       className={`flex items-center border-r border-slate-200 px-5 py-4 text-sm font-bold ${
-        highlighted ? "text-cyan-600" : muted ? "text-slate-500" : "text-slate-700"
+        highlighted
+          ? "text-cyan-600"
+          : muted
+            ? "text-slate-500"
+            : "text-slate-700"
       }`}
     >
       {value}
