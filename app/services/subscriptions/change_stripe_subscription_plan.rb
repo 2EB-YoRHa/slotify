@@ -10,7 +10,9 @@ module Subscriptions
 
       local_subscription = organization.active_stripe_subscription
 
-      raise "This organization does not have an active Stripe subscription." if local_subscription.blank?
+      if local_subscription.blank?
+        raise "This organization does not have an active Stripe subscription."
+      end
 
       plan = SubscriptionPlan.find!(plan_key)
       price_id = SubscriptionPlan.stripe_price_id(plan_key)
@@ -34,10 +36,12 @@ module Subscriptions
               price: price_id
             }
           ],
-          proration_behavior: "create_prorations",
+          proration_behavior: "always_invoice",
+          payment_behavior: "pending_if_incomplete",
           metadata: {
             organization_id: organization.id,
-            plan_key: plan[:key]
+            requested_plan_key: plan[:key],
+            change_type: "upgrade"
           }
         }
       )

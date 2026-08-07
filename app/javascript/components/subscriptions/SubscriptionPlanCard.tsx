@@ -1,6 +1,7 @@
 import { router } from "@inertiajs/react";
 import { useState } from "react";
 import {
+  AlertTriangle,
   ArrowDownCircle,
   ArrowRight,
   ArrowUpCircle,
@@ -54,18 +55,38 @@ export default function SubscriptionPlanCard({
   canManageBilling = false,
 }: SubscriptionPlanCardProps) {
   const [processing, setProcessing] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const canChooseNewPlan = billingRequired && checkoutReady && canStartCheckout;
+
   const canUpgradeToPro =
     !billingRequired &&
+    canManageBilling &&
     currentPlan === "starter" &&
     planKey === "pro" &&
     checkoutReady;
 
-  const canManagePlanChange =
-    !billingRequired && !current && !canUpgradeToPro && canManageBilling;
+  const canScheduleDowngradeToStarter =
+    !billingRequired &&
+    canManageBilling &&
+    currentPlan === "pro" &&
+    planKey === "starter" &&
+    checkoutReady;
 
-  const canSubmit = canChooseNewPlan || canUpgradeToPro || canManagePlanChange;
+  const canManagePlanChange =
+    !billingRequired &&
+    !current &&
+    !canUpgradeToPro &&
+    !canScheduleDowngradeToStarter &&
+    canManageBilling;
+
+  const canSubmit =
+    canChooseNewPlan ||
+    canUpgradeToPro ||
+    canScheduleDowngradeToStarter ||
+    canManagePlanChange;
+
+  const requiresConfirmation = canUpgradeToPro || canScheduleDowngradeToStarter;
 
   const visibleFeatureGroups =
     featureGroups.length > 0
@@ -84,6 +105,7 @@ export default function SubscriptionPlanCard({
     billingRequired,
     canChooseNewPlan,
     canUpgradeToPro,
+    canScheduleDowngradeToStarter,
     canManagePlanChange,
     checkoutReady,
   });
@@ -91,10 +113,20 @@ export default function SubscriptionPlanCard({
   function handleAction() {
     if (current || !canSubmit || processing) return;
 
+    if (requiresConfirmation) {
+      setShowConfirmation(true);
+      return;
+    }
+
+    submitAction();
+  }
+
+  function submitAction() {
     setProcessing(true);
+    setShowConfirmation(false);
 
     const path =
-      canChooseNewPlan || canUpgradeToPro
+      canChooseNewPlan || canUpgradeToPro || canScheduleDowngradeToStarter
         ? `/subscription/checkout/${planKey}`
         : "/subscription/portal";
 
@@ -108,180 +140,200 @@ export default function SubscriptionPlanCard({
   }
 
   return (
-    <div
-      className={`relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
-        highlighted ? "border-cyan-200 ring-4 ring-cyan-50" : "border-slate-200"
-      }`}
-    >
-      {highlighted && (
-        <div className="absolute right-5 top-5 rounded-full bg-cyan-400 px-4 py-1.5 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm">
-          {badge || "Recommended"}
-        </div>
-      )}
-
-      {!highlighted && badge && (
-        <div className="absolute right-5 top-5 rounded-full bg-slate-100 px-4 py-1.5 text-xs font-extrabold uppercase tracking-wide text-slate-500">
-          {badge}
-        </div>
-      )}
-
+    <>
       <div
-        className={`p-7 ${
+        className={`relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
           highlighted
-            ? "bg-linear-to-br from-cyan-50 to-white"
-            : "bg-linear-to-br from-slate-50 to-white"
+            ? "border-cyan-200 ring-4 ring-cyan-50"
+            : "border-slate-200"
         }`}
       >
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
-          <Icon size={27} strokeWidth={2.4} />
-        </div>
+        {highlighted && (
+          <div className="absolute right-5 top-5 rounded-full bg-cyan-400 px-4 py-1.5 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm">
+            {badge || "Recommended"}
+          </div>
+        )}
 
-        <div className="flex items-center gap-2">
-          <h3 className="text-2xl font-extrabold text-slate-950">{name}</h3>
+        {!highlighted && badge && (
+          <div className="absolute right-5 top-5 rounded-full bg-slate-100 px-4 py-1.5 text-xs font-extrabold uppercase tracking-wide text-slate-500">
+            {badge}
+          </div>
+        )}
 
-          {current && (
-            <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
-              Current
-            </span>
+        <div
+          className={`p-7 ${
+            highlighted
+              ? "bg-linear-to-br from-cyan-50 to-white"
+              : "bg-linear-to-br from-slate-50 to-white"
+          }`}
+        >
+          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
+            <Icon size={27} strokeWidth={2.4} />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <h3 className="text-2xl font-extrabold text-slate-950">{name}</h3>
+
+            {current && (
+              <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
+                Current
+              </span>
+            )}
+          </div>
+
+          <p className="mt-3 min-h-12 text-sm leading-6 text-slate-600">
+            {description}
+          </p>
+
+          {bestFor && (
+            <div className="mt-5 rounded-2xl border border-white bg-white/80 p-4 text-sm leading-6 text-slate-600 shadow-sm">
+              <span className="font-extrabold text-slate-950">Best for: </span>
+              {bestFor}
+            </div>
           )}
+
+          <div className="mt-6 flex items-end gap-1">
+            <span className="text-5xl font-extrabold tracking-tight text-slate-950">
+              {price}
+            </span>
+
+            <span className="pb-2 text-sm font-bold text-slate-400">
+              /month
+            </span>
+          </div>
         </div>
 
-        <p className="mt-3 min-h-12 text-sm leading-6 text-slate-600">
-          {description}
-        </p>
-
-        {bestFor && (
-          <div className="mt-5 rounded-2xl border border-white bg-white/80 p-4 text-sm leading-6 text-slate-600 shadow-sm">
-            <span className="font-extrabold text-slate-950">Best for: </span>
-            {bestFor}
-          </div>
-        )}
-
-        <div className="mt-6 flex items-end gap-1">
-          <span className="text-5xl font-extrabold tracking-tight text-slate-950">
-            {price}
-          </span>
-
-          <span className="pb-2 text-sm font-bold text-slate-400">/month</span>
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col p-7">
-        {highlights.length > 0 && (
-          <div className="mb-6 grid grid-cols-1 gap-2">
-            {highlights.map((highlight) => (
-              <div
-                key={highlight}
-                className="flex items-center gap-2 rounded-xl border border-cyan-100 bg-cyan-50 px-3 py-2 text-xs font-extrabold text-cyan-700"
-              >
-                <Sparkles size={14} className="shrink-0" />
-                {highlight}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {limits.length > 0 && (
-          <div className="mb-7 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="mb-3 text-xs font-extrabold uppercase tracking-wide text-slate-400">
-              Plan Limits
-            </p>
-
-            <div className="space-y-2">
-              {limits.map((limit) => (
-                <div key={limit} className="flex items-start gap-2">
-                  <CheckCircle2
-                    size={16}
-                    className="mt-0.5 shrink-0 text-cyan-500"
-                  />
-
-                  <span className="text-sm font-semibold leading-6 text-slate-700">
-                    {limit}
-                  </span>
+        <div className="flex flex-1 flex-col p-7">
+          {highlights.length > 0 && (
+            <div className="mb-6 grid grid-cols-1 gap-2">
+              {highlights.map((highlight) => (
+                <div
+                  key={highlight}
+                  className="flex items-center gap-2 rounded-xl border border-cyan-100 bg-cyan-50 px-3 py-2 text-xs font-extrabold text-cyan-700"
+                >
+                  <Sparkles size={14} className="shrink-0" />
+                  {highlight}
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="space-y-6">
-          {visibleFeatureGroups.map((group) => (
-            <div key={group.title}>
-              <p className="mb-3 text-sm font-extrabold text-slate-950">
-                {group.title}
+          {limits.length > 0 && (
+            <div className="mb-7 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-3 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+                Plan Limits
               </p>
 
-              <div className="space-y-3">
-                {group.items.map((feature) => (
-                  <div key={feature} className="flex items-start gap-3">
+              <div className="space-y-2">
+                {limits.map((limit) => (
+                  <div key={limit} className="flex items-start gap-2">
                     <CheckCircle2
-                      size={18}
+                      size={16}
                       className="mt-0.5 shrink-0 text-cyan-500"
                     />
 
-                    <span className="text-sm leading-6 text-slate-600">
-                      {feature}
+                    <span className="text-sm font-semibold leading-6 text-slate-700">
+                      {limit}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
-          ))}
-        </div>
+          )}
 
-        {!checkoutReady && (
-          <div className="mt-6 rounded-2xl border border-amber-100 bg-amber-50 p-4">
-            <div className="flex items-start gap-3">
-              <XCircle size={18} className="mt-0.5 shrink-0 text-amber-500" />
+          <div className="space-y-6">
+            {visibleFeatureGroups.map((group) => (
+              <div key={group.title}>
+                <p className="mb-3 text-sm font-extrabold text-slate-950">
+                  {group.title}
+                </p>
 
-              <p className="text-sm font-semibold leading-6 text-amber-700">
-                Stripe price is not configured for this plan yet.
+                <div className="space-y-3">
+                  {group.items.map((feature) => (
+                    <div key={feature} className="flex items-start gap-3">
+                      <CheckCircle2
+                        size={18}
+                        className="mt-0.5 shrink-0 text-cyan-500"
+                      />
+
+                      <span className="text-sm leading-6 text-slate-600">
+                        {feature}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {!checkoutReady && (
+            <div className="mt-6 rounded-2xl border border-amber-100 bg-amber-50 p-4">
+              <div className="flex items-start gap-3">
+                <XCircle
+                  size={18}
+                  className="mt-0.5 shrink-0 text-amber-500"
+                />
+
+                <p className="text-sm font-semibold leading-6 text-amber-700">
+                  Stripe price is not configured for this plan yet.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {action.helper && (
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-bold leading-5 text-slate-500">
+                {action.helper}
               </p>
             </div>
-          </div>
-        )}
-
-        {action.helper && (
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs font-bold leading-5 text-slate-500">
-              {action.helper}
-            </p>
-          </div>
-        )}
-
-        <button
-          type="button"
-          disabled={current || processing || !canSubmit}
-          onClick={handleAction}
-          className={`mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition ${
-            current
-              ? "bg-green-50 text-green-600"
-              : canSubmit
-                ? highlighted
-                  ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
-                  : "bg-slate-950 text-white shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md"
-                : "cursor-not-allowed bg-slate-100 text-slate-400"
-          }`}
-        >
-          {current ? (
-            <>
-              <Sparkles size={16} />
-              Active Plan
-            </>
-          ) : (
-            <>
-              {processing ? (
-                <CreditCard size={16} />
-              ) : (
-                <action.icon size={16} />
-              )}
-
-              {processing ? "Redirecting..." : action.label}
-            </>
           )}
-        </button>
+
+          <button
+            type="button"
+            disabled={current || processing || !canSubmit}
+            onClick={handleAction}
+            className={`mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition ${
+              current
+                ? "bg-green-50 text-green-600"
+                : canSubmit
+                  ? highlighted
+                    ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
+                    : "bg-slate-950 text-white shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md"
+                  : "cursor-not-allowed bg-slate-100 text-slate-400"
+            }`}
+          >
+            {current ? (
+              <>
+                <Sparkles size={16} />
+                Active Plan
+              </>
+            ) : (
+              <>
+                {processing ? (
+                  <CreditCard size={16} />
+                ) : (
+                  <action.icon size={16} />
+                )}
+
+                {processing ? "Redirecting..." : action.label}
+              </>
+            )}
+          </button>
+        </div>
       </div>
-    </div>
+
+      {showConfirmation && (
+        <PlanChangeConfirmationModal
+          planName={name}
+          isUpgrade={canUpgradeToPro}
+          isDowngrade={canScheduleDowngradeToStarter}
+          processing={processing}
+          onCancel={() => setShowConfirmation(false)}
+          onConfirm={submitAction}
+        />
+      )}
+    </>
   );
 }
 
@@ -292,17 +344,18 @@ type PlanActionInput = {
   billingRequired: boolean;
   canChooseNewPlan: boolean;
   canUpgradeToPro: boolean;
+  canScheduleDowngradeToStarter: boolean;
   canManagePlanChange: boolean;
   checkoutReady: boolean;
 };
 
 function actionForPlan({
   planKey,
-  currentPlan,
   current,
   billingRequired,
   canChooseNewPlan,
   canUpgradeToPro,
+  canScheduleDowngradeToStarter,
   canManagePlanChange,
   checkoutReady,
 }: PlanActionInput) {
@@ -318,8 +371,7 @@ function actionForPlan({
     return {
       label: "Stripe Not Configured",
       icon: XCircle,
-      helper:
-        "Configure this plan's Stripe Price ID before it can be selected.",
+      helper: "Configure this plan's Stripe Price ID before it can be selected.",
     };
   }
 
@@ -337,17 +389,16 @@ function actionForPlan({
       label: "Upgrade to Pro",
       icon: ArrowUpCircle,
       helper:
-        "Upgrade this organization to Pro. Existing workspaces, members, and reservations remain available.",
+        "You will review and confirm the plan change securely in Stripe before Pro is activated.",
     };
   }
 
-
-  if (canManagePlanChange && currentPlan === "pro" && planKey === "starter") {
+  if (canScheduleDowngradeToStarter) {
     return {
       label: "Schedule Downgrade",
       icon: ArrowDownCircle,
       helper:
-        "Downgrades should be scheduled from Stripe and take effect at the end of the billing cycle. Existing data is not deleted.",
+        "Starter will begin after the current Pro billing period ends. Pro features remain active until then.",
     };
   }
 
@@ -355,14 +406,14 @@ function actionForPlan({
     return {
       label: "Manage in Billing Portal",
       icon: CreditCard,
-      helper: "Plan changes are managed through the Stripe Customer Portal.",
+      helper: "Plan changes are managed through Stripe.",
     };
   }
 
   return {
     label: "Billing Not Available",
     icon: XCircle,
-    helper: "Billing portal access is not available for this organization yet.",
+    helper: "Billing access is not available for this organization yet.",
   };
 }
 
@@ -370,4 +421,87 @@ function planName(planKey: string): string {
   return planKey
     .replace(/_/g, " ")
     .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
+}
+
+type PlanChangeConfirmationModalProps = {
+  planName: string;
+  isUpgrade: boolean;
+  isDowngrade: boolean;
+  processing: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+};
+
+function PlanChangeConfirmationModal({
+  planName,
+  isUpgrade,
+  isDowngrade,
+  processing,
+  onCancel,
+  onConfirm,
+}: PlanChangeConfirmationModalProps) {
+  const title = isUpgrade
+    ? `Upgrade to ${planName}?`
+    : `Schedule downgrade to ${planName}?`;
+
+  const description = isUpgrade
+    ? "You will be redirected to Stripe to review the plan change, confirm the charge, and complete any payment verification required. Pro will only be active after Stripe confirms the subscription update."
+    : "Your Pro plan will remain active until the end of the current billing period. Starter will begin automatically after that date.";
+
+  const confirmLabel = isUpgrade ? "Continue to Stripe" : "Schedule in Stripe";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-3xl bg-white p-7 shadow-2xl">
+        <div className="mb-5 flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+            <AlertTriangle size={24} strokeWidth={2.4} />
+          </div>
+
+          <div>
+            <h2 className="text-xl font-extrabold text-slate-950">{title}</h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              {description}
+            </p>
+          </div>
+        </div>
+
+        {isUpgrade && (
+          <div className="mb-5 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-sm font-semibold leading-6 text-cyan-700">
+            You may not be asked to enter a card again if Stripe already has a
+            valid payment method. Stripe will still show the plan update before
+            confirming the charge.
+          </div>
+        )}
+
+        {isDowngrade && (
+          <div className="mb-5 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-700">
+            No Pro features are removed immediately. The downgrade is scheduled
+            for the end of the paid period.
+          </div>
+        )}
+
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            disabled={processing}
+            onClick={onCancel}
+            className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            disabled={processing}
+            onClick={onConfirm}
+            className="rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {processing ? "Redirecting..." : confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
