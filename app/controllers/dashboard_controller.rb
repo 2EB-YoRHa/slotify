@@ -1,11 +1,14 @@
 class DashboardController < InertiaController
-  before_action :redirect_member_dashboard
-
   def index
     organization = current_organization
 
     unless organization
       render inertia: "dashboard/index", props: empty_dashboard_props
+      return
+    end
+
+    if member?
+      render inertia: "dashboard/index", props: member_dashboard_props(organization)
       return
     end
 
@@ -73,12 +76,6 @@ class DashboardController < InertiaController
 
   private
 
-  def redirect_member_dashboard
-    return unless member?
-
-    redirect_to workspaces_path
-  end
-
   def empty_dashboard_props
     {
       current_user: current_user.as_json(only: [ :id, :name, :email ]),
@@ -90,7 +87,10 @@ class DashboardController < InertiaController
       recent_activities: [],
       weekly_occupancy: [],
       workspace_distribution: [],
-      availability_command_center: nil
+      availability_command_center: nil,
+      member_dashboard: false,
+      member_next_reservation: nil,
+      member_upcoming_reservations: []
     }
   end
 
@@ -133,13 +133,15 @@ class DashboardController < InertiaController
   end
 
   def serialize_reservations(reservations)
-    reservations.as_json(
-      only: [ :id, :start_time, :end_time, :status, :attendees_count ],
-      include: {
-        workspace: { only: [ :id, :name, :workspace_type, :location ] },
-        user: { only: [ :id, :name, :email ] }
-      }
-    )
+    reservations.map do |reservation|
+      serialize_reservation(reservation)
+    end
+  end
+
+  def serialize_reservation(reservation)
+    ReservationSerializer
+      .new(reservation, view_context: view_context)
+      .as_json
   end
 
   def recent_activities(organization)
@@ -257,5 +259,74 @@ class DashboardController < InertiaController
                   .split
                   .map(&:capitalize)
                   .join(" ")
+  end
+
+  def member_dashboard_props(organization)
+  current_time = Time.current
+
+  reservations = current_user
+    .reservations
+    .where(organization: organization)
+
+  active_reservations = reservations.where.not(status: "cancelled")
+
+  upcoming_reservations = active_reservations
+    .includes(workspace: [ :amenities, { photo_attachment: :blob } ])
+    .where("start_time >= ?", current_time)
+    .order(start_time: :asc)
+    .limit(3)
+
+  next_reservation = upcoming_reservations.first
+
+  {
+    current_user: current_user.as_json(
+      only: [ :id, :name, :email ]
+    ).merge(
+      role: current_user.role&.name
+    ),
+    organization_name: organization.name,
+    current_plan: organization.current_plan,
+    plan_entitlements: organization.plan_entitlements,
+    stats: member_dashboard_stats(reservations, current_time),
+    upcoming_reservations: [],
+    recent_activities: [],
+    weekly_occupancy: [],
+    workspace_distribution: [],
+    availability_command_center: nil,
+    member_dashboard: true,
+    member_next_reservation: next_reservation.present? ? serialize_reservation(next_reservation) : nil,
+    member_upcoming_reservations: serialize_reservations(upcoming_reservations)
+  }
+  end
+
+  def member_dashboard_stats(reservations, current_time)
+    active_reservations = reservations.where.not(status: "cancelled")
+
+    [
+      {
+        label: "Upcoming",
+        value: active_reservations.where("start_time >= ?", current_time).count,
+        helper: "Confirmed future bookings"
+      },
+      {
+        label: "Active Now",
+        value: active_reservations.where(
+          "start_time <= ? AND end_time >= ?",
+          current_time,
+          current_time
+        ).count,
+        helper: "Bookings currently in progress"
+      },
+      {
+        label: "Completed",
+        value: active_reservations.where("end_time < ?", current_time).count,
+        helper: "Past completed bookings"
+      },
+      {
+        label: "Cancelled",
+        value: reservations.where(status: "cancelled").count,
+        helper: "Cancelled bookings"
+      }
+    ]
   end
 end

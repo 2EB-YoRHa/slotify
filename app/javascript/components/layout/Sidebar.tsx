@@ -52,6 +52,7 @@ const managerNavItems: NavItem[] = [
 ];
 
 const memberNavItems: NavItem[] = [
+  { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Browse Workspaces", href: "/workspaces", icon: Building2 },
   { label: "My Bookings", href: "/my_reservations", icon: CalendarDays },
 ];
@@ -83,11 +84,7 @@ export default function Sidebar() {
       ? memberNavItems
       : managerNavItems;
 
-  const logoHref = billingRequired
-    ? "/subscription"
-    : isMember
-      ? "/workspaces"
-      : "/";
+  const logoHref = billingRequired ? "/subscription" : "/";
 
   function signOut() {
     setSigningOut(true);

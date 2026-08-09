@@ -25,6 +25,7 @@ export type DashboardWorkspace = {
   name?: string | null;
   workspace_type?: string | null;
   location?: string | null;
+  photo_url?: string | null;
 };
 
 export type DashboardUser = {
@@ -38,6 +39,7 @@ export type UpcomingReservation = {
   start_time: string;
   end_time: string;
   status: string;
+  can_modify?: boolean;
   attendees_count?: number | null;
   workspace?: DashboardWorkspace | null;
   user?: DashboardUser | null;

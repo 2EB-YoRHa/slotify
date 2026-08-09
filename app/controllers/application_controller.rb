@@ -50,8 +50,6 @@ class ApplicationController < ActionController::Base
       accept_organization_invitations_path(token: invitation_token)
     elsif billing_required_after_sign_in?
       subscription_path
-    elsif current_user&.role&.name == "member"
-      workspaces_path
     else
       root_path
     end
