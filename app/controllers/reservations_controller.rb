@@ -66,7 +66,7 @@ class ReservationsController < InertiaController
     respond_to do |format|
       if result.success?
         format.html do
-          redirect_to my_reservations_path,
+          redirect_to reservation_path(result.reservation),
                       notice: "Reservation created successfully"
         end
 

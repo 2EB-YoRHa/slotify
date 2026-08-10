@@ -69,9 +69,9 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
            }
     end
 
-    assert_redirected_to my_reservations_path
-
     reservation = Reservation.order(:created_at).last
+
+    assert_redirected_to reservation_path(reservation)
 
     assert_equal @member, reservation.user
     assert_equal @workspace, reservation.workspace

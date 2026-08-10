@@ -10,7 +10,7 @@ import type { TimeSlot } from "../../utils/timeSlots";
 import type { Workspace } from "../../types/workspace";
 import AvailableWorkspaceGrid from "./new/AvailableWorkspaceGrid";
 import ReservationDateTimeSection from "./new/ReservationDateTimeSection";
-import ReservationSummaryPanel from "../reservations/new/ReservationSummaryPanel";
+import ReservationSummaryPanel from "./new/ReservationSummaryPanel";
 import type { BookingTimeSlot } from "../../types/bookingTimeSlot";
 import {
   buildDateTime,
@@ -97,12 +97,23 @@ export default function NewReservationForm({
     initialTimeSlots,
   );
 
+  const validSelectedWorkspaceId = workspaces.some(
+    (workspace) => workspace.id === Number(selectedWorkspaceId),
+  )
+    ? selectedWorkspaceId || ""
+    : "";
+
   const [selectedDate, setSelectedDate] = useState(defaultDate);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot>(defaultSlot);
   const [search, setSearch] = useState("");
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [availabilityChecked, setAvailabilityChecked] = useState(true);
   const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
+
+  const [showWorkspacePicker, setShowWorkspacePicker] = useState(
+    !validSelectedWorkspaceId,
+  );
+
   const [unavailableWorkspaceIds, setUnavailableWorkspaceIds] = useState<
     number[]
   >(initialUnavailableWorkspaceIds);
@@ -117,12 +128,6 @@ export default function NewReservationForm({
   });
 
   const noCustomSlotsForSelectedDate = hasCustomSlots && timeSlots.length === 0;
-
-  const validSelectedWorkspaceId = workspaces.some(
-    (workspace) => workspace.id === Number(selectedWorkspaceId),
-  )
-    ? selectedWorkspaceId || ""
-    : "";
 
   const { data, setData, post, processing, errors } =
     useForm<ReservationFormData>({
@@ -221,6 +226,8 @@ export default function NewReservationForm({
 
     if (nextTimeSlots.length > 0) {
       void checkAvailabilityFor(nextStartTime, nextEndTime);
+    } else {
+      setAvailabilityChecked(false);
     }
   }
 
@@ -244,10 +251,14 @@ export default function NewReservationForm({
 
   function selectWorkspace(workspaceId: number) {
     clearClientError("workspace_id");
+    clearClientError("base");
 
     updateReservation({
       workspace_id: workspaceId,
     });
+
+    setShowWorkspacePicker(false);
+    setSearch("");
 
     if (!availabilityChecked && !checkingAvailability) {
       void checkAvailabilityFor(
@@ -358,21 +369,28 @@ export default function NewReservationForm({
           weekendViolation={weekendViolation}
           baseErrors={baseErrors}
           minDate={today}
+          selectedWorkspaceName={selectedWorkspace?.name || null}
+          workspacePickerVisible={showWorkspacePicker}
           onDateChange={handleDateChange}
           onSlotChange={handleSlotChange}
           onSearchChange={setSearch}
           onRefreshAvailability={() => void checkAvailability()}
+          onToggleWorkspacePicker={() =>
+            setShowWorkspacePicker((value) => !value)
+          }
         />
 
-        <AvailableWorkspaceGrid
-          workspaces={workspaces}
-          filteredWorkspaces={filteredWorkspaces}
-          selectedWorkspaceId={data.reservation.workspace_id}
-          unavailableWorkspaceIds={unavailableWorkspaceIds}
-          availabilityChecked={availabilityChecked}
-          processing={processing}
-          onSelectWorkspace={selectWorkspace}
-        />
+        {(showWorkspacePicker || !selectedWorkspace) && (
+          <AvailableWorkspaceGrid
+            workspaces={workspaces}
+            filteredWorkspaces={filteredWorkspaces}
+            selectedWorkspaceId={data.reservation.workspace_id}
+            unavailableWorkspaceIds={unavailableWorkspaceIds}
+            availabilityChecked={availabilityChecked}
+            processing={processing}
+            onSelectWorkspace={selectWorkspace}
+          />
+        )}
       </motion.section>
 
       <motion.aside
@@ -472,16 +490,24 @@ function validateReservationForm(
 }
 
 function filterWorkspaces(workspaces: Workspace[], search: string) {
-  const query = search.toLowerCase();
+  const query = search.trim().toLowerCase();
 
   return workspaces.filter((workspace) => {
-    return (
-      workspace.name.toLowerCase().includes(query) ||
-      workspace.workspace_type.toLowerCase().includes(query) ||
-      (workspace.location || "").toLowerCase().includes(query) ||
-      (workspace.amenities || []).some((amenity) =>
-        amenity.name.toLowerCase().includes(query),
-      )
-    );
+    if (query.length === 0) return true;
+
+    const searchableText = [
+      workspace.name,
+      workspace.workspace_type,
+      workspace.location,
+      workspace.floor,
+      workspace.zone,
+      workspace.description,
+      ...(workspace.amenities || []).map((amenity) => amenity.name),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return searchableText.includes(query);
   });
 }
