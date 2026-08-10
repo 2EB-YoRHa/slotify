@@ -5,23 +5,28 @@ class ReservationsController < InertiaController
               only: %i[edit update destroy cancel_confirmation]
 
   def index
-    reservations = reservation_scope
-                   .includes(:user, workspace: [ :amenities, { photo_attachment: :blob } ])
-                   .order(start_time: :desc)
-
-    serialized_reservations = serialize_reservations(reservations)
-
-    respond_to do |format|
-      format.html do
-        render inertia: "reservations/index", props: {
-          reservations: serialized_reservations
-        }
-      end
-
-      format.json do
-        render json: serialized_reservations
-      end
+    if member? && request.format.html?
+      redirect_to my_reservations_path
+      return
     end
+
+    reservations = reservation_scope
+                  .includes(:user, workspace: [ :amenities, { photo_attachment: :blob } ])
+                  .order(start_time: :desc)
+
+      serialized_reservations = serialize_reservations(reservations)
+
+      respond_to do |format|
+        format.html do
+          render inertia: "reservations/index", props: {
+            reservations: serialized_reservations
+          }
+        end
+
+        format.json do
+          render json: serialized_reservations
+        end
+      end
   end
 
   def show

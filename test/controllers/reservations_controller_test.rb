@@ -43,6 +43,14 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "member is redirected from reservations index to my bookings" do
+    sign_in @member
+
+    get reservations_path
+
+    assert_redirected_to my_reservations_path
+  end
+
   test "member can open new reservation page" do
     sign_in @member
 

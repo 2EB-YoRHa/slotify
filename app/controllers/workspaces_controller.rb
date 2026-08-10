@@ -21,35 +21,21 @@ class WorkspacesController < InertiaController
   end
 
   def show
-    reservations = @workspace.reservations
-                             .includes(:user)
-                             .order(start_time: :desc)
-                             .limit(10)
+    serialized_reservations =
+      if member?
+        []
+      else
+        serialize_workspace_reservations(recent_workspace_reservations)
+      end
 
-    serialized_reservations = reservations.as_json(
-      only: [
-        :id,
-        :start_time,
-        :end_time,
-        :status
-      ],
-      include: {
-        user: {
-          only: [
-            :id,
-            :name,
-            :email
-          ]
-        }
-      }
-    )
+    reservation_count = member? ? nil : @workspace.reservations.count
 
     respond_to do |format|
       format.html do
         render inertia: "workspaces/show", props: {
           workspace: serialize_workspace(@workspace),
           reservations: serialized_reservations,
-          reservation_count: @workspace.reservations.count
+          reservation_count: reservation_count
         }
       end
 
@@ -57,7 +43,7 @@ class WorkspacesController < InertiaController
         render json: {
           workspace: serialize_workspace(@workspace),
           reservations: serialized_reservations,
-          reservation_count: @workspace.reservations.count
+          reservation_count: reservation_count
         }
       end
     end
@@ -213,15 +199,45 @@ class WorkspacesController < InertiaController
   private
 
     def workspace_scope
-      current_organization
-        .workspaces
-        .with_attached_photo
-        .with_attached_extra_photos
-        .includes(:amenities)
+      scope = current_organization
+              .workspaces
+              .with_attached_photo
+              .with_attached_extra_photos
+              .includes(:amenities)
+
+      member? ? scope.where(active: true) : scope
     end
 
     def set_workspace
       @workspace = workspace_scope.find(params[:id])
+    end
+
+    def recent_workspace_reservations
+      @workspace
+        .reservations
+        .includes(:user)
+        .order(start_time: :desc)
+        .limit(10)
+    end
+
+    def serialize_workspace_reservations(reservations)
+      reservations.as_json(
+        only: [
+          :id,
+          :start_time,
+          :end_time,
+          :status
+        ],
+        include: {
+          user: {
+            only: [
+              :id,
+              :name,
+              :email
+            ]
+          }
+        }
+      )
     end
 
     def amenities_for_form
@@ -261,87 +277,15 @@ class WorkspacesController < InertiaController
     end
 
     def extra_photo_files
-    raw_files = params.dig(:workspace, :extra_photos)
+      raw_files = params.dig(:workspace, :extra_photos)
 
-    return [] if raw_files.blank?
+      return [] if raw_files.blank?
 
-    if raw_files.is_a?(ActionController::Parameters)
-      raw_files = raw_files.values
-    end
-
-    Array(raw_files).reject(&:blank?)
-    end
-
-    def extra_photos_validation_error_for(workspace, files)
-      return nil if files.blank?
-
-      unless current_organization.multiple_workspace_photos_enabled?
-        return "Extra gallery photos are only available on the Pro plan."
+      if raw_files.is_a?(ActionController::Parameters)
+        raw_files = raw_files.values
       end
 
-      current_count = workspace.persisted? ? workspace.extra_photos.attachments.size : 0
-      next_count = current_count + files.size
-
-      if next_count > Workspace::MAX_EXTRA_PHOTOS
-        return "You can attach up to #{Workspace::MAX_EXTRA_PHOTOS} extra gallery photos."
-      end
-
-      invalid_file = files.find do |file|
-        !file.content_type.in?(Workspace::ALLOWED_PHOTO_CONTENT_TYPES)
-      end
-
-      if invalid_file.present?
-        return "Extra gallery photos must be PNG, JPG, JPEG, or WEBP images."
-      end
-
-      oversized_file = files.find do |file|
-        file.size > Workspace::MAX_PHOTO_SIZE
-      end
-
-      if oversized_file.present?
-        return "Each extra gallery photo must be less than 5MB."
-      end
-
-      nil
-    end
-
-    def render_workspace_form_error(workspace, message, page:)
-      workspace.errors.add(:extra_photos, message)
-
-      respond_to do |format|
-        format.html do
-          props =
-            if workspace.persisted?
-              workspace_form_props(workspace: workspace)
-            else
-              workspace_form_props
-            end
-
-          render inertia: page,
-                props: props.merge(
-                  errors: workspace.errors.to_hash
-                ),
-                status: :unprocessable_entity
-        end
-
-        format.json do
-          render json: {
-            errors: [ message ]
-          }, status: :unprocessable_entity
-        end
-      end
-    end
-
-    def extra_photo_files
-    raw_files = params.dig(:workspace, :extra_photos)
-
-    return [] if raw_files.blank?
-
-    if raw_files.is_a?(ActionController::Parameters)
-      raw_files = raw_files.values
-    end
-
-    Array(raw_files).reject(&:blank?)
+      Array(raw_files).reject(&:blank?)
     end
 
     def extra_photos_validation_error_for(workspace, files)
