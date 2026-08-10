@@ -11,6 +11,8 @@ Rails.application.routes.draw do
 
   root "dashboard#index"
 
+  resource :profile, only: [ :show, :update ]
+
   resource :organization, only: [ :show, :edit, :update ]
 
   get "organization/members/:id",

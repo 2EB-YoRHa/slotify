@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+  AVATAR_ALLOWED_CONTENT_TYPES = %w[image/png image/jpeg image/jpg image/webp].freeze
+  MAX_AVATAR_SIZE = 5.megabytes
+
   PASSWORD_REQUIREMENTS = {
     uppercase: /[A-Z]/,
     lowercase: /[a-z]/,
@@ -11,6 +14,7 @@ class User < ApplicationRecord
 
   belongs_to :organization, optional: true
   belongs_to :role
+  has_one_attached :avatar
 
   has_many :reservations, dependent: :destroy
   has_many :sent_invitations,
@@ -22,6 +26,8 @@ class User < ApplicationRecord
   validate :password_complexity,
            if: :password_required?
 
+  validate :acceptable_avatar
+
   def active_for_authentication?
     super && active?
   end
@@ -31,6 +37,18 @@ class User < ApplicationRecord
   end
 
   private
+
+  def acceptable_avatar
+    return unless avatar.attached?
+
+    unless avatar.blob.content_type.in?(AVATAR_ALLOWED_CONTENT_TYPES)
+      errors.add(:avatar, "must be a PNG, JPG, JPEG, or WEBP image")
+    end
+
+    if avatar.blob.byte_size > MAX_AVATAR_SIZE
+      errors.add(:avatar, "must be less than 5MB")
+    end
+  end
 
   def password_complexity
     return if password.blank?

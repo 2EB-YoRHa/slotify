@@ -1,10 +1,11 @@
-import { usePage } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { LockKeyhole, Moon } from "lucide-react";
 
 type SharedCurrentUser = {
   id: number;
   name: string;
   email: string;
+  avatar_url?: string | null;
   role?: string | null;
   organization_id?: number | null;
   organization_name?: string | null;
@@ -91,15 +92,25 @@ export default function Header() {
             </span>
           </button>
 
-          <div
-            className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-extrabold ${
+          <Link
+            href="/profile"
+            title="My Profile"
+            className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-full text-sm font-extrabold ring-2 ring-transparent transition hover:ring-cyan-100 ${
               billingRequired
                 ? "bg-amber-50 text-amber-500"
                 : "bg-cyan-50 text-cyan-500"
             }`}
           >
-            {initials(current_user?.name)}
-          </div>
+            {current_user?.avatar_url ? (
+              <img
+                src={current_user.avatar_url}
+                alt={current_user?.name || "Profile"}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              initials(current_user?.name)
+            )}
+          </Link>
         </div>
       </div>
     </header>

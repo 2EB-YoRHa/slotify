@@ -43,11 +43,8 @@ class DashboardController < InertiaController
       .limit(5)
 
     render inertia: "dashboard/index", props: {
-      current_user: current_user.as_json(
-        only: [ :id, :name, :email ]
-      ).merge(
-        role: current_user.role&.name
-      ),
+      current_user: dashboard_current_user_props,
+
       organization_name: organization.name,
       current_plan: organization.current_plan,
       plan_entitlements: organization.plan_entitlements,
@@ -76,9 +73,26 @@ class DashboardController < InertiaController
 
   private
 
+  def dashboard_current_user_props
+    organization = current_user.organization
+
+    {
+      id: current_user.id,
+      name: current_user.name,
+      email: current_user.email,
+      avatar_url: current_user.avatar.attached? ? url_for(current_user.avatar) : nil,
+      role: current_user.role&.name,
+      organization_id: organization&.id,
+      organization_name: organization&.name,
+      current_plan: organization&.current_plan,
+      billing_required: organization&.billing_required? || false,
+      subscription_active: organization&.subscription_active? || false
+    }
+  end
+
   def empty_dashboard_props
     {
-      current_user: current_user.as_json(only: [ :id, :name, :email ]),
+      current_user: dashboard_current_user_props,
       organization_name: nil,
       current_plan: "billing_required",
       plan_entitlements: SubscriptionPlan::BILLING_REQUIRED_ENTITLEMENTS,
@@ -279,11 +293,8 @@ class DashboardController < InertiaController
   next_reservation = upcoming_reservations.first
 
   {
-    current_user: current_user.as_json(
-      only: [ :id, :name, :email ]
-    ).merge(
-      role: current_user.role&.name
-    ),
+    current_user: dashboard_current_user_props,
+
     organization_name: organization.name,
     current_plan: organization.current_plan,
     plan_entitlements: organization.plan_entitlements,

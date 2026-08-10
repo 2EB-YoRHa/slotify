@@ -33,6 +33,7 @@ class ApplicationController < ActionController::Base
       id: current_user.id,
       name: current_user.name,
       email: current_user.email,
+      avatar_url: current_user.avatar.attached? ? url_for(current_user.avatar) : nil,
       role: current_user.role&.name,
       organization_id: organization&.id,
       organization_name: organization&.name,
@@ -77,6 +78,7 @@ class ApplicationController < ActionController::Base
   def subscription_access_allowed?
     return true if devise_controller?
     return true if controller_path == "subscriptions"
+    return true if controller_path == "profiles"
     return true if controller_path == "errors"
     return true if controller_path.start_with?("users/")
     return true if invitation_acceptance_action?

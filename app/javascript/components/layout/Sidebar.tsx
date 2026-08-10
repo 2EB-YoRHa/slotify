@@ -13,6 +13,7 @@ import {
   SlidersHorizontal,
   Sparkles,
   UsersRound,
+  UserRound,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -49,12 +50,14 @@ const managerNavItems: NavItem[] = [
   { label: "Subscription", href: "/subscription", icon: CreditCard },
   { label: "Booking Rules", href: "/booking_rule", icon: SlidersHorizontal },
   { label: "Time Slots", href: "/booking_time_slots", icon: Clock3 },
+  { label: "Profile", href: "/profile", icon: UserRound },
 ];
 
 const memberNavItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Browse Workspaces", href: "/workspaces", icon: Building2 },
   { label: "My Bookings", href: "/my_reservations", icon: CalendarDays },
+  { label: "Profile", href: "/profile", icon: UserRound },
 ];
 
 const billingRequiredNavItems: NavItem[] = [
@@ -64,6 +67,7 @@ const billingRequiredNavItems: NavItem[] = [
     icon: CreditCard,
     badge: "Required",
   },
+  { label: "Profile", href: "/profile", icon: UserRound },
 ];
 
 export default function Sidebar() {
