@@ -1,15 +1,19 @@
 import { Link, usePage } from "@inertiajs/react";
 import { motion } from "motion/react";
+import { useState } from "react";
 import {
   Building2,
   DollarSign,
   PlusCircle,
   UsersRound,
   CheckCircle2,
+  Grid3X3,
+  List,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import MemberWorkspaceGrid from "../../components/workspaces/MemberWorkspaceGrid";
+import ManagerWorkspaceGrid from "../../components/workspaces/ManagerWorkspaceGrid";
 import WorkspaceTable from "../../components/workspaces/WorkspaceTable";
 import type { Workspace } from "../../types/workspace";
 
@@ -82,6 +86,7 @@ function MemberWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
 }
 
 function ManagerWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
+  const [viewMode, setViewMode] = useState<"table" | "browse">("table");
   const activeWorkspaces = workspaces.filter((workspace) => workspace.active);
 
   const totalCapacity = workspaces.reduce(
@@ -167,7 +172,15 @@ function ManagerWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
         ))}
       </section>
 
-      <WorkspaceTable workspaces={workspaces} />
+      <div className="mb-6 flex justify-end">
+        <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
+      </div>
+
+      {viewMode === "table" ? (
+        <WorkspaceTable workspaces={workspaces} />
+      ) : (
+        <ManagerWorkspaceGrid workspaces={workspaces} />
+      )}
     </AppLayout>
   );
 }
@@ -210,5 +223,59 @@ function WorkspaceStatCard({ stat, index }: WorkspaceStatCardProps) {
 
       <p className="mt-3 text-xs text-slate-500">{stat.helper}</p>
     </motion.div>
+  );
+}
+
+type ViewModeToggleProps = {
+  viewMode: "table" | "browse";
+  onChange: (viewMode: "table" | "browse") => void;
+};
+
+function ViewModeToggle({ viewMode, onChange }: ViewModeToggleProps) {
+  return (
+    <div className="inline-flex rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+      <ViewModeButton
+        label="Table"
+        icon={List}
+        selected={viewMode === "table"}
+        onClick={() => onChange("table")}
+      />
+
+      <ViewModeButton
+        label="Browse"
+        icon={Grid3X3}
+        selected={viewMode === "browse"}
+        onClick={() => onChange("browse")}
+      />
+    </div>
+  );
+}
+
+type ViewModeButtonProps = {
+  label: string;
+  icon: LucideIcon;
+  selected: boolean;
+  onClick: () => void;
+};
+
+function ViewModeButton({
+  label,
+  icon: Icon,
+  selected,
+  onClick,
+}: ViewModeButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-extrabold transition ${
+        selected
+          ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100"
+          : "text-slate-500 hover:bg-cyan-50 hover:text-cyan-600"
+      }`}
+    >
+      <Icon size={16} />
+      {label}
+    </button>
   );
 }
