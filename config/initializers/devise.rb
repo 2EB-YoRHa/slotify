@@ -8,7 +8,11 @@
 #
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
+require Rails.root.join("lib/users/failure_app")
 Devise.setup do |config|
+config.warden do |manager|
+  manager.failure_app = Users::FailureApp
+end
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
@@ -160,6 +164,8 @@ Devise.setup do |config|
   # Also, when used in conjunction with `send_email_changed_notification`,
   # the notification is sent to the original email when the change is requested,
   # not when the unconfirmed email is confirmed.
+  config.allow_unconfirmed_access_for = 0.days
+  config.confirm_within = 3.days
   config.reconfirmable = true
 
   # Defines which key will be used when confirming an account

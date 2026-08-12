@@ -1,4 +1,7 @@
 class Users::RegistrationsController < Devise::RegistrationsController
+  skip_before_action :authenticate_user!, only: [ :new, :create ]
+  skip_before_action :require_active_subscription!, only: [ :new, :create ]
+
   def new
     invitation = invitation_from_token(
       params[:invitation_token] || session[:pending_invitation_token]
@@ -66,11 +69,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
         )
       end
 
+      send_confirmation_email_if_needed(user)
+
+      store_development_manual_email_links(
+        development_manual_email_links_for(
+          user,
+          confirmation: true
+        )
+      )
+
       session.delete(:pending_invitation_token)
 
-      sign_in(:user, user)
-
-      redirect_to root_path, notice: "Account created successfully"
+      redirect_to new_user_session_path,
+                  notice: "Account created successfully. Please check your email to confirm your account before signing in."
     else
       render_sign_up(
         invitation: invitation,
@@ -121,10 +132,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
         user.save!
       end
 
-      sign_in(:user, user)
+      send_confirmation_email_if_needed(user)
 
-      redirect_to subscription_path,
-                  notice: "Organization account created successfully. Choose a plan to unlock Slotify."
+      store_development_manual_email_links(
+        development_manual_email_links_for(
+          user,
+          confirmation: true
+        )
+      )
+
+      redirect_to new_user_session_path,
+                  notice: "Organization account created successfully. Please check your email to confirm your account before signing in."
     else
       errors = user.errors.to_hash
 
@@ -140,6 +158,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
         status: :unprocessable_entity
       )
     end
+  end
+
+  def send_confirmation_email_if_needed(user)
+    return unless user.respond_to?(:send_confirmation_instructions)
+    return if user.confirmed?
+    return if user.confirmation_sent_at.present?
+
+    user.send_confirmation_instructions
   end
 
   def sign_up_params

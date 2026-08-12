@@ -21,7 +21,14 @@ class ProfilesController < ApplicationController
     if current_user.save
       bypass_sign_in(current_user) if password_change_requested?
 
-      redirect_to profile_path, notice: "Profile updated successfully."
+      notice =
+          if email_change_requested?
+            "Profile updated. Please check your new email to confirm the address change."
+          else
+            "Profile updated successfully."
+          end
+
+        redirect_to profile_path, notice: notice
     else
       render_profile_error(current_user.errors.to_hash)
     end
@@ -81,6 +88,9 @@ class ProfilesController < ApplicationController
       id: user.id,
       name: user.name,
       email: user.email,
+      confirmed: user.confirmed?,
+      confirmed_at: user.confirmed_at,
+      pending_email: user.pending_reconfirmation? ? user.unconfirmed_email : nil,
       role: user.role&.name,
       active: user.active?,
       avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil,

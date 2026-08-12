@@ -1,5 +1,6 @@
 class Users::PasswordsController < Devise::PasswordsController
   skip_before_action :authenticate_user!, only: [ :new, :create, :edit, :update ]
+  skip_before_action :require_active_subscription!, only: [ :new, :create, :edit, :update ]
 
   def new
     render inertia: "auth/forgot_password", props: {
@@ -12,15 +13,21 @@ class Users::PasswordsController < Devise::PasswordsController
     self.resource = resource_class.send_reset_password_instructions(resource_params)
 
     if successfully_sent?(resource)
-      render inertia: "auth/forgot_password", props: {
-        errors: {},
-        status: "Password reset instructions have been sent to your email."
-      }
+      store_development_manual_email_links(
+        development_manual_email_links_for(
+          resource,
+          reset_password: true
+        )
+      )
+
+      redirect_to new_user_session_path,
+                  notice: "Reset password instructions have been sent to your email."
     else
-      render inertia: "auth/forgot_password", props: {
-        errors: resource.errors.to_hash,
-        status: nil
-      }, status: :unprocessable_entity
+      render inertia: "auth/forgot_password",
+             props: {
+               errors: resource.errors.to_hash
+             },
+             status: :unprocessable_entity
     end
   end
 
@@ -37,9 +44,15 @@ class Users::PasswordsController < Devise::PasswordsController
     if resource.errors.empty?
       unlockable?(resource) ? resource.unlock_access! : nil
 
-      sign_in(resource_name, resource)
+      if resource.active_for_authentication?
+        sign_in(resource_name, resource)
+        redirect_to root_path, notice: "Password updated successfully"
+      else
+        session[:confirmation_required_email] = resource.email
 
-      redirect_to root_path, notice: "Password updated successfully"
+        redirect_to user_confirmation_required_path,
+                    alert: "Password updated successfully. Please confirm your email before signing in."
+      end
     else
       render inertia: "auth/reset_password", props: {
         reset_password_token: password_params[:reset_password_token],

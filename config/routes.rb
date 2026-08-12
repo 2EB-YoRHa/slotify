@@ -1,8 +1,19 @@
 Rails.application.routes.draw do
+  devise_scope :user do
+    get "auth/confirmation_required",
+        to: "users/sessions#confirmation_required",
+        as: :user_confirmation_required
+
+    get "auth/inactive_account",
+        to: "users/sessions#inactive_account",
+        as: :user_inactive_account
+  end
+
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations",
-    passwords: "users/passwords"
+    passwords: "users/passwords",
+    confirmations: "users/confirmations"
   }
 
   constraints(host: "127.0.0.1") do

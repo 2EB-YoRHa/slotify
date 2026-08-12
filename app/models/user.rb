@@ -10,7 +10,8 @@ class User < ApplicationRecord
   }.freeze
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+        :recoverable, :rememberable, :validatable,
+        :confirmable
 
   belongs_to :organization, optional: true
   belongs_to :role

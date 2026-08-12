@@ -33,16 +33,16 @@ module ActiveSupport
 
     def create_user(organization:, role_name:, name: nil, active: true)
       role = create_role(name: role_name)
-
-      User.create!(
-        organization: organization,
-        role: role,
-        name: name || unique_value(role_name),
-        email: "#{unique_value(role_name)}@slotify.test",
-        password: "Password123!",
-        password_confirmation: "Password123!",
-        active: active
-      )
+        User.create!(
+          organization: organization,
+          role: role,
+          name: name || unique_value(role_name),
+          email: "#{unique_value(role_name)}@slotify.test",
+          password: "Password123!",
+          password_confirmation: "Password123!",
+          active: active,
+          confirmed_at: Time.current
+        )
     end
 
     def create_booking_rule(

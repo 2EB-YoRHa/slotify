@@ -4,51 +4,41 @@
     <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">
       <div style="background: #ecfeff; border-bottom: 1px solid #cffafe; padding: 32px;">
         <div style="display: inline-block; background: #22d3ee; color: #ffffff; border-radius: 999px; padding: 8px 14px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: .04em;">
-          Slotify Invitation
+          Slotify Security
         </div>
 
         <h1 style="margin: 20px 0 0; color: #0f172a; font-size: 28px; line-height: 1.2;">
-          You have been invited to join <%= @organization.name %>
+          Confirm your email address
         </h1>
 
         <p style="margin: 12px 0 0; color: #475569; line-height: 1.6;">
-          <strong><%= @invited_by.name %></strong> invited you to access this workspace in Slotify.
+          Finish setting up your Slotify account by confirming that this email belongs to you.
         </p>
       </div>
 
       <div style="padding: 32px;">
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px;">
-          <p style="margin: 0 0 10px; color: #0f172a; font-weight: bold;">
-            Invitation details
-          </p>
-
-          <p style="margin: 6px 0; color: #475569;">
-            <strong>Organization:</strong> <%= @organization.name %>
-          </p>
-
-          <p style="margin: 6px 0; color: #475569;">
-            <strong>Role:</strong> <%= @role.name.to_s.titleize %>
-          </p>
-
-          <p style="margin: 6px 0; color: #475569;">
-            <strong>Invited email:</strong> <%= @invitation.email %>
-          </p>
-
-          <p style="margin: 6px 0; color: #475569;">
-            <strong>Expires:</strong> <%= @invitation.expires_at.strftime("%B %d, %Y") %>
-          </p>
-        </div>
-
-        <p style="color: #475569; line-height: 1.6; margin-top: 28px;">
-          Accept the invitation to create your account and start reserving workspaces.
+        <p style="color: #475569; line-height: 1.6; margin-top: 0;">
+          Hello <strong><%= @resource.email %></strong>,
         </p>
+
+        <% if @resource.try(:unconfirmed_email).present? %>
+          <p style="color: #475569; line-height: 1.6;">
+            You requested to change the email address on your Slotify account.
+            Confirm the new address using the button below.
+          </p>
+        <% else %>
+          <p style="color: #475569; line-height: 1.6;">
+            Welcome to Slotify. Please confirm your email before signing in.
+            This helps keep your account and organization workspace protected.
+          </p>
+        <% end %>
 
         <p style="margin: 32px 0;">
           <a
-            href="<%= @accept_url %>"
+            href="<%= confirmation_url(@resource, confirmation_token: @token) %>"
             style="background: #22d3ee; color: white; text-decoration: none; padding: 14px 22px; border-radius: 10px; font-weight: bold; display: inline-block;"
           >
-            Accept Invitation
+            Confirm Email
           </a>
         </p>
 
@@ -57,7 +47,7 @@
         </p>
 
         <p style="word-break: break-all; color: #0891b2; font-size: 14px;">
-          <%= @accept_url %>
+          <%= confirmation_url(@resource, confirmation_token: @token) %>
         </p>
 
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-top: 28px;">
@@ -66,14 +56,14 @@
           </p>
 
           <p style="margin: 8px 0 0; color: #64748b; font-size: 14px; line-height: 1.6;">
-            This invitation was created for <%= @invitation.email %>. If you were not expecting it, you can safely ignore this email.
+            If you did not create or update a Slotify account, you can safely ignore this email.
           </p>
         </div>
 
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
 
         <p style="color: #94a3b8; font-size: 12px; line-height: 1.6; margin: 0;">
-          Slotify helps teams manage workspace reservations, members, schedules, and booking rules.
+          This confirmation link is time-limited for your security.
         </p>
       </div>
     </div>

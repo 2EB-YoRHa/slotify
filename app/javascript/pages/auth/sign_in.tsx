@@ -23,6 +23,10 @@ import {
 type SignInProps = {
   invitation_token?: string | null;
   errors?: Partial<Record<string, string | string[]>>;
+  development_manual_links?: {
+    confirmation_url?: string;
+    reset_password_url?: string;
+  };
 };
 
 type SignInFormData = {
@@ -36,6 +40,7 @@ type SignInFormData = {
 export default function SignIn({
   invitation_token = null,
   errors: initialErrors = {},
+  development_manual_links = {},
 }: SignInProps) {
   const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
 
@@ -149,7 +154,9 @@ export default function SignIn({
                   />
                 </div>
 
-                <FieldHint>Use the email registered for your account.</FieldHint>
+                <FieldHint>
+                  Use the email registered for your account.
+                </FieldHint>
                 <FieldError error={emailError} label="Email" />
               </label>
 
@@ -206,7 +213,18 @@ export default function SignIn({
               >
                 Sign In
               </LoadingButton>
+              <DevelopmentManualLinks links={development_manual_links} />
             </form>
+
+            <div className="mt-5 text-center text-sm text-slate-500">
+              Need to confirm your email?{" "}
+              <Link
+                href="/users/confirmation/new"
+                className="font-bold text-cyan-500 hover:text-cyan-600"
+              >
+                Resend confirmation
+              </Link>
+            </div>
 
             <div className="mt-8 text-center text-sm text-slate-500">
               New to Slotify?{" "}
@@ -251,4 +269,50 @@ function fieldError(
   field: string,
 ): string | string[] | undefined {
   return errors[field] || errors[`user.${field}`];
+}
+
+type DevelopmentManualLinksProps = {
+  links?: {
+    confirmation_url?: string;
+    reset_password_url?: string;
+  };
+};
+
+function DevelopmentManualLinks({ links = {} }: DevelopmentManualLinksProps) {
+  const hasLinks = Boolean(links.confirmation_url || links.reset_password_url);
+
+  if (!hasLinks) return null;
+
+  return (
+    <div className="mt-6 rounded-2xl border border-amber-100 bg-amber-50 p-4">
+      <p className="text-xs font-extrabold uppercase tracking-wide text-amber-600">
+        Development Email Shortcut
+      </p>
+
+      <p className="mt-2 text-sm leading-6 text-amber-700">
+        SendGrid already attempted to send the email. If Gmail delays it, use
+        this temporary development link to continue testing.
+      </p>
+
+      <div className="mt-4 space-y-2">
+        {links.confirmation_url && (
+          <a
+            href={links.confirmation_url}
+            className="block break-all rounded-xl bg-white px-4 py-3 text-sm font-bold text-cyan-600 transition hover:bg-cyan-50"
+          >
+            Confirm account now
+          </a>
+        )}
+
+        {links.reset_password_url && (
+          <a
+            href={links.reset_password_url}
+            className="block break-all rounded-xl bg-white px-4 py-3 text-sm font-bold text-cyan-600 transition hover:bg-cyan-50"
+          >
+            Reset password now
+          </a>
+        )}
+      </div>
+    </div>
+  );
 }

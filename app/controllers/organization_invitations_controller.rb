@@ -12,17 +12,33 @@ class OrganizationInvitationsController < InertiaController
 
     respond_to do |format|
       if invitation.save
-        OrganizationInvitationMailer
-          .invitation_email(invitation)
-          .deliver_now
+        begin
+          deliver_invitation_email!(invitation)
 
-        format.html do
-          redirect_to organization_path,
-                      notice: "Invitation sent successfully"
-        end
+          format.html do
+            redirect_to organization_path,
+                        notice: "Invitation created for #{invitation.email}. If the email does not arrive, copy the invite link from Pending Invitations."
+          end
 
-        format.json do
-          render json: invitation, status: :created
+          format.json do
+            render json: invitation, status: :created
+          end
+        rescue StandardError => e
+          Rails.logger.error(
+            "[Invitation Email] Failed to send invitation #{invitation.id}: #{e.class} - #{e.message}"
+          )
+
+          format.html do
+            redirect_to organization_path,
+                        alert: "The invitation was created, but the email could not be delivered. Copy the invite link from Pending Invitations."
+          end
+
+          format.json do
+            render json: {
+              invitation: invitation,
+              warning: "The invitation was created, but the email could not be delivered."
+            }, status: :created
+          end
         end
       else
         format.html do
@@ -128,6 +144,12 @@ class OrganizationInvitationsController < InertiaController
   end
 
   private
+
+  def deliver_invitation_email!(invitation)
+    OrganizationInvitationMailer
+      .invitation_email(invitation)
+      .deliver_now!
+  end
 
   def ensure_member_slot_available!
     return unless current_organization.user_limit_reached?

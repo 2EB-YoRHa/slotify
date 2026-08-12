@@ -53,6 +53,9 @@ type UserProfile = {
   organization?: ProfileOrganization | null;
   created_at?: string | null;
   updated_at?: string | null;
+  confirmed?: boolean;
+  confirmed_at?: string | null;
+  pending_email?: string | null;
 };
 
 type ProfileShowProps = {
@@ -241,6 +244,7 @@ export default function ProfileShow({
           className="col-span-2 space-y-8"
         >
           <ProfileInfoSection
+            profile={profile}
             data={data}
             errors={errors}
             processing={processing}
@@ -302,6 +306,7 @@ type ProfileSectionProps = {
   processing: boolean;
   currentPasswordRequired?: boolean;
   passwordRequested: boolean;
+  profile?: UserProfile;
   onFieldChange: (
     field: keyof ProfileFormData["user"],
     value: string | boolean | File | null,
@@ -309,6 +314,7 @@ type ProfileSectionProps = {
 };
 
 function ProfileInfoSection({
+  profile,
   data,
   errors,
   processing,
@@ -345,6 +351,15 @@ function ProfileInfoSection({
           onChange={(value) => onFieldChange("email", value)}
         />
       </div>
+
+      {profile?.pending_email && (
+        <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-700">
+          A confirmation email was sent to{" "}
+          <span className="font-extrabold">{profile.pending_email}</span>. Your
+          current login email will remain active until the new address is
+          confirmed.
+        </div>
+      )}
 
       <div className="mt-5">
         <TextField

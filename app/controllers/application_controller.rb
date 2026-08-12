@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include DevelopmentMailLinksHelper
   include RoleAuthorization
 
   allow_browser versions: :modern

@@ -1,5 +1,11 @@
 import { router } from "@inertiajs/react";
 import { useState } from "react";
+import {
+  CheckCircle2,
+  Copy,
+  ExternalLink,
+  Trash2,
+} from "lucide-react";
 import ConfirmDialog from "../ui/ConfirmDialog";
 import type { OrganizationInvitation } from "../../types/organization";
 
@@ -16,6 +22,9 @@ export default function OrganizationInvitationsList({
     useState<OrganizationInvitation | null>(null);
 
   const [processing, setProcessing] = useState(false);
+  const [copiedInvitationId, setCopiedInvitationId] = useState<number | null>(
+    null,
+  );
 
   function confirmRemoveInvitation() {
     if (!selectedInvitation) return;
@@ -28,6 +37,20 @@ export default function OrganizationInvitationsList({
         setSelectedInvitation(null);
       },
     });
+  }
+
+  async function copyInviteLink(invitation: OrganizationInvitation) {
+    const inviteUrl = invitationUrlFor(invitation);
+
+    await navigator.clipboard.writeText(inviteUrl);
+
+    setCopiedInvitationId(invitation.id);
+
+    window.setTimeout(() => {
+      setCopiedInvitationId((currentId) =>
+        currentId === invitation.id ? null : currentId,
+      );
+    }, 1800);
   }
 
   return (
@@ -55,48 +78,97 @@ export default function OrganizationInvitationsList({
           </div>
         ) : (
           <div className="space-y-4">
-            {invitations.map((invitation) => (
-              <div
-                key={invitation.id}
-                className="rounded-xl border border-slate-100 p-4"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="font-bold text-slate-900">
-                      {invitation.email}
-                    </p>
+            {invitations.map((invitation) => {
+              const copied = copiedInvitationId === invitation.id;
+              const inviteUrl = invitationUrlFor(invitation);
 
-                    <p className="mt-1 text-sm text-slate-500">
-                      Role: {formatRole(invitation.role?.name)}
-                    </p>
+              return (
+                <div
+                  key={invitation.id}
+                  className="rounded-xl border border-slate-100 p-4"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-bold text-slate-900">
+                        {invitation.email}
+                      </p>
 
-                    <p className="mt-1 text-xs text-slate-400">
-                      Expires: {formatDate(invitation.expires_at)}
-                    </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        Role: {formatRole(invitation.role?.name)}
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-400">
+                        Expires: {formatDate(invitation.expires_at)}
+                      </p>
+                    </div>
+
+                    {canManage && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedInvitation(invitation)}
+                        className="inline-flex items-center gap-2 rounded-lg border border-red-100 px-3 py-2 text-xs font-bold text-red-500 transition hover:bg-red-50"
+                      >
+                        <Trash2 size={14} />
+                        Remove
+                      </button>
+                    )}
                   </div>
 
-                  {canManage && (
-                    <button
-                      type="button"
-                      onClick={() => setSelectedInvitation(invitation)}
-                      className="rounded-lg border border-red-100 px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
+                  <div className="mt-4 rounded-xl border border-cyan-100 bg-cyan-50 p-4">
+                    <div className="mb-3 flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
+                          Manual Invite Link
+                        </p>
 
-                <div className="mt-4 rounded-lg bg-slate-50 p-3">
-                  <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                    Invite Token
-                  </p>
+                        <p className="mt-1 text-xs leading-5 text-cyan-700">
+                          If the email does not arrive, copy this link and send
+                          it manually.
+                        </p>
+                      </div>
 
-                  <p className="mt-1 break-all text-xs text-slate-500">
-                    {invitation.token}
-                  </p>
+                      <div className="flex shrink-0 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => copyInviteLink(invitation)}
+                          className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-extrabold transition ${
+                            copied
+                              ? "bg-green-500 text-white"
+                              : "bg-white text-cyan-600 hover:bg-cyan-100"
+                          }`}
+                        >
+                          {copied ? (
+                            <>
+                              <CheckCircle2 size={14} />
+                              Copied
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={14} />
+                              Copy Link
+                            </>
+                          )}
+                        </button>
+
+                        <a
+                          href={inviteUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50"
+                        >
+                          <ExternalLink size={14} />
+                          Open
+                        </a>
+                      </div>
+                    </div>
+
+                    <p className="break-all rounded-lg bg-white px-3 py-2 text-xs font-semibold text-slate-500">
+                      {inviteUrl}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -116,6 +188,12 @@ export default function OrganizationInvitationsList({
       />
     </>
   );
+}
+
+function invitationUrlFor(invitation: OrganizationInvitation): string {
+  return `${window.location.origin}/organization_invitations/accept/${encodeURIComponent(
+    invitation.token,
+  )}`;
 }
 
 function formatRole(role?: string | null): string {

@@ -1,11 +1,14 @@
 You have been invited to Slotify
 
-<%= @invited_by.name %> invited you to join <%= @organization.name %> as <%= @role.name %>.
+<%= @invited_by.name %> invited you to join <%= @organization.name %> as <%= @role.name.to_s.titleize %>.
+
+Invitation details:
+Organization: <%= @organization.name %>
+Role: <%= @role.name.to_s.titleize %>
+Invited email: <%= @invitation.email %>
+Expires: <%= @invitation.expires_at.strftime("%B %d, %Y") %>
 
 Accept your invitation here:
-
 <%= @accept_url %>
-
-This invitation expires on <%= @invitation.expires_at.strftime("%B %d, %Y") %>.
 
 If you were not expecting this invitation, you can ignore this email.
