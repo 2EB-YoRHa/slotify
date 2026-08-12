@@ -10,8 +10,8 @@ class User < ApplicationRecord
   }.freeze
 
   devise :database_authenticatable, :registerable,
-        :recoverable, :rememberable, :validatable,
-        :confirmable
+         :recoverable, :rememberable, :validatable,
+         :confirmable
 
   belongs_to :organization, optional: true
   belongs_to :role
@@ -37,7 +37,71 @@ class User < ApplicationRecord
     active? ? super : :inactive
   end
 
+  def two_factor_enabled?
+    otp_required_for_login? && otp_secret.present?
+  end
+
+  def ensure_otp_secret!
+    return otp_secret if otp_secret.present?
+
+    update!(otp_secret: ROTP::Base32.random_base32)
+
+    otp_secret
+  end
+
+  def otp_provisioning_uri
+    ensure_otp_secret!
+
+    ROTP::TOTP
+      .new(
+        otp_secret,
+        issuer: "Slotify"
+      )
+      .provisioning_uri(email)
+  end
+
+  def verify_otp(code)
+    return false if otp_secret.blank?
+
+    normalized_code = code.to_s.gsub(/\s+/, "")
+
+    return false unless normalized_code.match?(/\A\d{6}\z/)
+
+    verified_at = totp.verify(
+      normalized_code,
+      drift_behind: 30,
+      drift_ahead: 30,
+      after: otp_last_used_at
+    )
+
+    return false unless verified_at
+
+    update_column(:otp_last_used_at, verified_at)
+
+    true
+  end
+
+  def enable_two_factor!
+    ensure_otp_secret!
+
+    update!(
+      otp_required_for_login: true
+    )
+  end
+
+  def disable_two_factor!
+    update!(
+      otp_secret: nil,
+      otp_required_for_login: false,
+      otp_last_used_at: nil
+    )
+  end
+
   private
+
+  def totp
+    ROTP::TOTP.new(otp_secret, issuer: "Slotify")
+  end
 
   def acceptable_avatar
     return unless avatar.attached?

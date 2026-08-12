@@ -66,6 +66,13 @@ class Users::SessionsController < Devise::SessionsController
       return
     end
 
+    if user.two_factor_enabled?
+      session[:pending_two_factor_user_id] = user.id
+
+      redirect_to user_two_factor_challenge_path
+      return
+    end
+
     sign_in(resource_name, user)
 
     redirect_to after_sign_in_path_for(user),

@@ -7,7 +7,7 @@ class ProfilesController < ApplicationController
   end
 
   def update
-    if password_change_requested? || email_change_requested?
+    if email_change_requested?
       unless current_user.valid_password?(profile_params[:current_password].to_s)
         render_profile_error(current_password: "Current password is incorrect.")
         return
@@ -19,16 +19,14 @@ class ProfilesController < ApplicationController
     current_user.avatar.attach(profile_params[:avatar]) if profile_params[:avatar].present?
 
     if current_user.save
-      bypass_sign_in(current_user) if password_change_requested?
-
       notice =
-          if email_change_requested?
-            "Profile updated. Please check your new email to confirm the address change."
-          else
-            "Profile updated successfully."
-          end
+        if email_change_requested?
+          "Profile updated. Please check your new email to confirm the address change."
+        else
+          "Profile updated successfully."
+        end
 
-        redirect_to profile_path, notice: notice
+      redirect_to profile_path, notice: notice
     else
       render_profile_error(current_user.errors.to_hash)
     end
@@ -42,28 +40,15 @@ class ProfilesController < ApplicationController
       :email,
       :avatar,
       :remove_avatar,
-      :current_password,
-      :password,
-      :password_confirmation
+      :current_password
     )
   end
 
   def profile_attributes
-    attributes = {
+    {
       name: profile_params[:name],
       email: profile_params[:email].to_s.strip.downcase
     }
-
-    if password_change_requested?
-      attributes[:password] = profile_params[:password]
-      attributes[:password_confirmation] = profile_params[:password_confirmation]
-    end
-
-    attributes
-  end
-
-  def password_change_requested?
-    profile_params[:password].present? || profile_params[:password_confirmation].present?
   end
 
   def email_change_requested?
@@ -93,6 +78,7 @@ class ProfilesController < ApplicationController
       pending_email: user.pending_reconfirmation? ? user.unconfirmed_email : nil,
       role: user.role&.name,
       active: user.active?,
+      two_factor_enabled: user.two_factor_enabled?,
       avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil,
       organization: user.organization&.as_json(
         only: [ :id, :name, :slug, :email, :phone, :address ]

@@ -1,13 +1,21 @@
 Rails.application.routes.draw do
-  devise_scope :user do
-    get "auth/confirmation_required",
-        to: "users/sessions#confirmation_required",
-        as: :user_confirmation_required
+    devise_scope :user do
+        get "auth/confirmation_required",
+            to: "users/sessions#confirmation_required",
+            as: :user_confirmation_required
 
-    get "auth/inactive_account",
-        to: "users/sessions#inactive_account",
-        as: :user_inactive_account
-  end
+        get "auth/inactive_account",
+            to: "users/sessions#inactive_account",
+            as: :user_inactive_account
+
+        get "auth/two_factor",
+            to: "users/two_factor_sessions#new",
+            as: :user_two_factor_challenge
+
+        post "auth/two_factor",
+            to: "users/two_factor_sessions#create",
+            as: :user_two_factor_verify
+    end
 
   devise_for :users, controllers: {
     sessions: "users/sessions",
@@ -23,6 +31,17 @@ Rails.application.routes.draw do
   root "dashboard#index"
 
   resource :profile, only: [ :show, :update ]
+
+  get "security", to: "two_factor_settings#show", as: :security
+
+  resource :two_factor,
+            only: [ :show, :destroy ],
+            controller: "two_factor_settings" do
+    post :prepare
+    patch :enable
+  end
+
+  resource :password_settings, only: [ :update ]
 
   resource :organization, only: [ :show, :edit, :update ]
 

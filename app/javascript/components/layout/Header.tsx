@@ -5,6 +5,7 @@ import {
   ChevronDown,
   LogOut,
   Moon,
+  ShieldCheck,
   UserRound,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -208,7 +209,15 @@ function ProfileDropdown({
           href="/profile"
           icon={UserRound}
           title="View my profile"
-          description="Photo, name, email and password"
+          description="Photo, name and email"
+          onClick={onClose}
+        />
+
+        <DropdownLink
+          href="/security"
+          icon={ShieldCheck}
+          title="Security"
+          description="Password and two-factor authentication"
           onClick={onClose}
         />
 

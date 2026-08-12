@@ -1,8 +1,10 @@
-import { useForm } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
+import AccountSettingsNav from "../../components/account/AccountSettingsNav";
 import {
+  BadgeCheck,
   Building2,
   Camera,
   CheckCircle2,
@@ -14,7 +16,6 @@ import {
   UserRound,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import PasswordChecklist from "../../components/auth/PasswordChecklist";
 import AppLayout from "../../components/AppLayout";
 import LoadingButton from "../../components/ui/LoadingButton";
 import {
@@ -27,8 +28,6 @@ import {
 import {
   hasValidationErrors,
   validateEmail,
-  validatePasswordConfirmation,
-  validatePasswordStrength,
   validateTextLength,
   type ValidationErrors,
 } from "../../utils/clientValidation";
@@ -49,6 +48,7 @@ type UserProfile = {
   email: string;
   role?: string | null;
   active?: boolean;
+  two_factor_enabled?: boolean;
   avatar_url?: string | null;
   organization?: ProfileOrganization | null;
   created_at?: string | null;
@@ -70,8 +70,6 @@ type ProfileFormData = {
     avatar: File | null;
     remove_avatar: boolean;
     current_password: string;
-    password: string;
-    password_confirmation: string;
   };
 };
 
@@ -95,8 +93,6 @@ export default function ProfileShow({
       avatar: null,
       remove_avatar: false,
       current_password: "",
-      password: "",
-      password_confirmation: "",
     },
   });
 
@@ -109,21 +105,13 @@ export default function ProfileShow({
   const avatarUrl =
     avatarPreview || (!data.user.remove_avatar ? profile.avatar_url : null);
 
-  const passwordRequested =
-    data.user.password.length > 0 || data.user.password_confirmation.length > 0;
-
-  const emailChanged = data.user.email.trim().toLowerCase() !== profile.email;
-
-  const currentPasswordRequired = passwordRequested || emailChanged;
+  const emailChanged =
+    data.user.email.trim().toLowerCase() !== profile.email.trim().toLowerCase();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const validationErrors = validateProfileForm(
-      data,
-      currentPasswordRequired,
-      passwordRequested,
-    );
+    const validationErrors = validateProfileForm(data, emailChanged);
 
     setClientErrors(validationErrors);
 
@@ -140,8 +128,6 @@ export default function ProfileShow({
           avatar: null,
           remove_avatar: false,
           current_password: "",
-          password: "",
-          password_confirmation: "",
         });
       },
     });
@@ -208,95 +194,123 @@ export default function ProfileShow({
 
   return (
     <AppLayout>
-      <div className="mb-8 flex items-start justify-between gap-8">
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-extrabold text-slate-950"
-          >
-            My Profile
-          </motion.h1>
+      <div className="mx-auto max-w-6xl space-y-8">
+        <PageHeader profile={profile} />
 
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="mt-2 max-w-2xl text-sm leading-6 text-slate-500"
-          >
-            Update your personal information, profile photo, email, and
-            password.
-          </motion.p>
-        </div>
+        <AccountSettingsNav active="profile" />
 
-        <ProfileStatusCard profile={profile} />
+        <form
+          noValidate
+          onSubmit={handleSubmit}
+          className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]"
+        >
+          <motion.main
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="space-y-8"
+          >
+            <ProfileInfoSection
+              profile={profile}
+              data={data}
+              errors={errors}
+              processing={processing}
+              emailChanged={emailChanged}
+              onFieldChange={updateField}
+            />
+
+            <AccountDetailsSection profile={profile} />
+          </motion.main>
+
+          <motion.aside
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="space-y-6"
+          >
+            <AvatarSection
+              profile={profile}
+              avatarUrl={avatarUrl}
+              processing={processing}
+              error={fieldError(errors, "avatar")}
+              onAvatarChange={handleAvatarChange}
+              onRemoveAvatar={removeAvatar}
+            />
+
+            <SecuritySummary profile={profile} />
+
+            <SaveProfileCard processing={processing} emailChanged={emailChanged} />
+          </motion.aside>
+        </form>
       </div>
+    </AppLayout>
+  );
+}
 
-      <form
-        noValidate
-        onSubmit={handleSubmit}
-        className="grid grid-cols-3 gap-8"
-      >
-        <motion.section
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08 }}
-          className="col-span-2 space-y-8"
-        >
-          <ProfileInfoSection
-            profile={profile}
-            data={data}
-            errors={errors}
-            processing={processing}
-            currentPasswordRequired={currentPasswordRequired}
-            passwordRequested={passwordRequested}
-            onFieldChange={updateField}
-          />
+function PageHeader({ profile }: { profile: UserProfile }) {
+  return (
+    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+      <div className="bg-linear-to-r from-cyan-50 via-white to-white p-8">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400 text-white shadow-sm shadow-cyan-100">
+              <UserRound size={28} strokeWidth={2.5} />
+            </div>
 
-          <PasswordSection
-            data={data}
-            errors={errors}
-            processing={processing}
-            passwordRequested={passwordRequested}
-            onFieldChange={updateField}
-          />
-        </motion.section>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500">
+              Personal Profile
+            </p>
 
-        <motion.aside
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.12 }}
-          className="space-y-8"
-        >
-          <AvatarSection
-            profile={profile}
-            avatarUrl={avatarUrl}
-            processing={processing}
-            error={fieldError(errors, "avatar")}
-            onAvatarChange={handleAvatarChange}
-            onRemoveAvatar={removeAvatar}
-          />
+            <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950">
+              My Profile
+            </h1>
 
-          <OrganizationSummary profile={profile} />
-
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <LoadingButton
-              type="submit"
-              loading={processing}
-              loadingText="Saving..."
-              className="w-full"
-            >
-              Save Profile
-            </LoadingButton>
-
-            <p className="mt-4 text-xs font-semibold leading-5 text-slate-400">
-              Email or password changes require your current password for
-              account security.
+            <p className="mt-3 max-w-xl text-sm leading-7 text-slate-500">
+              Manage your photo, name, email address, and account identity.
             </p>
           </div>
-        </motion.aside>
-      </form>
-    </AppLayout>
+
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <StatusPill
+              active={Boolean(profile.active)}
+              label={profile.active ? "Active account" : "Inactive account"}
+              tone={profile.active ? "green" : "amber"}
+            />
+
+            <StatusPill
+              active={Boolean(profile.confirmed)}
+              label={profile.confirmed ? "Email confirmed" : "Email pending"}
+              tone={profile.confirmed ? "cyan" : "amber"}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StatusPill({
+  active,
+  label,
+  tone,
+}: {
+  active: boolean;
+  label: string;
+  tone: "cyan" | "green" | "amber";
+}) {
+  const classes = {
+    cyan: "bg-cyan-50 text-cyan-600",
+    green: "bg-green-50 text-green-600",
+    amber: "bg-amber-50 text-amber-600",
+  };
+
+  return (
+    <div
+      className={`inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-extrabold ${classes[tone]}`}
+    >
+      {active ? <CheckCircle2 size={17} /> : <BadgeCheck size={17} />}
+      {label}
+    </div>
   );
 }
 
@@ -304,9 +318,8 @@ type ProfileSectionProps = {
   data: ProfileFormData;
   errors: Record<string, string | string[] | undefined>;
   processing: boolean;
-  currentPasswordRequired?: boolean;
-  passwordRequested: boolean;
-  profile?: UserProfile;
+  emailChanged: boolean;
+  profile: UserProfile;
   onFieldChange: (
     field: keyof ProfileFormData["user"],
     value: string | boolean | File | null,
@@ -318,18 +331,19 @@ function ProfileInfoSection({
   data,
   errors,
   processing,
-  currentPasswordRequired = false,
+  emailChanged,
   onFieldChange,
 }: ProfileSectionProps) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+    <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
       <SectionHeader
         icon={UserRound}
-        title="Account Information"
-        description="Keep your name and email address up to date."
+        eyebrow="Identity"
+        title="Account information"
+        description="Keep your personal information accurate for your workspace."
       />
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="mt-7 grid gap-5 md:grid-cols-2">
         <TextField
           label="Full Name"
           icon={UserRound}
@@ -352,85 +366,113 @@ function ProfileInfoSection({
         />
       </div>
 
-      {profile?.pending_email && (
-        <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-700">
-          A confirmation email was sent to{" "}
-          <span className="font-extrabold">{profile.pending_email}</span>. Your
-          current login email will remain active until the new address is
-          confirmed.
+      {profile.pending_email && (
+        <div className="mt-6 rounded-2xl border border-amber-100 bg-amber-50 p-5">
+          <p className="text-sm font-black text-amber-800">
+            Pending email confirmation
+          </p>
+
+          <p className="mt-2 text-sm font-semibold leading-6 text-amber-700">
+            A confirmation email was sent to{" "}
+            <span className="font-black">{profile.pending_email}</span>. Your
+            current login email remains active until the new address is
+            confirmed.
+          </p>
         </div>
       )}
 
-      <div className="mt-5">
-        <TextField
-          label="Current Password"
-          icon={LockKeyhole}
-          type="password"
-          value={data.user.current_password}
-          placeholder={
-            currentPasswordRequired
-              ? "Required to change email or password"
-              : "Only needed when changing email or password"
-          }
-          disabled={processing}
-          required={currentPasswordRequired}
-          error={fieldError(errors, "current_password")}
-          helper="Required only when changing your email address or password."
-          onChange={(value) => onFieldChange("current_password", value)}
+      {emailChanged && (
+        <div className="mt-6 rounded-2xl border border-cyan-100 bg-cyan-50 p-5">
+          <div className="flex items-start gap-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
+              <LockKeyhole size={20} strokeWidth={2.4} />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-black text-slate-950">
+                Confirm this email change
+              </p>
+
+              <p className="mt-1 text-sm font-semibold leading-6 text-cyan-700">
+                Enter your current password to request the email update.
+              </p>
+
+              <div className="mt-4">
+                <TextField
+                  label="Current Password"
+                  icon={LockKeyhole}
+                  type="password"
+                  value={data.user.current_password}
+                  placeholder="Required to change email"
+                  disabled={processing}
+                  error={fieldError(errors, "current_password")}
+                  helper="Your password is required only when changing email."
+                  onChange={(value) =>
+                    onFieldChange("current_password", value)
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function AccountDetailsSection({ profile }: { profile: UserProfile }) {
+  return (
+    <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <SectionHeader
+        icon={Building2}
+        eyebrow="Workspace"
+        title="Organization details"
+        description="This information comes from the organization connected to your account."
+      />
+
+      <div className="mt-7 grid gap-4 md:grid-cols-2">
+        <DetailCard
+          label="Organization"
+          value={profile.organization?.name || "No organization"}
+        />
+
+        <DetailCard label="Role" value={formatText(profile.role)} />
+
+        <DetailCard
+          label="Account status"
+          value={profile.active ? "Active" : "Inactive"}
+        />
+
+        <DetailCard
+          label="Email status"
+          value={profile.confirmed ? "Confirmed" : "Pending confirmation"}
+        />
+
+        <DetailCard
+          label="Organization email"
+          value={profile.organization?.email || "-"}
+        />
+
+        <DetailCard
+          label="Organization phone"
+          value={profile.organization?.phone || "-"}
         />
       </div>
     </section>
   );
 }
 
-function PasswordSection({
-  data,
-  errors,
-  processing,
-  passwordRequested,
-  onFieldChange,
-}: ProfileSectionProps) {
+function DetailCard({ label, value }: { label: string; value: string }) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <SectionHeader
-        icon={ShieldCheck}
-        title="Password"
-        description="Create a new password only when you want to change it."
-      />
+    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
+      <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
 
-      <div className="grid grid-cols-2 gap-5">
-        <TextField
-          label="New Password"
-          icon={LockKeyhole}
-          type="password"
-          value={data.user.password}
-          placeholder="Create a new password"
-          disabled={processing}
-          required={passwordRequested}
-          error={fieldError(errors, "password")}
-          onChange={(value) => onFieldChange("password", value)}
-        />
-
-        <TextField
-          label="Confirm Password"
-          icon={LockKeyhole}
-          type="password"
-          value={data.user.password_confirmation}
-          placeholder="Confirm the new password"
-          disabled={processing}
-          required={passwordRequested}
-          error={fieldError(errors, "password_confirmation")}
-          onChange={(value) => onFieldChange("password_confirmation", value)}
-        />
-      </div>
-
-      <div className="mt-5">
-        <PasswordChecklist
-          password={data.user.password}
-          passwordConfirmation={data.user.password_confirmation}
-        />
-      </div>
-    </section>
+      <p className="mt-2 break-words text-sm font-black text-slate-950">
+        {value}
+      </p>
+    </div>
   );
 }
 
@@ -452,22 +494,22 @@ function AvatarSection({
   onRemoveAvatar,
 }: AvatarSectionProps) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
           <Camera size={20} strokeWidth={2.4} />
         </div>
 
         <div>
-          <h2 className="text-lg font-extrabold text-slate-950">
-            Profile Photo
-          </h2>
+          <h2 className="text-lg font-black text-slate-950">Profile Photo</h2>
 
-          <p className="text-sm text-slate-500">PNG, JPG, JPEG or WEBP.</p>
+          <p className="text-sm font-semibold text-slate-500">
+            PNG, JPG, JPEG or WEBP.
+          </p>
         </div>
       </div>
 
-      <div className="flex flex-col items-center rounded-2xl bg-slate-50 p-6 text-center">
+      <div className="flex flex-col items-center rounded-3xl bg-slate-50 p-6 text-center">
         {avatarUrl ? (
           <img
             src={avatarUrl}
@@ -480,7 +522,7 @@ function AvatarSection({
           </div>
         )}
 
-        <p className="mt-4 text-sm font-extrabold text-slate-950">
+        <p className="mt-4 text-sm font-black text-slate-950">
           {profile.name}
         </p>
 
@@ -489,7 +531,7 @@ function AvatarSection({
         </p>
       </div>
 
-      <label className="mt-5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+      <label className="mt-5 flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50">
         <UploadCloud size={17} />
         Upload Photo
         <input
@@ -506,7 +548,7 @@ function AvatarSection({
           type="button"
           disabled={processing}
           onClick={onRemoveAvatar}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-5 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-100 bg-white px-5 py-3 text-sm font-black text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Trash2 size={17} />
           Remove Photo
@@ -520,85 +562,110 @@ function AvatarSection({
   );
 }
 
-function OrganizationSummary({ profile }: { profile: UserProfile }) {
+function SecuritySummary({ profile }: { profile: UserProfile }) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="rounded-3xl border border-cyan-100 bg-cyan-50 p-6 shadow-sm">
       <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
-          <Building2 size={20} strokeWidth={2.4} />
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
+          <ShieldCheck size={20} strokeWidth={2.4} />
         </div>
 
         <div>
-          <h2 className="text-lg font-extrabold text-slate-950">
-            Organization
-          </h2>
+          <h2 className="text-lg font-black text-slate-950">Security</h2>
 
-          <p className="text-sm text-slate-500">Your account workspace.</p>
+          <p className="text-sm font-semibold text-cyan-700">
+            Password and 2FA settings.
+          </p>
         </div>
       </div>
 
-      <div className="rounded-2xl bg-slate-50 p-5">
-        <SummaryRow
-          label="Organization"
-          value={profile.organization?.name || "-"}
-        />
-        <SummaryRow label="Role" value={formatText(profile.role)} />
-        <SummaryRow
-          label="Status"
-          value={profile.active ? "Active" : "Inactive"}
+      <div className="space-y-3">
+        <SecurityRow label="Password" value="Managed in Security" />
+        <SecurityRow
+          label="Two-factor"
+          value={profile.two_factor_enabled ? "Enabled" : "Not enabled"}
         />
       </div>
+
+      <Link
+        href="/security"
+        className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-5 py-3 text-sm font-black text-white shadow-sm shadow-cyan-100 transition hover:bg-cyan-500"
+      >
+        <ShieldCheck size={17} />
+        Open Security
+      </Link>
     </section>
   );
 }
 
-function ProfileStatusCard({ profile }: { profile: UserProfile }) {
+function SecurityRow({ label, value }: { label: string; value: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="flex shrink-0 items-center gap-3 rounded-2xl border border-cyan-100 bg-white px-5 py-4 shadow-sm"
-    >
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
-        <CheckCircle2 size={21} strokeWidth={2.4} />
-      </div>
+    <div className="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3">
+      <span className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
+        {label}
+      </span>
 
-      <div>
-        <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
-          Account Status
-        </p>
+      <span className="text-right text-sm font-black text-slate-950">
+        {value}
+      </span>
+    </div>
+  );
+}
 
-        <p className="text-base font-extrabold text-slate-950">
-          {profile.active ? "Active" : "Inactive"}
-        </p>
+function SaveProfileCard({
+  processing,
+  emailChanged,
+}: {
+  processing: boolean;
+  emailChanged: boolean;
+}) {
+  return (
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <LoadingButton
+        type="submit"
+        loading={processing}
+        loadingText="Saving..."
+        className="w-full rounded-2xl py-4"
+      >
+        Save Profile
+      </LoadingButton>
 
-        <p className="mt-1 text-xs font-bold text-cyan-600">
-          {formatText(profile.role)}
-        </p>
-      </div>
-    </motion.div>
+      <p className="mt-4 text-xs font-semibold leading-5 text-slate-400">
+        {emailChanged
+          ? "Changing email requires your current password and email confirmation."
+          : "Profile changes are saved to your current account."}
+      </p>
+    </section>
   );
 }
 
 function SectionHeader({
   icon: Icon,
+  eyebrow,
   title,
   description,
 }: {
   icon: LucideIcon;
+  eyebrow: string;
   title: string;
   description: string;
 }) {
   return (
-    <div className="mb-7 flex items-start gap-4">
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+    <div className="flex items-start gap-4">
+      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
         <Icon size={26} strokeWidth={2.4} />
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold text-slate-950">{title}</h2>
+        <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500">
+          {eyebrow}
+        </p>
 
-        <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+        <h2 className="mt-1 text-2xl font-black text-slate-950">{title}</h2>
+
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+          {description}
+        </p>
       </div>
     </div>
   );
@@ -661,22 +728,9 @@ function TextField({
   );
 }
 
-function SummaryRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
-      <span className="text-sm text-slate-500">{label}</span>
-
-      <span className="text-right text-sm font-bold text-slate-950">
-        {value}
-      </span>
-    </div>
-  );
-}
-
 function validateProfileForm(
   data: ProfileFormData,
-  currentPasswordRequired: boolean,
-  passwordRequested: boolean,
+  emailChanged: boolean,
 ): ValidationErrors {
   const errors: ValidationErrors = {};
 
@@ -693,10 +747,7 @@ function validateProfileForm(
 
   if (emailError) errors.email = emailError;
 
-  if (
-    currentPasswordRequired &&
-    data.user.current_password.trim().length === 0
-  ) {
+  if (emailChanged && data.user.current_password.trim().length === 0) {
     errors.current_password = "Current Password is required.";
   }
 
@@ -710,23 +761,6 @@ function validateProfileForm(
     if (data.user.avatar.size > 5 * 1024 * 1024) {
       errors.avatar = "Profile Photo must be less than 5MB.";
     }
-  }
-
-  if (passwordRequested) {
-    const passwordError = validatePasswordStrength(
-      data.user.password,
-      "New Password",
-    );
-
-    if (passwordError) errors.password = passwordError;
-
-    const confirmationError = validatePasswordConfirmation(
-      data.user.password,
-      data.user.password_confirmation,
-      "Confirm Password",
-    );
-
-    if (confirmationError) errors.password_confirmation = confirmationError;
   }
 
   return errors;
@@ -754,6 +788,7 @@ function initials(name?: string | null): string {
 function autoCompleteFor(label: string, type: string): string {
   if (label === "Email") return "email";
   if (label === "Full Name") return "name";
+  if (label === "Current Password") return "current-password";
   if (type === "password") return "new-password";
 
   return "off";
