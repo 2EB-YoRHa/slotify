@@ -1,22 +1,19 @@
-import { Link, useForm } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import AccountSettingsNav from "../../components/account/AccountSettingsNav";
 import {
-  BadgeCheck,
-  Building2,
   Camera,
   CheckCircle2,
   LockKeyhole,
   Mail,
-  ShieldCheck,
   Trash2,
   UploadCloud,
   UserRound,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
+import AccountSettingsNav from "../../components/account/AccountSettingsNav";
 import LoadingButton from "../../components/ui/LoadingButton";
 import {
   FieldError,
@@ -195,14 +192,19 @@ export default function ProfileShow({
   return (
     <AppLayout>
       <div className="mx-auto max-w-6xl space-y-8">
-        <PageHeader profile={profile} />
+        <ProfileHero
+          profile={profile}
+          avatarUrl={avatarUrl}
+          displayName={data.user.name}
+          displayEmail={data.user.email}
+        />
 
         <AccountSettingsNav active="profile" />
 
         <form
           noValidate
           onSubmit={handleSubmit}
-          className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]"
+          className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]"
         >
           <motion.main
             initial={{ opacity: 0, y: 14 }}
@@ -219,7 +221,7 @@ export default function ProfileShow({
               onFieldChange={updateField}
             />
 
-            <AccountDetailsSection profile={profile} />
+            <OrganizationSection profile={profile} />
           </motion.main>
 
           <motion.aside
@@ -228,8 +230,7 @@ export default function ProfileShow({
             transition={{ delay: 0.12 }}
             className="space-y-6"
           >
-            <AvatarSection
-              profile={profile}
+            <PhotoActionsCard
               avatarUrl={avatarUrl}
               processing={processing}
               error={fieldError(errors, "avatar")}
@@ -237,9 +238,10 @@ export default function ProfileShow({
               onRemoveAvatar={removeAvatar}
             />
 
-            <SecuritySummary profile={profile} />
-
-            <SaveProfileCard processing={processing} emailChanged={emailChanged} />
+            <SaveProfileCard
+              processing={processing}
+              emailChanged={emailChanged}
+            />
           </motion.aside>
         </form>
       </div>
@@ -247,70 +249,91 @@ export default function ProfileShow({
   );
 }
 
-function PageHeader({ profile }: { profile: UserProfile }) {
+function ProfileHero({
+  profile,
+  avatarUrl,
+  displayName,
+  displayEmail,
+}: {
+  profile: UserProfile;
+  avatarUrl?: string | null;
+  displayName: string;
+  displayEmail: string;
+}) {
   return (
-    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="bg-linear-to-r from-cyan-50 via-white to-white p-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400 text-white shadow-sm shadow-cyan-100">
-              <UserRound size={28} strokeWidth={2.5} />
+    <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={displayName || profile.name}
+              className="h-28 w-28 rounded-3xl object-cover shadow-sm ring-4 ring-cyan-50"
+            />
+          ) : (
+            <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-cyan-50 text-4xl font-black text-cyan-500 shadow-sm ring-4 ring-cyan-50">
+              {initials(displayName || profile.name)}
             </div>
+          )}
 
-            <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500">
-              Personal Profile
-            </p>
-
-            <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950">
-              My Profile
+          <div>
+            <h1 className="text-4xl font-black tracking-tight text-slate-950">
+              {displayName || profile.name}
             </h1>
 
-            <p className="mt-3 max-w-xl text-sm leading-7 text-slate-500">
-              Manage your photo, name, email address, and account identity.
+            <p className="mt-2 break-all text-sm font-semibold text-slate-500">
+              {displayEmail || profile.email}
             </p>
-          </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <StatusPill
-              active={Boolean(profile.active)}
-              label={profile.active ? "Active account" : "Inactive account"}
-              tone={profile.active ? "green" : "amber"}
-            />
-
-            <StatusPill
-              active={Boolean(profile.confirmed)}
-              label={profile.confirmed ? "Email confirmed" : "Email pending"}
-              tone={profile.confirmed ? "cyan" : "amber"}
-            />
+            <div className="mt-4 flex flex-wrap gap-2">
+              <ProfilePill label={formatText(profile.role)} />
+              <ProfilePill
+                label={profile.active ? "Active" : "Inactive"}
+                tone={profile.active ? "green" : "amber"}
+              />
+              <ProfilePill
+                label={profile.confirmed ? "Email confirmed" : "Email pending"}
+                tone={profile.confirmed ? "cyan" : "amber"}
+              />
+            </div>
           </div>
+        </div>
+
+        <div className="rounded-2xl bg-slate-50 px-5 py-4">
+          <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
+            Organization
+          </p>
+
+          <p className="mt-1 max-w-xs wrap-break-word text-sm font-black text-slate-950">
+            {profile.organization?.name || "No organization"}
+          </p>
         </div>
       </div>
     </section>
   );
 }
 
-function StatusPill({
-  active,
+function ProfilePill({
   label,
-  tone,
+  tone = "slate",
 }: {
-  active: boolean;
   label: string;
-  tone: "cyan" | "green" | "amber";
+  tone?: "slate" | "cyan" | "green" | "amber";
 }) {
   const classes = {
+    slate: "bg-slate-100 text-slate-600",
     cyan: "bg-cyan-50 text-cyan-600",
     green: "bg-green-50 text-green-600",
     amber: "bg-amber-50 text-amber-600",
   };
 
   return (
-    <div
-      className={`inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-extrabold ${classes[tone]}`}
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black ${classes[tone]}`}
     >
-      {active ? <CheckCircle2 size={17} /> : <BadgeCheck size={17} />}
+      {tone !== "slate" && <CheckCircle2 size={14} />}
       {label}
-    </div>
+    </span>
   );
 }
 
@@ -337,8 +360,6 @@ function ProfileInfoSection({
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
       <SectionHeader
-        icon={UserRound}
-        eyebrow="Identity"
         title="Account information"
         description="Keep your personal information accurate for your workspace."
       />
@@ -383,36 +404,26 @@ function ProfileInfoSection({
 
       {emailChanged && (
         <div className="mt-6 rounded-2xl border border-cyan-100 bg-cyan-50 p-5">
-          <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
-              <LockKeyhole size={20} strokeWidth={2.4} />
-            </div>
+          <p className="text-sm font-black text-slate-950">
+            Confirm this email change
+          </p>
 
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-black text-slate-950">
-                Confirm this email change
-              </p>
+          <p className="mt-1 text-sm font-semibold leading-6 text-cyan-700">
+            Enter your current password to request the email update.
+          </p>
 
-              <p className="mt-1 text-sm font-semibold leading-6 text-cyan-700">
-                Enter your current password to request the email update.
-              </p>
-
-              <div className="mt-4">
-                <TextField
-                  label="Current Password"
-                  icon={LockKeyhole}
-                  type="password"
-                  value={data.user.current_password}
-                  placeholder="Required to change email"
-                  disabled={processing}
-                  error={fieldError(errors, "current_password")}
-                  helper="Your password is required only when changing email."
-                  onChange={(value) =>
-                    onFieldChange("current_password", value)
-                  }
-                />
-              </div>
-            </div>
+          <div className="mt-4 max-w-md">
+            <TextField
+              label="Current Password"
+              icon={LockKeyhole}
+              type="password"
+              value={data.user.current_password}
+              placeholder="Required to change email"
+              disabled={processing}
+              error={fieldError(errors, "current_password")}
+              helper="Your password is required only when changing email."
+              onChange={(value) => onFieldChange("current_password", value)}
+            />
           </div>
         </div>
       )}
@@ -420,12 +431,10 @@ function ProfileInfoSection({
   );
 }
 
-function AccountDetailsSection({ profile }: { profile: UserProfile }) {
+function OrganizationSection({ profile }: { profile: UserProfile }) {
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
       <SectionHeader
-        icon={Building2}
-        eyebrow="Workspace"
         title="Organization details"
         description="This information comes from the organization connected to your account."
       />
@@ -469,39 +478,35 @@ function DetailCard({ label, value }: { label: string; value: string }) {
         {label}
       </p>
 
-      <p className="mt-2 break-words text-sm font-black text-slate-950">
+      <p className="mt-2 wrap-break-word text-sm font-black text-slate-950">
         {value}
       </p>
     </div>
   );
 }
 
-type AvatarSectionProps = {
-  profile: UserProfile;
-  avatarUrl?: string | null;
-  processing: boolean;
-  error?: string | string[];
-  onAvatarChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onRemoveAvatar: () => void;
-};
-
-function AvatarSection({
-  profile,
+function PhotoActionsCard({
   avatarUrl,
   processing,
   error,
   onAvatarChange,
   onRemoveAvatar,
-}: AvatarSectionProps) {
+}: {
+  avatarUrl?: string | null;
+  processing: boolean;
+  error?: string | string[];
+  onAvatarChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onRemoveAvatar: () => void;
+}) {
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-          <Camera size={20} strokeWidth={2.4} />
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+          <Camera size={19} strokeWidth={2.4} />
         </div>
 
         <div>
-          <h2 className="text-lg font-black text-slate-950">Profile Photo</h2>
+          <h2 className="text-lg font-black text-slate-950">Photo</h2>
 
           <p className="text-sm font-semibold text-slate-500">
             PNG, JPG, JPEG or WEBP.
@@ -509,29 +514,7 @@ function AvatarSection({
         </div>
       </div>
 
-      <div className="flex flex-col items-center rounded-3xl bg-slate-50 p-6 text-center">
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt={profile.name}
-            className="h-32 w-32 rounded-3xl object-cover shadow-sm ring-4 ring-white"
-          />
-        ) : (
-          <div className="flex h-32 w-32 items-center justify-center rounded-3xl bg-cyan-50 text-4xl font-black text-cyan-500 shadow-sm ring-4 ring-white">
-            {initials(profile.name)}
-          </div>
-        )}
-
-        <p className="mt-4 text-sm font-black text-slate-950">
-          {profile.name}
-        </p>
-
-        <p className="mt-1 text-xs font-bold uppercase tracking-wide text-slate-400">
-          {formatText(profile.role)}
-        </p>
-      </div>
-
-      <label className="mt-5 flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50">
+      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50">
         <UploadCloud size={17} />
         Upload Photo
         <input
@@ -556,59 +539,8 @@ function AvatarSection({
       )}
 
       <FieldError error={error} label="Profile Photo" />
-
       <FieldHint>Maximum file size is 5MB.</FieldHint>
     </section>
-  );
-}
-
-function SecuritySummary({ profile }: { profile: UserProfile }) {
-  return (
-    <section className="rounded-3xl border border-cyan-100 bg-cyan-50 p-6 shadow-sm">
-      <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
-          <ShieldCheck size={20} strokeWidth={2.4} />
-        </div>
-
-        <div>
-          <h2 className="text-lg font-black text-slate-950">Security</h2>
-
-          <p className="text-sm font-semibold text-cyan-700">
-            Password and 2FA settings.
-          </p>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <SecurityRow label="Password" value="Managed in Security" />
-        <SecurityRow
-          label="Two-factor"
-          value={profile.two_factor_enabled ? "Enabled" : "Not enabled"}
-        />
-      </div>
-
-      <Link
-        href="/security"
-        className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-5 py-3 text-sm font-black text-white shadow-sm shadow-cyan-100 transition hover:bg-cyan-500"
-      >
-        <ShieldCheck size={17} />
-        Open Security
-      </Link>
-    </section>
-  );
-}
-
-function SecurityRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3">
-      <span className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
-        {label}
-      </span>
-
-      <span className="text-right text-sm font-black text-slate-950">
-        {value}
-      </span>
-    </div>
   );
 }
 
@@ -640,33 +572,19 @@ function SaveProfileCard({
 }
 
 function SectionHeader({
-  icon: Icon,
-  eyebrow,
   title,
   description,
 }: {
-  icon: LucideIcon;
-  eyebrow: string;
   title: string;
   description: string;
 }) {
   return (
-    <div className="flex items-start gap-4">
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-        <Icon size={26} strokeWidth={2.4} />
-      </div>
+    <div>
+      <h2 className="text-2xl font-black text-slate-950">{title}</h2>
 
-      <div>
-        <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500">
-          {eyebrow}
-        </p>
-
-        <h2 className="mt-1 text-2xl font-black text-slate-950">{title}</h2>
-
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-          {description}
-        </p>
-      </div>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+        {description}
+      </p>
     </div>
   );
 }

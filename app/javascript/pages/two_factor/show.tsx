@@ -1,11 +1,10 @@
 import { useForm } from "@inertiajs/react";
 import { useState } from "react";
 import type { FormEvent } from "react";
-import AccountSettingsNav from "../../components/account/AccountSettingsNav";
 import {
   CheckCircle2,
   Copy,
-  KeyRound,
+  Info,
   LockKeyhole,
   ShieldCheck,
   Smartphone,
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import PasswordChecklist from "../../components/auth/PasswordChecklist";
+import AccountSettingsNav from "../../components/account/AccountSettingsNav";
 import LoadingButton from "../../components/ui/LoadingButton";
 import {
   FieldError,
@@ -187,105 +187,50 @@ export default function SecurityShow({
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-6xl space-y-8">
-        <PageHeader enabled={two_factor.enabled} />
+      <div className="mx-auto max-w-5xl space-y-8">
+        <SecurityHero />
 
         <AccountSettingsNav active="security" />
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <main className="space-y-8">
-            <PasswordSection
-              data={passwordForm.data}
-              errors={passwordErrors}
-              processing={passwordForm.processing}
-              onSubmit={handlePasswordSubmit}
-              onFieldChange={updatePasswordField}
-            />
+        <main className="space-y-8">
+          <PasswordSection
+            data={passwordForm.data}
+            errors={passwordErrors}
+            processing={passwordForm.processing}
+            onSubmit={handlePasswordSubmit}
+            onFieldChange={updatePasswordField}
+          />
 
-            <TwoFactorSection
-              twoFactor={two_factor}
-              data={twoFactorForm.data}
-              errors={twoFactorErrors}
-              processing={twoFactorForm.processing}
-              copied={copied}
-              onCopySetupKey={copySetupKey}
-              onSubmit={handleTwoFactorSubmit}
-              onFieldChange={updateTwoFactorField}
-            />
-          </main>
-
-          <SecuritySidePanel enabled={two_factor.enabled} />
-        </div>
+          <TwoFactorSection
+            twoFactor={two_factor}
+            data={twoFactorForm.data}
+            errors={twoFactorErrors}
+            processing={twoFactorForm.processing}
+            copied={copied}
+            onCopySetupKey={copySetupKey}
+            onSubmit={handleTwoFactorSubmit}
+            onFieldChange={updateTwoFactorField}
+          />
+        </main>
       </div>
     </AppLayout>
   );
 }
 
-function PageHeader({ enabled }: { enabled: boolean }) {
+function SecurityHero() {
   return (
-    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="bg-linear-to-r from-cyan-50 via-white to-white p-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400 text-white shadow-sm shadow-cyan-100">
-              <ShieldCheck size={28} strokeWidth={2.5} />
-            </div>
+    <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="max-w-2xl">
+        <h1 className="text-4xl font-black tracking-tight text-slate-950">
+          Security
+        </h1>
 
-            <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500">
-              Account Security
-            </p>
-
-            <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950">
-              Security
-            </h1>
-
-            <p className="mt-3 max-w-xl text-sm leading-7 text-slate-500">
-              Manage your password and protect your Slotify account with an
-              authenticator app.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <StatusPill
-              active
-              label="Password protected"
-              tone="cyan"
-            />
-
-            <StatusPill
-              active={enabled}
-              label={enabled ? "2FA enabled" : "2FA not enabled"}
-              tone={enabled ? "green" : "amber"}
-            />
-          </div>
-        </div>
+        <p className="mt-3 text-sm leading-7 text-slate-500">
+          Manage your password and protect your Slotify account with an
+          authenticator app.
+        </p>
       </div>
     </section>
-  );
-}
-
-function StatusPill({
-  active,
-  label,
-  tone,
-}: {
-  active: boolean;
-  label: string;
-  tone: "cyan" | "green" | "amber";
-}) {
-  const classes = {
-    cyan: "bg-cyan-50 text-cyan-600",
-    green: "bg-green-50 text-green-600",
-    amber: "bg-amber-50 text-amber-600",
-  };
-
-  return (
-    <div
-      className={`inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-extrabold ${classes[tone]}`}
-    >
-      {active ? <CheckCircle2 size={17} /> : <TriangleAlert size={17} />}
-      {label}
-    </div>
   );
 }
 
@@ -304,9 +249,7 @@ function PasswordSection({
 }) {
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-      <SectionHeading
-        icon={LockKeyhole}
-        eyebrow="Password"
+      <SectionHeader
         title="Change password"
         description="Use a strong password with uppercase, lowercase, number, and symbol."
       />
@@ -396,20 +339,22 @@ function TwoFactorSection({
   return (
     <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 p-8">
-        <SectionHeading
-          icon={ShieldCheck}
-          eyebrow="Two-Factor Authentication"
-          title={
-            twoFactor.enabled
-              ? "Your account is protected"
-              : "Add authenticator protection"
-          }
-          description={
-            twoFactor.enabled
-              ? "Slotify will ask for a 6-digit code after your password when you sign in."
-              : "Set up a code from Google Authenticator, Microsoft Authenticator, Authy, or 1Password."
-          }
-        />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <SectionHeader
+            title={
+              twoFactor.enabled
+                ? "Your account is protected"
+                : "Add authenticator protection"
+            }
+            description={
+              twoFactor.enabled
+                ? "Slotify will ask for a 6-digit code after your password when you sign in."
+                : "Use a 6-digit code from an authenticator app instead of waiting for email."
+            }
+          />
+
+          <TwoFactorStatus enabled={twoFactor.enabled} />
+        </div>
       </div>
 
       {!twoFactor.enabled && (
@@ -423,23 +368,11 @@ function TwoFactorSection({
       )}
 
       {twoFactor.enabled && (
-        <div className="border-b border-slate-100 bg-green-50 p-8">
-          <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-green-500 shadow-sm">
-              <CheckCircle2 size={26} strokeWidth={2.4} />
-            </div>
-
-            <div>
-              <h3 className="text-xl font-black text-slate-950">
-                Two-factor authentication is enabled
-              </h3>
-
-              <p className="mt-2 max-w-2xl text-sm leading-7 text-green-700">
-                Your next sign in will require your password and a temporary
-                authenticator code.
-              </p>
-            </div>
-          </div>
+        <div className="border-b border-slate-100 bg-green-50 px-8 py-5">
+          <InlineNote
+            tone="green"
+            text="Two-factor authentication is enabled. Your next login will require your password and an authenticator code."
+          />
         </div>
       )}
 
@@ -462,6 +395,13 @@ function TwoFactorSection({
             disabled={processing}
             autoComplete="current-password"
             onChange={(value) => onFieldChange("current_password", value)}
+          />
+        </div>
+
+        <div className="mt-5">
+          <InlineNote
+            tone="amber"
+            text="Keep access to your authenticator app. Without it, you may need admin help to recover your account."
           />
         </div>
 
@@ -497,6 +437,21 @@ function TwoFactorSection({
   );
 }
 
+function TwoFactorStatus({ enabled }: { enabled: boolean }) {
+  return (
+    <div
+      className={`inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-black ${
+        enabled
+          ? "bg-green-50 text-green-600"
+          : "bg-amber-50 text-amber-600"
+      }`}
+    >
+      {enabled ? <CheckCircle2 size={17} /> : <TriangleAlert size={17} />}
+      {enabled ? "2FA enabled" : "2FA not enabled"}
+    </div>
+  );
+}
+
 function SetupPanel({
   twoFactor,
   copied,
@@ -508,9 +463,9 @@ function SetupPanel({
 }) {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
-          <Smartphone size={27} strokeWidth={2.4} />
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
+          <Smartphone size={24} strokeWidth={2.4} />
         </div>
 
         <div className="min-w-0 flex-1">
@@ -519,14 +474,24 @@ function SetupPanel({
           </h3>
 
           <p className="mt-2 max-w-2xl text-sm leading-7 text-cyan-700">
-            Add a new account manually in your authenticator app, then paste the
-            setup key below.
+            Add a new account manually, copy the setup key, then enter the
+            6-digit code generated by the app.
           </p>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            <SetupStep number="1" title="Open app" />
-            <SetupStep number="2" title="Add account" />
-            <SetupStep number="3" title="Enter code" />
+          <div className="mt-4 flex flex-wrap gap-2">
+            {[
+              "Google Authenticator",
+              "Microsoft Authenticator",
+              "Authy",
+              "1Password",
+            ].map((app) => (
+              <span
+                key={app}
+                className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm"
+              >
+                {app}
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -574,121 +539,20 @@ function SetupPanel({
   );
 }
 
-function SetupStep({ number, title }: { number: string; title: string }) {
-  return (
-    <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-sm">
-      <p className="text-xs font-black text-cyan-500">Step {number}</p>
-      <p className="mt-1 text-sm font-extrabold text-slate-800">{title}</p>
-    </div>
-  );
-}
-
-function SecuritySidePanel({ enabled }: { enabled: boolean }) {
-  return (
-    <aside className="space-y-5">
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-          <KeyRound size={23} strokeWidth={2.4} />
-        </div>
-
-        <h2 className="text-lg font-black text-slate-950">Login security</h2>
-
-        <div className="mt-5 space-y-4">
-          <InfoRow
-            title="Password"
-            description="Your first sign-in layer."
-          />
-          <InfoRow
-            title="Authenticator code"
-            description="A temporary code generated on your device."
-          />
-          <InfoRow
-            title="No email delay"
-            description="2FA codes do not depend on Gmail or SendGrid."
-          />
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-cyan-100 bg-cyan-50 p-6">
-        <h2 className="text-lg font-black text-slate-950">
-          Recommended apps
-        </h2>
-
-        <p className="mt-2 text-sm font-semibold leading-6 text-cyan-700">
-          Any authenticator app that supports 6-digit TOTP codes will work.
-        </p>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          {[
-            "Google Authenticator",
-            "Microsoft Authenticator",
-            "Authy",
-            "1Password",
-          ].map((app) => (
-            <span
-              key={app}
-              className="rounded-full bg-white px-3 py-1.5 text-xs font-extrabold text-cyan-700 shadow-sm"
-            >
-              {app}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-amber-100 bg-amber-50 p-6">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-amber-500 shadow-sm">
-          <TriangleAlert size={23} strokeWidth={2.4} />
-        </div>
-
-        <h2 className="text-lg font-black text-slate-950">Recovery note</h2>
-
-        <p className="mt-2 text-sm font-semibold leading-6 text-amber-700">
-          Keep access to your authenticator app. Without it, you may need admin
-          help to recover your account.
-        </p>
-
-        <div
-          className={`mt-5 rounded-2xl px-4 py-3 text-xs font-extrabold ${
-            enabled ? "bg-green-100 text-green-700" : "bg-white text-amber-700"
-          }`}
-        >
-          {enabled
-            ? "2FA is currently protecting this account."
-            : "2FA is not enabled yet."}
-        </div>
-      </section>
-    </aside>
-  );
-}
-
-function SectionHeading({
-  icon: Icon,
-  eyebrow,
+function SectionHeader({
   title,
   description,
 }: {
-  icon: typeof ShieldCheck;
-  eyebrow: string;
   title: string;
   description: string;
 }) {
   return (
-    <div className="flex items-start gap-4">
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-        <Icon size={26} strokeWidth={2.4} />
-      </div>
+    <div>
+      <h2 className="text-2xl font-black text-slate-950">{title}</h2>
 
-      <div>
-        <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500">
-          {eyebrow}
-        </p>
-
-        <h2 className="mt-1 text-2xl font-black text-slate-950">{title}</h2>
-
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-          {description}
-        </p>
-      </div>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+        {description}
+      </p>
     </div>
   );
 }
@@ -782,24 +646,27 @@ function CodeField({
   );
 }
 
-function InfoRow({
-  title,
-  description,
+function InlineNote({
+  tone,
+  text,
 }: {
-  title: string;
-  description: string;
+  tone: "green" | "amber";
+  text: string;
 }) {
-  return (
-    <div className="flex gap-3">
-      <div className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-cyan-400" />
+  const toneClasses = {
+    green: "text-green-700",
+    amber: "text-amber-700",
+  };
 
-      <div>
-        <p className="text-sm font-extrabold text-slate-800">{title}</p>
-        <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">
-          {description}
-        </p>
-      </div>
-    </div>
+  const Icon = tone === "green" ? CheckCircle2 : Info;
+
+  return (
+    <p
+      className={`flex items-start gap-2 text-xs font-semibold leading-5 ${toneClasses[tone]}`}
+    >
+      <Icon size={15} className="mt-0.5 shrink-0" />
+      <span>{text}</span>
+    </p>
   );
 }
 

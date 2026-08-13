@@ -13,7 +13,7 @@ class PasswordSettingsController < ApplicationController
     if current_user.save
       bypass_sign_in(current_user)
 
-      redirect_to two_factor_path,
+      redirect_to security_path,
                   notice: "Password updated successfully."
     else
       render_security_error(current_user.errors.to_hash)

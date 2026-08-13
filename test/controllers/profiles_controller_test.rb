@@ -81,28 +81,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "updated-member@slotify.test", @member.unconfirmed_email
   end
 
-  test "password change requires valid current password" do
-    sign_in @member
-
-    patch profile_path,
-          params: {
-            user: {
-              name: @member.name,
-              email: @member.email,
-              current_password: "WrongPassword123!",
-              password: "NewPassword123!",
-              password_confirmation: "NewPassword123!"
-            }
-          }
-
-    assert_response :unprocessable_entity
-
-    @member.reload
-
-    assert @member.valid_password?("Password123!")
-  end
-
-  test "user can change password with current password" do
+  test "profile update does not change password" do
     sign_in @member
 
     patch profile_path,
@@ -120,7 +99,8 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
     @member.reload
 
-    assert @member.valid_password?("NewPassword123!")
+    assert @member.valid_password?("Password123!")
+    assert_not @member.valid_password?("NewPassword123!")
   end
 
   test "user can upload avatar" do
