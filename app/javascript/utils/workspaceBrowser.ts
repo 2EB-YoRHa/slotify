@@ -1,5 +1,7 @@
 import type { Workspace } from "../types/workspace";
 import type {
+  WorkspaceCapacityFilter,
+  WorkspacePriceFilter,
   WorkspaceSortOption,
   WorkspaceStatusFilter,
 } from "../types/workspaceBrowser";
@@ -36,6 +38,45 @@ export function workspaceMatchesStatus(
     statusFilter === "all" ||
     (statusFilter === "active" && workspace.active) ||
     (statusFilter === "inactive" && !workspace.active)
+  );
+}
+
+export function workspaceMatchesCapacity(
+  workspace: Workspace,
+  capacityFilter: WorkspaceCapacityFilter,
+): boolean {
+  const capacity = Number(workspace.capacity || 0);
+
+  return (
+    capacityFilter === "all" ||
+    (capacityFilter === "1-4" && capacity >= 1 && capacity <= 4) ||
+    (capacityFilter === "5-10" && capacity >= 5 && capacity <= 10) ||
+    (capacityFilter === "10+" && capacity > 10)
+  );
+}
+
+export function workspaceMatchesPrice(
+  workspace: Workspace,
+  priceFilter: WorkspacePriceFilter,
+): boolean {
+  const hourlyRate = Number(workspace.hourly_rate || 0);
+
+  return (
+    priceFilter === "all" ||
+    (priceFilter === "0-25" && hourlyRate <= 25) ||
+    (priceFilter === "25-75" && hourlyRate > 25 && hourlyRate <= 75) ||
+    (priceFilter === "75+" && hourlyRate > 75)
+  );
+}
+
+export function workspaceMatchesAmenity(
+  workspace: Workspace,
+  amenityFilter: string,
+): boolean {
+  if (amenityFilter === "all") return true;
+
+  return (workspace.amenities || []).some(
+    (amenity) => amenity.name === amenityFilter,
   );
 }
 
