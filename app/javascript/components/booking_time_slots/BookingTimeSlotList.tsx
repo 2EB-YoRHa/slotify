@@ -1,5 +1,6 @@
 import { router } from "@inertiajs/react";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   CalendarDays,
   Clock3,
@@ -19,10 +20,35 @@ export default function BookingTimeSlotList({
   bookingTimeSlots,
 }: BookingTimeSlotListProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [dirtyEditing, setDirtyEditing] = useState(false);
+  const [pendingEditId, setPendingEditId] = useState<number | null>(null);
   const [slotToDelete, setSlotToDelete] = useState<BookingTimeSlot | null>(
     null,
   );
   const [processingDelete, setProcessingDelete] = useState(false);
+
+  function requestEdit(slotId: number) {
+    if (editingId && editingId !== slotId && dirtyEditing) {
+      setPendingEditId(slotId);
+      return;
+    }
+
+    setDirtyEditing(false);
+    setEditingId(slotId);
+  }
+
+  function confirmSwitchEdit() {
+    if (!pendingEditId) return;
+
+    setEditingId(pendingEditId);
+    setPendingEditId(null);
+    setDirtyEditing(false);
+  }
+
+  function cancelEdit() {
+    setDirtyEditing(false);
+    setEditingId(null);
+  }
 
   function confirmDeleteSlot() {
     if (!slotToDelete) return;
@@ -52,12 +78,13 @@ export default function BookingTimeSlotList({
               {editing ? (
                 <BookingTimeSlotForm
                   bookingTimeSlot={slot}
-                  onCancel={() => setEditingId(null)}
+                  onCancel={cancelEdit}
+                  onDirtyChange={setDirtyEditing}
                 />
               ) : (
                 <TimeSlotCard
                   slot={slot}
-                  onEdit={() => setEditingId(slot.id)}
+                  onEdit={() => requestEdit(slot.id)}
                   onDelete={() => setSlotToDelete(slot)}
                 />
               )}
@@ -65,6 +92,17 @@ export default function BookingTimeSlotList({
           );
         })}
       </div>
+
+      <ConfirmDialog
+        open={Boolean(pendingEditId)}
+        title="Discard current time slot changes?"
+        description="You are editing another time slot. If you continue, your unsaved changes will be lost."
+        confirmText="Discard Changes"
+        cancelText="Keep Editing"
+        danger
+        onCancel={() => setPendingEditId(null)}
+        onConfirm={confirmSwitchEdit}
+      />
 
       <ConfirmDialog
         open={Boolean(slotToDelete)}
@@ -202,7 +240,7 @@ function IconButton({
   danger?: boolean;
   disabled: boolean;
   onClick: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button

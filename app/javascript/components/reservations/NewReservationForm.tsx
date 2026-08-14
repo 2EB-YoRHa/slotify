@@ -2,6 +2,9 @@ import { useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
 import type { FormEvent } from "react";
 import { useState } from "react";
+import ConfirmDialog from "../ui/ConfirmDialog";
+import useUnsavedChangesGuard from "../../hooks/useUnsavedChangesGuard";
+import { normalizeNumber, normalizeString } from "../../utils/dirtyForm";
 import {
   hasActiveCustomTimeSlots,
   reservationTimeSlotsForDate,
@@ -129,16 +132,18 @@ export default function NewReservationForm({
 
   const noCustomSlotsForSelectedDate = hasCustomSlots && timeSlots.length === 0;
 
+  const initialReservationData: ReservationFormData = {
+    reservation: {
+      workspace_id: validSelectedWorkspaceId,
+      start_time: defaultStartTime,
+      end_time: defaultEndTime,
+      attendees_count: 1,
+      notes: "",
+    },
+  };
+
   const { data, setData, post, processing, errors } =
-    useForm<ReservationFormData>({
-      reservation: {
-        workspace_id: validSelectedWorkspaceId,
-        start_time: defaultStartTime,
-        end_time: defaultEndTime,
-        attendees_count: 1,
-        notes: "",
-      },
-    });
+    useForm<ReservationFormData>(initialReservationData);
 
   const selectedWorkspace = workspaces.find(
     (workspace) => workspace.id === Number(data.reservation.workspace_id),
@@ -200,6 +205,21 @@ export default function NewReservationForm({
     !ruleViolation &&
     !selectedWorkspaceUnavailable &&
     !attendeesExceedCapacity;
+
+  const formDirty = newReservationFormChanged(data, initialReservationData);
+
+  const cancelHref = selectedWorkspace
+    ? `/workspaces/${selectedWorkspace.id}`
+    : "/reservations";
+
+  const unsavedChangesGuard = useUnsavedChangesGuard({
+    enabled: formDirty && !processing,
+    title: "Discard new reservation?",
+    description:
+      "You have started creating a reservation. If you leave now, the selected workspace, schedule, attendees, and notes will be lost.",
+    confirmText: "Discard Reservation",
+    cancelText: "Keep Editing",
+  });
 
   function handleDateChange(date: string) {
     const nextTimeSlots = reservationTimeSlotsForDate({
@@ -332,6 +352,8 @@ export default function NewReservationForm({
     if (hasValidationErrors(validationErrors)) return;
     if (!canSubmit) return;
 
+    unsavedChangesGuard.allowNextNavigation();
+
     post("/reservations");
   }
 
@@ -347,82 +369,100 @@ export default function NewReservationForm({
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
-      <motion.section
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.12 }}
-        className="col-span-2 space-y-8"
+    <>
+      <form
+        noValidate
+        onSubmit={handleSubmit}
+        className="grid grid-cols-3 gap-8"
       >
-        <ReservationDateTimeSection
-          selectedDate={selectedDate}
-          selectedSlot={selectedSlot}
-          timeSlots={timeSlots}
-          search={search}
-          processing={processing}
-          checkingAvailability={checkingAvailability}
-          availabilityChecked={availabilityChecked}
-          availabilityError={availabilityError}
-          unavailableCount={unavailableWorkspaceIds.length}
-          minNoticeViolation={minNoticeViolation}
-          minNoticeMinutes={minNoticeMinutes || 0}
-          weekendViolation={weekendViolation}
-          baseErrors={baseErrors}
-          minDate={today}
-          selectedWorkspaceName={selectedWorkspace?.name || null}
-          workspacePickerVisible={showWorkspacePicker}
-          onDateChange={handleDateChange}
-          onSlotChange={handleSlotChange}
-          onSearchChange={setSearch}
-          onRefreshAvailability={() => void checkAvailability()}
-          onToggleWorkspacePicker={() =>
-            setShowWorkspacePicker((value) => !value)
-          }
-        />
-
-        {(showWorkspacePicker || !selectedWorkspace) && (
-          <AvailableWorkspaceGrid
-            workspaces={workspaces}
-            filteredWorkspaces={filteredWorkspaces}
-            selectedWorkspaceId={data.reservation.workspace_id}
-            unavailableWorkspaceIds={unavailableWorkspaceIds}
-            availabilityChecked={availabilityChecked}
+        <motion.section
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="col-span-2 space-y-8"
+        >
+          <ReservationDateTimeSection
+            selectedDate={selectedDate}
+            selectedSlot={selectedSlot}
+            timeSlots={timeSlots}
+            search={search}
             processing={processing}
-            onSelectWorkspace={selectWorkspace}
+            checkingAvailability={checkingAvailability}
+            availabilityChecked={availabilityChecked}
+            availabilityError={availabilityError}
+            unavailableCount={unavailableWorkspaceIds.length}
+            minNoticeViolation={minNoticeViolation}
+            minNoticeMinutes={minNoticeMinutes || 0}
+            weekendViolation={weekendViolation}
+            baseErrors={baseErrors}
+            minDate={today}
+            selectedWorkspaceName={selectedWorkspace?.name || null}
+            workspacePickerVisible={showWorkspacePicker}
+            onDateChange={handleDateChange}
+            onSlotChange={handleSlotChange}
+            onSearchChange={setSearch}
+            onRefreshAvailability={() => void checkAvailability()}
+            onToggleWorkspacePicker={() =>
+              setShowWorkspacePicker((value) => !value)
+            }
           />
-        )}
-      </motion.section>
 
-      <motion.aside
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.16 }}
-        className="space-y-6"
-      >
-        <ReservationSummaryPanel
-          selectedWorkspace={selectedWorkspace}
-          selectedDate={selectedDate}
-          selectedSlotLabel={selectedSlot.label}
-          attendeesCount={data.reservation.attendees_count}
-          notes={data.reservation.notes}
-          errors={allErrors}
-          estimatedTotal={estimatedTotal}
-          availabilityChecked={availabilityChecked}
-          ruleViolation={ruleViolation}
-          selectedWorkspaceUnavailable={selectedWorkspaceUnavailable}
-          attendeesExceedCapacity={attendeesExceedCapacity}
-          minNoticeViolation={minNoticeViolation}
-          minNoticeMinutes={minNoticeMinutes || 0}
-          weekendViolation={weekendViolation}
-          processing={processing}
-          canSubmit={canSubmit}
-          onAttendeesChange={(value) =>
-            updateReservation({ attendees_count: value })
-          }
-          onNotesChange={(value) => updateReservation({ notes: value })}
-        />
-      </motion.aside>
-    </form>
+          {(showWorkspacePicker || !selectedWorkspace) && (
+            <AvailableWorkspaceGrid
+              workspaces={workspaces}
+              filteredWorkspaces={filteredWorkspaces}
+              selectedWorkspaceId={data.reservation.workspace_id}
+              unavailableWorkspaceIds={unavailableWorkspaceIds}
+              availabilityChecked={availabilityChecked}
+              processing={processing}
+              onSelectWorkspace={selectWorkspace}
+            />
+          )}
+        </motion.section>
+
+        <motion.aside
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16 }}
+          className="space-y-6"
+        >
+          <ReservationSummaryPanel
+            selectedWorkspace={selectedWorkspace}
+            selectedDate={selectedDate}
+            selectedSlotLabel={selectedSlot.label}
+            attendeesCount={data.reservation.attendees_count}
+            notes={data.reservation.notes}
+            errors={allErrors}
+            estimatedTotal={estimatedTotal}
+            availabilityChecked={availabilityChecked}
+            ruleViolation={ruleViolation}
+            selectedWorkspaceUnavailable={selectedWorkspaceUnavailable}
+            attendeesExceedCapacity={attendeesExceedCapacity}
+            minNoticeViolation={minNoticeViolation}
+            minNoticeMinutes={minNoticeMinutes || 0}
+            weekendViolation={weekendViolation}
+            processing={processing}
+            canSubmit={canSubmit}
+            onAttendeesChange={(value) =>
+              updateReservation({ attendees_count: value })
+            }
+            onNotesChange={(value) => updateReservation({ notes: value })}
+            onCancel={() => unsavedChangesGuard.guardedVisit(cancelHref)}
+          />
+        </motion.aside>
+      </form>
+
+      <ConfirmDialog
+        open={unsavedChangesGuard.confirmOpen}
+        title={unsavedChangesGuard.title}
+        description={unsavedChangesGuard.description}
+        confirmText={unsavedChangesGuard.confirmText}
+        cancelText={unsavedChangesGuard.cancelText}
+        danger
+        onCancel={unsavedChangesGuard.cancelNavigation}
+        onConfirm={unsavedChangesGuard.confirmNavigation}
+      />
+    </>
   );
 }
 
@@ -510,4 +550,22 @@ function filterWorkspaces(workspaces: Workspace[], search: string) {
 
     return searchableText.includes(query);
   });
+}
+
+function newReservationFormChanged(
+  data: ReservationFormData,
+  initialData: ReservationFormData,
+): boolean {
+  return (
+    normalizeNumber(data.reservation.workspace_id) !==
+      normalizeNumber(initialData.reservation.workspace_id) ||
+    normalizeString(data.reservation.start_time) !==
+      normalizeString(initialData.reservation.start_time) ||
+    normalizeString(data.reservation.end_time) !==
+      normalizeString(initialData.reservation.end_time) ||
+    normalizeNumber(data.reservation.attendees_count) !==
+      normalizeNumber(initialData.reservation.attendees_count) ||
+    normalizeString(data.reservation.notes) !==
+      normalizeString(initialData.reservation.notes)
+  );
 }

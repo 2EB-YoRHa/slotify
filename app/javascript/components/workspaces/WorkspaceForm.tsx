@@ -12,6 +12,14 @@ import {
   validateTextLength,
   type ValidationErrors,
 } from "../../utils/clientValidation";
+import {
+  normalizeNumber,
+  normalizeString,
+  sameNumberArray,
+} from "../../utils/dirtyForm";
+import useUnsavedChangesGuard from "../../hooks/useUnsavedChangesGuard";
+import ConfirmDialog from "../ui/ConfirmDialog";
+import GuardedBackButton from "../ui/GuardedBackButton";
 import WorkspaceAmenitiesSection from "./form/WorkspaceAmenitiesSection";
 import WorkspaceInformationSection from "./form/WorkspaceInformationSection";
 import WorkspaceSummaryPanel from "./form/WorkspaceSummaryPanel";
@@ -32,6 +40,10 @@ type WorkspaceFormProps = {
   multipleWorkspacePhotosEnabled?: boolean;
   multiple_workspace_photos_enabled?: boolean;
   errors?: Partial<Record<string, string | string[]>>;
+  backHref?: string;
+  backLabel?: string;
+  title?: string;
+  description?: string;
 };
 
 export default function WorkspaceForm({
@@ -42,6 +54,10 @@ export default function WorkspaceForm({
   multipleWorkspacePhotosEnabled = false,
   multiple_workspace_photos_enabled = false,
   errors: initialErrors = {},
+  backHref = "/workspaces",
+  backLabel,
+  title,
+  description,
 }: WorkspaceFormProps) {
   const isEditing = Boolean(workspace?.id);
   const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
@@ -52,15 +68,7 @@ export default function WorkspaceForm({
   const initialAmenityIds =
     selectedAmenityIds.length > 0 ? selectedAmenityIds : selected_amenity_ids;
 
-  const {
-    data,
-    setData,
-    post,
-    patch,
-    processing,
-    errors: formErrors,
-    transform,
-  } = useForm<WorkspaceFormData>({
+  const initialWorkspaceData: WorkspaceFormData = {
     name: workspace?.name || "",
     workspace_type: workspace?.workspace_type || "meeting_room",
     capacity: workspace?.capacity || 1,
@@ -73,13 +81,35 @@ export default function WorkspaceForm({
     amenity_ids: initialAmenityIds,
     photo: null,
     extra_photos: [],
-  });
+  };
+
+  const {
+    data,
+    setData,
+    post,
+    patch,
+    processing,
+    errors: formErrors,
+    transform,
+  } = useForm<WorkspaceFormData>(initialWorkspaceData);
 
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
     ...clientErrors,
   };
+
+  const formDirty = workspaceFormChanged(data, initialWorkspaceData);
+
+  const unsavedChangesGuard = useUnsavedChangesGuard({
+    enabled: formDirty && !processing,
+    title: isEditing ? "Discard workspace changes?" : "Discard new workspace?",
+    description: isEditing
+      ? "You have unsaved changes for this workspace. If you leave now, those changes will be lost."
+      : "You have started creating a workspace. If you leave now, the information entered will be lost.",
+    confirmText: isEditing ? "Discard Changes" : "Discard Workspace",
+    cancelText: "Keep Editing",
+  });
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -115,6 +145,8 @@ export default function WorkspaceForm({
         workspace: payload,
       };
     });
+
+    unsavedChangesGuard.allowNextNavigation();
 
     if (isEditing && workspace?.id) {
       patch(`/workspaces/${workspace.id}`, {
@@ -163,61 +195,109 @@ export default function WorkspaceForm({
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
-      <motion.section
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.12 }}
-        className="col-span-2 space-y-8"
-      >
-        <WorkspaceInformationSection
-          data={data}
-          errors={errors}
-          processing={processing}
-          currentPhotoUrl={workspace?.photo_url}
-          currentPhotoFilename={workspace?.photo_filename}
-          existingExtraPhotoCount={workspace?.extra_photos?.length || 0}
-          existingExtraPhotos={workspace?.extra_photos || []}
-          multipleWorkspacePhotosEnabled={extraPhotosEnabled}
-          onNameChange={(value) => updateField("name", value)}
-          onWorkspaceTypeChange={(value) =>
-            updateField("workspace_type", value)
-          }
-          onCapacityChange={(value) => updateField("capacity", value)}
-          onHourlyRateChange={(value) => updateField("hourly_rate", value)}
-          onFloorChange={(value) => updateField("floor", value)}
-          onZoneChange={(value) => updateField("zone", value)}
-          onLocationChange={(value) => updateField("location", value)}
-          onDescriptionChange={(value) => updateField("description", value)}
-          onPhotoChange={(file) => updateField("photo", file)}
-          onExtraPhotosChange={(files) => updateField("extra_photos", files)}
-        />
+    <>
+      <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <GuardedBackButton
+            disabled={processing}
+            onClick={() => unsavedChangesGuard.guardedVisit(backHref)}
+          >
+            {backLabel || (isEditing ? "Back to Workspace" : "Back to Workspaces")}
+          </GuardedBackButton>
+        </motion.div>
 
-        <WorkspaceAmenitiesSection
-          amenities={amenities}
-          selectedAmenityIds={data.amenity_ids}
-          processing={processing}
-          error={errors.amenity_ids || errors["workspace.amenity_ids"]}
-          onToggleAmenity={toggleAmenity}
-        />
-      </motion.section>
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 }}
+          className="mt-6 text-3xl font-bold text-slate-950"
+        >
+          {title || (isEditing ? "Edit Workspace" : "Create Workspace")}
+        </motion.h1>
 
-      <motion.aside
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.16 }}
-        className="space-y-6"
-      >
-        <WorkspaceSummaryPanel
-          workspace={workspace}
-          data={data}
-          errors={errors}
-          isEditing={isEditing}
-          processing={processing}
-          onActiveChange={(checked) => updateField("active", checked)}
-        />
-      </motion.aside>
-    </form>
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mt-2 max-w-2xl text-slate-500"
+        >
+          {description ||
+            (isEditing
+              ? "Update capacity, pricing, location, amenities, and availability for this workspace."
+              : "Add a bookable space with capacity, pricing, location details, and amenities.")}
+        </motion.p>
+      </div>
+
+      <form noValidate onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
+        <motion.section
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="col-span-2 space-y-8"
+        >
+          <WorkspaceInformationSection
+            data={data}
+            errors={errors}
+            processing={processing}
+            currentPhotoUrl={workspace?.photo_url}
+            currentPhotoFilename={workspace?.photo_filename}
+            existingExtraPhotoCount={workspace?.extra_photos?.length || 0}
+            existingExtraPhotos={workspace?.extra_photos || []}
+            multipleWorkspacePhotosEnabled={extraPhotosEnabled}
+            onNameChange={(value) => updateField("name", value)}
+            onWorkspaceTypeChange={(value) =>
+              updateField("workspace_type", value)
+            }
+            onCapacityChange={(value) => updateField("capacity", value)}
+            onHourlyRateChange={(value) => updateField("hourly_rate", value)}
+            onFloorChange={(value) => updateField("floor", value)}
+            onZoneChange={(value) => updateField("zone", value)}
+            onLocationChange={(value) => updateField("location", value)}
+            onDescriptionChange={(value) => updateField("description", value)}
+            onPhotoChange={(file) => updateField("photo", file)}
+            onExtraPhotosChange={(files) => updateField("extra_photos", files)}
+          />
+
+          <WorkspaceAmenitiesSection
+            amenities={amenities}
+            selectedAmenityIds={data.amenity_ids}
+            processing={processing}
+            error={errors.amenity_ids || errors["workspace.amenity_ids"]}
+            onToggleAmenity={toggleAmenity}
+          />
+        </motion.section>
+
+        <motion.aside
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16 }}
+          className="space-y-6"
+        >
+          <WorkspaceSummaryPanel
+            workspace={workspace}
+            data={data}
+            errors={errors}
+            isEditing={isEditing}
+            processing={processing}
+            onActiveChange={(checked) => updateField("active", checked)}
+          />
+        </motion.aside>
+      </form>
+
+      <ConfirmDialog
+        open={unsavedChangesGuard.confirmOpen}
+        title={unsavedChangesGuard.title}
+        description={unsavedChangesGuard.description}
+        confirmText={unsavedChangesGuard.confirmText}
+        cancelText={unsavedChangesGuard.cancelText}
+        danger
+        onCancel={unsavedChangesGuard.cancelNavigation}
+        onConfirm={unsavedChangesGuard.confirmNavigation}
+      />
+    </>
   );
 }
 
@@ -284,4 +364,27 @@ function validateWorkspaceForm(data: WorkspaceFormData): ValidationErrors {
   if (descriptionError) errors.description = descriptionError;
 
   return errors;
+}
+
+function workspaceFormChanged(
+  data: WorkspaceFormData,
+  initialData: WorkspaceFormData,
+): boolean {
+  return (
+    normalizeString(data.name) !== normalizeString(initialData.name) ||
+    normalizeString(data.workspace_type) !==
+      normalizeString(initialData.workspace_type) ||
+    normalizeNumber(data.capacity) !== normalizeNumber(initialData.capacity) ||
+    normalizeString(data.floor) !== normalizeString(initialData.floor) ||
+    normalizeString(data.zone) !== normalizeString(initialData.zone) ||
+    normalizeString(data.location) !== normalizeString(initialData.location) ||
+    normalizeString(data.description) !==
+      normalizeString(initialData.description) ||
+    normalizeNumber(data.hourly_rate) !==
+      normalizeNumber(initialData.hourly_rate) ||
+    Boolean(data.active) !== Boolean(initialData.active) ||
+    !sameNumberArray(data.amenity_ids, initialData.amenity_ids) ||
+    data.photo instanceof File ||
+    data.extra_photos.length > 0
+  );
 }

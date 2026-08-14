@@ -1,4 +1,3 @@
-import { Link } from "@inertiajs/react";
 import AppLayout from "../../components/AppLayout";
 import EditReservationForm from "../../components/reservations/EditReservationForm";
 import type { BookingRule } from "../../types/bookingRule";
@@ -27,25 +26,16 @@ export default function EditReservation({
 }: EditReservationProps) {
   return (
     <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">
-            Edit Reservation
-          </h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">
+          Edit Reservation
+        </h1>
 
-          <p className="mt-1 text-slate-500">
-            {can_manage_status
-              ? "Update workspace, schedule, attendees, notes, or reservation status."
-              : "Update workspace, schedule, attendees, or notes for your booking."}
-          </p>
-        </div>
-
-        <Link
-          href={`/reservations/${reservation.id}`}
-          className="rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
-        >
-          Back to Details
-        </Link>
+        <p className="mt-1 text-slate-500">
+          {can_manage_status
+            ? "Update workspace, schedule, attendees, notes, or reservation status."
+            : "Update workspace, schedule, attendees, or notes for your booking."}
+        </p>
       </div>
 
       <EditReservationForm

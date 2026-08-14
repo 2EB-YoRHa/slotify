@@ -1,6 +1,7 @@
 import { useForm } from "@inertiajs/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
   Clock3,
   LockKeyhole,
@@ -8,12 +9,18 @@ import {
   ToggleLeft,
 } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
+import ConfirmDialog from "../ui/ConfirmDialog";
+import useUnsavedChangesGuard from "../../hooks/useUnsavedChangesGuard";
 import {
   FieldError,
   RequiredMark,
   formInputClassName,
   hasFieldError,
 } from "../ui/FormFeedback";
+import {
+  normalizeString,
+  sameStringArray,
+} from "../../utils/dirtyForm";
 import type {
   BookingTimeSlot,
   BookingTimeSlotFormData,
@@ -23,6 +30,7 @@ type BookingTimeSlotFormProps = {
   bookingTimeSlot?: BookingTimeSlot | null;
   disabled?: boolean;
   onCancel?: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 const DAYS = [
@@ -47,9 +55,22 @@ export default function BookingTimeSlotForm({
   bookingTimeSlot = null,
   disabled = false,
   onCancel,
+  onDirtyChange,
 }: BookingTimeSlotFormProps) {
   const isEditing = Boolean(bookingTimeSlot?.id);
   const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
+  const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
+
+  const initialFormData: BookingTimeSlotFormData = {
+    name: bookingTimeSlot?.name || "",
+    start_time: minuteToTime(bookingTimeSlot?.start_minute ?? 8 * 60),
+    end_time: minuteToTime(bookingTimeSlot?.end_minute ?? 12 * 60),
+    days_of_week:
+      bookingTimeSlot?.days ||
+      daysFromString(bookingTimeSlot?.days_of_week) ||
+      DEFAULT_DAYS,
+    active: bookingTimeSlot?.active ?? true,
+  };
 
   const {
     data,
@@ -60,21 +81,29 @@ export default function BookingTimeSlotForm({
     errors,
     reset,
     transform,
-  } = useForm<BookingTimeSlotFormData>({
-    name: bookingTimeSlot?.name || "",
-    start_time: minuteToTime(bookingTimeSlot?.start_minute ?? 8 * 60),
-    end_time: minuteToTime(bookingTimeSlot?.end_minute ?? 12 * 60),
-    days_of_week:
-      bookingTimeSlot?.days ||
-      daysFromString(bookingTimeSlot?.days_of_week) ||
-      DEFAULT_DAYS,
-    active: bookingTimeSlot?.active ?? true,
-  });
+  } = useForm<BookingTimeSlotFormData>(initialFormData);
 
   const mergedErrors: Record<string, string | string[] | undefined> = {
     ...errors,
     ...clientErrors,
   };
+
+  const locked = disabled || processing;
+  const formDirty = bookingTimeSlotFormChanged(data, initialFormData);
+
+  const unsavedChangesGuard = useUnsavedChangesGuard({
+    enabled: formDirty && !locked,
+    title: isEditing ? "Discard time slot changes?" : "Discard new time slot?",
+    description: isEditing
+      ? "You have unsaved changes for this time slot. If you leave now, those changes will be lost."
+      : "You have started creating a time slot. If you leave now, the information entered will be lost.",
+    confirmText: isEditing ? "Discard Changes" : "Discard Time Slot",
+    cancelText: "Keep Editing",
+  });
+
+  useEffect(() => {
+    onDirtyChange?.(formDirty);
+  }, [formDirty, onDirtyChange]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -94,10 +123,15 @@ export default function BookingTimeSlotForm({
       },
     }));
 
+    unsavedChangesGuard.allowNextNavigation();
+
     if (isEditing && bookingTimeSlot?.id) {
       patch(`/booking_time_slots/${bookingTimeSlot.id}`, {
         preserveScroll: true,
-        onSuccess: () => onCancel?.(),
+        onSuccess: () => {
+          onDirtyChange?.(false);
+          onCancel?.();
+        },
       });
     } else {
       post("/booking_time_slots", {
@@ -112,9 +146,30 @@ export default function BookingTimeSlotForm({
             days_of_week: DEFAULT_DAYS,
             active: true,
           });
+
+          setClientErrors({});
+          onDirtyChange?.(false);
         },
       });
     }
+  }
+
+  function requestCancel() {
+    if (!onCancel) return;
+
+    if (formDirty) {
+      setCancelConfirmOpen(true);
+      return;
+    }
+
+    onDirtyChange?.(false);
+    onCancel();
+  }
+
+  function confirmCancel() {
+    setCancelConfirmOpen(false);
+    onDirtyChange?.(false);
+    onCancel?.();
   }
 
   function toggleDay(day: string) {
@@ -141,174 +196,196 @@ export default function BookingTimeSlotForm({
     });
   }
 
-  const locked = disabled || processing;
-
   return (
-    <form noValidate onSubmit={handleSubmit} className="space-y-5">
-      {disabled && (
-        <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
-          <div className="flex items-start gap-3">
-            <LockKeyhole
-              size={18}
-              className="mt-0.5 shrink-0 text-amber-500"
-            />
+    <>
+      <form noValidate onSubmit={handleSubmit} className="space-y-5">
+        {disabled && (
+          <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+            <div className="flex items-start gap-3">
+              <LockKeyhole
+                size={18}
+                className="mt-0.5 shrink-0 text-amber-500"
+              />
 
-            <p className="text-sm font-semibold leading-6 text-amber-700">
-              Upgrade to Pro to create and manage custom time slots.
-            </p>
-          </div>
-        </div>
-      )}
-
-      <TextInput
-        label="Time Slot Name"
-        icon={Tag}
-        value={data.name}
-        placeholder="Enter time slot name"
-        disabled={locked}
-        error={fieldError(mergedErrors, "name")}
-        required
-        onChange={(value) => {
-          clearError("name");
-          setData("name", value);
-        }}
-      />
-
-      <div className="grid grid-cols-2 gap-4">
-        <TextInput
-          label="Start Time"
-          icon={Clock3}
-          type="time"
-          value={data.start_time}
-          disabled={locked}
-          error={fieldError(mergedErrors, "start_time")}
-          required
-          onChange={(value) => {
-            clearError("start_time");
-            setData("start_time", value);
-          }}
-        />
-
-        <TextInput
-          label="End Time"
-          icon={Clock3}
-          type="time"
-          value={data.end_time}
-          disabled={locked}
-          error={fieldError(mergedErrors, "end_time")}
-          required
-          onChange={(value) => {
-            clearError("end_time");
-            setData("end_time", value);
-          }}
-        />
-      </div>
-
-      <div>
-        <div className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-950">
-          Active Days
-          <RequiredMark show />
-        </div>
-
-        <div className="grid grid-cols-7 gap-2">
-          {DAYS.map((day) => {
-            const selected = data.days_of_week.includes(day.value);
-
-            return (
-              <button
-                key={day.value}
-                type="button"
-                disabled={locked}
-                onClick={() => toggleDay(day.value)}
-                className={`rounded-xl border px-3 py-3 text-sm font-extrabold transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                  selected
-                    ? "border-cyan-200 bg-cyan-50 text-cyan-600"
-                    : "border-slate-200 bg-white text-slate-500 hover:border-cyan-100 hover:text-cyan-600"
-                }`}
-              >
-                {day.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <FieldError
-          error={fieldError(mergedErrors, "days_of_week")}
-          label="Active Days"
-        />
-      </div>
-
-      <div
-        className={`rounded-2xl border p-5 ${
-          data.active
-            ? "border-cyan-100 bg-cyan-50"
-            : "border-slate-200 bg-slate-50"
-        }`}
-      >
-        <div className="flex items-start justify-between gap-6">
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
-              <ToggleLeft size={19} strokeWidth={2.4} />
-            </div>
-
-            <div>
-              <p className="font-bold text-slate-950">Time Slot Status</p>
-
-              <p className="mt-1 text-sm leading-6 text-slate-500">
-                Inactive time slots stay saved but should not be used for new
-                scheduling options.
+              <p className="text-sm font-semibold leading-6 text-amber-700">
+                Upgrade to Pro to create and manage custom time slots.
               </p>
             </div>
           </div>
-
-          <label className="flex cursor-pointer items-center gap-3">
-            <span
-              className={`text-sm font-bold ${
-                data.active ? "text-cyan-600" : "text-slate-400"
-              }`}
-            >
-              {data.active ? "Active" : "Inactive"}
-            </span>
-
-            <input
-              type="checkbox"
-              checked={data.active}
-              disabled={locked}
-              onChange={(event) => setData("active", event.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-cyan-400"
-            />
-          </label>
-        </div>
-      </div>
-
-      <div className="flex justify-end gap-3">
-        {isEditing && (
-          <button
-            type="button"
-            disabled={processing}
-            onClick={onCancel}
-            className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Cancel
-          </button>
         )}
 
-        <LoadingButton
-          type="submit"
-          loading={processing}
-          disabled={disabled}
-          loadingText={isEditing ? "Saving..." : "Creating..."}
+        <TextInput
+          label="Time Slot Name"
+          icon={Tag}
+          value={data.name}
+          placeholder="Enter time slot name"
+          disabled={locked}
+          error={fieldError(mergedErrors, "name")}
+          required
+          onChange={(value) => {
+            clearError("name");
+            setData("name", value);
+          }}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <TextInput
+            label="Start Time"
+            icon={Clock3}
+            type="time"
+            value={data.start_time}
+            disabled={locked}
+            error={fieldError(mergedErrors, "start_time")}
+            required
+            onChange={(value) => {
+              clearError("start_time");
+              setData("start_time", value);
+            }}
+          />
+
+          <TextInput
+            label="End Time"
+            icon={Clock3}
+            type="time"
+            value={data.end_time}
+            disabled={locked}
+            error={fieldError(mergedErrors, "end_time")}
+            required
+            onChange={(value) => {
+              clearError("end_time");
+              setData("end_time", value);
+            }}
+          />
+        </div>
+
+        <div>
+          <div className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-950">
+            Active Days
+            <RequiredMark show />
+          </div>
+
+          <div className="grid grid-cols-7 gap-2">
+            {DAYS.map((day) => {
+              const selected = data.days_of_week.includes(day.value);
+
+              return (
+                <button
+                  key={day.value}
+                  type="button"
+                  disabled={locked}
+                  onClick={() => toggleDay(day.value)}
+                  className={`rounded-xl border px-3 py-3 text-sm font-extrabold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                    selected
+                      ? "border-cyan-200 bg-cyan-50 text-cyan-600"
+                      : "border-slate-200 bg-white text-slate-500 hover:border-cyan-100 hover:text-cyan-600"
+                  }`}
+                >
+                  {day.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <FieldError
+            error={fieldError(mergedErrors, "days_of_week")}
+            label="Active Days"
+          />
+        </div>
+
+        <div
+          className={`rounded-2xl border p-5 ${
+            data.active
+              ? "border-cyan-100 bg-cyan-50"
+              : "border-slate-200 bg-slate-50"
+          }`}
         >
-          {isEditing ? "Save Time Slot" : "Create Time Slot"}
-        </LoadingButton>
-      </div>
-    </form>
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
+                <ToggleLeft size={19} strokeWidth={2.4} />
+              </div>
+
+              <div>
+                <p className="font-bold text-slate-950">Time Slot Status</p>
+
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  Inactive time slots stay saved but should not be used for new
+                  scheduling options.
+                </p>
+              </div>
+            </div>
+
+            <label className="flex cursor-pointer items-center gap-3">
+              <span
+                className={`text-sm font-bold ${
+                  data.active ? "text-cyan-600" : "text-slate-400"
+                }`}
+              >
+                {data.active ? "Active" : "Inactive"}
+              </span>
+
+              <input
+                type="checkbox"
+                checked={data.active}
+                disabled={locked}
+                onChange={(event) => setData("active", event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          {isEditing && (
+            <button
+              type="button"
+              disabled={processing}
+              onClick={requestCancel}
+              className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Cancel
+            </button>
+          )}
+
+          <LoadingButton
+            type="submit"
+            loading={processing}
+            disabled={disabled}
+            loadingText={isEditing ? "Saving..." : "Creating..."}
+          >
+            {isEditing ? "Save Time Slot" : "Create Time Slot"}
+          </LoadingButton>
+        </div>
+      </form>
+
+      <ConfirmDialog
+        open={cancelConfirmOpen}
+        title="Discard time slot changes?"
+        description="You have unsaved changes for this time slot. If you cancel now, those changes will be lost."
+        confirmText="Discard Changes"
+        cancelText="Keep Editing"
+        danger
+        onCancel={() => setCancelConfirmOpen(false)}
+        onConfirm={confirmCancel}
+      />
+
+      <ConfirmDialog
+        open={unsavedChangesGuard.confirmOpen}
+        title={unsavedChangesGuard.title}
+        description={unsavedChangesGuard.description}
+        confirmText={unsavedChangesGuard.confirmText}
+        cancelText={unsavedChangesGuard.cancelText}
+        danger
+        onCancel={unsavedChangesGuard.cancelNavigation}
+        onConfirm={unsavedChangesGuard.confirmNavigation}
+      />
+    </>
   );
 }
 
 type TextInputProps = {
   label: string;
-  icon: typeof Tag;
+  icon: LucideIcon;
   value: string;
   placeholder?: string;
   type?: string;
@@ -388,6 +465,19 @@ function validateForm(data: BookingTimeSlotFormData): Record<string, string> {
   }
 
   return errors;
+}
+
+function bookingTimeSlotFormChanged(
+  data: BookingTimeSlotFormData,
+  initialData: BookingTimeSlotFormData,
+): boolean {
+  return (
+    normalizeString(data.name) !== normalizeString(initialData.name) ||
+    normalizeString(data.start_time) !== normalizeString(initialData.start_time) ||
+    normalizeString(data.end_time) !== normalizeString(initialData.end_time) ||
+    !sameStringArray(data.days_of_week, initialData.days_of_week) ||
+    Boolean(data.active) !== Boolean(initialData.active)
+  );
 }
 
 function timeToMinute(value: string): number {

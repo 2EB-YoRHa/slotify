@@ -23,10 +23,10 @@ type EditReservationSummaryPanelProps = {
   customTimeSlotViolation: boolean;
   processing: boolean;
   canSubmit: boolean;
+  onCancel: () => void;
 };
 
 export default function EditReservationSummaryPanel({
-  reservationId,
   selectedWorkspace,
   startTime,
   selectedSlotLabel,
@@ -45,6 +45,7 @@ export default function EditReservationSummaryPanel({
   customTimeSlotViolation,
   processing,
   canSubmit,
+  onCancel,
 }: EditReservationSummaryPanelProps) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -100,12 +101,14 @@ export default function EditReservationSummaryPanel({
           Save Changes
         </LoadingButton>
 
-        <a
-          href={`/reservations/${reservationId}`}
-          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+        <button
+          type="button"
+          disabled={processing}
+          onClick={onCancel}
+          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
         >
           Cancel
-        </a>
+        </button>
       </div>
     </div>
   );

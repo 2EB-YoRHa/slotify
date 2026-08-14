@@ -4,6 +4,9 @@ import type { FormEvent } from "react";
 import { Building2, Hash, Mail, MapPin, Phone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
+import ConfirmDialog from "../ui/ConfirmDialog";
+import useUnsavedChangesGuard from "../../hooks/useUnsavedChangesGuard";
+import { normalizeString } from "../../utils/dirtyForm";
 import {
   FieldError,
   FieldHint,
@@ -37,6 +40,14 @@ export default function OrganizationForm({
 }: OrganizationFormProps) {
   const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
 
+  const initialOrganizationData: OrganizationFormData = {
+    name: organization.name || "",
+    slug: organization.slug || "",
+    email: organization.email || "",
+    phone: organization.phone || "",
+    address: organization.address || "",
+  };
+
   const {
     data,
     setData,
@@ -44,19 +55,27 @@ export default function OrganizationForm({
     processing,
     errors: formErrors,
     transform,
-  } = useForm<OrganizationFormData>({
-    name: organization.name || "",
-    slug: organization.slug || "",
-    email: organization.email || "",
-    phone: organization.phone || "",
-    address: organization.address || "",
-  });
+  } = useForm<OrganizationFormData>(initialOrganizationData);
 
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
     ...formErrors,
     ...clientErrors,
   };
+
+  const organizationDirty = organizationFormChanged(
+    data,
+    initialOrganizationData,
+  );
+
+  const unsavedChangesGuard = useUnsavedChangesGuard({
+    enabled: organizationDirty && !processing,
+    title: "Discard organization changes?",
+    description:
+      "You have unsaved organization changes. If you leave now, those changes will be lost.",
+    confirmText: "Discard Changes",
+    cancelText: "Keep Editing",
+  });
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -69,6 +88,8 @@ export default function OrganizationForm({
     transform((formData) => ({
       organization: formData,
     }));
+
+    unsavedChangesGuard.allowNextNavigation();
 
     patch("/organization");
   }
@@ -94,133 +115,148 @@ export default function OrganizationForm({
   }
 
   return (
-    <form
-      noValidate
-      onSubmit={handleSubmit}
-      className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
-    >
-      <div className="mb-8 flex items-start gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-          <Building2 size={26} strokeWidth={2.4} />
-        </div>
-
-        <div>
-          <h2 className="text-2xl font-bold text-slate-950">
-            Organization Details
-          </h2>
-
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            Update the organization profile information shown across Slotify.
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-6">
-        <TextInput
-          icon={Building2}
-          label="Organization Name"
-          value={data.name}
-          placeholder="Enter organization name"
-          disabled={processing}
-          required
-          helper="Use the official or public name of the organization."
-          error={errors.name}
-          onChange={(value) => updateField("name", value)}
-        />
-
-        <TextInput
-          icon={Hash}
-          label="Slug"
-          value={data.slug}
-          placeholder="Generated automatically from the name"
-          disabled={processing}
-          required
-          helper="Use lowercase letters, numbers, and hyphens only."
-          error={errors.slug}
-          onChange={(value) => updateField("slug", value)}
-        />
-
-        <TextInput
-          icon={Mail}
-          type="email"
-          label="Email"
-          value={data.email}
-          placeholder="Enter contact email"
-          disabled={processing}
-          helper="Optional. Used as the organization contact email."
-          error={errors.email}
-          onChange={(value) => updateField("email", value)}
-        />
-
-        <TextInput
-          icon={Phone}
-          label="Phone"
-          value={data.phone}
-          placeholder="Enter contact phone"
-          disabled={processing}
-          helper="Optional. Use only numbers and basic phone symbols."
-          error={errors.phone}
-          onChange={(value) => updateField("phone", value)}
-        />
-
-        <label className="col-span-2 block">
-          <FieldLabel label="Address" />
-
-          <div className="relative">
-            <MapPin
-              size={17}
-              className="pointer-events-none absolute left-4 top-4 text-slate-400"
-            />
-
-            <textarea
-              value={data.address}
-              maxLength={200}
-              onChange={(event) => updateField("address", event.target.value)}
-              className={`${formInputClassName(
-                hasFieldError(errors.address),
-              )} min-h-32 resize-y`}
-              placeholder="Enter organization address"
-              disabled={processing}
-            />
+    <>
+      <form
+        noValidate
+        onSubmit={handleSubmit}
+        className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
+      >
+        <div className="mb-8 flex items-start gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+            <Building2 size={26} strokeWidth={2.4} />
           </div>
 
-          <div className="mt-2 flex items-center justify-between gap-4">
-            <FieldHint>
-              Optional. Add the main physical location or business address.
-            </FieldHint>
+          <div>
+            <h2 className="text-2xl font-bold text-slate-950">
+              Organization Details
+            </h2>
 
-            <span className="text-xs font-semibold text-slate-400">
-              {data.address.length}/200
-            </span>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Update the organization profile information shown across Slotify.
+            </p>
           </div>
-
-          <FieldError error={errors.address} label="Address" />
-        </label>
-      </div>
-
-      {getBaseError(errors) && (
-        <div className="mt-6">
-          <FieldError error={getBaseError(errors)} label="Organization" />
         </div>
-      )}
 
-      <div className="mt-8 flex justify-end gap-4">
-        <a
-          href="/organization"
-          className="rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
-        >
-          Cancel
-        </a>
+        <div className="grid grid-cols-2 gap-6">
+          <TextInput
+            icon={Building2}
+            label="Organization Name"
+            value={data.name}
+            placeholder="Enter organization name"
+            disabled={processing}
+            required
+            helper="Use the official or public name of the organization."
+            error={errors.name}
+            onChange={(value) => updateField("name", value)}
+          />
 
-        <LoadingButton
-          type="submit"
-          loading={processing}
-          loadingText="Saving..."
-        >
-          Save Changes
-        </LoadingButton>
-      </div>
-    </form>
+          <TextInput
+            icon={Hash}
+            label="Slug"
+            value={data.slug}
+            placeholder="Generated automatically from the name"
+            disabled={processing}
+            required
+            helper="Use lowercase letters, numbers, and hyphens only."
+            error={errors.slug}
+            onChange={(value) => updateField("slug", value)}
+          />
+
+          <TextInput
+            icon={Mail}
+            type="email"
+            label="Email"
+            value={data.email}
+            placeholder="Enter contact email"
+            disabled={processing}
+            helper="Optional. Used as the organization contact email."
+            error={errors.email}
+            onChange={(value) => updateField("email", value)}
+          />
+
+          <TextInput
+            icon={Phone}
+            label="Phone"
+            value={data.phone}
+            placeholder="Enter contact phone"
+            disabled={processing}
+            helper="Optional. Use only numbers and basic phone symbols."
+            error={errors.phone}
+            onChange={(value) => updateField("phone", value)}
+          />
+
+          <label className="col-span-2 block">
+            <FieldLabel label="Address" />
+
+            <div className="relative">
+              <MapPin
+                size={17}
+                className="pointer-events-none absolute left-4 top-4 text-slate-400"
+              />
+
+              <textarea
+                value={data.address}
+                maxLength={200}
+                onChange={(event) => updateField("address", event.target.value)}
+                className={`${formInputClassName(
+                  hasFieldError(errors.address),
+                )} min-h-32 resize-y`}
+                placeholder="Enter organization address"
+                disabled={processing}
+              />
+            </div>
+
+            <div className="mt-2 flex items-center justify-between gap-4">
+              <FieldHint>
+                Optional. Add the main physical location or business address.
+              </FieldHint>
+
+              <span className="text-xs font-semibold text-slate-400">
+                {data.address.length}/200
+              </span>
+            </div>
+
+            <FieldError error={errors.address} label="Address" />
+          </label>
+        </div>
+
+        {getBaseError(errors) && (
+          <div className="mt-6">
+            <FieldError error={getBaseError(errors)} label="Organization" />
+          </div>
+        )}
+
+        <div className="mt-8 flex justify-end gap-4">
+          <button
+            type="button"
+            disabled={processing}
+            onClick={() => unsavedChangesGuard.guardedVisit("/organization")}
+            className="rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Cancel
+          </button>
+
+          <LoadingButton
+            type="submit"
+            loading={processing}
+            loadingText="Saving..."
+          >
+            Save Changes
+          </LoadingButton>
+        </div>
+      </form>
+
+      <ConfirmDialog
+        open={unsavedChangesGuard.confirmOpen}
+        title={unsavedChangesGuard.title}
+        description={unsavedChangesGuard.description}
+        confirmText={unsavedChangesGuard.confirmText}
+        cancelText={unsavedChangesGuard.cancelText}
+        danger
+        onCancel={unsavedChangesGuard.cancelNavigation}
+        onConfirm={unsavedChangesGuard.confirmNavigation}
+      />
+    </>
   );
 }
 
@@ -322,7 +358,8 @@ function validateOrganizationForm(
   if (slugError) {
     errors.slug = slugError;
   } else if (!SLUG_REGEX.test(data.slug.trim())) {
-    errors.slug = "Slug can only include lowercase letters, numbers, and hyphens.";
+    errors.slug =
+      "Slug can only include lowercase letters, numbers, and hyphens.";
   }
 
   const emailError = validateEmail(data.email, "Email", {
@@ -343,4 +380,17 @@ function validateOrganizationForm(
   if (addressError) errors.address = addressError;
 
   return errors;
+}
+
+function organizationFormChanged(
+  data: OrganizationFormData,
+  initialData: OrganizationFormData,
+): boolean {
+  return (
+    normalizeString(data.name) !== normalizeString(initialData.name) ||
+    normalizeString(data.slug) !== normalizeString(initialData.slug) ||
+    normalizeString(data.email) !== normalizeString(initialData.email) ||
+    normalizeString(data.phone) !== normalizeString(initialData.phone) ||
+    normalizeString(data.address) !== normalizeString(initialData.address)
+  );
 }

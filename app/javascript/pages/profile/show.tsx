@@ -3,6 +3,8 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import useUnsavedChangesGuard from "../../hooks/useUnsavedChangesGuard";
+import { normalizeString } from "../../utils/dirtyForm";
 import {
   Camera,
   CheckCircle2,
@@ -80,13 +82,7 @@ export default function ProfileShow({
   const [removePhotoConfirmOpen, setRemovePhotoConfirmOpen] = useState(false);
   const [saveProfileConfirmOpen, setSaveProfileConfirmOpen] = useState(false);
 
-  const {
-    data,
-    setData,
-    patch,
-    processing,
-    errors: formErrors,
-  } = useForm<ProfileFormData>({
+  const initialProfileData: ProfileFormData = {
     user: {
       name: profile.name || "",
       email: profile.email || "",
@@ -94,7 +90,15 @@ export default function ProfileShow({
       remove_avatar: false,
       current_password: "",
     },
-  });
+  };
+
+  const {
+    data,
+    setData,
+    patch,
+    processing,
+    errors: formErrors,
+  } = useForm<ProfileFormData>(initialProfileData);
 
   const errors: Record<string, string | string[] | undefined> = {
     ...initialErrors,
@@ -107,6 +111,17 @@ export default function ProfileShow({
 
   const emailChanged =
     data.user.email.trim().toLowerCase() !== profile.email.trim().toLowerCase();
+
+  const profileDirty = profileFormChanged(data, initialProfileData);
+
+  const unsavedChangesGuard = useUnsavedChangesGuard({
+    enabled: profileDirty && !processing,
+    title: "Discard profile changes?",
+    description:
+      "You have unsaved profile changes. If you leave now, those changes will be lost.",
+    confirmText: "Discard Changes",
+    cancelText: "Keep Editing",
+  });
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -121,6 +136,8 @@ export default function ProfileShow({
   }
 
   function submitProfileUpdate() {
+    unsavedChangesGuard.allowNextNavigation();
+
     patch("/profile", {
       forceFormData: true,
       preserveScroll: true,
@@ -287,6 +304,16 @@ export default function ProfileShow({
         processing={processing}
         onCancel={() => setSaveProfileConfirmOpen(false)}
         onConfirm={submitProfileUpdate}
+      />
+      <ConfirmDialog
+        open={unsavedChangesGuard.confirmOpen}
+        title={unsavedChangesGuard.title}
+        description={unsavedChangesGuard.description}
+        confirmText={unsavedChangesGuard.confirmText}
+        cancelText={unsavedChangesGuard.cancelText}
+        danger
+        onCancel={unsavedChangesGuard.cancelNavigation}
+        onConfirm={unsavedChangesGuard.confirmNavigation}
       />
     </AppLayout>
   );
@@ -753,4 +780,17 @@ function autoCompleteFor(label: string, type: string): string {
   if (type === "password") return "new-password";
 
   return "off";
+}
+
+function profileFormChanged(
+  data: ProfileFormData,
+  initialData: ProfileFormData,
+): boolean {
+  return (
+    normalizeString(data.user.name) !== normalizeString(initialData.user.name) ||
+    normalizeString(data.user.email).toLowerCase() !==
+      normalizeString(initialData.user.email).toLowerCase() ||
+    data.user.avatar instanceof File ||
+    Boolean(data.user.remove_avatar) !== Boolean(initialData.user.remove_avatar)
+  );
 }

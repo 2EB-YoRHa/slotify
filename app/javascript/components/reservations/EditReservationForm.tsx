@@ -23,6 +23,12 @@ import {
   validateTextLength,
   type ValidationErrors,
 } from "../../utils/clientValidation";
+import {
+  normalizeNumber,
+  normalizeString,
+} from "../../utils/dirtyForm";
+import useUnsavedChangesGuard from "../../hooks/useUnsavedChangesGuard";
+import ConfirmDialog from "../ui/ConfirmDialog";
 import EditReservationDetailsSection from "./edit/EditReservationDetailsSection";
 import EditReservationScheduleSection from "./edit/EditReservationScheduleSection";
 import EditReservationSummaryPanel from "./edit/EditReservationSummaryPanel";
@@ -72,8 +78,20 @@ export default function EditReservationForm({
   });
 
   const initialSlot =
-    findMatchingSlot(reservation.start_time, reservation.end_time, initialTimeSlots) ||
-    buildSlotFromDateTimes(reservation.start_time, reservation.end_time);
+    findMatchingSlot(
+      reservation.start_time,
+      reservation.end_time,
+      initialTimeSlots,
+    ) || buildSlotFromDateTimes(reservation.start_time, reservation.end_time);
+
+  const initialReservationData: EditReservationFormData = {
+    workspace_id: reservation.workspace?.id || "",
+    start_time: buildDateTime(initialDate, initialSlot.start),
+    end_time: buildDateTime(initialDate, initialSlot.end),
+    status: reservation.status || "confirmed",
+    attendees_count: reservation.attendees_count || 1,
+    notes: reservation.notes || "",
+  };
 
   const {
     data,
@@ -82,14 +100,7 @@ export default function EditReservationForm({
     processing,
     errors: formErrors,
     transform,
-  } = useForm<EditReservationFormData>({
-    workspace_id: reservation.workspace?.id || "",
-    start_time: buildDateTime(initialDate, initialSlot.start),
-    end_time: buildDateTime(initialDate, initialSlot.end),
-    status: reservation.status || "confirmed",
-    attendees_count: reservation.attendees_count || 1,
-    notes: reservation.notes || "",
-  });
+  } = useForm<EditReservationFormData>(initialReservationData);
 
   const selectedDate = extractDate(data.start_time);
   const hasCustomSlots = hasActiveCustomTimeSlots(bookingTimeSlots);
@@ -107,7 +118,8 @@ export default function EditReservationForm({
   );
 
   const selectedSlot =
-    selectedMatchingSlot || buildSlotFromDateTimes(data.start_time, data.end_time);
+    selectedMatchingSlot ||
+    buildSlotFromDateTimes(data.start_time, data.end_time);
 
   const timeSlots = selectedMatchingSlot
     ? availableTimeSlots
@@ -177,6 +189,20 @@ export default function EditReservationForm({
     !selectedWorkspaceUnavailable &&
     !attendeesExceedCapacity;
 
+  const formDirty = editReservationFormChanged(
+    data,
+    initialReservationData,
+  );
+
+  const unsavedChangesGuard = useUnsavedChangesGuard({
+    enabled: formDirty && !processing,
+    title: "Discard reservation changes?",
+    description:
+      "You have unsaved changes for this reservation. If you leave now, those changes will be lost.",
+    confirmText: "Discard Changes",
+    cancelText: "Keep Editing",
+  });
+
   async function checkAvailabilityFor(startTime: string, endTime: string) {
     setCheckingAvailability(true);
     setAvailabilityChecked(false);
@@ -233,6 +259,8 @@ export default function EditReservationForm({
         attendees_count: Number(formData.attendees_count),
       },
     }));
+
+    unsavedChangesGuard.allowNextNavigation();
 
     patch(`/reservations/${reservation.id}`);
   }
@@ -315,70 +343,92 @@ export default function EditReservationForm({
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
-      <motion.section
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.12 }}
-        className="col-span-2 space-y-8"
+    <>
+      <form
+        noValidate
+        onSubmit={handleSubmit}
+        className="grid grid-cols-3 gap-8"
       >
-        <EditReservationScheduleSection
-          workspaces={workspaces}
-          data={data}
-          errors={errors}
-          processing={processing}
-          selectedSlot={selectedSlot}
-          timeSlots={timeSlots}
-          canManageStatus={canManageStatus}
-          hasCustomSlots={hasCustomSlots}
-          noCustomSlotsForSelectedDate={noCustomSlotsForSelectedDate}
-          customTimeSlotViolation={customTimeSlotViolation}
-          onWorkspaceChange={(value) => updateField("workspace_id", value)}
-          onStatusChange={(value) => updateField("status", value)}
-          onDateChange={handleDateChange}
-          onSlotChange={handleSlotChange}
-        />
+        <motion.section
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="col-span-2 space-y-8"
+        >
+          <EditReservationScheduleSection
+            workspaces={workspaces}
+            data={data}
+            errors={errors}
+            processing={processing}
+            selectedSlot={selectedSlot}
+            timeSlots={timeSlots}
+            canManageStatus={canManageStatus}
+            hasCustomSlots={hasCustomSlots}
+            noCustomSlotsForSelectedDate={noCustomSlotsForSelectedDate}
+            customTimeSlotViolation={customTimeSlotViolation}
+            onWorkspaceChange={(value) => updateField("workspace_id", value)}
+            onStatusChange={(value) => updateField("status", value)}
+            onDateChange={handleDateChange}
+            onSlotChange={handleSlotChange}
+          />
 
-        <EditReservationDetailsSection
-          data={data}
-          errors={errors}
-          processing={processing}
-          selectedWorkspace={selectedWorkspace}
-          attendeesExceedCapacity={attendeesExceedCapacity}
-          onAttendeesChange={(value) => updateField("attendees_count", value)}
-          onNotesChange={(value) => updateField("notes", value)}
-        />
-      </motion.section>
+          <EditReservationDetailsSection
+            data={data}
+            errors={errors}
+            processing={processing}
+            selectedWorkspace={selectedWorkspace}
+            attendeesExceedCapacity={attendeesExceedCapacity}
+            onAttendeesChange={(value) =>
+              updateField("attendees_count", value)
+            }
+            onNotesChange={(value) => updateField("notes", value)}
+          />
+        </motion.section>
 
-      <motion.aside
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.16 }}
-        className="space-y-6"
-      >
-        <EditReservationSummaryPanel
-          reservationId={reservation.id}
-          selectedWorkspace={selectedWorkspace}
-          startTime={data.start_time}
-          selectedSlotLabel={selectedSlot.label}
-          status={data.status}
-          attendeesCount={data.attendees_count}
-          ruleViolation={ruleViolation}
-          checkingAvailability={checkingAvailability}
-          availabilityChecked={availabilityChecked}
-          availabilityError={availabilityError}
-          selectedWorkspaceUnavailable={selectedWorkspaceUnavailable}
-          attendeesExceedCapacity={attendeesExceedCapacity}
-          minNoticeViolation={minNoticeViolation}
-          minNoticeMinutes={minNoticeMinutes || 0}
-          weekendViolation={weekendViolation}
-          noCustomSlotsForSelectedDate={noCustomSlotsForSelectedDate}
-          customTimeSlotViolation={customTimeSlotViolation}
-          processing={processing}
-          canSubmit={canSubmit}
-        />
-      </motion.aside>
-    </form>
+        <motion.aside
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16 }}
+          className="space-y-6"
+        >
+          <EditReservationSummaryPanel
+            reservationId={reservation.id}
+            selectedWorkspace={selectedWorkspace}
+            startTime={data.start_time}
+            selectedSlotLabel={selectedSlot.label}
+            status={data.status}
+            attendeesCount={data.attendees_count}
+            ruleViolation={ruleViolation}
+            checkingAvailability={checkingAvailability}
+            availabilityChecked={availabilityChecked}
+            availabilityError={availabilityError}
+            selectedWorkspaceUnavailable={selectedWorkspaceUnavailable}
+            attendeesExceedCapacity={attendeesExceedCapacity}
+            minNoticeViolation={minNoticeViolation}
+            minNoticeMinutes={minNoticeMinutes || 0}
+            weekendViolation={weekendViolation}
+            noCustomSlotsForSelectedDate={noCustomSlotsForSelectedDate}
+            customTimeSlotViolation={customTimeSlotViolation}
+            processing={processing}
+            canSubmit={canSubmit}
+            onCancel={() =>
+              unsavedChangesGuard.guardedVisit(`/reservations/${reservation.id}`)
+            }
+          />
+        </motion.aside>
+      </form>
+
+      <ConfirmDialog
+        open={unsavedChangesGuard.confirmOpen}
+        title={unsavedChangesGuard.title}
+        description={unsavedChangesGuard.description}
+        confirmText={unsavedChangesGuard.confirmText}
+        cancelText={unsavedChangesGuard.cancelText}
+        danger
+        onCancel={unsavedChangesGuard.cancelNavigation}
+        onConfirm={unsavedChangesGuard.confirmNavigation}
+      />
+    </>
   );
 }
 
@@ -454,6 +504,23 @@ function validateEditReservationForm(
   }
 
   return errors;
+}
+
+function editReservationFormChanged(
+  data: EditReservationFormData,
+  initialData: EditReservationFormData,
+): boolean {
+  return (
+    normalizeNumber(data.workspace_id) !==
+      normalizeNumber(initialData.workspace_id) ||
+    normalizeString(data.start_time) !==
+      normalizeString(initialData.start_time) ||
+    normalizeString(data.end_time) !== normalizeString(initialData.end_time) ||
+    normalizeString(data.status) !== normalizeString(initialData.status) ||
+    normalizeNumber(data.attendees_count) !==
+      normalizeNumber(initialData.attendees_count) ||
+    normalizeString(data.notes) !== normalizeString(initialData.notes)
+  );
 }
 
 function findMatchingSlot(

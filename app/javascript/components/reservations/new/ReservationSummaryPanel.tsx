@@ -30,6 +30,7 @@ type ReservationSummaryPanelProps = {
   canSubmit: boolean;
   onAttendeesChange: (value: string) => void;
   onNotesChange: (value: string) => void;
+  onCancel: () => void;
 };
 
 export default function ReservationSummaryPanel({
@@ -51,6 +52,7 @@ export default function ReservationSummaryPanel({
   canSubmit,
   onAttendeesChange,
   onNotesChange,
+  onCancel,
 }: ReservationSummaryPanelProps) {
   const attendeesError =
     fieldError(errors, "attendees_count") ||
@@ -174,15 +176,26 @@ export default function ReservationSummaryPanel({
         weekendViolation={weekendViolation}
       />
 
-      <LoadingButton
-        type="submit"
-        loading={processing}
-        loadingText="Creating..."
-        disabled={!canSubmit}
-        className="mt-8 w-full"
-      >
-        Create Reservation
-      </LoadingButton>
+      <div className="mt-8 flex flex-col gap-3">
+        <LoadingButton
+          type="submit"
+          loading={processing}
+          loadingText="Creating..."
+          disabled={!canSubmit}
+          className="w-full"
+        >
+          Create Reservation
+        </LoadingButton>
+
+        <button
+          type="button"
+          disabled={processing}
+          onClick={onCancel}
+          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }
