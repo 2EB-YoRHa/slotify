@@ -1,5 +1,6 @@
 import { Link, router, usePage } from "@inertiajs/react";
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import {
   Building2,
   ChevronDown,
@@ -24,8 +25,15 @@ type SharedPageProps = {
   current_user?: SharedCurrentUser | null;
 };
 
-export default function Header() {
-  const { current_user } = usePage<SharedPageProps>().props;
+type HeaderProps = {
+  actions?: ReactNode;
+};
+
+export default function Header({ actions = null }: HeaderProps) {
+  const { url, props } = usePage<SharedPageProps>();
+  const current_user = props.current_user;
+  const headerMeta = headerMetaFor(url, current_user?.role);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -61,23 +69,27 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 px-8 py-3 backdrop-blur">
-      <div className="flex items-center justify-between gap-6">
-        <div>
-          <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
-            {current_user?.role === "member"
-              ? "Member Workspace"
-              : "Workspace Management"}
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div className="flex items-center justify-between gap-6 px-8 py-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-black text-slate-950">
+            {headerMeta.title}
           </p>
 
-          <p className="mt-1 text-sm text-slate-500">
-            {current_user?.role === "member"
-              ? "Browse spaces, create bookings, and manage your reservations."
-              : "Manage spaces, bookings, members, and billing."}
+          <p className="mt-1 max-w-2xl truncate text-xs font-semibold text-slate-500">
+            {headerMeta.description}
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex shrink-0 items-center gap-3">
+          {actions && (
+            <div className="hidden items-center gap-2 xl:flex">
+              {actions}
+            </div>
+          )}
+
+          {actions && <div className="hidden h-8 w-px bg-slate-200 xl:block" />}
+
           <button
             type="button"
             className="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-500 shadow-sm transition hover:bg-slate-50"
@@ -120,6 +132,14 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      {actions && (
+        <div className="border-t border-slate-100 px-8 py-3 xl:hidden">
+          <div className="flex flex-wrap justify-end gap-3">
+            {actions}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
@@ -289,6 +309,107 @@ function DropdownLink({
       </div>
     </Link>
   );
+}
+
+function headerMetaFor(
+  url: string,
+  role?: string | null,
+): { title: string; description: string } {
+  const path = url.split("?")[0];
+
+  if (path === "/") {
+    return role === "member"
+      ? {
+          title: "Member Dashboard",
+          description: "Find workspaces, review bookings, and manage your day.",
+        }
+      : {
+          title: "Operations Dashboard",
+          description: "Track reservations, workspace activity, and team usage.",
+        };
+  }
+
+  if (path.startsWith("/reservations/new")) {
+    return {
+      title: "Create Reservation",
+      description: "Choose a workspace, select a time, and confirm the booking.",
+    };
+  }
+
+  if (path.startsWith("/reservations")) {
+    return {
+      title: "Reservations",
+      description: "Review, manage, and update workspace bookings.",
+    };
+  }
+
+  if (path.startsWith("/my_reservations")) {
+    return {
+      title: "My Bookings",
+      description: "View your upcoming and previous reservations.",
+    };
+  }
+
+  if (path.startsWith("/workspaces")) {
+    return {
+      title: "Workspaces",
+      description: "Manage workspace inventory, details, capacity, and photos.",
+    };
+  }
+
+  if (path.startsWith("/amenities")) {
+    return {
+      title: "Amenities",
+      description: "Create and manage reusable workspace features.",
+    };
+  }
+
+  if (path.startsWith("/organization")) {
+    return {
+      title: "Organization",
+      description: "Manage organization details, members, and invitations.",
+    };
+  }
+
+  if (path.startsWith("/subscription")) {
+    return {
+      title: "Subscription",
+      description: "Review plan limits, billing status, and available upgrades.",
+    };
+  }
+
+  if (path.startsWith("/booking_rule")) {
+    return {
+      title: "Booking Rules",
+      description: "Control booking limits, availability, and reservation policy.",
+    };
+  }
+
+  if (path.startsWith("/booking_time_slots")) {
+    return {
+      title: "Time Slots",
+      description: "Manage custom booking schedules for Pro organizations.",
+    };
+  }
+
+  if (path.startsWith("/profile")) {
+    return {
+      title: "Profile",
+      description: "Update your photo, name, email, and account identity.",
+    };
+  }
+
+  if (path.startsWith("/security")) {
+    return {
+      title: "Security",
+      description: "Manage password and two-factor authentication.",
+    };
+  }
+
+  return {
+    title: "Slotify",
+    description: "Workspace reservation management.",
+  };
 }
 
 function initials(name?: string | null): string {

@@ -21,27 +21,6 @@ export default function BookingTimeSlotsIndex({
 }: BookingTimeSlotsIndexProps) {
   return (
     <AppLayout>
-      <div className="mb-8">
-        <motion.h1
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.04 }}
-          className="mt-5 text-3xl font-extrabold text-slate-950"
-        >
-          Custom Time Slots
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08 }}
-          className="mt-2 max-w-3xl text-slate-500"
-        >
-          Define reusable reservation blocks for your organization. These time
-          slots help managers standardize booking schedules for members.
-        </motion.p>
-      </div>
-
       {!custom_time_slots_enabled && (
         <div className="mb-8 rounded-2xl border border-amber-100 bg-amber-50 p-6">
           <div className="flex items-start gap-4">

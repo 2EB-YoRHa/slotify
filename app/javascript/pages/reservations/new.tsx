@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import AppLayout from "../../components/AppLayout";
 import NewReservationForm from "../../components/reservations/NewReservationForm";
 import type { Workspace } from "../../types/workspace";
@@ -26,35 +25,9 @@ export default function NewReservation({
   booking_rule = null,
   booking_time_slots = [],
 }: NewReservationProps) {
-  const selectedWorkspace = workspaces.find(
-    (workspace) => workspace.id === Number(selected_workspace_id),
-  );
 
   return (
     <AppLayout>
-      <div className="mb-8 flex items-start justify-between gap-8">
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-extrabold text-slate-950"
-          >
-            {selectedWorkspace ? "Reserve Workspace" : "Create Reservation"}
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="mt-2 max-w-2xl text-sm leading-6 text-slate-500"
-          >
-            {selectedWorkspace
-              ? `Complete the booking details for ${selectedWorkspace.name}.`
-              : "Choose a workspace, select an available time, and confirm your booking."}
-          </motion.p>
-        </div>
-      </div>
-
       <NewReservationForm
         workspaces={workspaces}
         selectedWorkspaceId={selected_workspace_id}

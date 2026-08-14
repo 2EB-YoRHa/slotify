@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
+import HeaderActionButton from "../../components/ui/HeaderActionButton";
 import MyReservationsTable from "../../components/reservations/MyReservationsTable";
 import ReservationStatusBadge from "../../components/reservations/ReservationStatusBadge";
 import WorkspacePhoto from "../../components/workspaces/WorkspacePhoto";
@@ -82,51 +83,13 @@ export default function MyReservations({
   ];
 
   return (
-    <AppLayout>
-      <div className="mb-8 flex items-start justify-between gap-8">
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-extrabold text-slate-950"
-          >
-            My Bookings
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="mt-2 max-w-2xl text-sm leading-6 text-slate-500"
-          >
-            Review your next reservation, manage upcoming bookings, and keep
-            your workspace history organized.
-          </motion.p>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex shrink-0 gap-3"
-        >
-          <Link
-            href="/workspaces"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-cyan-100 hover:bg-cyan-50 hover:text-cyan-600"
-          >
-            Browse Workspaces
-            <ArrowRight size={17} />
-          </Link>
-
-          <Link
-            href="/reservations/new"
-            className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
-          >
-            <CalendarPlus size={18} />
-            New Booking
-          </Link>
-        </motion.div>
-      </div>
-
+    <AppLayout
+      headerActions={
+        <HeaderActionButton href="/reservations/new" icon={CalendarPlus}>
+          New Booking
+        </HeaderActionButton>
+      }
+    >
       <section className="mb-8 grid grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <BookingStatCard key={stat.label} stat={stat} index={index} />

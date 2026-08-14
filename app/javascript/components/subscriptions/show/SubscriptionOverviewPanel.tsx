@@ -67,9 +67,13 @@ export default function SubscriptionOverviewPanel({
             Current Subscription
           </p>
 
-          <h2 className="mt-2 text-3xl font-extrabold text-slate-950">
-            {currentPlanLabel}
-          </h2>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h2 className="text-3xl font-extrabold text-slate-950">
+              {currentPlanLabel}
+            </h2>
+
+            <StatusPill status={status} />
+          </div>
 
           <p className="mt-2 text-sm leading-6 text-slate-500">
             {activePlan?.description ||
@@ -94,14 +98,7 @@ export default function SubscriptionOverviewPanel({
 
       {overPlanLimits && <OverLimitNotice usage={usage} />}
 
-      <div className="mb-7 grid grid-cols-4 gap-4">
-        <InfoCard
-          icon={CreditCard}
-          label="Plan"
-          value={currentPlanLabel}
-          helper={status}
-        />
-
+      <div className="mb-7 grid grid-cols-3 gap-4">
         <InfoCard
           icon={CalendarClock}
           label="Next Billing Date"
@@ -161,6 +158,35 @@ export default function SubscriptionOverviewPanel({
       )}
     </motion.section>
   );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const tone = statusTone(status);
+
+  const classes = {
+    green: "bg-green-50 text-green-600",
+    amber: "bg-amber-50 text-amber-600",
+    slate: "bg-slate-100 text-slate-500",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-extrabold ${classes[tone]}`}
+    >
+      {status}
+    </span>
+  );
+}
+
+function statusTone(status: string): "green" | "amber" | "slate" {
+  const normalizedStatus = status.toLowerCase();
+
+  if (normalizedStatus.includes("active")) return "green";
+  if (normalizedStatus.includes("needed")) return "amber";
+  if (normalizedStatus.includes("past")) return "amber";
+  if (normalizedStatus.includes("unpaid")) return "amber";
+
+  return "slate";
 }
 
 type InfoCardProps = {
@@ -262,9 +288,7 @@ function OverLimitItem({ label, used, limit, overBy }: OverLimitItemProps) {
         {used} used / {limit} allowed
       </p>
 
-      <p className="mt-1 text-xs font-bold text-red-500">
-        {overBy} over limit
-      </p>
+      <p className="mt-1 text-xs font-bold text-red-500">{overBy} over limit</p>
     </div>
   );
 }

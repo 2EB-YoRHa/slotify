@@ -59,14 +59,14 @@ export default function ReservationDateTimeSection({
   onToggleWorkspacePicker,
 }: ReservationDateTimeSectionProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
       <div className="mb-8 flex items-start gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
           <CalendarDays size={26} strokeWidth={2.4} />
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold text-slate-950">
+          <h2 className="text-2xl font-black text-slate-950">
             Booking Details
           </h2>
 
@@ -78,8 +78,8 @@ export default function ReservationDateTimeSection({
       </div>
 
       {selectedWorkspaceName && (
-        <div className="mb-7 rounded-2xl border border-cyan-100 bg-cyan-50 p-5">
-          <div className="flex items-center justify-between gap-6">
+        <div className="mb-8 rounded-2xl border border-cyan-100 bg-cyan-50 p-5">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
                 <Building2 size={20} strokeWidth={2.4} />
@@ -100,7 +100,7 @@ export default function ReservationDateTimeSection({
               type="button"
               disabled={processing || checkingAvailability}
               onClick={onToggleWorkspacePicker}
-              className="inline-flex items-center gap-2 rounded-xl border border-cyan-100 bg-white px-4 py-2.5 text-sm font-bold text-cyan-600 transition hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-100 bg-white px-4 py-2.5 text-sm font-bold text-cyan-600 transition hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {workspacePickerVisible ? "Hide Workspaces" : "Change Workspace"}
               {workspacePickerVisible ? (
@@ -113,14 +113,16 @@ export default function ReservationDateTimeSection({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-5">
-        <DatePickerField
-          label="Reservation Date"
-          value={selectedDate}
-          disabled={processing || checkingAvailability}
-          min={minDate}
-          onChange={onDateChange}
-        />
+      <div className="space-y-7">
+        <div className="max-w-xl">
+          <DatePickerField
+            label="Reservation Date"
+            value={selectedDate}
+            disabled={processing || checkingAvailability}
+            min={minDate}
+            onChange={onDateChange}
+          />
+        </div>
 
         <TimeSlotPicker
           label="Time Slot"
@@ -131,9 +133,9 @@ export default function ReservationDateTimeSection({
         />
       </div>
 
-      <div className="mt-8 flex items-end gap-4">
-        {workspacePickerVisible && (
-          <label className="flex-1">
+      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        {workspacePickerVisible ? (
+          <label className="block">
             <span className="mb-2 block text-sm font-bold text-slate-700">
               Search Workspace
             </span>
@@ -154,6 +156,8 @@ export default function ReservationDateTimeSection({
               />
             </div>
           </label>
+        ) : (
+          <div className="hidden lg:block" />
         )}
 
         <LoadingButton
@@ -161,7 +165,7 @@ export default function ReservationDateTimeSection({
           loading={checkingAvailability}
           loadingText="Checking..."
           onClick={onRefreshAvailability}
-          className={workspacePickerVisible ? "" : "ml-auto"}
+          className="w-full lg:w-auto"
         >
           Refresh Availability
         </LoadingButton>
@@ -181,7 +185,7 @@ export default function ReservationDateTimeSection({
       />
 
       {baseErrors.length > 0 && (
-        <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+        <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-600">
           {baseErrors.join(", ")}
         </div>
       )}

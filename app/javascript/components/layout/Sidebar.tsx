@@ -49,8 +49,13 @@ const managerNavItems: NavItem[] = [
   { label: "Organization", href: "/organization", icon: UsersRound },
   { label: "Subscription", href: "/subscription", icon: CreditCard },
   { label: "Booking Rules", href: "/booking_rule", icon: SlidersHorizontal },
-  { label: "Time Slots", href: "/booking_time_slots", icon: Clock3 },
   { label: "Profile", href: "/profile", icon: UserRound },
+];
+
+const proManagerNavItems: NavItem[] = [
+  ...managerNavItems.slice(0, 8),
+  { label: "Time Slots", href: "/booking_time_slots", icon: Clock3 },
+  ...managerNavItems.slice(8),
 ];
 
 const memberNavItems: NavItem[] = [
@@ -82,11 +87,14 @@ export default function Sidebar() {
     currentUser?.billing_required && isManagerOrAdmin,
   );
 
+  const managerItems =
+    currentUser?.current_plan === "pro" ? proManagerNavItems : managerNavItems;
+
   const navItems = billingRequired
     ? billingRequiredNavItems
     : isMember
       ? memberNavItems
-      : managerNavItems;
+      : managerItems;
 
   const logoHref = billingRequired ? "/subscription" : "/";
 

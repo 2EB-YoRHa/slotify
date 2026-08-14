@@ -95,71 +95,69 @@ export default function AmenityForm({
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
     >
-      <div className="grid grid-cols-[1fr_2fr] items-end gap-8">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
-              <PlusCircle size={20} strokeWidth={2.4} />
-            </div>
-
-            <h2 className="text-xl font-bold text-slate-950">
-              Create Amenity
-            </h2>
+      <div className="grid gap-6 lg:grid-cols-[320px_1fr] lg:items-center">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+            <PlusCircle size={22} strokeWidth={2.4} />
           </div>
 
-          <p className="mt-3 text-sm leading-6 text-slate-500">
-            Add a reusable feature that can be assigned to workspaces.
-          </p>
+          <div>
+            <h2 className="text-xl font-black text-slate-950">
+              Create Amenity
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Add a reusable feature that can be assigned to workspaces.
+            </p>
+          </div>
         </div>
 
-        <div>
-          <label className="block">
-            <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
-              Amenity Name
-              <RequiredMark />
-            </span>
+        <label className="block">
+          <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+            Amenity Name
+            <RequiredMark />
+          </span>
 
-            <div className="grid grid-cols-[1fr_auto] gap-4">
-              <div>
-                <div className="relative">
-                  <Sparkles
-                    size={17}
-                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
+          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-start">
+            <div>
+              <div className="relative">
+                <Sparkles
+                  size={17}
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                />
 
-                  <input
-                    type="text"
-                    value={data.amenity.name}
-                    onChange={(event) => updateName(event.target.value)}
-                    className={`h-12 ${formInputClassName(
-                      hasFieldError(nameError),
-                    )}`}
-                    placeholder="Enter amenity name"
-                    disabled={processing}
-                  />
-                </div>
-
-                <FieldHint>
-                  Use a short reusable name, such as Projector, Wi-Fi, or
-                  Whiteboard.
-                </FieldHint>
-
-                <FieldError error={nameError} label="Amenity Name" />
+                <input
+                  type="text"
+                  value={data.amenity.name}
+                  onChange={(event) => updateName(event.target.value)}
+                  className={`h-12 ${formInputClassName(
+                    hasFieldError(nameError),
+                  )}`}
+                  placeholder="Enter amenity name"
+                  disabled={processing}
+                />
               </div>
 
-              <LoadingButton
-                type="submit"
-                loading={processing}
-                loadingText="Creating..."
-                className="h-12 px-8"
-              >
-                Create Amenity
-              </LoadingButton>
+              <FieldError error={nameError} label="Amenity Name" />
+
+              <FieldHint>
+                Use a short reusable name, such as Projector, Wi-Fi, or
+                Whiteboard.
+              </FieldHint>
             </div>
-          </label>
-        </div>
+
+            <LoadingButton
+              type="submit"
+              loading={processing}
+              loadingText="Creating..."
+              className="h-12 px-8"
+            >
+              Create Amenity
+            </LoadingButton>
+          </div>
+        </label>
       </div>
     </form>
   );

@@ -1,4 +1,3 @@
-import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
 import {
   CalendarCheck,
@@ -10,6 +9,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import ReservationsTable from "../../components/reservations/ReservationsTable";
+import HeaderActionButton from "../../components/ui/HeaderActionButton";
 import type { Reservation } from "../../types/reservation";
 
 type ReservationsIndexProps = {
@@ -22,15 +22,15 @@ export default function ReservationsIndex({
   const upcomingReservations = reservations.filter(
     (reservation) =>
       reservation.status !== "cancelled" &&
-      new Date(reservation.start_time).getTime() >= Date.now()
+      new Date(reservation.start_time).getTime() >= Date.now(),
   );
 
   const confirmedReservations = reservations.filter(
-    (reservation) => reservation.status === "confirmed"
+    (reservation) => reservation.status === "confirmed",
   );
 
   const cancelledReservations = reservations.filter(
-    (reservation) => reservation.status === "cancelled"
+    (reservation) => reservation.status === "cancelled",
   );
 
   const stats = [
@@ -61,42 +61,13 @@ export default function ReservationsIndex({
   ];
 
   return (
-    <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-slate-950"
-          >
-            Reservations
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="mt-2 max-w-2xl text-slate-500"
-          >
-            Manage workspace bookings, review availability, and keep reservation
-            activity organized.
-          </motion.p>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          <Link
-            href="/reservations/new"
-            className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
-          >
-            <CalendarPlus size={18} />
-            New Reservation
-          </Link>
-        </motion.div>
-      </div>
-
+    <AppLayout
+      headerActions={
+        <HeaderActionButton href="/reservations/new" icon={CalendarPlus}>
+          New Reservation
+        </HeaderActionButton>
+      }
+    >
       <section className="mb-8 grid grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <ReservationStatCard key={stat.label} stat={stat} index={index} />

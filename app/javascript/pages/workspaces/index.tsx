@@ -1,6 +1,7 @@
-import { Link, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 import { motion } from "motion/react";
 import { useState } from "react";
+import HeaderActionButton from "../../components/ui/HeaderActionButton";
 import {
   Building2,
   DollarSign,
@@ -46,40 +47,8 @@ export default function WorkspacesIndex({
 }
 
 function MemberWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
-  const activeCount = workspaces.filter((workspace) => workspace.active).length;
-
   return (
     <AppLayout>
-      <div className="mb-8 flex items-start justify-between gap-6">
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-slate-950"
-          >
-            Browse Workspaces
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="mt-2 max-w-2xl text-slate-500"
-          >
-            Explore available rooms, offices, desks, amenities, pricing, and
-            capacity before creating your next reservation.
-          </motion.p>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="rounded-xl border border-cyan-100 bg-cyan-50 px-5 py-3 text-sm font-bold text-cyan-700"
-        >
-          {activeCount} spaces available
-        </motion.div>
-      </div>
-
       <MemberWorkspaceGrid workspaces={workspaces} />
     </AppLayout>
   );
@@ -130,42 +99,13 @@ function ManagerWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
   ];
 
   return (
-    <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-slate-950"
-          >
-            Workspaces
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="mt-2 max-w-2xl text-slate-500"
-          >
-            Browse and manage desks, rooms, offices, amenities, pricing, and
-            availability for your organization.
-          </motion.p>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          <Link
-            href="/workspaces/new"
-            className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
-          >
-            <PlusCircle size={18} />
-            New Workspace
-          </Link>
-        </motion.div>
-      </div>
-
+    <AppLayout
+      headerActions={
+        <HeaderActionButton href="/workspaces/new" icon={PlusCircle}>
+          New Workspace
+        </HeaderActionButton>
+      }
+    >
       <section className="mb-8 grid grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <WorkspaceStatCard key={stat.label} stat={stat} index={index} />

@@ -2,6 +2,7 @@ import { useForm } from "@inertiajs/react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import {
   Camera,
   CheckCircle2,
@@ -76,6 +77,8 @@ export default function ProfileShow({
 }: ProfileShowProps) {
   const [clientErrors, setClientErrors] = useState<ValidationErrors>({});
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [removePhotoConfirmOpen, setRemovePhotoConfirmOpen] = useState(false);
+  const [saveProfileConfirmOpen, setSaveProfileConfirmOpen] = useState(false);
 
   const {
     data,
@@ -114,11 +117,16 @@ export default function ProfileShow({
 
     if (hasValidationErrors(validationErrors)) return;
 
+    setSaveProfileConfirmOpen(true);
+  }
+
+  function submitProfileUpdate() {
     patch("/profile", {
       forceFormData: true,
       preserveScroll: true,
       onSuccess: () => {
         setAvatarPreview(null);
+        setSaveProfileConfirmOpen(false);
 
         setData("user", {
           ...data.user,
@@ -126,6 +134,9 @@ export default function ProfileShow({
           remove_avatar: false,
           current_password: "",
         });
+      },
+      onError: () => {
+        setSaveProfileConfirmOpen(false);
       },
     });
   }
@@ -166,7 +177,11 @@ export default function ProfileShow({
     setAvatarPreview(URL.createObjectURL(file));
   }
 
-  function removeAvatar() {
+  function requestRemoveAvatar() {
+    setRemovePhotoConfirmOpen(true);
+  }
+
+  function confirmRemoveAvatar() {
     clearClientError("avatar");
 
     setAvatarPreview(null);
@@ -176,6 +191,8 @@ export default function ProfileShow({
       avatar: null,
       remove_avatar: true,
     });
+
+    setRemovePhotoConfirmOpen(false);
   }
 
   function clearClientError(field: string) {
@@ -235,7 +252,7 @@ export default function ProfileShow({
               processing={processing}
               error={fieldError(errors, "avatar")}
               onAvatarChange={handleAvatarChange}
-              onRemoveAvatar={removeAvatar}
+              onRemoveAvatar={requestRemoveAvatar}
             />
 
             <SaveProfileCard
@@ -245,6 +262,32 @@ export default function ProfileShow({
           </motion.aside>
         </form>
       </div>
+      <ConfirmDialog
+        open={removePhotoConfirmOpen}
+        title="Remove profile photo?"
+        description="This will remove your current profile photo. You can upload a new one later."
+        confirmText="Remove Photo"
+        cancelText="Keep Photo"
+        danger
+        processing={processing}
+        onCancel={() => setRemovePhotoConfirmOpen(false)}
+        onConfirm={confirmRemoveAvatar}
+      />
+
+      <ConfirmDialog
+        open={saveProfileConfirmOpen}
+        title="Save profile changes?"
+        description={
+          emailChanged
+            ? "Your profile will be updated and your new email will require confirmation before it becomes active."
+            : "Your profile information will be updated for your current account."
+        }
+        confirmText="Save Profile"
+        cancelText="Review Changes"
+        processing={processing}
+        onCancel={() => setSaveProfileConfirmOpen(false)}
+        onConfirm={submitProfileUpdate}
+      />
     </AppLayout>
   );
 }

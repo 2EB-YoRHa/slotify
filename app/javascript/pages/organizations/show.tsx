@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { Send } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
+import HeaderActionButton from "../../components/ui/HeaderActionButton";
 import InviteMemberModal from "../../components/organizations/InviteMemberModal";
-import OrganizationHeader from "../../components/organizations/show/OrganizationHeader";
 import OrganizationProfileCard from "../../components/organizations/show/OrganizationProfileCard";
 import OrganizationSidePanels from "../../components/organizations/show/OrganizationSidePanels";
 import OrganizationStatsGrid from "../../components/organizations/show/OrganizationStatsGrid";
@@ -37,13 +38,15 @@ export default function OrganizationShow({
   const [inviteOpen, setInviteOpen] = useState(false);
 
   return (
-    <AppLayout>
-      <OrganizationHeader
-        organization={organization}
-        canManageOrganization={can_manage_organization}
-        onOpenInvite={() => setInviteOpen(true)}
-      />
-
+    <AppLayout
+      headerActions={
+        can_manage_organization ? (
+          <HeaderActionButton icon={Send} onClick={() => setInviteOpen(true)}>
+            Invite Member
+          </HeaderActionButton>
+        ) : null
+      }
+    >
       <OrganizationStatsGrid
         users={users}
         invitations={invitations}
@@ -51,7 +54,10 @@ export default function OrganizationShow({
       />
 
       <section className="mb-8 grid grid-cols-3 gap-8">
-        <OrganizationProfileCard organization={organization} />
+        <OrganizationProfileCard
+          organization={organization}
+          canManageOrganization={can_manage_organization}
+        />
 
         <OrganizationSidePanels
           bookingRule={booking_rule}

@@ -8,6 +8,7 @@ import {
   Trash2,
 } from "lucide-react";
 import BookingTimeSlotForm from "./BookingTimeSlotForm";
+import ConfirmDialog from "../ui/ConfirmDialog";
 import type { BookingTimeSlot } from "../../types/bookingTimeSlot";
 
 type BookingTimeSlotListProps = {
@@ -18,41 +19,77 @@ export default function BookingTimeSlotList({
   bookingTimeSlots,
 }: BookingTimeSlotListProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [slotToDelete, setSlotToDelete] = useState<BookingTimeSlot | null>(
+    null,
+  );
+  const [processingDelete, setProcessingDelete] = useState(false);
+
+  function confirmDeleteSlot() {
+    if (!slotToDelete) return;
+
+    setProcessingDelete(true);
+
+    router.delete(`/booking_time_slots/${slotToDelete.id}`, {
+      preserveScroll: true,
+      onFinish: () => {
+        setProcessingDelete(false);
+        setSlotToDelete(null);
+      },
+    });
+  }
 
   return (
-    <div className="space-y-4">
-      {bookingTimeSlots.map((slot) => {
-        const editing = editingId === slot.id;
+    <>
+      <div className="space-y-4">
+        {bookingTimeSlots.map((slot) => {
+          const editing = editingId === slot.id;
 
-        return (
-          <div
-            key={slot.id}
-            className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
-          >
-            {editing ? (
-              <BookingTimeSlotForm
-                bookingTimeSlot={slot}
-                onCancel={() => setEditingId(null)}
-              />
-            ) : (
-              <TimeSlotCard
-                slot={slot}
-                onEdit={() => setEditingId(slot.id)}
-              />
-            )}
-          </div>
-        );
-      })}
-    </div>
+          return (
+            <div
+              key={slot.id}
+              className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              {editing ? (
+                <BookingTimeSlotForm
+                  bookingTimeSlot={slot}
+                  onCancel={() => setEditingId(null)}
+                />
+              ) : (
+                <TimeSlotCard
+                  slot={slot}
+                  onEdit={() => setEditingId(slot.id)}
+                  onDelete={() => setSlotToDelete(slot)}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <ConfirmDialog
+        open={Boolean(slotToDelete)}
+        title="Delete time slot?"
+        description={`This will permanently delete ${
+          slotToDelete?.name || "this time slot"
+        }. Existing reservations will remain, but this schedule option will no longer be available.`}
+        confirmText="Delete Time Slot"
+        cancelText="Keep Time Slot"
+        danger
+        processing={processingDelete}
+        onCancel={() => setSlotToDelete(null)}
+        onConfirm={confirmDeleteSlot}
+      />
+    </>
   );
 }
 
 type TimeSlotCardProps = {
   slot: BookingTimeSlot;
   onEdit: () => void;
+  onDelete: () => void;
 };
 
-function TimeSlotCard({ slot, onEdit }: TimeSlotCardProps) {
+function TimeSlotCard({ slot, onEdit, onDelete }: TimeSlotCardProps) {
   const [processing, setProcessing] = useState(false);
 
   function toggleActive() {
@@ -76,121 +113,129 @@ function TimeSlotCard({ slot, onEdit }: TimeSlotCardProps) {
     );
   }
 
-  function deleteSlot() {
-    const confirmed = window.confirm(
-      `Delete "${slot.name}"? This cannot be undone.`,
-    );
-
-    if (!confirmed) return;
-
-    setProcessing(true);
-
-    router.delete(`/booking_time_slots/${slot.id}`, {
-      preserveScroll: true,
-      onFinish: () => setProcessing(false),
-    });
-  }
+  const duration = slot.duration_minutes || slot.end_minute - slot.start_minute;
 
   return (
-    <div>
-      <div className="mb-5 flex items-start justify-between gap-6">
-        <div>
-          <div className="mb-2 flex items-center gap-3">
-            <h3 className="text-lg font-extrabold text-slate-950">
+    <div className="flex flex-col gap-5">
+      <div className="flex items-start justify-between gap-5">
+        <div className="min-w-0">
+          <div className="mb-2 flex flex-wrap items-center gap-3">
+            <h3 className="text-xl font-black text-slate-950">
               {slot.name}
             </h3>
 
             <span
-              className={`rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wide ${
+              className={`rounded-full px-3 py-1 text-xs font-black ${
                 slot.active
                   ? "bg-green-50 text-green-600"
-                  : "bg-slate-200 text-slate-500"
+                  : "bg-slate-100 text-slate-500"
               }`}
             >
               {slot.active ? "Active" : "Inactive"}
             </span>
           </div>
 
-          <div className="flex flex-wrap gap-3 text-sm font-semibold text-slate-500">
-            <span className="inline-flex items-center gap-2 rounded-xl bg-white px-3 py-2">
-              <Clock3 size={16} className="text-cyan-500" />
-              {slot.start_time_label || minuteToTime(slot.start_minute)} -{" "}
-              {slot.end_time_label || minuteToTime(slot.end_minute)}
-            </span>
-
-            <span className="inline-flex items-center gap-2 rounded-xl bg-white px-3 py-2">
-              <CalendarDays size={16} className="text-cyan-500" />
-              {formatDays(slot.days || daysFromString(slot.days_of_week))}
-            </span>
-          </div>
+          <p className="text-sm font-semibold text-slate-500">
+            {formatDays(slot.days || daysFromString(slot.days_of_week))}
+          </p>
         </div>
 
         <div className="flex shrink-0 gap-2">
-          <button
-            type="button"
+          <IconButton
+            title="Edit time slot"
             disabled={processing}
             onClick={onEdit}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-cyan-200 hover:text-cyan-600 disabled:cursor-not-allowed disabled:opacity-60"
-            title="Edit time slot"
           >
             <Edit size={17} />
-          </button>
+          </IconButton>
 
-          <button
-            type="button"
+          <IconButton
+            title={slot.active ? "Deactivate time slot" : "Activate time slot"}
             disabled={processing}
             onClick={toggleActive}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-cyan-200 hover:text-cyan-600 disabled:cursor-not-allowed disabled:opacity-60"
-            title={slot.active ? "Deactivate time slot" : "Activate time slot"}
           >
             <Power size={17} />
-          </button>
+          </IconButton>
 
-          <button
-            type="button"
-            disabled={processing}
-            onClick={deleteSlot}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-red-100 bg-white text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+          <IconButton
             title="Delete time slot"
+            danger
+            disabled={processing}
+            onClick={onDelete}
           >
             <Trash2 size={17} />
-          </button>
+          </IconButton>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         <Metric
+          icon={Clock3}
           label="Start"
           value={slot.start_time_label || minuteToTime(slot.start_minute)}
         />
 
         <Metric
+          icon={Clock3}
           label="End"
           value={slot.end_time_label || minuteToTime(slot.end_minute)}
         />
 
         <Metric
+          icon={CalendarDays}
           label="Duration"
-          value={`${slot.duration_minutes || slot.end_minute - slot.start_minute} min`}
+          value={formatDuration(duration)}
         />
       </div>
     </div>
   );
 }
 
+function IconButton({
+  title,
+  danger = false,
+  disabled,
+  onClick,
+  children,
+}: {
+  title: string;
+  danger?: boolean;
+  disabled: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      disabled={disabled}
+      onClick={onClick}
+      className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+        danger
+          ? "border-red-100 text-red-500 hover:bg-red-50"
+          : "border-slate-200 text-slate-500 hover:border-cyan-200 hover:text-cyan-600"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 type MetricProps = {
+  icon: typeof Clock3;
   label: string;
   value: string;
 };
 
-function Metric({ label, value }: MetricProps) {
+function Metric({ icon: Icon, label, value }: MetricProps) {
   return (
-    <div className="rounded-xl bg-white px-4 py-3">
-      <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
+    <div className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
+      <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+        <Icon size={15} className="text-cyan-500" />
         {label}
-      </p>
+      </div>
 
-      <p className="mt-1 text-sm font-bold text-slate-700">{value}</p>
+      <p className="text-lg font-black text-slate-950">{value}</p>
     </div>
   );
 }
@@ -204,13 +249,13 @@ function daysFromString(value: string): string[] {
 
 function formatDays(days: string[]): string {
   const labels: Record<string, string> = {
-    monday: "Mon",
-    tuesday: "Tue",
-    wednesday: "Wed",
-    thursday: "Thu",
-    friday: "Fri",
-    saturday: "Sat",
-    sunday: "Sun",
+    monday: "Monday",
+    tuesday: "Tuesday",
+    wednesday: "Wednesday",
+    thursday: "Thursday",
+    friday: "Friday",
+    saturday: "Saturday",
+    sunday: "Sunday",
   };
 
   return days.map((day) => labels[day] || day).join(", ");
@@ -221,4 +266,14 @@ function minuteToTime(value: number): string {
   const minutes = value % 60;
 
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+function formatDuration(value: number): string {
+  if (value === 60) return "1 hour";
+
+  if (value % 60 === 0) {
+    return `${value / 60} hours`;
+  }
+
+  return `${value} min`;
 }

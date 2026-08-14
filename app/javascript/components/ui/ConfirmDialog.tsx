@@ -1,3 +1,5 @@
+import { AlertTriangle, HelpCircle } from "lucide-react";
+
 type ConfirmDialogProps = {
   open: boolean;
   title: string;
@@ -23,29 +25,33 @@ export default function ConfirmDialog({
 }: ConfirmDialogProps) {
   if (!open) return null;
 
+  const Icon = danger ? AlertTriangle : HelpCircle;
+
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/40 px-4">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+    <div className="fixed inset-0 z-120 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-[2px]">
+      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-7 text-center shadow-2xl">
         <div
-          className={`mb-5 flex h-12 w-12 items-center justify-center rounded-full ${
+          className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl ${
             danger ? "bg-red-50 text-red-500" : "bg-cyan-50 text-cyan-500"
           }`}
         >
-          {danger ? "!" : "?"}
+          <Icon size={25} strokeWidth={2.4} />
         </div>
 
-        <h2 className="text-xl font-bold text-slate-950">{title}</h2>
+        <h2 className="mt-5 text-2xl font-black text-slate-950">
+          {title}
+        </h2>
 
-        <p className="mt-3 text-sm leading-6 text-slate-500">
+        <p className="mx-auto mt-3 max-w-sm text-sm font-semibold leading-6 text-slate-500">
           {description}
         </p>
 
-        <div className="mt-7 flex justify-end gap-3">
+        <div className="mt-7 grid gap-3 sm:grid-cols-2">
           <button
             type="button"
             onClick={onCancel}
             disabled={processing}
-            className="rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {cancelText}
           </button>
@@ -54,10 +60,10 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={processing}
-            className={`rounded-lg px-5 py-3 text-sm font-bold text-white disabled:opacity-60 ${
+            className={`rounded-2xl px-5 py-3 text-sm font-black text-white shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${
               danger
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-cyan-400 hover:bg-cyan-500"
+                ? "bg-red-500 shadow-red-100 hover:bg-red-600"
+                : "bg-cyan-400 shadow-cyan-100 hover:bg-cyan-500"
             }`}
           >
             {processing ? "Processing..." : confirmText}

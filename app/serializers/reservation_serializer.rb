@@ -49,10 +49,14 @@ class ReservationSerializer
   end
 
   def serialized_user
-    return nil unless reservation.user.present?
+    user = reservation.user
 
-    reservation.user.as_json(
+    return nil unless user.present?
+
+    user.as_json(
       only: USER_ATTRIBUTES
+    ).merge(
+      avatar_url: user.avatar.attached? ? view_context.url_for(user.avatar) : nil
     )
   end
 end

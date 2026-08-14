@@ -43,7 +43,6 @@ const DEFAULT_ENTITLEMENTS: DashboardPlanEntitlements = {
 
 export default function DashboardIndex({
   current_user = null,
-  current_plan = "starter",
   plan_entitlements = DEFAULT_ENTITLEMENTS,
   stats = [],
   upcoming_reservations = [],
@@ -80,7 +79,6 @@ export default function DashboardIndex({
       </section>
 
       <DashboardPremiumPanels
-        currentPlan={current_plan}
         planEntitlements={plan_entitlements}
         weeklyOccupancy={weekly_occupancy}
         workspaceDistribution={workspace_distribution}

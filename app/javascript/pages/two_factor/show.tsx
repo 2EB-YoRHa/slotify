@@ -640,8 +640,9 @@ function CodeField({
         disabled={disabled}
       />
 
-      <FieldHint>Use the 6-digit code from your authenticator app.</FieldHint>
       <FieldError error={error} label="Code" />
+
+      <FieldHint>Use the 6-digit code from your authenticator app.</FieldHint>
     </label>
   );
 }

@@ -151,9 +151,17 @@ export default function ReservationsTable({
                 >
                   <td className="px-6 py-5 align-middle">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-cyan-500">
-                        <UserRound size={18} strokeWidth={2.4} />
-                      </div>
+                      {reservation.user?.avatar_url ? (
+                        <img
+                          src={reservation.user.avatar_url}
+                          alt={reservation.user.name || "User"}
+                          className="h-10 w-10 shrink-0 rounded-2xl object-cover ring-4 ring-cyan-50"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+                          <UserRound size={18} strokeWidth={2.4} />
+                        </div>
+                      )}
 
                       <div className="min-w-0">
                         <div className="truncate font-bold text-slate-950">

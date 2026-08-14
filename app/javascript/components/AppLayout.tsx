@@ -7,9 +7,13 @@ import PageTransition from "./ui/PageTransition";
 
 type AppLayoutProps = {
   children: ReactNode;
+  headerActions?: ReactNode;
 };
 
-export default function AppLayout({ children }: AppLayoutProps) {
+export default function AppLayout({
+  children,
+  headerActions = null,
+}: AppLayoutProps) {
   return (
     <div className="h-screen overflow-hidden bg-slate-50 text-slate-900">
       <FlashMessages />
@@ -18,7 +22,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <Sidebar />
 
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          <Header />
+          <Header actions={headerActions} />
 
           <NavigationLoadingOverlay />
 

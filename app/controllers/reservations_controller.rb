@@ -11,7 +11,10 @@ class ReservationsController < InertiaController
     end
 
     reservations = reservation_scope
-                  .includes(:user, workspace: [ :amenities, { photo_attachment: :blob } ])
+                  .includes(
+                    { user: { avatar_attachment: :blob } },
+                    workspace: [ :amenities, { photo_attachment: :blob } ]
+                  )
                   .order(start_time: :desc)
 
       serialized_reservations = serialize_reservations(reservations)
@@ -206,7 +209,10 @@ class ReservationsController < InertiaController
     reservations = current_user
                    .reservations
                    .where(organization: current_organization)
-                   .includes(:user, workspace: [ :amenities, { photo_attachment: :blob } ])
+                   .includes(
+                      { user: { avatar_attachment: :blob } },
+                      workspace: [ :amenities, { photo_attachment: :blob } ]
+                   )
                    .order(start_time: :desc)
 
     render inertia: "reservations/my_reservations", props: {
@@ -258,7 +264,10 @@ class ReservationsController < InertiaController
 
   def set_reservation
     @reservation = reservation_scope
-                   .includes(:user, workspace: [ :amenities, { photo_attachment: :blob } ])
+                   .includes(
+                    { user: { avatar_attachment: :blob } },
+                    workspace: [ :amenities, { photo_attachment: :blob } ]
+                   )
                    .find(params[:id])
   end
 

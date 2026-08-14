@@ -3,7 +3,6 @@ import AppLayout from "../../components/AppLayout";
 import AvailablePlansSection from "../../components/subscriptions/show/AvailablePlansSection";
 import BillingRequiredActivationPanel from "../../components/subscriptions/show/BillingRequiredActivationPanel";
 import PlanFeatureComparisonPanel from "../../components/subscriptions/show/PlanFeatureComparisonPanel";
-import SubscriptionHeader from "../../components/subscriptions/show/SubscriptionHeader";
 import SubscriptionOverviewPanel from "../../components/subscriptions/show/SubscriptionOverviewPanel";
 import {
   formatPlan,
@@ -58,12 +57,6 @@ export default function SubscriptionShow({
 
   return (
     <AppLayout>
-      <SubscriptionHeader
-        currentPlanLabel={currentPlanLabel}
-        status={status}
-        billingRequired={billingRequired}
-      />
-
       {billingRequired ? (
         <BillingRequiredActivationPanel />
       ) : (
@@ -128,9 +121,7 @@ function CollapsibleSection({
         <div>
           <h2 className="text-xl font-extrabold text-slate-950">{title}</h2>
 
-          <p className="mt-1 text-sm leading-6 text-slate-500">
-            {description}
-          </p>
+          <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
         </div>
 
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-open:rotate-180">

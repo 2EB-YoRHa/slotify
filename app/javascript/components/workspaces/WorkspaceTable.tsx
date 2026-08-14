@@ -12,6 +12,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import type { Workspace } from "../../types/workspace";
 import WorkspacePhoto from "./WorkspacePhoto";
 
@@ -123,12 +124,12 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
         <table className="w-full table-fixed text-sm">
           <colgroup>
             <col className="w-[28%]" />
-            <col className="w-[14%]" />
-            <col className="w-[12%]" />
-            <col className="w-[18%]" />
-            <col className="w-[12%]" />
-            <col className="w-[8%]" />
-            <col className="w-[8%]" />
+            <col className="w-[13%]" />
+            <col className="w-[10%]" />
+            <col className="w-[17%]" />
+            <col className="w-[10%]" />
+            <col className="w-[9%]" />
+            <col className="w-[13%]" />
           </colgroup>
 
           <thead className="bg-white text-slate-500">
@@ -139,7 +140,7 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
               <th className="px-6 py-4 text-center font-bold">Location</th>
               <th className="px-6 py-4 text-center font-bold">Rate</th>
               <th className="px-6 py-4 text-center font-bold">Status</th>
-              <th className="px-6 py-4 text-center font-bold">Actions</th>
+              <th className="px-4 py-4 text-center font-bold">Actions</th>
             </tr>
           </thead>
 
@@ -212,8 +213,8 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
                   <StatusBadge active={workspace.active} />
                 </td>
 
-                <td className="px-6 py-5 text-center align-middle">
-                  <div className="flex items-center justify-center gap-2">
+                <td className="px-4 py-5 text-center align-middle">
+                  <div className="inline-flex items-center justify-center gap-2">
                     <ActionLink
                       href={`/workspaces/${workspace.id}`}
                       title="View"
@@ -262,7 +263,7 @@ function StatusBadge({ active }: StatusBadgeProps) {
 type ActionLinkProps = {
   href: string;
   title: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   danger?: boolean;
 };
 
@@ -271,7 +272,7 @@ function ActionLink({ href, title, icon, danger = false }: ActionLinkProps) {
     <Link
       href={href}
       title={title}
-      className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition hover:-translate-y-0.5 hover:shadow-sm ${
+      className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-white transition hover:-translate-y-0.5 hover:shadow-sm ${
         danger
           ? "border-red-100 text-red-500 hover:bg-red-50"
           : "border-slate-200 text-slate-500 hover:border-cyan-100 hover:bg-cyan-50 hover:text-cyan-500"

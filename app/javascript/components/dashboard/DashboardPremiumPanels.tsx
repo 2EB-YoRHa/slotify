@@ -23,7 +23,6 @@ import type {
 } from "../../types/dashboardTypes";
 
 type DashboardPremiumPanelsProps = {
-  currentPlan: string;
   planEntitlements: DashboardPlanEntitlements;
   weeklyOccupancy: WeeklyOccupancy[];
   workspaceDistribution: WorkspaceDistribution[];
@@ -31,7 +30,6 @@ type DashboardPremiumPanelsProps = {
 };
 
 export default function DashboardPremiumPanels({
-  currentPlan,
   planEntitlements,
   weeklyOccupancy,
   workspaceDistribution,
@@ -42,31 +40,14 @@ export default function DashboardPremiumPanels({
 
   return (
     <section className="mt-8 space-y-6">
-      <div className="flex items-end justify-between gap-6">
-        <div>
-          <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500">
-            Premium Operations
-          </p>
+      <div>
+        <h2 className="text-2xl font-black text-slate-950">
+          Availability insights
+        </h2>
 
-          <h2 className="mt-2 text-2xl font-extrabold text-slate-950">
-            Insights and availability controls
-          </h2>
-
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-            These sections are controlled by the current subscription plan. Pro
-            unlocks deeper visibility and premium availability management.
-          </p>
-        </div>
-
-        <span
-          className={`rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-wide ${
-            currentPlan === "pro"
-              ? "bg-cyan-50 text-cyan-600"
-              : "bg-slate-100 text-slate-500"
-          }`}
-        >
-          {formatPlan(currentPlan)}
-        </span>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
+          Monitor occupancy and workspace distribution across your organization.
+        </p>
       </div>
 
       {usageInsightsEnabled ? (
@@ -226,7 +207,8 @@ function AvailabilityCommandCenterPreview({
             </div>
 
             <p className="mt-1 text-sm leading-6 text-slate-500">
-              Monitor availability, occupancy, and the next scheduled booking in real time.
+              Monitor availability, occupancy, and the next scheduled booking in
+              real time.
             </p>
           </div>
         </div>
@@ -284,7 +266,12 @@ type CommandMetricProps = {
   helper: string;
 };
 
-function CommandMetric({ icon: Icon, label, value, helper }: CommandMetricProps) {
+function CommandMetric({
+  icon: Icon,
+  label,
+  value,
+  helper,
+}: CommandMetricProps) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
@@ -320,10 +307,4 @@ function nextReservationHelper(
   return `${formatDate(reservation.start_time)} · ${formatTime(
     reservation.start_time,
   )}`;
-}
-
-function formatPlan(plan: string): string {
-  return plan
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }
