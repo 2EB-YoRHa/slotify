@@ -53,7 +53,7 @@ export default function OrganizationShow({
         subscription={subscription}
       />
 
-      <section className="mb-8 grid grid-cols-3 gap-8">
+      <section className="mb-6 grid grid-cols-1 gap-6 xl:mb-8 xl:grid-cols-3 xl:gap-8">
         <OrganizationProfileCard
           organization={organization}
           canManageOrganization={can_manage_organization}

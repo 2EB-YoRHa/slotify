@@ -56,7 +56,7 @@ export default function OrganizationStatsGrid({
   ];
 
   return (
-    <section className="mb-8 grid grid-cols-4 gap-6">
+    <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:mb-8 xl:grid-cols-4 xl:gap-6">
       {stats.map((stat, index) => (
         <OrganizationStatCard key={stat.label} stat={stat} index={index} />
       ))}

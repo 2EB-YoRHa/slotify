@@ -21,20 +21,16 @@ export default function OrganizationTeamSection({
   );
 
   return (
-    <>
-      <section className="mb-8">
-        <OrganizationMembersTable
-          users={users}
-          canManage={canManageOrganization}
-        />
-      </section>
+    <div className="space-y-6 xl:space-y-8">
+      <OrganizationMembersTable
+        users={users}
+        canManage={canManageOrganization}
+      />
 
-      <section>
-        <OrganizationInvitationsList
-          invitations={pendingInvitations}
-          canManage={canManageOrganization}
-        />
-      </section>
-    </>
+      <OrganizationInvitationsList
+        invitations={pendingInvitations}
+        canManage={canManageOrganization}
+      />
+    </div>
   );
 }

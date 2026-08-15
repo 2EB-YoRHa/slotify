@@ -26,7 +26,7 @@ export default function OrganizationSidePanels({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.16 }}
-      className="space-y-6"
+      className="space-y-6 xl:sticky xl:top-24 xl:self-start"
     >
       <BookingRulesPanel bookingRule={bookingRule} />
       <SubscriptionPanel subscription={subscription} />

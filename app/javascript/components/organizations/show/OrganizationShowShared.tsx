@@ -34,13 +34,15 @@ export function OrganizationStatCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-5 xl:p-6"
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-medium leading-5 text-slate-500">
+            {stat.label}
+          </p>
 
-          <h2 className="mt-2 text-3xl font-bold text-slate-950">
+          <h2 className="mt-2 truncate text-2xl font-bold text-slate-950 sm:text-3xl">
             {stat.value}
           </h2>
         </div>
@@ -48,7 +50,7 @@ export function OrganizationStatCard({
         <IconBox icon={Icon} />
       </div>
 
-      <p className="mt-3 text-xs text-slate-500">{stat.helper}</p>
+      <p className="mt-3 text-xs leading-5 text-slate-500">{stat.helper}</p>
     </motion.div>
   );
 }
@@ -61,13 +63,18 @@ type InfoCardProps = {
 
 export function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
   return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 p-5">
+    <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50 p-4 sm:p-5">
       <div className="mb-3 flex items-center gap-2 text-slate-400">
-        <Icon size={16} />
-        <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
+        <Icon size={16} className="shrink-0" />
+
+        <p className="truncate text-xs font-bold uppercase tracking-wide">
+          {label}
+        </p>
       </div>
 
-      <p className="wrap-break-word text-sm font-bold text-slate-900">{value}</p>
+      <p className="wrap-break-word text-sm font-bold text-slate-900">
+        {value}
+      </p>
     </div>
   );
 }
@@ -80,7 +87,7 @@ type SidePanelProps = {
 
 export function SidePanel({ title, icon: Icon, children }: SidePanelProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
       <div className="mb-5 flex items-center gap-3">
         <IconBox icon={Icon} />
 
@@ -99,10 +106,10 @@ type SummaryRowProps = {
 
 export function SummaryRow({ label, value }: SummaryRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-slate-100 py-3 last:border-0">
+    <div className="flex flex-col gap-1 border-b border-slate-100 py-3 last:border-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <span className="text-sm text-slate-500">{label}</span>
 
-      <span className="text-right text-sm font-bold text-slate-950">
+      <span className="break-words text-sm font-bold text-slate-950 sm:text-right">
         {value}
       </span>
     </div>

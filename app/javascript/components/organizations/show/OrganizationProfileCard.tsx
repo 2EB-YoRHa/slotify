@@ -25,32 +25,32 @@ export default function OrganizationProfileCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.12 }}
-      className="col-span-2 rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
+      className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8 xl:col-span-2"
     >
-      <div className="mb-7 flex items-start justify-between gap-6">
-        <div className="flex items-start gap-4">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
           <IconBox icon={Building2} />
 
-          <div>
-            <h2 className="text-2xl font-bold text-slate-950">
+          <div className="min-w-0">
+            <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
               Organization Profile
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-slate-500">
               Basic company information used across Slotify.
             </p>
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-3">
-          <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
+        <div className="flex flex-col gap-3 sm:shrink-0 sm:flex-row sm:items-center">
+          <span className="w-fit rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
             Active
           </span>
 
           {canManageOrganization && (
             <Link
               href="/organization/edit"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 sm:h-10 sm:w-auto"
             >
               <Pencil size={16} strokeWidth={2.4} />
               Edit
@@ -59,7 +59,7 @@ export default function OrganizationProfileCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
         <InfoCard
           icon={Building2}
           label="Organization Name"
@@ -72,7 +72,7 @@ export default function OrganizationProfileCard({
 
         <InfoCard icon={Phone} label="Phone" value={organization.phone || "-"} />
 
-        <div className="col-span-2">
+        <div className="sm:col-span-2">
           <InfoCard
             icon={MapPin}
             label="Address"

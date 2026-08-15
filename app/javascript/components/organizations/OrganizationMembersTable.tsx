@@ -1,5 +1,12 @@
 import { Link } from "@inertiajs/react";
 import { useState } from "react";
+import {
+  CheckCircle2,
+  Search,
+  ShieldCheck,
+  UserRound,
+  XCircle,
+} from "lucide-react";
 import type { OrganizationUser } from "../../types/organization";
 
 type OrganizationMembersTableProps = {
@@ -14,9 +21,10 @@ export default function OrganizationMembersTable({
   const [search, setSearch] = useState("");
 
   const filteredUsers = users.filter((user) => {
-    const query = search.toLowerCase();
+    const query = search.trim().toLowerCase();
 
     return (
+      query.length === 0 ||
       user.name.toLowerCase().includes(query) ||
       user.email.toLowerCase().includes(query) ||
       formatRole(user.role?.name).toLowerCase().includes(query)
@@ -24,123 +32,236 @@ export default function OrganizationMembersTable({
   });
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-slate-200 p-6">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Team Members</h2>
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <h2 className="text-lg font-bold text-slate-900 sm:text-xl">
+            Team Members
+          </h2>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm leading-6 text-slate-500">
             Users assigned to this organization.
           </p>
         </div>
 
-        <input
-          type="text"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search members..."
-          className="w-72 rounded-lg border border-slate-200 px-4 py-2 text-sm outline-none focus:border-cyan-400"
-        />
+        <div className="relative w-full lg:w-80">
+          <Search
+            size={17}
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          />
+
+          <input
+            type="text"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search members..."
+            className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+          />
+        </div>
       </div>
 
       {filteredUsers.length === 0 ? (
-        <div className="p-10 text-center text-slate-400">
-          No members match your search.
+        <div className="px-5 py-10 text-center sm:p-12">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+            <UserRound size={24} />
+          </div>
+
+          <h3 className="mt-4 text-lg font-bold text-slate-900">
+            No members found
+          </h3>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Try changing the search text.
+          </p>
         </div>
       ) : (
-        <table className="w-full table-fixed text-sm">
-          <colgroup>
-            <col className="w-[46%]" />
-            <col className="w-[18%]" />
-            <col className="w-[18%]" />
-            <col className="w-[18%]" />
-          </colgroup>
-
-          <thead className="bg-slate-50 text-slate-500">
-            <tr>
-              <th className="px-6 py-4 text-center align-middle font-medium">
-                Members
-              </th>
-
-              <th className="px-6 py-4 text-center align-middle font-medium">
-                Role
-              </th>
-
-              <th className="px-6 py-4 text-center align-middle font-medium">
-                Status
-              </th>
-
-              <th className="px-6 py-4 text-center align-middle font-medium">
-                Actions
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
+        <>
+          <div className="grid grid-cols-1 gap-4 p-4 md:hidden">
             {filteredUsers.map((user) => (
-              <tr
-                key={user.id}
-                className="h-18 border-t border-slate-100 hover:bg-slate-50"
-              >
-                <td className="px-6 py-4 text-left align-middle">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-50 font-bold text-cyan-500">
-                      {initials(user.name)}
-                    </div>
-
-                    <div className="min-w-0 text-left">
-                      <div className="truncate font-semibold text-slate-900">
-                        {user.name}
-                      </div>
-
-                      <div className="truncate text-xs text-slate-400">
-                        {user.email}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-
-                <td className="px-6 py-4 text-center align-middle">
-                  <div className="flex justify-center">
-                    <span className="inline-flex min-w-24 justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
-                      {formatRole(user.role?.name)}
-                    </span>
-                  </div>
-                </td>
-
-                <td className="px-6 py-4 text-center align-middle">
-                  <div className="flex justify-center">
-                    <span
-                      className={`inline-flex min-w-24 justify-center rounded-full px-3 py-1 text-xs font-bold ${
-                        user.active
-                          ? "bg-green-50 text-green-600"
-                          : "bg-red-50 text-red-600"
-                      }`}
-                    >
-                      {user.active ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-                </td>
-
-                <td className="px-6 py-4 text-center align-middle">
-                  {canManage ? (
-                    <Link
-                      href={`/organization/members/${user.id}`}
-                      className="text-sm font-bold text-cyan-500 hover:text-cyan-600"
-                    >
-                      Manage
-                    </Link>
-                  ) : (
-                    <span className="text-sm font-semibold text-slate-300">
-                      -
-                    </span>
-                  )}
-                </td>
-              </tr>
+              <MemberCard key={user.id} user={user} canManage={canManage} />
             ))}
-          </tbody>
-        </table>
+          </div>
+
+          <div className="hidden overflow-x-auto md:block">
+            <table className="min-w-[760px] w-full table-fixed text-sm">
+              <colgroup>
+                <col className="w-[46%]" />
+                <col className="w-[18%]" />
+                <col className="w-[18%]" />
+                <col className="w-[18%]" />
+              </colgroup>
+
+              <thead className="bg-slate-50 text-slate-500">
+                <tr>
+                  <th className="px-6 py-4 text-left align-middle font-medium">
+                    Members
+                  </th>
+
+                  <th className="px-6 py-4 text-center align-middle font-medium">
+                    Role
+                  </th>
+
+                  <th className="px-6 py-4 text-center align-middle font-medium">
+                    Status
+                  </th>
+
+                  <th className="px-6 py-4 text-center align-middle font-medium">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredUsers.map((user) => (
+                  <tr
+                    key={user.id}
+                    className="h-18 border-t border-slate-100 hover:bg-slate-50"
+                  >
+                    <td className="px-6 py-4 text-left align-middle">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <Avatar name={user.name} />
+
+                        <div className="min-w-0 text-left">
+                          <div className="truncate font-semibold text-slate-900">
+                            {user.name}
+                          </div>
+
+                          <div className="truncate text-xs text-slate-400">
+                            {user.email}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 text-center align-middle">
+                      <div className="flex justify-center">
+                        <RoleBadge role={user.role?.name} />
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 text-center align-middle">
+                      <div className="flex justify-center">
+                        <StatusBadge active={user.active} />
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 text-center align-middle">
+                      {canManage ? (
+                        <Link
+                          href={`/organization/members/${user.id}`}
+                          className="text-sm font-bold text-cyan-500 hover:text-cyan-600"
+                        >
+                          Manage
+                        </Link>
+                      ) : (
+                        <span className="text-sm font-semibold text-slate-300">
+                          -
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
+    </div>
+  );
+}
+
+function MemberCard({
+  user,
+  canManage,
+}: {
+  user: OrganizationUser;
+  canManage: boolean;
+}) {
+  return (
+    <article className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="mb-4 flex min-w-0 items-start gap-3">
+        <Avatar name={user.name} />
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-bold text-slate-950">{user.name}</p>
+
+          <p className="mt-1 truncate text-xs text-slate-400">{user.email}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4">
+        <InfoLine
+          icon={<ShieldCheck size={15} />}
+          label="Role"
+          value={formatRole(user.role?.name)}
+        />
+
+        <InfoLine
+          icon={
+            user.active ? <CheckCircle2 size={15} /> : <XCircle size={15} />
+          }
+          label="Status"
+          value={user.active ? "Active" : "Inactive"}
+        />
+      </div>
+
+      {canManage && (
+        <Link
+          href={`/organization/members/${user.id}`}
+          className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-cyan-400 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:bg-cyan-500"
+        >
+          Manage Member
+        </Link>
+      )}
+    </article>
+  );
+}
+
+function Avatar({ name }: { name?: string | null }) {
+  return (
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cyan-50 font-bold text-cyan-500">
+      {initials(name)}
+    </div>
+  );
+}
+
+function RoleBadge({ role }: { role?: string | null }) {
+  return (
+    <span className="inline-flex min-w-24 justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+      {formatRole(role)}
+    </span>
+  );
+}
+
+function StatusBadge({ active }: { active: boolean }) {
+  return (
+    <span
+      className={`inline-flex min-w-24 justify-center rounded-full px-3 py-1 text-xs font-bold ${
+        active ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
+      }`}
+    >
+      {active ? "Active" : "Inactive"}
+    </span>
+  );
+}
+
+function InfoLine({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex min-w-0 items-center justify-between gap-4">
+      <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+        {icon}
+        {label}
+      </div>
+
+      <p className="truncate text-sm font-bold text-slate-950">{value}</p>
     </div>
   );
 }
