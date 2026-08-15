@@ -6,12 +6,14 @@ type SidebarNavProps = {
   items: NavItem[];
   currentUrl: string;
   billingRequired: boolean;
+  onNavigate?: () => void;
 };
 
 export default function SidebarNav({
   items,
   currentUrl,
   billingRequired,
+  onNavigate,
 }: SidebarNavProps) {
   return (
     <nav className="min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-6">
@@ -23,6 +25,7 @@ export default function SidebarNav({
           <Link
             key={item.href}
             href={item.href}
+            onClick={onNavigate}
             className={`flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm font-bold transition ${
               active
                 ? billingRequired

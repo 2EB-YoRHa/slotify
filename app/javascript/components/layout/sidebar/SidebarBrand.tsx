@@ -3,13 +3,15 @@ import { Link } from "@inertiajs/react";
 export default function SidebarBrand({
   href,
   billingRequired,
+  onClick,
 }: {
   href: string;
   billingRequired: boolean;
+  onClick?: () => void;
 }) {
   return (
     <div className="flex h-16 items-center px-7">
-      <Link href={href} className="group inline-block">
+      <Link href={href} onClick={onClick} className="group inline-block">
         <span className="block text-2xl font-black tracking-[-0.055em] text-slate-950 transition group-hover:text-slate-800">
           Slotify
         </span>

@@ -47,21 +47,24 @@ export default function HeaderProfileMenu({
   }
 
   return (
-    <div ref={menuRef} className="relative">
+    <div ref={menuRef} className="relative shrink-0">
       <button
         type="button"
         onClick={() => setMenuOpen((value) => !value)}
-        className={`flex items-center gap-2 rounded-full p-1 pr-2 text-sm font-extrabold transition hover:bg-slate-100 ${
+        className={`flex h-10 items-center gap-1 rounded-full p-1 text-sm font-extrabold transition hover:bg-slate-100 sm:gap-2 sm:pr-2 ${
           menuOpen ? "bg-slate-100" : ""
         }`}
         aria-expanded={menuOpen}
         aria-haspopup="menu"
+        aria-label="Open profile menu"
       >
         <UserAvatar user={user} billingRequired={billingRequired} />
 
         <ChevronDown
           size={15}
-          className={`text-slate-400 transition ${menuOpen ? "rotate-180" : ""}`}
+          className={`hidden text-slate-400 transition sm:block ${
+            menuOpen ? "rotate-180" : ""
+          }`}
         />
       </button>
 

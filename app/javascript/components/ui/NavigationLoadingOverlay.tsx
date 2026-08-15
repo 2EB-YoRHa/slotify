@@ -28,7 +28,7 @@ export default function NavigationLoadingOverlay() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.18 }}
-          className="fixed bottom-0 left-64 right-0 top-16 z-[80] overflow-hidden bg-slate-50/95 p-8 backdrop-blur-sm"
+          className="fixed bottom-0 left-0 right-0 top-16 z-80 overflow-hidden bg-slate-50/95 p-4 backdrop-blur-sm sm:p-6 lg:left-64 lg:p-8"
         >
           {skeletonForPath(path)}
         </motion.div>

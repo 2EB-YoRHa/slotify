@@ -23,7 +23,7 @@ export default function ProfileDropdown({
   return (
     <div
       role="menu"
-      className="absolute right-0 top-14 z-50 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+      className="absolute right-0 top-14 z-50 w-[calc(100vw-2rem)] max-w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
     >
       <div
         className={`border-b p-5 ${

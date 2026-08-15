@@ -9,11 +9,11 @@ export function headerMetaFor(
   if (path === "/") {
     return role === "member"
       ? {
-          title: "Member Dashboard",
+          title: "Dashboard",
           description: "Find workspaces, review bookings, and manage your day.",
         }
       : {
-          title: "Operations Dashboard",
+          title: "Dashboard",
           description: "Track reservations, workspace activity, and team usage.",
         };
   }
