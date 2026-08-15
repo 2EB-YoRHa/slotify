@@ -37,16 +37,16 @@ export default function ReservationWorkspacePanel({
         fit="contain"
         position="object-center"
         showThumbnails
-        className="h-105 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm"
+        className="h-64 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm sm:h-96 xl:h-105"
       />
 
-      <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-        <div className="mb-8 flex items-start justify-between">
-          <div className="flex items-start gap-4">
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+        <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-start gap-3 sm:gap-4">
             <IconBox icon={Building2} />
 
-            <div>
-              <h2 className="text-2xl font-bold text-slate-950">
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
                 Workspace Information
               </h2>
 
@@ -56,10 +56,12 @@ export default function ReservationWorkspacePanel({
             </div>
           </div>
 
-          <ReservationStatusBadge status={reservation.status} />
+          <div className="shrink-0">
+            <ReservationStatusBadge status={reservation.status} />
+          </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
           <InfoCard
             icon={Building2}
             label="Workspace"
@@ -96,7 +98,7 @@ export default function ReservationWorkspacePanel({
             value={reservation.workspace?.zone || "-"}
           />
 
-          <div className="col-span-3">
+          <div className="sm:col-span-2 xl:col-span-3">
             <InfoCard
               icon={MapPin}
               label="Location"
@@ -104,12 +106,12 @@ export default function ReservationWorkspacePanel({
             />
           </div>
 
-          <div className="col-span-3 border-t border-slate-100 pt-6">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
+          <div className="border-t border-slate-100 pt-6 sm:col-span-2 xl:col-span-3">
+            <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
                 <IconBox icon={Sparkles} size="sm" />
 
-                <div>
+                <div className="min-w-0">
                   <h3 className="font-bold text-slate-950">
                     Amenities Included
                   </h3>
@@ -120,7 +122,7 @@ export default function ReservationWorkspacePanel({
                 </div>
               </div>
 
-              <span className="rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-400">
+              <span className="w-fit rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-400">
                 {workspaceAmenities.length} assigned
               </span>
             </div>
@@ -151,10 +153,10 @@ function AmenityChips({ amenities }: AmenityChipsProps) {
       {amenities.map((amenity) => (
         <span
           key={amenity.id}
-          className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-slate-600 ring-1 ring-slate-200"
+          className="inline-flex max-w-full items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-slate-600 ring-1 ring-slate-200"
         >
-          <Sparkles size={13} className="text-cyan-500" />
-          {amenity.name}
+          <Sparkles size={13} className="shrink-0 text-cyan-500" />
+          <span className="truncate">{amenity.name}</span>
         </span>
       ))}
     </div>

@@ -18,13 +18,13 @@ export default function ReservationSummaryPanel({
   canModify,
 }: ReservationSummaryPanelProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-8">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
         <div className="mb-4">
           <IconBox icon={CalendarCheck} />
         </div>
 
-        <h2 className="text-2xl font-bold text-slate-950">
+        <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
           Booking Summary
         </h2>
 
@@ -33,7 +33,7 @@ export default function ReservationSummaryPanel({
         </p>
       </div>
 
-      <div className="rounded-xl bg-slate-50 p-5">
+      <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
         <SummaryRow
           label="Workspace"
           value={reservation.workspace?.name || "Workspace removed"}
@@ -66,7 +66,7 @@ export default function ReservationSummaryPanel({
       </div>
 
       {!canModify && (
-        <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-500">
+        <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm leading-6 text-slate-500">
           This reservation can no longer be modified.
         </div>
       )}

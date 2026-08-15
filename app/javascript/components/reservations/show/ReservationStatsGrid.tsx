@@ -16,7 +16,7 @@ export default function ReservationStatsGrid({
   reservation,
 }: ReservationStatsGridProps) {
   return (
-    <section className="mb-8 grid grid-cols-4 gap-6">
+    <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:mb-8 xl:grid-cols-4 xl:gap-6">
       <SummaryCard
         index={0}
         icon={CalendarDays}

@@ -17,8 +17,8 @@ export default function ReservationHeader({
   backLabel,
 }: ReservationHeaderProps) {
   return (
-    <div className="mb-8 flex items-start justify-between">
-      <div>
+    <div className="mb-6 flex flex-col gap-5 sm:mb-8 xl:flex-row xl:items-start xl:justify-between">
+      <div className="min-w-0">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -28,7 +28,7 @@ export default function ReservationHeader({
             className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
           >
             <ArrowLeft size={16} />
-            {backLabel}
+            <span className="truncate">{backLabel}</span>
           </Link>
         </motion.div>
 
@@ -36,7 +36,7 @@ export default function ReservationHeader({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04 }}
-          className="mt-6 text-3xl font-bold text-slate-950"
+          className="mt-5 break-words text-2xl font-black leading-tight text-slate-950 sm:mt-6 sm:text-3xl"
         >
           Reservation for {reservation.workspace?.name || "Workspace"}
         </motion.h1>
@@ -45,7 +45,7 @@ export default function ReservationHeader({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="mt-2 max-w-2xl text-slate-500"
+          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base"
         >
           Review the booking schedule, workspace details, attendees, and notes.
         </motion.p>
@@ -55,11 +55,11 @@ export default function ReservationHeader({
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="flex gap-3"
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:flex xl:shrink-0"
         >
           <Link
             href={`/reservations/${reservation.id}/edit`}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 hover:shadow-md"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 hover:shadow-md xl:w-auto"
           >
             <Edit3 size={18} />
             Edit
@@ -67,7 +67,7 @@ export default function ReservationHeader({
 
           <Link
             href={`/reservations/${reservation.id}/cancel`}
-            className="inline-flex items-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-red-600 hover:shadow-md"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-red-600 hover:shadow-md xl:w-auto"
           >
             <Ban size={18} />
             Cancel

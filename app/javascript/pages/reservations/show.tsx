@@ -39,12 +39,12 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
 
       <ReservationStatsGrid reservation={reservation} />
 
-      <section className="grid grid-cols-3 gap-8">
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-3 xl:gap-8">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="col-span-2 space-y-8"
+          className="space-y-6 xl:col-span-2 xl:space-y-8"
         >
           <ReservationWorkspacePanel reservation={reservation} />
           <ReservationUserCard reservation={reservation} />
@@ -55,7 +55,7 @@ export default function ReservationShow({ reservation }: ReservationShowProps) {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16 }}
-          className="space-y-6"
+          className="space-y-6 xl:sticky xl:top-24 xl:self-start"
         >
           <ReservationSummaryPanel
             reservation={reservation}
