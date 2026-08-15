@@ -1,8 +1,7 @@
 class ReservationsController < InertiaController
   before_action :set_reservation, only: %i[show edit update destroy cancel_confirmation]
-
   before_action :ensure_reservation_can_be_modified,
-              only: %i[edit update destroy cancel_confirmation]
+                only: %i[edit update destroy cancel_confirmation]
 
   def index
     if member? && request.format.html?
@@ -11,25 +10,22 @@ class ReservationsController < InertiaController
     end
 
     reservations = reservation_scope
-                  .includes(
-                    { user: { avatar_attachment: :blob } },
-                    workspace: [ :amenities, { photo_attachment: :blob } ]
-                  )
-                  .order(start_time: :desc)
+                   .includes(reservation_includes)
+                   .order(start_time: :desc)
 
-      serialized_reservations = serialize_reservations(reservations)
+    serialized_reservations = serialize_reservations(reservations)
 
-      respond_to do |format|
-        format.html do
-          render inertia: "reservations/index", props: {
-            reservations: serialized_reservations
-          }
-        end
-
-        format.json do
-          render json: serialized_reservations
-        end
+    respond_to do |format|
+      format.html do
+        render inertia: "reservations/index", props: {
+          reservations: serialized_reservations
+        }
       end
+
+      format.json do
+        render json: serialized_reservations
+      end
+    end
   end
 
   def show
@@ -49,21 +45,7 @@ class ReservationsController < InertiaController
   end
 
   def new
-    default_start_time = Time.zone.parse("#{Time.zone.today} 09:00")
-    default_end_time = Time.zone.parse("#{Time.zone.today} 10:00")
-
-      render inertia: "reservations/new", props: {
-        workspaces: serialize_workspaces(active_workspaces),
-        selected_workspace_id: params[:workspace_id],
-        initial_start_time: default_start_time.strftime("%Y-%m-%dT%H:%M"),
-        initial_end_time: default_end_time.strftime("%Y-%m-%dT%H:%M"),
-        initial_unavailable_workspace_ids: unavailable_workspace_ids_for(
-          default_start_time,
-          default_end_time
-        ),
-        booking_rule: current_organization.booking_rule,
-        booking_time_slots: reservation_time_slots
-      }
+    render inertia: "reservations/new", props: new_reservation_props
   end
 
   def create
@@ -85,18 +67,7 @@ class ReservationsController < InertiaController
       else
         format.html do
           render inertia: "reservations/new",
-                 props: {
-                   workspaces: serialize_workspaces(active_workspaces),
-                   selected_workspace_id: reservation_params[:workspace_id],
-                   initial_start_time: reservation_params[:start_time],
-                   initial_end_time: reservation_params[:end_time],
-                   initial_unavailable_workspace_ids: unavailable_workspace_ids_from_params,
-                   errors: {
-                     base: result.errors
-                   },
-                   booking_rule: current_organization.booking_rule,
-                   booking_time_slots: reservation_time_slots
-                 },
+                 props: failed_new_reservation_props(result),
                  status: :unprocessable_entity
         end
 
@@ -110,22 +81,11 @@ class ReservationsController < InertiaController
   end
 
   def edit
-    render inertia: "reservations/edit", props: {
-        reservation: serialize_reservation(@reservation),
-        workspaces: serialize_workspaces(editable_workspaces),
-        booking_rule: current_organization.booking_rule,
-        booking_time_slots: reservation_time_slots,
-        can_manage_status: admin? || manager?,
-        initial_unavailable_workspace_ids: initial_unavailable_workspace_ids_for(@reservation)
-      }
+    render inertia: "reservations/edit", props: edit_reservation_props
   end
 
   def update
-    attrs = reservation_params.to_h.symbolize_keys
-    workspace_id = attrs.delete(:workspace_id)
-
-    assign_workspace(workspace_id) if workspace_id.present?
-    @reservation.assign_attributes(attrs)
+    assign_reservation_update_attributes
 
     respond_to do |format|
       if @reservation.errors.blank? && @reservation.save
@@ -140,15 +100,7 @@ class ReservationsController < InertiaController
       else
         format.html do
           render inertia: "reservations/edit",
-                 props: {
-                   reservation: serialize_reservation(@reservation),
-                   workspaces: serialize_workspaces(editable_workspaces),
-                   errors: @reservation.errors.to_hash,
-                   booking_rule: current_organization.booking_rule,
-                   booking_time_slots: reservation_time_slots,
-                   can_manage_status: admin? || manager?,
-                   initial_unavailable_workspace_ids: initial_unavailable_workspace_ids_for(@reservation)
-                 },
+                 props: edit_reservation_props(errors: @reservation.errors.to_hash),
                  status: :unprocessable_entity
         end
 
@@ -168,10 +120,13 @@ class ReservationsController < InertiaController
   end
 
   def destroy
-    booking_rule = current_organization.booking_rule
+    cancellation_policy = Reservations::CancellationPolicy.new(
+      reservation: @reservation,
+      booking_rule: current_organization.booking_rule
+    )
 
-    if cancellation_blocked?(booking_rule)
-      render_cancellation_blocked_response
+    if cancellation_policy.blocked?
+      render_cancellation_blocked_response(cancellation_policy.message)
       return
     end
 
@@ -180,7 +135,7 @@ class ReservationsController < InertiaController
     respond_to do |format|
       if @reservation.save
         format.html do
-          redirect_to member? ? my_reservations_path : reservations_path,
+          redirect_to reservations_redirect_path,
                       notice: "Reservation cancelled successfully"
         end
 
@@ -192,7 +147,7 @@ class ReservationsController < InertiaController
         end
       else
         format.html do
-          redirect_to member? ? my_reservations_path : reservations_path,
+          redirect_to reservations_redirect_path,
                       alert: "Reservation could not be cancelled"
         end
 
@@ -209,10 +164,7 @@ class ReservationsController < InertiaController
     reservations = current_user
                    .reservations
                    .where(organization: current_organization)
-                   .includes(
-                      { user: { avatar_attachment: :blob } },
-                      workspace: [ :amenities, { photo_attachment: :blob } ]
-                   )
+                   .includes(reservation_includes)
                    .order(start_time: :desc)
 
     render inertia: "reservations/my_reservations", props: {
@@ -221,14 +173,11 @@ class ReservationsController < InertiaController
   end
 
   def availability
-    start_time = Time.zone.parse(params[:start_time].to_s)
-    end_time = Time.zone.parse(params[:end_time].to_s)
+    start_time = parse_time_param(params[:start_time])
+    end_time = parse_time_param(params[:end_time])
 
-    if start_time.blank? || end_time.blank? || start_time >= end_time
-      render json: {
-        error: "Invalid date or time"
-      }, status: :unprocessable_entity
-
+    if invalid_time_range?(start_time, end_time)
+      render_invalid_availability_response
       return
     end
 
@@ -240,179 +189,254 @@ class ReservationsController < InertiaController
       )
     }
   rescue ArgumentError, TypeError
-    render json: {
-      error: "Invalid date or time"
-    }, status: :unprocessable_entity
+    render_invalid_availability_response
   end
 
   private
 
-  def ensure_reservation_can_be_modified
-  return if @reservation.modifiable?
+    def ensure_reservation_can_be_modified
+      return if @reservation.modifiable?
 
-  redirect_to reservation_path(@reservation),
-              alert: "Concluded or cancelled reservations cannot be edited or cancelled."
-  end
-
-  def reservation_scope
-    if member?
-      current_user.reservations.where(organization: current_organization)
-    else
-      current_organization.reservations
+      redirect_to reservation_path(@reservation),
+                  alert: "Concluded or cancelled reservations cannot be edited or cancelled."
     end
-  end
 
-  def set_reservation
-    @reservation = reservation_scope
-                   .includes(
-                    { user: { avatar_attachment: :blob } },
-                    workspace: [ :amenities, { photo_attachment: :blob } ]
-                   )
-                   .find(params[:id])
-  end
+    def reservation_scope
+      if member?
+        current_user.reservations.where(organization: current_organization)
+      else
+        current_organization.reservations
+      end
+    end
 
-  def active_workspaces
-    current_organization
-      .workspaces
-      .where(active: true)
-      .with_attached_photo
-      .includes(:amenities)
-      .order(:name)
-  end
+    def set_reservation
+      @reservation = reservation_scope
+                     .includes(reservation_includes)
+                     .find(params[:id])
+    end
 
-  def editable_workspaces
-    current_organization
-      .workspaces
-      .where("active = ? OR id = ?", true, @reservation.workspace_id)
-      .with_attached_photo
-      .includes(:amenities)
-      .order(:name)
-  end
+    def reservation_includes
+      [
+        { user: { avatar_attachment: :blob } },
+        { workspace: [ :amenities, { photo_attachment: :blob } ] }
+      ]
+    end
 
-  def assign_workspace(workspace_id)
-    workspace = current_organization
-                .workspaces
-                .find_by(id: workspace_id, active: true)
+    def active_workspaces
+      current_organization
+        .workspaces
+        .where(active: true)
+        .with_attached_photo
+        .includes(:amenities)
+        .order(:name)
+    end
 
-    @reservation.workspace = workspace
-    @reservation.errors.add(:workspace_id, "is invalid") if workspace.blank?
-  end
+    def editable_workspaces
+      current_organization
+        .workspaces
+        .where("active = ? OR id = ?", true, @reservation.workspace_id)
+        .with_attached_photo
+        .includes(:amenities)
+        .order(:name)
+    end
 
-  def reservation_params
-    permitted_attributes = [
-      :workspace_id,
-      :start_time,
-      :end_time,
-      :attendees_count,
-      :notes
-    ]
+    def assign_reservation_update_attributes
+      attrs = reservation_params.to_h.symbolize_keys
+      workspace_id = attrs.delete(:workspace_id)
 
-    permitted_attributes << :status if admin? || manager?
+      assign_workspace(workspace_id) if workspace_id.present?
+      @reservation.assign_attributes(attrs)
+    end
 
-    params.require(:reservation).permit(permitted_attributes)
-  end
+    def assign_workspace(workspace_id)
+      workspace = current_organization
+                  .workspaces
+                  .find_by(id: workspace_id, active: true)
 
-  def initial_unavailable_workspace_ids_for(reservation)
-    return [] if reservation.start_time.blank? || reservation.end_time.blank?
-    return [] if reservation.start_time >= reservation.end_time
+      @reservation.workspace = workspace
+      @reservation.errors.add(:workspace_id, "is invalid") if workspace.blank?
+    end
 
-    unavailable_workspace_ids_for(
-      reservation.start_time,
-      reservation.end_time,
-      except_reservation_id: reservation.id
+    def reservation_params
+      permitted_attributes = [
+        :workspace_id,
+        :start_time,
+        :end_time,
+        :attendees_count,
+        :notes
+      ]
+
+      permitted_attributes << :status if admin? || manager?
+
+      params.require(:reservation).permit(permitted_attributes)
+    end
+
+    def new_reservation_props
+      default_start_time = Time.zone.parse("#{Time.zone.today} 09:00")
+      default_end_time = Time.zone.parse("#{Time.zone.today} 10:00")
+
+      reservation_form_props(
+        selected_workspace_id: params[:workspace_id],
+        initial_start_time: default_start_time,
+        initial_end_time: default_end_time,
+        initial_unavailable_workspace_ids: unavailable_workspace_ids_for(
+          default_start_time,
+          default_end_time
+        )
+      )
+    end
+
+    def failed_new_reservation_props(result)
+      reservation_form_props(
+        selected_workspace_id: reservation_params[:workspace_id],
+        initial_start_time: reservation_params[:start_time],
+        initial_end_time: reservation_params[:end_time],
+        initial_unavailable_workspace_ids: unavailable_workspace_ids_from_params,
+        errors: {
+          base: result.errors
+        }
+      )
+    end
+
+    def reservation_form_props(
+      selected_workspace_id:,
+      initial_start_time:,
+      initial_end_time:,
+      initial_unavailable_workspace_ids:,
+      errors: nil
     )
-  end
+      props = {
+        workspaces: serialize_workspaces(active_workspaces),
+        selected_workspace_id: selected_workspace_id,
+        initial_start_time: format_datetime(initial_start_time),
+        initial_end_time: format_datetime(initial_end_time),
+        initial_unavailable_workspace_ids: initial_unavailable_workspace_ids,
+        booking_rule: current_organization.booking_rule,
+        booking_time_slots: reservation_time_slots
+      }
 
-  def unavailable_workspace_ids_for(start_time, end_time, except_reservation_id: nil)
-  reservations = current_organization
-                .reservations
-                .where(status: Reservation::ACTIVE_STATUSES)
-                .where(
-                  "start_time < ? AND end_time > ?",
-                  end_time,
-                  start_time
-                )
+      props[:errors] = errors if errors.present?
 
-    if except_reservation_id.present?
-      reservations = reservations.where.not(id: except_reservation_id)
+      props
     end
 
-    reservations.pluck(:workspace_id).uniq
-  end
+    def edit_reservation_props(errors: nil)
+      props = {
+        reservation: serialize_reservation(@reservation),
+        workspaces: serialize_workspaces(editable_workspaces),
+        booking_rule: current_organization.booking_rule,
+        booking_time_slots: reservation_time_slots,
+        can_manage_status: admin? || manager?,
+        initial_unavailable_workspace_ids: initial_unavailable_workspace_ids_for(@reservation)
+      }
 
-  def unavailable_workspace_ids_from_params
-    start_time = Time.zone.parse(reservation_params[:start_time].to_s)
-    end_time = Time.zone.parse(reservation_params[:end_time].to_s)
+      props[:errors] = errors if errors.present?
 
-    return [] if start_time.blank? || end_time.blank? || start_time >= end_time
+      props
+    end
 
-    unavailable_workspace_ids_for(start_time, end_time)
-  rescue ArgumentError, TypeError
-    []
-  end
+    def initial_unavailable_workspace_ids_for(reservation)
+      return [] if invalid_time_range?(reservation.start_time, reservation.end_time)
 
-  def cancellation_blocked?(booking_rule)
-    return false unless booking_rule&.cancellation_limit_hours.present?
+      unavailable_workspace_ids_for(
+        reservation.start_time,
+        reservation.end_time,
+        except_reservation_id: reservation.id
+      )
+    end
 
-    cancellation_deadline = booking_rule.cancellation_limit_hours.hours.from_now
+    def unavailable_workspace_ids_for(start_time, end_time, except_reservation_id: nil)
+      Reservations::AvailabilityQuery.new(
+        organization: current_organization,
+        start_time: start_time,
+        end_time: end_time,
+        except_reservation_id: except_reservation_id
+      ).unavailable_workspace_ids
+    end
 
-    @reservation.start_time < cancellation_deadline
-  end
+    def unavailable_workspace_ids_from_params
+      start_time = parse_time_param(reservation_params[:start_time])
+      end_time = parse_time_param(reservation_params[:end_time])
 
-  def render_cancellation_blocked_response
-    message = "This reservation cannot be cancelled because it starts too soon according to the organization's cancellation policy."
+      return [] if invalid_time_range?(start_time, end_time)
 
-    respond_to do |format|
-      format.html do
-        render inertia: "reservations/cancel",
-               props: {
-                 reservation: serialize_reservation(@reservation),
-                 cancel_error: message
-               },
-               status: :unprocessable_entity
+      unavailable_workspace_ids_for(start_time, end_time)
+    rescue ArgumentError, TypeError
+      []
+    end
+
+    def parse_time_param(value)
+      Time.zone.parse(value.to_s)
+    end
+
+    def invalid_time_range?(start_time, end_time)
+      start_time.blank? || end_time.blank? || start_time >= end_time
+    end
+
+    def render_invalid_availability_response
+      render json: {
+        error: "Invalid date or time"
+      }, status: :unprocessable_entity
+    end
+
+    def render_cancellation_blocked_response(message)
+      respond_to do |format|
+        format.html do
+          render inertia: "reservations/cancel",
+                 props: {
+                   reservation: serialize_reservation(@reservation),
+                   cancel_error: message
+                 },
+                 status: :unprocessable_entity
+        end
+
+        format.json do
+          render json: {
+            errors: [ message ]
+          }, status: :unprocessable_entity
+        end
       end
+    end
 
-      format.json do
-        render json: {
-          errors: [
-            message
-          ]
-        }, status: :unprocessable_entity
+    def reservations_redirect_path
+      member? ? my_reservations_path : reservations_path
+    end
+
+    def reservation_time_slots
+      return [] unless current_organization.custom_time_slots_enabled?
+
+      current_organization
+        .booking_time_slots
+        .where(active: true)
+        .order(:start_minute, :name)
+        .as_json
+    end
+
+    def format_datetime(value)
+      value.respond_to?(:strftime) ? value.strftime("%Y-%m-%dT%H:%M") : value
+    end
+
+    def serialize_reservations(reservations)
+      reservations.map do |reservation|
+        serialize_reservation(reservation)
       end
     end
-  end
 
-  def reservation_time_slots
-    return [] unless current_organization.custom_time_slots_enabled?
-
-    current_organization
-      .booking_time_slots
-      .where(active: true)
-      .order(:start_minute, :name)
-      .as_json
-  end
-
-  def serialize_reservations(reservations)
-    reservations.map do |reservation|
-      serialize_reservation(reservation)
+    def serialize_reservation(reservation)
+      ReservationSerializer
+        .new(reservation, view_context: view_context)
+        .as_json
     end
-  end
 
-  def serialize_reservation(reservation)
-    ReservationSerializer
-      .new(reservation, view_context: view_context)
-      .as_json
-  end
-
-  def serialize_workspaces(workspaces)
-    workspaces.map do |workspace|
-      serialize_workspace(workspace)
+    def serialize_workspaces(workspaces)
+      workspaces.map do |workspace|
+        serialize_workspace(workspace)
+      end
     end
-  end
 
-  def serialize_workspace(workspace)
-    WorkspaceSerializer
-      .new(workspace, view_context: view_context)
-      .as_json
-  end
+    def serialize_workspace(workspace)
+      WorkspaceSerializer
+        .new(workspace, view_context: view_context)
+        .as_json
+    end
 end
