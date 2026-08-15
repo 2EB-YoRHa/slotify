@@ -63,9 +63,9 @@ export default function ReservationSummaryPanel({
   const notesError = fieldError(errors, "notes");
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-950">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
           Reservation Summary
         </h2>
 
@@ -125,12 +125,12 @@ export default function ReservationSummaryPanel({
             />
           </div>
 
-          <div className="mt-2 flex items-center justify-between gap-4">
+          <div className="mt-2 flex items-start justify-between gap-4">
             <FieldHint>
               Optional. Keep notes short and relevant for the booking.
             </FieldHint>
 
-            <span className="text-xs font-semibold text-slate-400">
+            <span className="shrink-0 text-xs font-semibold text-slate-400">
               {notes.length}/500
             </span>
           </div>
@@ -139,7 +139,7 @@ export default function ReservationSummaryPanel({
         </label>
       </div>
 
-      <div className="mt-8 rounded-xl bg-slate-50 p-5">
+      <div className="mt-6 rounded-xl bg-slate-50 p-4 sm:mt-8 sm:p-5">
         <SummaryRow
           label="Workspace"
           value={selectedWorkspace?.name || "Not selected"}
@@ -207,10 +207,10 @@ type SummaryRowProps = {
 
 function SummaryRow({ label, value }: SummaryRowProps) {
   return (
-    <div className="flex justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
+    <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 sm:flex-row sm:justify-between sm:gap-4">
       <span className="text-sm text-slate-500">{label}</span>
 
-      <span className="text-right text-sm font-bold text-slate-950">
+      <span className="wrap-break-word text-sm font-bold text-slate-950 sm:text-right">
         {value}
       </span>
     </div>

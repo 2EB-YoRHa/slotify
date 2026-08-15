@@ -31,10 +31,10 @@ export default function AvailableWorkspaceGrid({
   onSelectWorkspace,
 }: AvailableWorkspaceGridProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-950">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
             Available Workspaces
           </h2>
 
@@ -45,7 +45,7 @@ export default function AvailableWorkspaceGrid({
         </div>
 
         <span
-          className={`rounded-full px-3 py-1 text-xs font-bold ${
+          className={`w-fit rounded-full px-3 py-1 text-xs font-bold ${
             availabilityChecked
               ? "bg-green-50 text-green-600"
               : "bg-yellow-50 text-yellow-600"
@@ -58,7 +58,7 @@ export default function AvailableWorkspaceGrid({
       {filteredWorkspaces.length === 0 ? (
         <EmptyWorkspaceSearch />
       ) : (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {filteredWorkspaces.map((workspace, index) => {
             const unavailable = unavailableWorkspaceIds.includes(workspace.id);
             const selected = Number(selectedWorkspaceId) === workspace.id;
@@ -84,7 +84,7 @@ export default function AvailableWorkspaceGrid({
 
 function EmptyWorkspaceSearch() {
   return (
-    <div className="rounded-xl bg-slate-50 p-12 text-center">
+    <div className="rounded-xl bg-slate-50 px-5 py-10 text-center sm:p-12">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
         <Building2 size={24} />
       </div>
@@ -127,7 +127,7 @@ function WorkspaceOption({
       transition={{ delay: index * 0.035 }}
       onClick={onSelect}
       disabled={disabled}
-      className={`rounded-xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${
+      className={`overflow-hidden rounded-xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm sm:p-5 ${
         selected
           ? "border-cyan-300 bg-cyan-50 ring-4 ring-cyan-50"
           : "border-slate-200 bg-white hover:border-cyan-100"
@@ -138,19 +138,21 @@ function WorkspaceOption({
         photoUrl={workspace.photo_url}
         fit="contain"
         position="object-center"
-        className="-mx-5 -mt-5 mb-5 h-56 rounded-t-xl bg-slate-100"
+        className="-mx-4 -mt-4 mb-4 h-44 rounded-t-xl bg-slate-100 sm:-mx-5 sm:-mt-5 sm:mb-5 sm:h-56"
       />
 
-      <div className="mb-5 flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="flex min-w-0 items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
             <Building2 size={20} strokeWidth={2.4} />
           </div>
 
-          <div>
-            <h3 className="font-bold text-slate-950">{workspace.name}</h3>
+          <div className="min-w-0">
+            <h3 className="truncate font-bold text-slate-950">
+              {workspace.name}
+            </h3>
 
-            <p className="mt-1 text-xs font-bold uppercase text-slate-400">
+            <p className="mt-1 truncate text-xs font-bold uppercase text-slate-400">
               {formatText(workspace.workspace_type)}
             </p>
           </div>
@@ -177,8 +179,8 @@ function WorkspaceOption({
       </div>
 
       {workspace.location && (
-        <div className="mt-5 flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-500">
-          <MapPin size={15} className="text-slate-400" />
+        <div className="mt-5 flex min-w-0 items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-500">
+          <MapPin size={15} className="shrink-0 text-slate-400" />
           <span className="truncate">{workspace.location}</span>
         </div>
       )}
@@ -207,7 +209,7 @@ function AvailabilityBadge({
 }) {
   if (!checked) {
     return (
-      <span className="rounded-full bg-yellow-50 px-3 py-1 text-xs font-bold text-yellow-600">
+      <span className="w-fit rounded-full bg-yellow-50 px-3 py-1 text-xs font-bold text-yellow-600">
         Check first
       </span>
     );
@@ -215,14 +217,14 @@ function AvailabilityBadge({
 
   if (unavailable) {
     return (
-      <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-600">
+      <span className="w-fit rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-600">
         Unavailable
       </span>
     );
   }
 
   return (
-    <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
+    <span className="w-fit rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
       Available
     </span>
   );

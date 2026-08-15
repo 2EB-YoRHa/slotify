@@ -26,13 +26,13 @@ export default function TimeSlotPicker({
 }: TimeSlotPickerProps) {
   return (
     <div>
-      <div className="mb-3 flex items-center justify-between gap-4">
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <span className="block text-sm font-bold text-slate-700">
           {label}
         </span>
 
         {options.length > 0 && (
-          <span className="rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-400">
+          <span className="w-fit rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-400">
             {options.length === 1
               ? "1 available slot"
               : `${options.length} available slots`}
@@ -52,7 +52,7 @@ export default function TimeSlotPicker({
               whileTap={disabled ? undefined : { scale: 0.985 }}
               onClick={() => onChange(slot.label)}
               disabled={disabled}
-              className={`group rounded-2xl border px-5 py-4 text-left transition ${
+              className={`group rounded-2xl border px-4 py-4 text-left transition sm:px-5 ${
                 selected
                   ? "border-cyan-300 bg-cyan-50 shadow-sm ring-4 ring-cyan-50"
                   : "border-slate-200 bg-white hover:border-cyan-200 hover:bg-slate-50"
@@ -60,10 +60,10 @@ export default function TimeSlotPicker({
                 disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
               }`}
             >
-              <div className="flex items-center justify-between gap-5">
+              <div className="flex items-center justify-between gap-4 sm:gap-5">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                    <p className="text-2xl font-black leading-none text-slate-950">
+                    <p className="text-xl font-black leading-none text-slate-950 sm:text-2xl">
                       {formatHour(slot.start)}
                     </p>
 

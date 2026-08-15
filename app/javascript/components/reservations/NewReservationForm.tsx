@@ -14,13 +14,13 @@ export default function NewReservationForm(props: NewReservationFormProps) {
       <form
         noValidate
         onSubmit={reservationForm.handleSubmit}
-        className="grid grid-cols-3 gap-8"
+        className="grid grid-cols-1 gap-6 xl:grid-cols-3 xl:gap-8"
       >
         <motion.section
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="col-span-2 space-y-8"
+          className="space-y-6 xl:col-span-2 xl:space-y-8"
         >
           <ReservationDateTimeSection
             selectedDate={reservationForm.selectedDate}
@@ -64,7 +64,7 @@ export default function NewReservationForm(props: NewReservationFormProps) {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16 }}
-          className="space-y-6"
+          className="space-y-6 xl:sticky xl:top-24 xl:self-start"
         >
           <ReservationSummaryPanel
             selectedWorkspace={reservationForm.selectedWorkspace}

@@ -59,14 +59,14 @@ export default function ReservationDateTimeSection({
   onToggleWorkspacePicker,
 }: ReservationDateTimeSectionProps) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-8 flex items-start gap-4">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-          <CalendarDays size={26} strokeWidth={2.4} />
+    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-14 sm:w-14">
+          <CalendarDays size={24} strokeWidth={2.4} />
         </div>
 
-        <div>
-          <h2 className="text-2xl font-black text-slate-950">
+        <div className="min-w-0">
+          <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
             Booking Details
           </h2>
 
@@ -78,19 +78,19 @@ export default function ReservationDateTimeSection({
       </div>
 
       {selectedWorkspaceName && (
-        <div className="mb-8 rounded-2xl border border-cyan-100 bg-cyan-50 p-5">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
+        <div className="mb-6 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 sm:mb-8 sm:p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
                 <Building2 size={20} strokeWidth={2.4} />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
                   Selected Workspace
                 </p>
 
-                <p className="mt-1 font-extrabold text-slate-950">
+                <p className="mt-1 truncate font-extrabold text-slate-950">
                   {selectedWorkspaceName}
                 </p>
               </div>
@@ -100,7 +100,7 @@ export default function ReservationDateTimeSection({
               type="button"
               disabled={processing || checkingAvailability}
               onClick={onToggleWorkspacePicker}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-100 bg-white px-4 py-2.5 text-sm font-bold text-cyan-600 transition hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-100 bg-white px-4 py-3 text-sm font-bold text-cyan-600 transition hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-2.5"
             >
               {workspacePickerVisible ? "Hide Workspaces" : "Change Workspace"}
               {workspacePickerVisible ? (
@@ -113,8 +113,8 @@ export default function ReservationDateTimeSection({
         </div>
       )}
 
-      <div className="space-y-7">
-        <div className="max-w-xl">
+      <div className="space-y-6 sm:space-y-7">
+        <div className="w-full max-w-xl">
           <DatePickerField
             label="Reservation Date"
             value={selectedDate}
@@ -133,9 +133,9 @@ export default function ReservationDateTimeSection({
         />
       </div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+      <div className="mt-6 grid gap-4 lg:mt-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         {workspacePickerVisible ? (
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-2 block text-sm font-bold text-slate-700">
               Search Workspace
             </span>
@@ -185,7 +185,7 @@ export default function ReservationDateTimeSection({
       />
 
       {baseErrors.length > 0 && (
-        <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-600">
+        <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-semibold leading-6 text-red-600">
           {baseErrors.join(", ")}
         </div>
       )}

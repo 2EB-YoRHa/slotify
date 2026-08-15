@@ -48,14 +48,14 @@ export default function EditReservationScheduleSection({
   onSlotChange,
 }: EditReservationScheduleSectionProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-8 flex items-start gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-          <CalendarDays size={26} strokeWidth={2.4} />
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-14 sm:w-14">
+          <CalendarDays size={24} strokeWidth={2.4} />
         </div>
 
-        <div>
-          <h2 className="text-2xl font-bold text-slate-950">
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
             Reservation Schedule
           </h2>
 
@@ -101,8 +101,8 @@ export default function EditReservationScheduleSection({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-5">
-        <label className="block">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <label className="block min-w-0">
           <span className="mb-2 block text-sm font-bold text-slate-700">
             Workspace
           </span>
@@ -134,7 +134,7 @@ export default function EditReservationScheduleSection({
         </label>
 
         {canManageStatus && (
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-2 block text-sm font-bold text-slate-700">
               Status
             </span>
@@ -161,8 +161,8 @@ export default function EditReservationScheduleSection({
           </label>
         )}
 
-        <div className="col-span-2 space-y-6">
-          <div className="max-w-xl">
+        <div className="space-y-6 md:col-span-2">
+          <div className="w-full max-w-xl">
             <DatePickerField
               label="Reservation Date"
               value={extractDate(data.start_time)}

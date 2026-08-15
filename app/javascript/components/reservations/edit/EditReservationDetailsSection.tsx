@@ -47,14 +47,14 @@ export default function EditReservationDetailsSection({
   const baseError = getBaseError(errors);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-8 flex items-start gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-          <UsersRound size={26} strokeWidth={2.4} />
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-14 sm:w-14">
+          <UsersRound size={24} strokeWidth={2.4} />
         </div>
 
-        <div>
-          <h2 className="text-2xl font-bold text-slate-950">
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
             Reservation Details
           </h2>
 
@@ -64,8 +64,8 @@ export default function EditReservationDetailsSection({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
-        <label className="block">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <label className="block min-w-0">
           <FieldLabel label="Attendees" required />
 
           <div className="relative">
@@ -95,7 +95,7 @@ export default function EditReservationDetailsSection({
 
         <WorkspacePreview workspace={selectedWorkspace} />
 
-        <label className="col-span-2 block">
+        <label className="block md:col-span-2">
           <FieldLabel label="Notes" />
 
           <div className="relative">
@@ -116,12 +116,12 @@ export default function EditReservationDetailsSection({
             />
           </div>
 
-          <div className="mt-2 flex items-center justify-between gap-4">
+          <div className="mt-2 flex items-start justify-between gap-4">
             <FieldHint>
               Optional. Keep notes short and relevant for the booking.
             </FieldHint>
 
-            <span className="text-xs font-semibold text-slate-400">
+            <span className="shrink-0 text-xs font-semibold text-slate-400">
               {data.notes.length}/500
             </span>
           </div>
