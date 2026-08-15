@@ -31,29 +31,29 @@ export default function MemberWorkspaceCard({
       transition={{ delay: index * 0.035 }}
       className="flex min-h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-cyan-100 hover:shadow-md"
     >
-      <div className="relative">
+      <div className="relative overflow-hidden bg-slate-100">
         <WorkspacePhoto
           name={workspace.name}
           photoUrl={workspace.photo_url}
           galleryPhotos={workspace.gallery_photos || []}
           fit="contain"
           position="object-center"
-          className="h-60 w-full border-0 bg-slate-100 p-2"
+          className="h-48 w-full border-0 bg-slate-100 p-2 sm:h-60"
         />
 
-        <span className="absolute right-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-green-600 shadow-sm">
+        <span className="pointer-events-none absolute right-3 top-3 z-20 rounded-full bg-white/95 px-3 py-1 text-xs font-extrabold text-green-600 shadow-sm ring-1 ring-green-100 sm:right-4 sm:top-4">
           Available
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="mb-4 flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
             <Building2 size={20} strokeWidth={2.4} />
           </div>
 
           <div className="min-w-0">
-            <h3 className="truncate text-lg font-extrabold text-slate-950">
+            <h3 className="truncate text-base font-extrabold text-slate-950 sm:text-lg">
               {workspace.name}
             </h3>
 
@@ -81,9 +81,7 @@ export default function MemberWorkspaceCard({
             label="Rate"
             value={`$${Number(workspace.hourly_rate || 0).toFixed(2)}/h`}
           />
-        </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
           <SmallInfo
             icon={Layers3}
             label="Floor"
@@ -98,7 +96,7 @@ export default function MemberWorkspaceCard({
         </div>
 
         {workspace.location && (
-          <div className="mt-4 flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-500">
+          <div className="mt-4 flex min-w-0 items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-500">
             <MapPin size={15} className="shrink-0 text-slate-400" />
 
             <span className="truncate">{workspace.location}</span>
@@ -107,7 +105,7 @@ export default function MemberWorkspaceCard({
 
         <AmenityPreview workspace={workspace} compact />
 
-        <div className="mt-auto grid grid-cols-2 gap-3 pt-6">
+        <div className="mt-auto grid grid-cols-1 gap-3 pt-6 sm:grid-cols-2">
           <WorkspaceAction
             href={`/workspaces/${workspace.id}`}
             icon={Building2}

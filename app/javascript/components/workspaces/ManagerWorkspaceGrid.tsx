@@ -75,7 +75,7 @@ export default function ManagerWorkspaceGrid({
       transition={{ delay: 0.12 }}
       className="rounded-xl border border-slate-200 bg-white shadow-sm"
     >
-      <div className="border-b border-slate-200 p-6">
+      <div className="border-b border-slate-200 p-4 sm:p-6">
         <WorkspaceBrowserHeader
           title="Workspace Browser"
           description="Use the visual browser to review spaces, status, photos, and quick management actions."
@@ -83,55 +83,59 @@ export default function ManagerWorkspaceGrid({
           totalCount={workspaces.length}
         />
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
           <WorkspaceSearchInput
             value={search}
             onChange={setSearch}
             placeholder="Search by name, amenity, floor, zone, status or location..."
           />
 
-          <WorkspaceSelectFilter<WorkspaceStatusFilter>
-            value={statusFilter}
-            onChange={setStatusFilter}
-            className="w-40"
-            ariaLabel="Workspace status filter"
-          >
-            <option value="all">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </WorkspaceSelectFilter>
+          <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:w-auto lg:flex-wrap lg:items-center">
+            <WorkspaceSelectFilter<WorkspaceStatusFilter>
+              value={statusFilter}
+              onChange={setStatusFilter}
+              className="lg:w-40"
+              ariaLabel="Workspace status filter"
+            >
+              <option value="all">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </WorkspaceSelectFilter>
 
-          <WorkspaceSelectFilter
-            value={typeFilter}
-            onChange={setTypeFilter}
-            ariaLabel="Workspace type filter"
-          >
-            <option value="all">All Types</option>
+            <WorkspaceSelectFilter
+              value={typeFilter}
+              onChange={setTypeFilter}
+              className="lg:w-44"
+              ariaLabel="Workspace type filter"
+            >
+              <option value="all">All Types</option>
 
-            {workspaceTypes.map((type) => (
-              <option key={type} value={type}>
-                {formatText(type)}
-              </option>
-            ))}
-          </WorkspaceSelectFilter>
+              {workspaceTypes.map((type) => (
+                <option key={type} value={type}>
+                  {formatText(type)}
+                </option>
+              ))}
+            </WorkspaceSelectFilter>
 
-          <WorkspaceSelectFilter<WorkspaceSortOption>
-            value={sortBy}
-            onChange={setSortBy}
-            ariaLabel="Workspace sort option"
-          >
-            <option value="status">Sort by Status</option>
-            <option value="name">Sort by Name</option>
-            <option value="capacity">Sort by Capacity</option>
-            <option value="rate_low">Lowest Rate</option>
-            <option value="rate_high">Highest Rate</option>
-          </WorkspaceSelectFilter>
+            <WorkspaceSelectFilter<WorkspaceSortOption>
+              value={sortBy}
+              onChange={setSortBy}
+              className="lg:w-44"
+              ariaLabel="Workspace sort option"
+            >
+              <option value="status">Sort by Status</option>
+              <option value="name">Sort by Name</option>
+              <option value="capacity">Sort by Capacity</option>
+              <option value="rate_low">Lowest Rate</option>
+              <option value="rate_high">Highest Rate</option>
+            </WorkspaceSelectFilter>
 
-          {hasFilters && <ClearFiltersButton onClick={clearFilters} />}
+            {hasFilters && <ClearFiltersButton onClick={clearFilters} />}
+          </div>
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {filteredWorkspaces.length === 0 ? (
           <EmptyWorkspaceBrowser
             hasFilters={hasFilters}
@@ -139,7 +143,7 @@ export default function ManagerWorkspaceGrid({
             description="Try changing the search text, status, type, or sort option."
           />
         ) : (
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
             {filteredWorkspaces.map((workspace, index) => (
               <ManagerWorkspaceCard
                 key={workspace.id}

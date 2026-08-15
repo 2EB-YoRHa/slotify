@@ -6,10 +6,10 @@ import type { Workspace } from "../../../types/workspace";
 export function WorkspaceStatusBadge({ active }: { active: boolean }) {
   return (
     <span
-      className={`absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-extrabold shadow-sm ${
+      className={`pointer-events-none absolute right-3 top-3 z-20 rounded-full px-3 py-1 text-xs font-extrabold shadow-sm ring-1 sm:right-4 sm:top-4 ${
         active
-          ? "bg-green-50 text-green-600 ring-1 ring-green-100"
-          : "bg-slate-100 text-slate-500 ring-1 ring-slate-200"
+          ? "bg-green-50/95 text-green-600 ring-green-100"
+          : "bg-slate-100/95 text-slate-500 ring-slate-200"
       }`}
     >
       {active ? "Active" : "Inactive"}
@@ -27,11 +27,11 @@ export function SmallInfo({
   value: string;
 }) {
   return (
-    <div className="rounded-xl bg-slate-50 p-3">
+    <div className="min-w-0 rounded-xl bg-slate-50 p-3">
       <div className="mb-1 flex items-center gap-2 text-slate-400">
         <Icon size={14} />
 
-        <p className="text-[10px] font-bold uppercase tracking-wide">
+        <p className="truncate text-[10px] font-bold uppercase tracking-wide">
           {label}
         </p>
       </div>
@@ -66,7 +66,7 @@ export function AmenityPreview({
           {visibleAmenities.map((amenity) => (
             <span
               key={amenity.id}
-              className="rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600 ring-1 ring-slate-200"
+              className="max-w-full truncate rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600 ring-1 ring-slate-200"
             >
               {amenity.name}
             </span>
@@ -101,7 +101,7 @@ export function WorkspaceAction({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-extrabold transition hover:-translate-y-0.5 hover:shadow-sm ${
+      className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-extrabold transition hover:-translate-y-0.5 hover:shadow-sm ${
         primary
           ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:bg-cyan-500"
           : danger
@@ -127,12 +127,12 @@ export function EmptyWorkspaceBrowser({
   onClear: () => void;
 }) {
   return (
-    <div className="rounded-2xl bg-slate-50 p-12 text-center">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-        <Search size={30} strokeWidth={2.4} />
+    <div className="rounded-2xl bg-slate-50 px-5 py-10 text-center sm:p-12">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 sm:h-16 sm:w-16">
+        <Search size={28} strokeWidth={2.4} />
       </div>
 
-      <h3 className="mt-5 text-xl font-extrabold text-slate-950">
+      <h3 className="mt-5 text-lg font-extrabold text-slate-950 sm:text-xl">
         {title}
       </h3>
 
@@ -144,7 +144,7 @@ export function EmptyWorkspaceBrowser({
         <button
           type="button"
           onClick={onClear}
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 sm:w-auto"
         >
           <XCircle size={16} />
           Clear Filters

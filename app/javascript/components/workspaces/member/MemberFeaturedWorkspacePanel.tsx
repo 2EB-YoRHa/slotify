@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import type { ReactNode } from "react";
 import {
   ArrowRight,
   CalendarPlus,
@@ -9,7 +10,6 @@ import {
 } from "lucide-react";
 import WorkspacePhoto from "../WorkspacePhoto";
 import type { Workspace } from "../../../types/workspace";
-import type { ReactNode } from "react";
 import { formatText } from "../../../utils/reservationFormUtils";
 import {
   AmenityPreview,
@@ -28,25 +28,25 @@ export default function MemberFeaturedWorkspacePanel({
       transition={{ delay: 0.08 }}
       className="overflow-hidden rounded-xl border border-cyan-100 bg-white shadow-sm"
     >
-      <div className="grid grid-cols-5">
+      <div className="grid grid-cols-1 lg:grid-cols-5">
         <WorkspacePhoto
           name={workspace.name}
           photoUrl={workspace.photo_url}
           galleryPhotos={workspace.gallery_photos || []}
           fit="contain"
           position="object-center"
-          className="col-span-2 h-full min-h-80 border-0 bg-slate-100 p-3"
+          className="h-56 w-full border-0 bg-slate-100 p-3 sm:h-72 lg:col-span-2 lg:h-full lg:min-h-80"
         />
 
-        <div className="col-span-3 bg-linear-to-br from-cyan-50 to-white p-8">
-          <div className="mb-5 flex items-start justify-between gap-4">
-            <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-cyan-600 shadow-sm">
+        <div className="bg-linear-to-br from-cyan-50 to-white p-5 sm:p-8 lg:col-span-3">
+          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <div className="mb-3 inline-flex max-w-full items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-cyan-600 shadow-sm">
                 <Sparkles size={14} />
-                Suggested workspace
+                <span className="truncate">Suggested workspace</span>
               </div>
 
-              <h2 className="text-3xl font-extrabold text-slate-950">
+              <h2 className="text-2xl font-extrabold text-slate-950 sm:text-3xl">
                 {workspace.name}
               </h2>
 
@@ -55,7 +55,7 @@ export default function MemberFeaturedWorkspacePanel({
               </p>
             </div>
 
-            <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
+            <span className="w-fit rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
               Available
             </span>
           </div>
@@ -66,7 +66,7 @@ export default function MemberFeaturedWorkspacePanel({
             </p>
           )}
 
-          <div className="mb-6 grid grid-cols-3 gap-4">
+          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <FeaturedInfo
               icon={<UsersRound size={15} />}
               label="Capacity"
@@ -88,7 +88,7 @@ export default function MemberFeaturedWorkspacePanel({
 
           <AmenityPreview workspace={workspace} compact={false} />
 
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <WorkspaceAction
               href={`/reservations/new?workspace_id=${workspace.id}`}
               icon={CalendarPlus}
@@ -118,11 +118,11 @@ function FeaturedInfo({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white bg-white/80 p-4 shadow-sm">
+    <div className="min-w-0 rounded-2xl border border-white bg-white/80 p-4 shadow-sm">
       <div className="mb-2 flex items-center gap-2 text-slate-400">
         {icon}
 
-        <p className="text-[10px] font-extrabold uppercase tracking-wide">
+        <p className="truncate text-[10px] font-extrabold uppercase tracking-wide">
           {label}
         </p>
       </div>

@@ -1,6 +1,5 @@
 import { motion } from "motion/react";
 import { useMemo, useState } from "react";
-import { SlidersHorizontal } from "lucide-react";
 import type { Workspace } from "../../types/workspace";
 import type {
   MemberWorkspaceSortOption,
@@ -133,7 +132,7 @@ export default function MemberWorkspaceGrid({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {featuredWorkspace && (
         <MemberFeaturedWorkspacePanel workspace={featuredWorkspace} />
       )}
@@ -144,7 +143,7 @@ export default function MemberWorkspaceGrid({
         transition={{ delay: 0.12 }}
         className="rounded-xl border border-slate-200 bg-white shadow-sm"
       >
-        <div className="border-b border-slate-200 p-6">
+        <div className="border-b border-slate-200 p-4 sm:p-6">
           <WorkspaceBrowserHeader
             title="Find a Workspace"
             description="Search by name, location, type, or amenity and reserve the space that fits your visit."
@@ -152,22 +151,18 @@ export default function MemberWorkspaceGrid({
             totalCount={activeWorkspaces.length}
           />
 
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-col gap-4">
             <WorkspaceSearchInput
               value={search}
               onChange={setSearch}
               placeholder="Search by name, amenity, type, floor, zone or location..."
             />
 
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="hidden h-12 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-500 xl:flex">
-                <SlidersHorizontal size={16} />
-                Filters
-              </div>
-
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <WorkspaceSelectFilter
                 value={typeFilter}
                 onChange={setTypeFilter}
+                className="xl:w-full"
                 ariaLabel="Workspace type filter"
               >
                 <option value="all">All Types</option>
@@ -182,6 +177,7 @@ export default function MemberWorkspaceGrid({
               <WorkspaceSelectFilter
                 value={amenityFilter}
                 onChange={setAmenityFilter}
+                className="xl:w-full"
                 ariaLabel="Amenity filter"
               >
                 <option value="all">All Amenities</option>
@@ -196,6 +192,7 @@ export default function MemberWorkspaceGrid({
               <WorkspaceSelectFilter<MemberWorkspaceSortOption>
                 value={sortBy}
                 onChange={setSortBy}
+                className="xl:w-full"
                 ariaLabel="Sort workspaces"
               >
                 <option value="name">Sort by Name</option>
@@ -231,7 +228,7 @@ export default function MemberWorkspaceGrid({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {filteredWorkspaces.length === 0 ? (
             <EmptyWorkspaceBrowser
               title={
@@ -248,7 +245,7 @@ export default function MemberWorkspaceGrid({
               onClear={clearFilters}
             />
           ) : (
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
               {filteredWorkspaces.map((workspace, index) => (
                 <MemberWorkspaceCard
                   key={workspace.id}
