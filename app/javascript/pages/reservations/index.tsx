@@ -68,7 +68,7 @@ export default function ReservationsIndex({
         </HeaderActionButton>
       }
     >
-      <section className="mb-8 grid grid-cols-4 gap-6">
+      <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:mb-8 xl:grid-cols-4 xl:gap-6">
         {stats.map((stat, index) => (
           <ReservationStatCard key={stat.label} stat={stat} index={index} />
         ))}
@@ -99,23 +99,25 @@ function ReservationStatCard({ stat, index }: ReservationStatCardProps) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-5 xl:p-6"
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-bold leading-5 text-slate-500">
+            {stat.label}
+          </p>
 
-          <h2 className="mt-2 text-3xl font-bold text-slate-950">
+          <h2 className="mt-2 text-3xl font-extrabold text-slate-950">
             {stat.value}
           </h2>
         </div>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
           <Icon size={19} strokeWidth={2.4} />
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-slate-500">{stat.helper}</p>
+      <p className="mt-3 text-xs leading-5 text-slate-500">{stat.helper}</p>
     </motion.div>
   );
 }

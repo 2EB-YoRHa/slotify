@@ -90,7 +90,7 @@ export default function MyReservations({
         </HeaderActionButton>
       }
     >
-      <section className="mb-8 grid grid-cols-4 gap-6">
+      <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:mb-8 xl:grid-cols-4 xl:gap-6">
         {stats.map((stat, index) => (
           <BookingStatCard key={stat.label} stat={stat} index={index} />
         ))}
@@ -123,18 +123,20 @@ function BookingStatCard({ stat, index }: BookingStatCardProps) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-5 xl:p-6"
     >
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-bold text-slate-500">{stat.label}</p>
+        <div className="min-w-0">
+          <p className="text-sm font-bold leading-5 text-slate-500">
+            {stat.label}
+          </p>
 
           <h2 className="mt-2 text-3xl font-extrabold text-slate-950">
             {stat.value}
           </h2>
         </div>
 
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
           <Icon size={20} strokeWidth={2.4} />
         </div>
       </div>
@@ -150,16 +152,16 @@ function NextBookingPanel({ reservation }: { reservation: Reservation | null }) 
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.16 }}
-      className="mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm xl:mb-8"
     >
-      <div className="flex items-center justify-between border-b border-slate-200 p-6">
+      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 sm:h-12 sm:w-12">
             <CalendarCheck size={22} strokeWidth={2.4} />
           </div>
 
-          <div>
-            <h2 className="text-xl font-extrabold text-slate-950">
+          <div className="min-w-0">
+            <h2 className="text-lg font-extrabold text-slate-950 sm:text-xl">
               Next Booking
             </h2>
 
@@ -171,7 +173,7 @@ function NextBookingPanel({ reservation }: { reservation: Reservation | null }) 
 
         <Link
           href="/workspaces"
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 sm:w-auto"
         >
           Find another workspace
           <ArrowRight size={16} />
@@ -189,24 +191,24 @@ function NextBookingPanel({ reservation }: { reservation: Reservation | null }) 
 
 function NextBookingDetails({ reservation }: { reservation: Reservation }) {
   return (
-    <div className="grid grid-cols-5 gap-0">
+    <div className="grid grid-cols-1 lg:grid-cols-5">
       <WorkspacePhoto
         name={reservation.workspace?.name || "Workspace"}
         photoUrl={reservation.workspace?.photo_url}
         galleryPhotos={reservation.workspace?.gallery_photos || []}
         fit="cover"
         position="object-center"
-        className="col-span-2 h-full min-h-80 border-0 bg-slate-100"
+        className="h-56 w-full border-0 bg-slate-100 sm:h-72 lg:col-span-2 lg:h-full lg:min-h-80"
       />
 
-      <div className="col-span-3 p-8">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
+      <div className="p-5 sm:p-8 lg:col-span-3">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
             <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500">
               {formatText(reservation.workspace?.workspace_type)}
             </p>
 
-            <h3 className="mt-2 text-3xl font-extrabold text-slate-950">
+            <h3 className="mt-2 text-2xl font-extrabold text-slate-950 sm:text-3xl">
               {reservation.workspace?.name || "Workspace removed"}
             </h3>
 
@@ -218,7 +220,7 @@ function NextBookingDetails({ reservation }: { reservation: Reservation }) {
           <ReservationStatusBadge status={reservation.status} />
         </div>
 
-        <div className="grid grid-cols-4 gap-4 rounded-2xl bg-slate-50 p-5">
+        <div className="grid grid-cols-2 gap-4 rounded-2xl bg-slate-50 p-4 sm:p-5 lg:grid-cols-4">
           <SummaryItem label="Date" value={formatDate(reservation.start_time)} />
 
           <SummaryItem
@@ -239,10 +241,10 @@ function NextBookingDetails({ reservation }: { reservation: Reservation }) {
           />
         </div>
 
-        <div className="mt-7 flex flex-wrap gap-3">
+        <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Link
             href={`/reservations/${reservation.id}`}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
           >
             View Details
             <ArrowRight size={16} />
@@ -251,7 +253,7 @@ function NextBookingDetails({ reservation }: { reservation: Reservation }) {
           {reservation.can_modify && (
             <Link
               href={`/reservations/${reservation.id}/edit`}
-              className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
             >
               Edit Booking
             </Link>
@@ -264,12 +266,12 @@ function NextBookingDetails({ reservation }: { reservation: Reservation }) {
 
 function EmptyNextBooking() {
   return (
-    <div className="p-12 text-center">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+    <div className="px-5 py-10 text-center sm:p-12">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-16 sm:w-16">
         <CalendarPlus size={30} strokeWidth={2.4} />
       </div>
 
-      <h3 className="mt-5 text-xl font-extrabold text-slate-950">
+      <h3 className="mt-5 text-lg font-extrabold text-slate-950 sm:text-xl">
         No upcoming bookings yet
       </h3>
 
@@ -280,7 +282,7 @@ function EmptyNextBooking() {
 
       <Link
         href="/workspaces"
-        className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
+        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md sm:w-auto"
       >
         Browse Workspaces
         <ArrowRight size={16} />
@@ -297,12 +299,14 @@ function SummaryItem({
   value: string | number;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
         {label}
       </p>
 
-      <p className="mt-1 text-sm font-extrabold text-slate-950">{value}</p>
+      <p className="mt-1 truncate text-sm font-extrabold text-slate-950">
+        {value}
+      </p>
     </div>
   );
 }

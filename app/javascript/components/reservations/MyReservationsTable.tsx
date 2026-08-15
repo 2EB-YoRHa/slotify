@@ -98,10 +98,10 @@ export default function MyReservationsTable({
       transition={{ delay: 0.2 }}
       className="rounded-xl border border-slate-200 bg-white shadow-sm"
     >
-      <div className="border-b border-slate-200 p-6">
-        <div className="mb-5 flex items-start justify-between gap-6">
-          <div>
-            <h2 className="text-xl font-extrabold text-slate-950">
+      <div className="border-b border-slate-200 p-4 sm:p-6">
+        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="text-lg font-extrabold text-slate-950 sm:text-xl">
               Booking History
             </h2>
 
@@ -110,13 +110,13 @@ export default function MyReservationsTable({
             </p>
           </div>
 
-          <div className="rounded-full bg-slate-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+          <div className="w-fit rounded-full bg-slate-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
             {filteredReservations.length} of {reservations.length} shown
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="relative min-w-80 flex-1">
+        <div className="flex flex-col gap-4">
+          <div className="relative w-full min-w-0">
             <Search
               size={17}
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
@@ -131,8 +131,8 @@ export default function MyReservationsTable({
             />
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500 xl:flex">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr] xl:flex xl:items-center">
+            <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500 sm:flex">
               <SlidersHorizontal size={16} />
               Filters
             </div>
@@ -142,7 +142,7 @@ export default function MyReservationsTable({
               onChange={(event) =>
                 setStatusFilter(event.target.value as StatusFilter)
               }
-              className="h-12 w-44 rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+              className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 xl:w-44"
             >
               <option value="all">All Statuses</option>
               <option value="confirmed">Confirmed</option>
@@ -154,7 +154,7 @@ export default function MyReservationsTable({
               <button
                 type="button"
                 onClick={clearFilters}
-                className="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 xl:w-auto"
               >
                 <XCircle size={16} />
                 Clear
@@ -185,7 +185,7 @@ export default function MyReservationsTable({
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {filteredReservations.length === 0 ? (
           <ReservationsEmptyState
             hasReservations={reservations.length > 0}
@@ -193,7 +193,7 @@ export default function MyReservationsTable({
             onClearFilters={clearFilters}
           />
         ) : (
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 gap-5 2xl:grid-cols-2">
             {filteredReservations.map((reservation, index) => (
               <ReservationCard
                 key={reservation.id}
@@ -224,18 +224,18 @@ function ReservationCard({
       transition={{ delay: index * 0.035 }}
       className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-100 hover:shadow-md"
     >
-      <div className="grid grid-cols-5 gap-0">
+      <div className="grid grid-cols-1 lg:grid-cols-5">
         <WorkspacePhoto
           name={reservation.workspace?.name || "Workspace"}
           photoUrl={reservation.workspace?.photo_url}
           galleryPhotos={reservation.workspace?.gallery_photos || []}
           fit="cover"
           position="object-center"
-          className="col-span-2 h-full min-h-52 border-0 bg-slate-100"
+          className="h-48 w-full border-0 bg-slate-100 sm:h-60 lg:col-span-2 lg:h-full lg:min-h-52"
         />
 
-        <div className="col-span-3 p-5">
-          <div className="mb-4 flex items-start justify-between gap-4">
+        <div className="p-4 sm:p-5 lg:col-span-3">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <p className="truncate text-xs font-extrabold uppercase tracking-wide text-cyan-500">
                 {formatText(reservation.workspace?.workspace_type)}
@@ -282,7 +282,7 @@ function ReservationCard({
             />
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3">
             <ActionButton
               href={`/reservations/${reservation.id}`}
               icon={Eye}
@@ -321,13 +321,13 @@ type InfoItemProps = {
 
 function InfoItem({ icon: Icon, label, value }: InfoItemProps) {
   return (
-    <div>
+    <div className="min-w-0">
       <div className="mb-1 flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wide text-slate-400">
         <Icon size={13} />
         {label}
       </div>
 
-      <p className="text-sm font-extrabold text-slate-950">{value}</p>
+      <p className="truncate text-sm font-extrabold text-slate-950">{value}</p>
     </div>
   );
 }
@@ -350,7 +350,7 @@ function ActionButton({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-extrabold transition hover:-translate-y-0.5 hover:shadow-sm ${
+      className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-extrabold transition hover:-translate-y-0.5 hover:shadow-sm ${
         primary
           ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:bg-cyan-500"
           : danger
@@ -377,12 +377,12 @@ function ReservationsEmptyState({
 }: ReservationsEmptyStateProps) {
   if (!hasReservations) {
     return (
-      <div className="rounded-2xl bg-slate-50 p-12 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-          <CalendarDays size={30} strokeWidth={2.4} />
+      <div className="rounded-2xl bg-slate-50 px-5 py-10 text-center sm:p-12">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-16 sm:w-16">
+          <CalendarDays size={28} strokeWidth={2.4} />
         </div>
 
-        <h3 className="mt-5 text-xl font-extrabold text-slate-950">
+        <h3 className="mt-5 text-lg font-extrabold text-slate-950 sm:text-xl">
           You do not have bookings yet
         </h3>
 
@@ -393,7 +393,7 @@ function ReservationsEmptyState({
 
         <Link
           href="/workspaces"
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md sm:w-auto"
         >
           Browse Workspaces
           <ArrowRight size={16} />
@@ -403,12 +403,12 @@ function ReservationsEmptyState({
   }
 
   return (
-    <div className="rounded-2xl bg-slate-50 p-12 text-center">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-        <Search size={30} strokeWidth={2.4} />
+    <div className="rounded-2xl bg-slate-50 px-5 py-10 text-center sm:p-12">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 sm:h-16 sm:w-16">
+        <Search size={28} strokeWidth={2.4} />
       </div>
 
-      <h3 className="mt-5 text-xl font-extrabold text-slate-950">
+      <h3 className="mt-5 text-lg font-extrabold text-slate-950 sm:text-xl">
         No bookings match your filters
       </h3>
 
@@ -420,7 +420,7 @@ function ReservationsEmptyState({
         <button
           type="button"
           onClick={onClearFilters}
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 sm:w-auto"
         >
           <XCircle size={16} />
           Clear Filters
