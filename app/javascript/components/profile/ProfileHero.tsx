@@ -17,23 +17,23 @@ export default function ProfileHero({
   displayEmail,
 }: ProfileHeroProps) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+      <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={displayName || profile.name}
-              className="h-28 w-28 rounded-3xl object-cover shadow-sm ring-4 ring-cyan-50"
+              className="h-24 w-24 shrink-0 rounded-3xl object-cover shadow-sm ring-4 ring-cyan-50 sm:h-28 sm:w-28"
             />
           ) : (
-            <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-cyan-50 text-4xl font-black text-cyan-500 shadow-sm ring-4 ring-cyan-50">
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-3xl bg-cyan-50 text-3xl font-black text-cyan-500 shadow-sm ring-4 ring-cyan-50 sm:h-28 sm:w-28 sm:text-4xl">
               {initials(displayName || profile.name)}
             </div>
           )}
 
-          <div>
-            <h1 className="text-4xl font-black tracking-tight text-slate-950">
+          <div className="min-w-0">
+            <h1 className="wrap-break-word text-2xl font-black tracking-tight text-slate-950 sm:text-4xl">
               {displayName || profile.name}
             </h1>
 
@@ -57,12 +57,12 @@ export default function ProfileHero({
           </div>
         </div>
 
-        <div className="rounded-2xl bg-slate-50 px-5 py-4">
+        <div className="w-full rounded-2xl bg-slate-50 px-5 py-4 xl:w-auto xl:min-w-64">
           <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
             Organization
           </p>
 
-          <p className="mt-1 max-w-xs wrap-break-word text-sm font-black text-slate-950">
+          <p className="mt-1 wrap-break-word text-sm font-black text-slate-950">
             {profile.organization?.name || "No organization"}
           </p>
         </div>
@@ -87,10 +87,10 @@ function ProfilePill({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black ${classes[tone]}`}
+      className={`inline-flex max-w-full items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black ${classes[tone]}`}
     >
-      {tone !== "slate" && <CheckCircle2 size={14} />}
-      {label}
+      {tone !== "slate" && <CheckCircle2 size={14} className="shrink-0" />}
+      <span className="truncate">{label}</span>
     </span>
   );
 }

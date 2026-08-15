@@ -154,12 +154,12 @@ export default function SecurityShow({
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-5xl space-y-8">
+      <div className="mx-auto max-w-5xl space-y-6 sm:space-y-8">
         <SecurityHero />
 
         <AccountSettingsNav active="security" />
 
-        <main className="space-y-8">
+        <main className="space-y-6 sm:space-y-8">
           <PasswordSection
             data={passwordForm.data}
             errors={passwordErrors}

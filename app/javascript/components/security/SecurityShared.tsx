@@ -10,9 +10,9 @@ import {
 
 export function SecurityHero() {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
       <div className="max-w-2xl">
-        <h1 className="text-4xl font-black tracking-tight text-slate-950">
+        <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-4xl">
           Security
         </h1>
 
@@ -33,8 +33,10 @@ export function SectionHeader({
   description: string;
 }) {
   return (
-    <div>
-      <h2 className="text-2xl font-black text-slate-950">{title}</h2>
+    <div className="min-w-0">
+      <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
+        {title}
+      </h2>
 
       <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
         {description}
@@ -63,7 +65,7 @@ export function PasswordField({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
         {label}
         <RequiredMark />
@@ -105,7 +107,7 @@ export function CodeField({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
         Authenticator Code
         <RequiredMark />
@@ -118,7 +120,7 @@ export function CodeField({
         maxLength={6}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className={`h-12 text-center font-mono text-lg font-black tracking-[0.45em] ${formInputClassName(
+        className={`h-12 text-center font-mono text-lg font-black tracking-[0.25em] sm:tracking-[0.45em] ${formInputClassName(
           hasError,
           false,
         )}`}
@@ -149,10 +151,10 @@ export function InlineNote({
 
   return (
     <p
-      className={`flex items-start gap-2 text-xs font-semibold leading-5 ${toneClasses[tone]}`}
+      className={`flex min-w-0 items-start gap-2 text-xs font-semibold leading-5 ${toneClasses[tone]}`}
     >
       <Icon size={15} className="mt-0.5 shrink-0" />
-      <span>{text}</span>
+      <span className="min-w-0 wrap-break-word">{text}</span>
     </p>
   );
 }

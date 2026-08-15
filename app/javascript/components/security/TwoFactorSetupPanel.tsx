@@ -21,7 +21,7 @@ export default function TwoFactorSetupPanel({
         </div>
 
         <div className="min-w-0 flex-1">
-          <h3 className="text-xl font-black text-slate-950">
+          <h3 className="text-lg font-black text-slate-950 sm:text-xl">
             Set up your authenticator app
           </h3>
 
@@ -39,7 +39,7 @@ export default function TwoFactorSetupPanel({
             ].map((app) => (
               <span
                 key={app}
-                className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm"
+                className="max-w-full truncate rounded-full bg-white px-3 py-1.5 text-xs font-black text-cyan-700 shadow-sm"
               >
                 {app}
               </span>
@@ -48,14 +48,14 @@ export default function TwoFactorSetupPanel({
         </div>
       </div>
 
-      <div className="rounded-3xl bg-white p-5 shadow-sm">
+      <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+          <div className="min-w-0">
             <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
               Setup Key
             </p>
 
-            <p className="mt-1 text-xs font-semibold text-slate-500">
+            <p className="mt-1 wrap-break-word text-xs font-semibold text-slate-500">
               Account: {twoFactor.issuer}: {twoFactor.account_label}
             </p>
           </div>
@@ -63,7 +63,7 @@ export default function TwoFactorSetupPanel({
           <button
             type="button"
             onClick={onCopySetupKey}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-extrabold shadow-sm transition ${
+            className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-extrabold shadow-sm transition sm:w-auto ${
               copied
                 ? "bg-green-500 text-white"
                 : "bg-cyan-400 text-white hover:bg-cyan-500"
@@ -83,7 +83,7 @@ export default function TwoFactorSetupPanel({
           </button>
         </div>
 
-        <p className="mt-4 break-all rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 font-mono text-sm font-black tracking-wide text-slate-800">
+        <p className="mt-4 break-all rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 font-mono text-xs font-black leading-6 tracking-wide text-slate-800 sm:text-sm">
           {formatSetupKey(twoFactor.setup_key)}
         </p>
       </div>

@@ -16,8 +16,10 @@ export function SectionHeader({
   description: string;
 }) {
   return (
-    <div>
-      <h2 className="text-2xl font-black text-slate-950">{title}</h2>
+    <div className="min-w-0">
+      <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
+        {title}
+      </h2>
 
       <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
         {description}
@@ -28,8 +30,8 @@ export function SectionHeader({
 
 export function DetailCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
-      <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
+    <div className="min-w-0 rounded-2xl border border-slate-100 bg-slate-50 p-4 sm:p-5">
+      <p className="truncate text-xs font-extrabold uppercase tracking-wide text-slate-400">
         {label}
       </p>
 
@@ -68,7 +70,7 @@ export function ProfileTextField({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
         {label}
         <RequiredMark show={required} />

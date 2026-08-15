@@ -22,14 +22,14 @@ export default function PasswordSection({
   onFieldChange,
 }: PasswordSectionProps) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
       <SectionHeader
         title="Change password"
         description="Use a strong password with uppercase, lowercase, number, and symbol."
       />
 
-      <form noValidate onSubmit={onSubmit} className="mt-7 space-y-6">
-        <div className="grid gap-5 md:grid-cols-3">
+      <form noValidate onSubmit={onSubmit} className="mt-6 space-y-6">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           <PasswordField
             label="Current Password"
             value={data.user.current_password}
@@ -73,7 +73,7 @@ export default function PasswordSection({
             type="submit"
             loading={processing}
             loadingText="Updating..."
-            className="min-w-44"
+            className="w-full sm:w-auto sm:min-w-44"
           >
             <LockKeyhole size={17} />
             Update Password

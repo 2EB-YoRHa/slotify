@@ -167,7 +167,7 @@ export default function ProfileShow({
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-6xl space-y-8">
+      <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
         <ProfileHero
           profile={profile}
           avatarUrl={avatarUrl}
@@ -180,13 +180,13 @@ export default function ProfileShow({
         <form
           noValidate
           onSubmit={handleSubmit}
-          className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]"
+          className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-8"
         >
           <motion.main
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="space-y-8"
+            className="space-y-6 sm:space-y-8"
           >
             <ProfileInfoSection
               profile={profile}
@@ -204,7 +204,7 @@ export default function ProfileShow({
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
-            className="space-y-6"
+            className="space-y-6 xl:sticky xl:top-24 xl:self-start"
           >
             <ProfilePhotoActionsCard
               avatarUrl={avatarUrl}

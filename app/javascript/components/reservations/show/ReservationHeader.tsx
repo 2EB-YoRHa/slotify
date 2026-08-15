@@ -36,7 +36,7 @@ export default function ReservationHeader({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04 }}
-          className="mt-5 break-words text-2xl font-black leading-tight text-slate-950 sm:mt-6 sm:text-3xl"
+          className="mt-5 wrap-break-word text-2xl font-black leading-tight text-slate-950 sm:mt-6 sm:text-3xl"
         >
           Reservation for {reservation.workspace?.name || "Workspace"}
         </motion.h1>

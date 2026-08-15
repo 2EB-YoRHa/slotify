@@ -38,7 +38,7 @@ export default function TwoFactorSection({
 }: TwoFactorSectionProps) {
   return (
     <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-100 p-8">
+      <div className="border-b border-slate-100 p-5 sm:p-6 lg:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <SectionHeader
             title={
@@ -58,7 +58,7 @@ export default function TwoFactorSection({
       </div>
 
       {!twoFactor.enabled && (
-        <div className="border-b border-slate-100 bg-cyan-50 p-8">
+        <div className="border-b border-slate-100 bg-cyan-50 p-5 sm:p-6 lg:p-8">
           <TwoFactorSetupPanel
             twoFactor={twoFactor}
             copied={copied}
@@ -68,7 +68,7 @@ export default function TwoFactorSection({
       )}
 
       {twoFactor.enabled && (
-        <div className="border-b border-slate-100 bg-green-50 px-8 py-5">
+        <div className="border-b border-slate-100 bg-green-50 px-5 py-5 sm:px-6 lg:px-8">
           <InlineNote
             tone="green"
             text="Two-factor authentication is enabled. Your next login will require your password and an authenticator code."
@@ -76,8 +76,8 @@ export default function TwoFactorSection({
         </div>
       )}
 
-      <form noValidate onSubmit={onSubmit} className="p-8">
-        <div className="grid gap-5 md:grid-cols-2">
+      <form noValidate onSubmit={onSubmit} className="p-5 sm:p-6 lg:p-8">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <CodeField
             value={data.two_factor.code}
             error={fieldError(errors, "code", "two_factor")}
@@ -111,7 +111,7 @@ export default function TwoFactorSection({
             loading={processing}
             loadingText={twoFactor.enabled ? "Disabling..." : "Enabling..."}
             variant={twoFactor.enabled ? "danger" : "primary"}
-            className="min-w-44"
+            className="w-full sm:w-auto sm:min-w-44"
           >
             {twoFactor.enabled ? (
               <>

@@ -77,7 +77,7 @@ export function SummaryRow({ label, value }: SummaryRowProps) {
     <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 sm:flex-row sm:justify-between sm:gap-4">
       <span className="text-sm text-slate-500">{label}</span>
 
-      <span className="break-words text-sm font-bold text-slate-950 sm:text-right">
+      <span className="wrap-break-word text-sm font-bold text-slate-950 sm:text-right">
         {value}
       </span>
     </div>

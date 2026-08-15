@@ -24,13 +24,13 @@ export default function ProfileInfoSection({
   onFieldChange,
 }: ProfileInfoSectionProps) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
       <SectionHeader
         title="Account information"
         description="Keep your personal information accurate for your workspace."
       />
 
-      <div className="mt-7 grid gap-5 md:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
         <ProfileTextField
           label="Full Name"
           icon={UserRound}
@@ -54,12 +54,12 @@ export default function ProfileInfoSection({
       </div>
 
       {profile.pending_email && (
-        <div className="mt-6 rounded-2xl border border-amber-100 bg-amber-50 p-5">
+        <div className="mt-6 rounded-2xl border border-amber-100 bg-amber-50 p-4 sm:p-5">
           <p className="text-sm font-black text-amber-800">
             Pending email confirmation
           </p>
 
-          <p className="mt-2 text-sm font-semibold leading-6 text-amber-700">
+          <p className="mt-2 wrap-break-word text-sm font-semibold leading-6 text-amber-700">
             A confirmation email was sent to{" "}
             <span className="font-black">{profile.pending_email}</span>. Your
             current login email remains active until the new address is
@@ -69,7 +69,7 @@ export default function ProfileInfoSection({
       )}
 
       {emailChanged && (
-        <div className="mt-6 rounded-2xl border border-cyan-100 bg-cyan-50 p-5">
+        <div className="mt-6 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 sm:p-5">
           <p className="text-sm font-black text-slate-950">
             Confirm this email change
           </p>
