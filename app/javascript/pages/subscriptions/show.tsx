@@ -1,4 +1,5 @@
 import { ChevronDown } from "lucide-react";
+import type { ReactNode } from "react";
 import AppLayout from "../../components/AppLayout";
 import AvailablePlansSection from "../../components/subscriptions/show/AvailablePlansSection";
 import BillingRequiredActivationPanel from "../../components/subscriptions/show/BillingRequiredActivationPanel";
@@ -103,7 +104,7 @@ type CollapsibleSectionProps = {
   title: string;
   description: string;
   defaultOpen?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function CollapsibleSection({
@@ -115,13 +116,17 @@ function CollapsibleSection({
   return (
     <details
       open={defaultOpen}
-      className="group mb-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+      className="group mb-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:mb-8 sm:p-6"
     >
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-6">
-        <div>
-          <h2 className="text-xl font-extrabold text-slate-950">{title}</h2>
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-4 sm:gap-6">
+        <div className="min-w-0">
+          <h2 className="text-lg font-extrabold text-slate-950 sm:text-xl">
+            {title}
+          </h2>
 
-          <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
+          <p className="mt-1 text-sm leading-6 text-slate-500">
+            {description}
+          </p>
         </div>
 
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-open:rotate-180">

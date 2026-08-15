@@ -37,13 +37,15 @@ export function SubscriptionStatCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-5 xl:p-6"
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-medium leading-5 text-slate-500">
+            {stat.label}
+          </p>
 
-          <h2 className="mt-2 text-2xl font-bold text-slate-950">
+          <h2 className="mt-2 truncate text-2xl font-bold text-slate-950 sm:text-3xl">
             {stat.value}
           </h2>
         </div>
@@ -51,7 +53,7 @@ export function SubscriptionStatCard({
         <IconBox icon={Icon} />
       </div>
 
-      <p className="mt-3 text-xs text-slate-500">{stat.helper}</p>
+      <p className="mt-3 text-xs leading-5 text-slate-500">{stat.helper}</p>
     </motion.div>
   );
 }
@@ -63,10 +65,10 @@ type SummaryRowProps = {
 
 export function SummaryRow({ label, value }: SummaryRowProps) {
   return (
-    <div className="flex justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
+    <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <span className="text-sm text-slate-500">{label}</span>
 
-      <span className="text-right text-sm font-bold text-slate-950">
+      <span className="wrap-break-word text-sm font-bold text-slate-950 sm:text-right">
         {value}
       </span>
     </div>
@@ -93,15 +95,19 @@ export function UsageMeter({
   const toneClasses = usageToneClasses(tone);
 
   return (
-    <div className={`rounded-2xl border p-5 ${toneClasses.container}`}>
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <div>
+    <div
+      className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${toneClasses.container}`}
+    >
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <p className="text-sm font-extrabold text-slate-800">{label}</p>
 
           <p className="mt-1 text-xs leading-5 text-slate-500">{helper}</p>
         </div>
 
-        <p className={`text-sm font-extrabold ${toneClasses.text}`}>{value}</p>
+        <p className={`shrink-0 text-sm font-extrabold ${toneClasses.text}`}>
+          {value}
+        </p>
       </div>
 
       <div className="h-3 overflow-hidden rounded-full bg-white">

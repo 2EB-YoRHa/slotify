@@ -109,15 +109,15 @@ export default function PlanFeatureComparisonPanel({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.22 }}
-      className="mb-10 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+      className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
     >
-      <div className="mb-7 flex items-start justify-between gap-8">
-        <div>
+      <div className="mb-6 flex flex-col gap-4 lg:mb-7 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
+        <div className="min-w-0">
           <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500">
             Plan Comparison
           </p>
 
-          <h2 className="mt-2 text-2xl font-extrabold text-slate-950">
+          <h2 className="mt-2 text-xl font-extrabold text-slate-950 sm:text-2xl">
             Compare limits and features
           </h2>
 
@@ -128,7 +128,13 @@ export default function PlanFeatureComparisonPanel({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200">
+      <div className="grid grid-cols-1 gap-4 lg:hidden">
+        {rows.map((row) => (
+          <ComparisonMobileCard key={row.label} row={row} />
+        ))}
+      </div>
+
+      <div className="hidden overflow-hidden rounded-2xl border border-slate-200 lg:block">
         <div className="grid grid-cols-[1.3fr_0.85fr_0.85fr] bg-slate-50">
           <div className="border-r border-slate-200 px-5 py-4 text-xs font-extrabold uppercase tracking-wide text-slate-400">
             Capability
@@ -163,6 +169,34 @@ type ComparisonRowProps = {
   row: ComparisonRowData;
 };
 
+function ComparisonMobileCard({ row }: ComparisonRowProps) {
+  const Icon = row.icon;
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="mb-4 flex min-w-0 items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+          <Icon size={17} strokeWidth={2.4} />
+        </div>
+
+        <p className="min-w-0 text-sm font-extrabold text-slate-950">
+          {row.label}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <MobilePlanValue
+          label="Starter"
+          value={row.starter}
+          muted={row.proWins}
+        />
+
+        <MobilePlanValue label="Pro" value={row.pro} highlighted />
+      </div>
+    </div>
+  );
+}
+
 function ComparisonRow({ row }: ComparisonRowProps) {
   const Icon = row.icon;
 
@@ -191,21 +225,64 @@ type PlanValueProps = {
   muted?: boolean;
 };
 
+function MobilePlanValue({
+  label,
+  value,
+  highlighted = false,
+  muted = false,
+}: PlanValueProps & { label: string }) {
+  return (
+    <div
+      className={`min-w-0 rounded-xl border p-4 ${
+        highlighted
+          ? "border-cyan-100 bg-cyan-50 text-cyan-700"
+          : "border-slate-100 bg-slate-50 text-slate-700"
+      }`}
+    >
+      <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
+
+      <PlanValueContent value={value} highlighted={highlighted} muted={muted} />
+    </div>
+  );
+}
+
 function PlanValue({
   value,
   highlighted = false,
   muted = false,
 }: PlanValueProps) {
+  return (
+    <div
+      className={`flex items-center border-r border-slate-200 px-5 py-4 text-sm font-bold ${
+        highlighted
+          ? "text-cyan-600"
+          : muted
+            ? "text-slate-400"
+            : "text-slate-700"
+      }`}
+    >
+      <PlanValueContent value={value} highlighted={highlighted} muted={muted} />
+    </div>
+  );
+}
+
+function PlanValueContent({
+  value,
+  highlighted = false,
+  muted = false,
+}: PlanValueProps) {
+  const className = highlighted
+    ? "text-cyan-600"
+    : muted
+      ? "text-slate-400"
+      : "text-slate-700";
+
   if (typeof value === "boolean") {
     return (
       <div
-        className={`flex items-center gap-2 border-r border-slate-200 px-5 py-4 text-sm font-bold ${
-          highlighted
-            ? "text-cyan-600"
-            : muted
-              ? "text-slate-400"
-              : "text-slate-700"
-        }`}
+        className={`flex min-w-0 items-center gap-2 text-sm font-bold ${className}`}
       >
         {value ? (
           <CheckCircle2 size={18} className="shrink-0 text-cyan-500" />
@@ -213,23 +290,17 @@ function PlanValue({
           <XCircle size={18} className="shrink-0 text-slate-300" />
         )}
 
-        {value ? "Included" : "Not included"}
+        <span className="wrap-break-word">
+          {value ? "Included" : "Not included"}
+        </span>
       </div>
     );
   }
 
   return (
-    <div
-      className={`flex items-center border-r border-slate-200 px-5 py-4 text-sm font-bold ${
-        highlighted
-          ? "text-cyan-600"
-          : muted
-            ? "text-slate-500"
-            : "text-slate-700"
-      }`}
-    >
+    <span className={`wrap-break-word text-sm font-bold ${className}`}>
       {value}
-    </div>
+    </span>
   );
 }
 

@@ -20,8 +20,8 @@ export default function AvailablePlansSection({
 }: AvailablePlansSectionProps) {
   return (
     <section>
-      <div className="mb-6 flex items-end justify-between gap-6">
-        <div>
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
           <p
             className={`text-sm font-extrabold uppercase tracking-wide ${
               billingRequired ? "text-amber-500" : "text-cyan-500"
@@ -30,7 +30,7 @@ export default function AvailablePlansSection({
             {billingRequired ? "Available Plans" : "Plan Options"}
           </p>
 
-          <h2 className="mt-2 text-2xl font-bold text-slate-950">
+          <h2 className="mt-2 text-xl font-bold text-slate-950 sm:text-2xl">
             {billingRequired
               ? "Choose a plan to activate the organization"
               : "Change or review the organization plan"}
@@ -44,14 +44,14 @@ export default function AvailablePlansSection({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 items-stretch gap-6">
+      <div className="grid grid-cols-1 items-stretch gap-5 xl:grid-cols-2 xl:gap-6">
         {plans.map((plan, index) => (
           <motion.div
             key={plan.key}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 + index * 0.06 }}
-            className="h-full"
+            className="h-full min-w-0"
           >
             <SubscriptionPlanCard
               planKey={plan.key}
