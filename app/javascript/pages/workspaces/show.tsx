@@ -46,12 +46,12 @@ export default function WorkspaceShow({
 
       <WorkspaceStats workspace={workspace} activeLabel={activeLabel} />
 
-      <section className="grid grid-cols-3 gap-8">
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-3 xl:gap-8">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="col-span-2 space-y-8"
+          className="space-y-6 xl:col-span-2 xl:space-y-8"
         >
           <WorkspacePhoto
             name={workspace.name}
@@ -60,7 +60,7 @@ export default function WorkspaceShow({
             fit="contain"
             position="object-center"
             showThumbnails
-            className="h-130 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm"
+            className="h-64 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm sm:h-96 xl:h-130"
           />
 
           <WorkspaceInformation workspace={workspace} />
@@ -74,7 +74,7 @@ export default function WorkspaceShow({
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16 }}
-          className="space-y-6"
+          className="space-y-6 xl:sticky xl:top-24 xl:self-start"
         >
           <WorkspaceSummaryPanel
             workspace={workspace}

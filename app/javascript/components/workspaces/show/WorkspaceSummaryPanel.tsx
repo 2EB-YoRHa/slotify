@@ -38,9 +38,9 @@ function WorkspaceSummary({
   isMember,
 }: WorkspaceSummaryPanelProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-950">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
           Workspace Summary
         </h2>
 
@@ -49,7 +49,7 @@ function WorkspaceSummary({
         </p>
       </div>
 
-      <div className="rounded-xl bg-slate-50 p-5">
+      <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
         <SummaryRow label="Name" value={workspace.name} />
 
         <SummaryRow label="Type" value={formatText(workspace.workspace_type)} />
@@ -77,7 +77,7 @@ type MemberBookingPanelProps = {
 
 function MemberBookingPanel({ workspace }: MemberBookingPanelProps) {
   return (
-    <div className="rounded-xl border border-cyan-100 bg-cyan-50/60 p-8 shadow-sm">
+    <div className="rounded-xl border border-cyan-100 bg-cyan-50/60 p-5 shadow-sm sm:p-6 lg:p-8">
       <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-cyan-500">
         <CalendarPlus size={22} strokeWidth={2.4} />
       </div>

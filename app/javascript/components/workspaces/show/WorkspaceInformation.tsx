@@ -17,13 +17,13 @@ export default function WorkspaceInformation({
   workspace,
 }: WorkspaceInformationProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-8 flex items-start justify-between">
-        <div className="flex items-start gap-4">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-3 sm:gap-4">
           <IconBox icon={Building2} />
 
-          <div>
-            <h2 className="text-2xl font-bold text-slate-950">
+          <div className="min-w-0">
+            <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
               Workspace Information
             </h2>
 
@@ -37,14 +37,14 @@ export default function WorkspaceInformation({
       </div>
 
       {workspace.description && (
-        <div className="mb-6 rounded-xl border border-cyan-100 bg-cyan-50/50 p-5">
+        <div className="mb-6 rounded-xl border border-cyan-100 bg-cyan-50/50 p-4 sm:p-5">
           <p className="text-sm leading-6 text-slate-600">
             {workspace.description}
           </p>
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
         <InfoCard icon={Building2} label="Name" value={workspace.name} />
 
         <InfoCard
@@ -73,7 +73,7 @@ export default function WorkspaceInformation({
 
         <InfoCard icon={MapPin} label="Zone" value={workspace.zone || "-"} />
 
-        <div className="col-span-2">
+        <div className="sm:col-span-2">
           <InfoCard
             icon={MapPin}
             label="Location"

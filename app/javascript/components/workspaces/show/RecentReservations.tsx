@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { CalendarClock, Clock3 } from "lucide-react";
+import { CalendarClock, Clock3, UserRound } from "lucide-react";
 import ReservationStatusBadge from "../../reservations/ReservationStatusBadge";
 import { formatDate, formatTime } from "../../../utils/dateTime";
 import { IconBox } from "./WorkspaceShowShared";
@@ -13,12 +13,12 @@ export default function RecentReservations({
   reservations,
 }: RecentReservationsProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-6 flex items-start gap-4">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 flex items-start gap-3 sm:gap-4">
         <IconBox icon={CalendarClock} />
 
-        <div>
-          <h2 className="text-2xl font-bold text-slate-950">
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
             Recent Reservations
           </h2>
 
@@ -31,7 +31,21 @@ export default function RecentReservations({
       {reservations.length === 0 ? (
         <EmptyReservationsState />
       ) : (
-        <RecentReservationsTable reservations={reservations} />
+        <>
+          <div className="grid min-w-0 grid-cols-1 gap-4 md:hidden">
+            {reservations.map((reservation, index) => (
+              <RecentReservationCard
+                key={reservation.id}
+                reservation={reservation}
+                index={index}
+              />
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto md:block">
+            <RecentReservationsTable reservations={reservations} />
+          </div>
+        </>
       )}
     </div>
   );
@@ -39,7 +53,7 @@ export default function RecentReservations({
 
 function EmptyReservationsState() {
   return (
-    <div className="rounded-xl bg-slate-50 p-8 text-center">
+    <div className="rounded-xl bg-slate-50 px-5 py-10 text-center sm:p-8">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
         <CalendarClock size={24} />
       </div>
@@ -55,11 +69,59 @@ function EmptyReservationsState() {
   );
 }
 
-function RecentReservationsTable({
-  reservations,
-}: RecentReservationsProps) {
+function RecentReservationCard({
+  reservation,
+  index,
+}: {
+  reservation: WorkspaceReservation;
+  index: number;
+}) {
   return (
-    <table className="w-full table-fixed text-sm">
+    <motion.article
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.035 }}
+      className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+    >
+      <div className="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+            <UserRound size={18} strokeWidth={2.4} />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-bold text-slate-950">
+              {reservation.user?.name || "Unknown user"}
+            </p>
+
+            <p className="mt-1 truncate text-xs text-slate-400">
+              {reservation.user?.email || "-"}
+            </p>
+          </div>
+        </div>
+
+        <div className="shrink-0 self-start">
+          <ReservationStatusBadge status={reservation.status} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
+        <InfoItem label="Date" value={formatDate(reservation.start_time)} />
+
+        <InfoItem
+          label="Time"
+          value={`${formatTime(reservation.start_time)} - ${formatTime(
+            reservation.end_time,
+          )}`}
+        />
+      </div>
+    </motion.article>
+  );
+}
+
+function RecentReservationsTable({ reservations }: RecentReservationsProps) {
+  return (
+    <table className="min-w-180 w-full table-fixed text-sm">
       <colgroup>
         <col className="w-[26%]" />
         <col className="w-[24%]" />
@@ -86,7 +148,7 @@ function RecentReservationsTable({
             className="border-t border-slate-100 transition hover:bg-slate-50"
           >
             <td className="px-4 py-5 align-middle">
-              <p className="font-bold text-slate-950">
+              <p className="truncate font-bold text-slate-950">
                 {reservation.user?.name || "Unknown user"}
               </p>
 
@@ -114,5 +176,19 @@ function RecentReservationsTable({
         ))}
       </tbody>
     </table>
+  );
+}
+
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
+
+      <p className="mt-1 truncate text-sm font-extrabold text-slate-950">
+        {value}
+      </p>
+    </div>
   );
 }
