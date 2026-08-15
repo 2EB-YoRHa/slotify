@@ -4,8 +4,7 @@ class WorkspacesController < InertiaController
   before_action :ensure_workspace_slot_available!, only: %i[new create]
 
   def index
-    workspaces = workspace_scope.order(:name)
-    serialized_workspaces = serialize_workspaces(workspaces)
+    serialized_workspaces = serialize_workspaces(workspace_scope.order(:name))
 
     respond_to do |format|
       format.html do
@@ -21,19 +20,14 @@ class WorkspacesController < InertiaController
   end
 
   def show
-    serialized_reservations =
-      if member?
-        []
-      else
-        serialize_workspace_reservations(recent_workspace_reservations)
-      end
-
+    serialized_workspace = serialize_workspace(@workspace)
+    serialized_reservations = member? ? [] : serialize_workspace_reservations
     reservation_count = member? ? nil : @workspace.reservations.count
 
     respond_to do |format|
       format.html do
         render inertia: "workspaces/show", props: {
-          workspace: serialize_workspace(@workspace),
+          workspace: serialized_workspace,
           reservations: serialized_reservations,
           reservation_count: reservation_count
         }
@@ -41,7 +35,7 @@ class WorkspacesController < InertiaController
 
       format.json do
         render json: {
-          workspace: serialize_workspace(@workspace),
+          workspace: serialized_workspace,
           reservations: serialized_reservations,
           reservation_count: reservation_count
         }
@@ -57,10 +51,10 @@ class WorkspacesController < InertiaController
     workspace = current_organization.workspaces.build(workspace_attributes)
     extra_photos = extra_photo_files
 
-    extra_photos_error = extra_photos_validation_error_for(workspace, extra_photos)
+    validation_error = validate_extra_photos(workspace, extra_photos)
 
-    if extra_photos_error.present?
-      render_workspace_form_error(workspace, extra_photos_error, page: "workspaces/new")
+    if validation_error.present?
+      render_workspace_form_error(workspace, validation_error, page: "workspaces/new")
       return
     end
 
@@ -75,21 +69,19 @@ class WorkspacesController < InertiaController
 
         format.json do
           render json: serialize_workspace(workspace.reload),
-                status: :created
+                 status: :created
         end
       else
         format.html do
-          render inertia: "workspaces/new",
-                props: workspace_form_props.merge(
-                  errors: workspace.errors.to_hash
-                ),
-                status: :unprocessable_entity
+          render_workspace_form(
+            page: "workspaces/new",
+            workspace: workspace,
+            status: :unprocessable_entity
+          )
         end
 
         format.json do
-          render json: {
-            errors: workspace.errors.full_messages
-          }, status: :unprocessable_entity
+          render_workspace_errors(workspace)
         end
       end
     end
@@ -103,10 +95,10 @@ class WorkspacesController < InertiaController
 
   def update
     extra_photos = extra_photo_files
-    extra_photos_error = extra_photos_validation_error_for(@workspace, extra_photos)
+    validation_error = validate_extra_photos(@workspace, extra_photos)
 
-    if extra_photos_error.present?
-      render_workspace_form_error(@workspace, extra_photos_error, page: "workspaces/edit")
+    if validation_error.present?
+      render_workspace_form_error(@workspace, validation_error, page: "workspaces/edit")
       return
     end
 
@@ -124,59 +116,27 @@ class WorkspacesController < InertiaController
         end
       else
         format.html do
-          render inertia: "workspaces/edit",
-                props: workspace_form_props(
-                  workspace: @workspace
-                ).merge(
-                  errors: @workspace.errors.to_hash
-                ),
-                status: :unprocessable_entity
+          render_workspace_form(
+            page: "workspaces/edit",
+            workspace: @workspace,
+            status: :unprocessable_entity
+          )
         end
 
         format.json do
-          render json: {
-            errors: @workspace.errors.full_messages
-          }, status: :unprocessable_entity
+          render_workspace_errors(@workspace)
         end
       end
     end
   end
 
   def delete_confirmation
-    reservation_count = @workspace.reservations.count
-    can_delete = reservation_count.zero?
-
-    render inertia: "workspaces/delete", props: {
-      workspace: serialize_workspace(@workspace),
-      reservation_count: reservation_count,
-      can_delete: can_delete,
-      delete_error: delete_error_for(can_delete)
-    }
+    render inertia: "workspaces/delete", props: delete_workspace_props
   end
 
   def destroy
     if @workspace.reservations.exists?
-      respond_to do |format|
-        format.html do
-          render inertia: "workspaces/delete",
-                 props: {
-                   workspace: serialize_workspace(@workspace),
-                   reservation_count: @workspace.reservations.count,
-                   can_delete: false,
-                   delete_error: delete_error_for(false)
-                 },
-                 status: :unprocessable_entity
-        end
-
-        format.json do
-          render json: {
-            errors: [
-              "Workspace has reservation history"
-            ]
-          }, status: :unprocessable_entity
-        end
-      end
-
+      render_workspace_delete_blocked
       return
     end
 
@@ -212,52 +172,22 @@ class WorkspacesController < InertiaController
       @workspace = workspace_scope.find(params[:id])
     end
 
-    def recent_workspace_reservations
-      @workspace
-        .reservations
-        .includes(:user)
-        .order(start_time: :desc)
-        .limit(10)
-    end
-
-    def serialize_workspace_reservations(reservations)
-      reservations.as_json(
-        only: [
-          :id,
-          :start_time,
-          :end_time,
-          :status
-        ],
-        include: {
-          user: {
-            only: [
-              :id,
-              :name,
-              :email
-            ]
-          }
-        }
-      )
-    end
-
-    def amenities_for_form
-      Amenity.order(:name)
-    end
-
     def workspace_form_props(workspace: nil)
       props = {
         amenities: amenities_for_form,
         multiple_workspace_photos_enabled: current_organization.multiple_workspace_photos_enabled?
       }
 
-      if workspace.present?
-        props.merge!(
-          workspace: serialize_workspace(workspace),
-          selected_amenity_ids: workspace.amenity_ids
-        )
-      end
+      return props unless workspace.present?
 
-      props
+      props.merge(
+        workspace: serialize_workspace(workspace),
+        selected_amenity_ids: workspace.amenity_ids
+      )
+    end
+
+    def amenities_for_form
+      Amenity.order(:name)
     end
 
     def workspace_attributes
@@ -278,47 +208,31 @@ class WorkspacesController < InertiaController
 
     def extra_photo_files
       raw_files = params.dig(:workspace, :extra_photos)
-
-      return [] if raw_files.blank?
-
-      if raw_files.is_a?(ActionController::Parameters)
-        raw_files = raw_files.values
-      end
+      raw_files = raw_files.values if raw_files.is_a?(ActionController::Parameters)
 
       Array(raw_files).reject(&:blank?)
     end
 
-    def extra_photos_validation_error_for(workspace, files)
-      return nil if files.blank?
+    def validate_extra_photos(workspace, files)
+      Workspaces::ExtraPhotosValidator
+        .new(
+          organization: current_organization,
+          workspace: workspace,
+          files: files
+        )
+        .error_message
+    end
 
-      unless current_organization.multiple_workspace_photos_enabled?
-        return "Extra gallery photos are only available on the Pro plan."
-      end
+    def render_workspace_form(page:, workspace:, status: :ok)
+      render inertia: page,
+             props: workspace_form_props_for(workspace),
+             status: status
+    end
 
-      current_count = workspace.persisted? ? workspace.extra_photos.attachments.size : 0
-      next_count = current_count + files.size
+    def workspace_form_props_for(workspace)
+      props = workspace.persisted? ? workspace_form_props(workspace: workspace) : workspace_form_props
 
-      if next_count > Workspace::MAX_EXTRA_PHOTOS
-        return "You can attach up to #{Workspace::MAX_EXTRA_PHOTOS} extra gallery photos."
-      end
-
-      invalid_file = files.find do |file|
-        !file.content_type.in?(Workspace::ALLOWED_PHOTO_CONTENT_TYPES)
-      end
-
-      if invalid_file.present?
-        return "Extra gallery photos must be PNG, JPG, JPEG, or WEBP images."
-      end
-
-      oversized_file = files.find do |file|
-        file.size > Workspace::MAX_PHOTO_SIZE
-      end
-
-      if oversized_file.present?
-        return "Each extra gallery photo must be less than 5MB."
-      end
-
-      nil
+      props.merge(errors: workspace.errors.to_hash)
     end
 
     def render_workspace_form_error(workspace, message, page:)
@@ -326,23 +240,50 @@ class WorkspacesController < InertiaController
 
       respond_to do |format|
         format.html do
-          props =
-            if workspace.persisted?
-              workspace_form_props(workspace: workspace)
-            else
-              workspace_form_props
-            end
-
-          render inertia: page,
-                props: props.merge(
-                  errors: workspace.errors.to_hash
-                ),
-                status: :unprocessable_entity
+          render_workspace_form(
+            page: page,
+            workspace: workspace,
+            status: :unprocessable_entity
+          )
         end
 
         format.json do
           render json: {
             errors: [ message ]
+          }, status: :unprocessable_entity
+        end
+      end
+    end
+
+    def render_workspace_errors(workspace)
+      render json: {
+        errors: workspace.errors.full_messages
+      }, status: :unprocessable_entity
+    end
+
+    def delete_workspace_props
+      reservation_count = @workspace.reservations.count
+      can_delete = reservation_count.zero?
+
+      {
+        workspace: serialize_workspace(@workspace),
+        reservation_count: reservation_count,
+        can_delete: can_delete,
+        delete_error: delete_error_for(can_delete)
+      }
+    end
+
+    def render_workspace_delete_blocked
+      respond_to do |format|
+        format.html do
+          render inertia: "workspaces/delete",
+                 props: delete_workspace_props,
+                 status: :unprocessable_entity
+        end
+
+        format.json do
+          render json: {
+            errors: [ "Workspace has reservation history" ]
           }, status: :unprocessable_entity
         end
       end
@@ -360,12 +301,12 @@ class WorkspacesController < InertiaController
                         alert: message
           else
             render inertia: "workspaces/new",
-                  props: workspace_form_props.merge(
-                    errors: {
-                      base: [ message ]
-                    }
-                  ),
-                  status: :unprocessable_entity
+                   props: workspace_form_props.merge(
+                     errors: {
+                       base: [ message ]
+                     }
+                   ),
+                   status: :unprocessable_entity
           end
         end
 
@@ -388,6 +329,22 @@ class WorkspacesController < InertiaController
       WorkspaceSerializer
         .new(workspace, view_context: view_context)
         .as_json
+    end
+
+    def serialize_workspace_reservations
+      @workspace
+        .reservations
+        .includes(:user)
+        .order(start_time: :desc)
+        .limit(10)
+        .as_json(
+          only: %i[id start_time end_time status],
+          include: {
+            user: {
+              only: %i[id name email]
+            }
+          }
+        )
     end
 
     def delete_error_for(can_delete)
