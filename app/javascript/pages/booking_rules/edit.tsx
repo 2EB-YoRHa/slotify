@@ -31,7 +31,7 @@ export default function BookingRuleEdit({
   if (!rule || !plan_entitlements || !booking_rule_constraints) {
     return (
       <AppLayout>
-        <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-sm text-red-600">
+        <div className="rounded-xl border border-red-100 bg-red-50 p-5 text-sm font-semibold leading-6 text-red-600 sm:p-6">
           Booking rules could not be loaded.
         </div>
       </AppLayout>
@@ -40,7 +40,7 @@ export default function BookingRuleEdit({
 
   return (
     <AppLayout>
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -50,7 +50,7 @@ export default function BookingRuleEdit({
             className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
           >
             <ArrowLeft size={16} />
-            Back to Booking Rules
+            <span className="truncate">Back to Booking Rules</span>
           </Link>
         </motion.div>
 
@@ -58,7 +58,7 @@ export default function BookingRuleEdit({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04 }}
-          className="mt-6 text-3xl font-bold text-slate-950"
+          className="mt-5 wrap-break-word text-2xl font-black leading-tight text-slate-950 sm:mt-6 sm:text-3xl"
         >
           Change Booking Rules
         </motion.h1>
@@ -67,7 +67,7 @@ export default function BookingRuleEdit({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="mt-2 max-w-2xl text-slate-500"
+          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base"
         >
           Your current plan controls how flexible these booking rules can be.
           Pro unlocks wider limits and advanced scheduling controls.

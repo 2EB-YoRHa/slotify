@@ -1,6 +1,7 @@
 import { router } from "@inertiajs/react";
 import { useState } from "react";
 import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
   CalendarDays,
   Clock3,
@@ -73,7 +74,7 @@ export default function BookingTimeSlotList({
           return (
             <div
               key={slot.id}
-              className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
             >
               {editing ? (
                 <BookingTimeSlotForm
@@ -154,16 +155,16 @@ function TimeSlotCard({ slot, onEdit, onDelete }: TimeSlotCardProps) {
   const duration = slot.duration_minutes || slot.end_minute - slot.start_minute;
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex items-start justify-between gap-5">
+    <div className="flex min-w-0 flex-col gap-5">
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
         <div className="min-w-0">
-          <div className="mb-2 flex flex-wrap items-center gap-3">
-            <h3 className="text-xl font-black text-slate-950">
+          <div className="mb-2 flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
+            <h3 className="min-w-0 wrap-break-word text-lg font-black text-slate-950 sm:text-xl">
               {slot.name}
             </h3>
 
             <span
-              className={`rounded-full px-3 py-1 text-xs font-black ${
+              className={`w-fit shrink-0 rounded-full px-3 py-1 text-xs font-black ${
                 slot.active
                   ? "bg-green-50 text-green-600"
                   : "bg-slate-100 text-slate-500"
@@ -173,12 +174,12 @@ function TimeSlotCard({ slot, onEdit, onDelete }: TimeSlotCardProps) {
             </span>
           </div>
 
-          <p className="text-sm font-semibold text-slate-500">
+          <p className="wrap-break-word text-sm font-semibold leading-6 text-slate-500">
             {formatDays(slot.days || daysFromString(slot.days_of_week))}
           </p>
         </div>
 
-        <div className="flex shrink-0 gap-2">
+        <div className="grid w-full shrink-0 grid-cols-3 gap-2 sm:w-auto sm:flex">
           <IconButton
             title="Edit time slot"
             disabled={processing}
@@ -206,7 +207,7 @@ function TimeSlotCard({ slot, onEdit, onDelete }: TimeSlotCardProps) {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Metric
           icon={Clock3}
           label="Start"
@@ -248,7 +249,7 @@ function IconButton({
       title={title}
       disabled={disabled}
       onClick={onClick}
-      className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+      className={`inline-flex h-10 w-full items-center justify-center rounded-xl border bg-white transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-10 ${
         danger
           ? "border-red-100 text-red-500 hover:bg-red-50"
           : "border-slate-200 text-slate-500 hover:border-cyan-200 hover:text-cyan-600"
@@ -260,20 +261,20 @@ function IconButton({
 }
 
 type MetricProps = {
-  icon: typeof Clock3;
+  icon: LucideIcon;
   label: string;
   value: string;
 };
 
 function Metric({ icon: Icon, label, value }: MetricProps) {
   return (
-    <div className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
+    <div className="min-w-0 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
       <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
-        <Icon size={15} className="text-cyan-500" />
-        {label}
+        <Icon size={15} className="shrink-0 text-cyan-500" />
+        <span className="truncate">{label}</span>
       </div>
 
-      <p className="text-lg font-black text-slate-950">{value}</p>
+      <p className="wrap-break-word text-lg font-black text-slate-950">{value}</p>
     </div>
   );
 }

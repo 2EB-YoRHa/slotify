@@ -129,15 +129,17 @@ export default function BookingRuleForm({
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
+      className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
     >
-      <div className="mb-8 flex items-start gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-          <CalendarClock size={26} strokeWidth={2.4} />
+      <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-14 sm:w-14">
+          <CalendarClock size={24} strokeWidth={2.4} />
         </div>
 
-        <div>
-          <h2 className="text-2xl font-bold text-slate-950">Booking Rules</h2>
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+            Booking Rules
+          </h2>
 
           <p className="mt-2 text-sm leading-6 text-slate-500">
             Configure how members can create, schedule, and cancel reservations.
@@ -146,7 +148,7 @@ export default function BookingRuleForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
         <RuleInput
           icon={Clock3}
           label="Maximum Reservation Duration"
@@ -199,7 +201,7 @@ export default function BookingRuleForm({
         />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-5 sm:mt-6">
         <ToggleCard
           icon={CalendarDays}
           title="Weekend Bookings"
@@ -217,11 +219,11 @@ export default function BookingRuleForm({
         </div>
       )}
 
-      <div className="mt-8 rounded-xl border border-cyan-100 bg-cyan-50 p-5 text-sm leading-6 text-cyan-700">
+      <div className="mt-6 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm leading-6 text-cyan-700 sm:mt-8 sm:p-5">
         <div className="flex items-start gap-3">
           <AlertTriangle size={18} className="mt-0.5 shrink-0" />
 
-          <div>
+          <div className="min-w-0">
             <p className="font-bold">Rule example</p>
 
             <p className="mt-1">
@@ -233,10 +235,10 @@ export default function BookingRuleForm({
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end gap-4">
+      <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:gap-4">
         <a
           href="/booking_rule"
-          className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 sm:w-auto"
         >
           Cancel
         </a>
@@ -245,6 +247,7 @@ export default function BookingRuleForm({
           type="submit"
           loading={processing}
           loadingText="Saving..."
+          className="w-full sm:w-auto"
         >
           Save Rules
         </LoadingButton>
@@ -281,13 +284,13 @@ function RuleInput({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-      <div className="mb-4 flex items-start gap-3">
+    <label className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+      <div className="mb-4 flex min-w-0 items-start gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
           <Icon size={19} strokeWidth={2.4} />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <FieldLabel label={label} required />
 
           <p className="mt-1 text-xs leading-5 text-slate-500">{helper}</p>
@@ -336,17 +339,17 @@ function ToggleCard({
 }: ToggleCardProps) {
   return (
     <div
-      className={`rounded-xl border p-5 transition ${
+      className={`rounded-xl border p-4 transition sm:p-5 ${
         checked ? "border-cyan-200 bg-cyan-50" : "border-slate-200 bg-slate-50"
       }`}
     >
-      <div className="flex items-start justify-between gap-6">
-        <div className="flex items-start gap-3">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div className="flex min-w-0 items-start gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
             <Icon size={19} strokeWidth={2.4} />
           </div>
 
-          <div>
+          <div className="min-w-0">
             <p className="font-bold text-slate-950">{title}</p>
 
             <p className="mt-1 text-sm leading-6 text-slate-500">
@@ -355,7 +358,7 @@ function ToggleCard({
           </div>
         </div>
 
-        <label className="flex cursor-pointer items-center gap-3">
+        <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm sm:w-auto sm:justify-start">
           <span
             className={`text-sm font-bold ${
               checked ? "text-cyan-600" : "text-slate-400"

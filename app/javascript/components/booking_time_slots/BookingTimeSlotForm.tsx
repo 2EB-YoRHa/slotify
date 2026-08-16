@@ -228,7 +228,7 @@ export default function BookingTimeSlotForm({
           }}
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextInput
             label="Start Time"
             icon={Clock3}
@@ -264,7 +264,7 @@ export default function BookingTimeSlotForm({
             <RequiredMark show />
           </div>
 
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7">
             {DAYS.map((day) => {
               const selected = data.days_of_week.includes(day.value);
 
@@ -293,19 +293,19 @@ export default function BookingTimeSlotForm({
         </div>
 
         <div
-          className={`rounded-2xl border p-5 ${
+          className={`rounded-2xl border p-4 sm:p-5 ${
             data.active
               ? "border-cyan-100 bg-cyan-50"
               : "border-slate-200 bg-slate-50"
           }`}
         >
-          <div className="flex items-start justify-between gap-6">
-            <div className="flex items-start gap-3">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+            <div className="flex min-w-0 items-start gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
                 <ToggleLeft size={19} strokeWidth={2.4} />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <p className="font-bold text-slate-950">Time Slot Status</p>
 
                 <p className="mt-1 text-sm leading-6 text-slate-500">
@@ -315,7 +315,7 @@ export default function BookingTimeSlotForm({
               </div>
             </div>
 
-            <label className="flex cursor-pointer items-center gap-3">
+            <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm sm:w-auto sm:justify-start">
               <span
                 className={`text-sm font-bold ${
                   data.active ? "text-cyan-600" : "text-slate-400"
@@ -335,13 +335,13 @@ export default function BookingTimeSlotForm({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           {isEditing && (
             <button
               type="button"
               disabled={processing}
               onClick={requestCancel}
-              className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
               Cancel
             </button>
@@ -352,6 +352,7 @@ export default function BookingTimeSlotForm({
             loading={processing}
             disabled={disabled}
             loadingText={isEditing ? "Saving..." : "Creating..."}
+            className="w-full sm:w-auto"
           >
             {isEditing ? "Save Time Slot" : "Create Time Slot"}
           </LoadingButton>
@@ -409,7 +410,7 @@ function TextInput({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-950">
         {label}
         <RequiredMark show={required} />
