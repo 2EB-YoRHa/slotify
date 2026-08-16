@@ -12,10 +12,11 @@ import {
   ShieldAlert,
   UsersRound,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import LoadingButton from "../../components/ui/LoadingButton";
-import { formatDate, formatTime, duration } from "../../utils/dateTime";
+import { duration, formatDate, formatTime } from "../../utils/dateTime";
 import type { Reservation } from "../../types/reservation";
 
 type CancelReservationProps = {
@@ -43,17 +44,17 @@ export default function CancelReservation({
 
   return (
     <AppLayout>
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <Link
             href={`/reservations/${reservation.id}`}
-            className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
+            className="inline-flex max-w-full items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
           >
-            <ArrowLeft size={16} />
-            Back to Reservation
+            <ArrowLeft size={16} className="shrink-0" />
+            <span className="truncate">Back to Reservation</span>
           </Link>
         </motion.div>
 
@@ -61,7 +62,7 @@ export default function CancelReservation({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04 }}
-          className="mt-6 text-3xl font-bold text-slate-950"
+          className="mt-5 wrap-break-word text-2xl font-black leading-tight text-slate-950 sm:mt-6 sm:text-3xl"
         >
           Cancel Reservation
         </motion.h1>
@@ -70,7 +71,7 @@ export default function CancelReservation({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="mt-2 max-w-2xl text-slate-500"
+          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base"
         >
           Review the reservation details and confirm whether this booking should
           be cancelled.
@@ -81,32 +82,32 @@ export default function CancelReservation({
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-5 text-sm text-red-600"
+          className="mb-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600 sm:mb-8 sm:p-5"
         >
           <ShieldAlert size={20} className="mt-0.5 shrink-0" />
 
-          <div>
+          <div className="min-w-0">
             <p className="font-bold">Cancellation blocked</p>
-            <p className="mt-1 leading-6">{cancel_error}</p>
+            <p className="mt-1 wrap-break-word leading-6">{cancel_error}</p>
           </div>
         </motion.div>
       )}
 
-      <div className="grid grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3 xl:gap-8">
         <motion.section
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="col-span-2 space-y-8"
+          className="min-w-0 space-y-6 xl:col-span-2 xl:space-y-8"
         >
-          <div className="rounded-xl border border-red-100 bg-white p-8 shadow-sm">
-            <div className="mb-8 flex items-start gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
-                <Ban size={26} strokeWidth={2.4} />
+          <div className="rounded-xl border border-red-100 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+            <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-500 sm:h-14 sm:w-14">
+                <Ban size={24} strokeWidth={2.4} />
               </div>
 
-              <div>
-                <h2 className="text-2xl font-bold text-slate-950">
+              <div className="min-w-0">
+                <h2 className="wrap-break-word text-xl font-bold leading-tight text-slate-950 sm:text-2xl">
                   Are you sure you want to cancel this reservation?
                 </h2>
 
@@ -118,7 +119,7 @@ export default function CancelReservation({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
               <InfoCard
                 icon={Building2}
                 label="Workspace"
@@ -159,15 +160,15 @@ export default function CancelReservation({
             </div>
           </div>
 
-          <div className="rounded-xl border border-yellow-100 bg-yellow-50 p-6">
+          <div className="rounded-xl border border-yellow-100 bg-yellow-50 p-4 sm:p-6">
             <div className="flex items-start gap-3">
               <AlertTriangle
                 size={22}
                 className="mt-0.5 shrink-0 text-yellow-600"
               />
 
-              <div>
-                <h3 className="font-bold text-yellow-800">
+              <div className="min-w-0">
+                <h3 className="wrap-break-word font-bold text-yellow-800">
                   Important cancellation notice
                 </h3>
 
@@ -184,11 +185,11 @@ export default function CancelReservation({
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16 }}
-          className="space-y-6"
+          className="space-y-6 xl:sticky xl:top-24 xl:self-start"
         >
-          <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-slate-950">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+            <div className="mb-6 sm:mb-8">
+              <h2 className="wrap-break-word text-xl font-bold text-slate-950 sm:text-2xl">
                 Cancellation Summary
               </h2>
 
@@ -197,7 +198,7 @@ export default function CancelReservation({
               </p>
             </div>
 
-            <div className="rounded-xl bg-slate-50 p-5">
+            <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
               <SummaryRow
                 label="Workspace"
                 value={reservation.workspace?.name || "Workspace removed"}
@@ -222,11 +223,11 @@ export default function CancelReservation({
             </div>
 
             {cancel_error ? (
-              <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+              <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm leading-6 text-red-600">
                 This reservation cannot be cancelled right now.
               </div>
             ) : (
-              <div className="mt-5 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
+              <div className="mt-5 rounded-xl border border-green-100 bg-green-50 p-4 text-sm leading-6 text-green-700">
                 This reservation is eligible for cancellation.
               </div>
             )}
@@ -275,17 +276,19 @@ export default function CancelReservation({
 }
 
 type InfoCardProps = {
-  icon: typeof Building2;
+  icon: LucideIcon;
   label: string;
   value: string | number;
 };
 
 function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
   return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 p-5">
+    <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50 p-4 sm:p-5">
       <div className="mb-3 flex items-center gap-2 text-slate-400">
-        <Icon size={16} />
-        <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
+        <Icon size={16} className="shrink-0" />
+        <p className="truncate text-xs font-bold uppercase tracking-wide">
+          {label}
+        </p>
       </div>
 
       <p className="wrap-break-word text-sm font-bold text-slate-900">{value}</p>
@@ -300,10 +303,10 @@ type SummaryRowProps = {
 
 function SummaryRow({ label, value }: SummaryRowProps) {
   return (
-    <div className="flex justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
+    <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 sm:flex-row sm:justify-between sm:gap-4">
       <span className="text-sm text-slate-500">{label}</span>
 
-      <span className="text-right text-sm font-bold text-slate-950">
+      <span className="wrap-break-word text-sm font-bold text-slate-950 sm:text-right">
         {value}
       </span>
     </div>

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { AlertTriangle, HelpCircle } from "lucide-react";
 
 type ConfirmDialogProps = {
@@ -23,13 +24,37 @@ export default function ConfirmDialog({
   onCancel,
   onConfirm,
 }: ConfirmDialogProps) {
+  useEffect(() => {
+    if (!open) return;
+
+    const scrollY = window.scrollY;
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalBodyPosition = document.body.style.position;
+    const originalBodyTop = document.body.style.top;
+    const originalBodyWidth = document.body.style.width;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.body.style.position = originalBodyPosition;
+      document.body.style.top = originalBodyTop;
+      document.body.style.width = originalBodyWidth;
+
+      window.scrollTo(0, scrollY);
+    };
+  }, [open]);
+
   if (!open) return null;
 
   const Icon = danger ? AlertTriangle : HelpCircle;
 
   return (
-    <div className="fixed inset-0 z-120 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-[2px]">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-7 text-center shadow-2xl">
+    <div className="fixed inset-0 z-120 flex items-center justify-center overflow-hidden bg-slate-950/40 px-4 py-6 backdrop-blur-[2px] overscroll-contain">
+      <div className="max-h-[calc(100dvh-3rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-3xl border border-slate-200 bg-white p-5 text-center shadow-2xl sm:p-7">
         <div
           className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl ${
             danger ? "bg-red-50 text-red-500" : "bg-cyan-50 text-cyan-500"
@@ -38,11 +63,11 @@ export default function ConfirmDialog({
           <Icon size={25} strokeWidth={2.4} />
         </div>
 
-        <h2 className="mt-5 text-2xl font-black text-slate-950">
+        <h2 className="mt-5 wrap-break-word text-xl font-black leading-tight text-slate-950 sm:text-2xl">
           {title}
         </h2>
 
-        <p className="mx-auto mt-3 max-w-sm text-sm font-semibold leading-6 text-slate-500">
+        <p className="mx-auto mt-3 max-w-sm wrap-break-word text-sm font-semibold leading-6 text-slate-500">
           {description}
         </p>
 

@@ -106,13 +106,13 @@ function ManagerWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
         </HeaderActionButton>
       }
     >
-      <section className="mb-8 grid grid-cols-4 gap-6">
+      <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:mb-8 xl:grid-cols-4 xl:gap-6">
         {stats.map((stat, index) => (
           <WorkspaceStatCard key={stat.label} stat={stat} index={index} />
         ))}
       </section>
 
-      <div className="mb-6 flex justify-end">
+      <div className="mb-6 flex justify-center sm:justify-end">
         <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
       </div>
 
@@ -145,23 +145,25 @@ function WorkspaceStatCard({ stat, index }: WorkspaceStatCardProps) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+      className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-5 xl:p-6"
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-medium leading-5 text-slate-500">
+            {stat.label}
+          </p>
 
-          <h2 className="mt-2 text-3xl font-bold text-slate-950">
+          <h2 className="mt-2 truncate text-2xl font-bold text-slate-950 sm:text-3xl">
             {stat.value}
           </h2>
         </div>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
           <Icon size={19} strokeWidth={2.4} />
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-slate-500">{stat.helper}</p>
+      <p className="mt-3 text-xs leading-5 text-slate-500">{stat.helper}</p>
     </motion.div>
   );
 }
@@ -173,7 +175,7 @@ type ViewModeToggleProps = {
 
 function ViewModeToggle({ viewMode, onChange }: ViewModeToggleProps) {
   return (
-    <div className="inline-flex rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+    <div className="inline-flex w-full rounded-2xl border border-slate-200 bg-white p-1 shadow-sm sm:w-auto">
       <ViewModeButton
         label="Table"
         icon={List}
@@ -208,14 +210,14 @@ function ViewModeButton({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-extrabold transition ${
+      className={`inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-extrabold transition sm:flex-none ${
         selected
           ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100"
           : "text-slate-500 hover:bg-cyan-50 hover:text-cyan-600"
       }`}
     >
-      <Icon size={16} />
-      {label}
+      <Icon size={16} className="shrink-0" />
+      <span className="truncate">{label}</span>
     </button>
   );
 }
