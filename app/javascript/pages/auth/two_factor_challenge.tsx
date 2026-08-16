@@ -77,7 +77,7 @@ export default function TwoFactorChallenge({
   }
 
   return (
-    <main className="min-h-dvh bg-slate-50 px-4 py-6 sm:px-6 sm:py-10">
+    <main className="min-h-dvh bg-slate-50 px-4 py-6 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 sm:px-6 sm:py-10">
       <FlashMessages />
 
       <div className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-5xl flex-col sm:min-h-[calc(100vh-5rem)]">
@@ -86,17 +86,17 @@ export default function TwoFactorChallenge({
         </header>
 
         <section className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-md overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm">
-            <div className="bg-linear-to-b from-cyan-50 to-white px-5 pt-8 text-center sm:px-8 sm:pt-10">
-              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-cyan-500 shadow-sm sm:mb-6 sm:h-20 sm:w-20">
+          <div className="w-full max-w-md overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm transition-colors dark:border-cyan-500/20 dark:bg-slate-900 dark:shadow-slate-950/30">
+            <div className="bg-linear-to-b from-cyan-50 to-white px-5 pt-8 text-center transition-colors dark:from-cyan-500/10 dark:to-slate-900 sm:px-8 sm:pt-10">
+              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-cyan-500 shadow-sm dark:bg-cyan-500/10 dark:text-cyan-300 dark:shadow-none sm:mb-6 sm:h-20 sm:w-20">
                 <ShieldCheck size={32} strokeWidth={2.4} />
               </div>
 
-              <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+              <h1 className="text-2xl font-black tracking-tight text-slate-950 dark:text-slate-100 sm:text-3xl">
                 Two-factor verification
               </h1>
 
-              <p className="mx-auto mt-3 max-w-sm text-sm leading-7 text-slate-500">
+              <p className="mx-auto mt-3 max-w-sm text-sm leading-7 text-slate-500 dark:text-slate-400">
                 Enter the 6-digit code from your authenticator app to finish
                 signing in.
               </p>
@@ -104,12 +104,12 @@ export default function TwoFactorChallenge({
 
             <div className="px-5 pb-8 pt-7 sm:px-8">
               {email && (
-                <div className="mb-7 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-left">
-                  <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
+                <div className="mb-7 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-left transition-colors dark:border-cyan-500/20 dark:bg-cyan-500/10">
+                  <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
                     Signing in as
                   </p>
 
-                  <p className="mt-1 break-all text-sm font-black text-slate-950">
+                  <p className="mt-1 break-all text-sm font-black text-slate-950 dark:text-slate-100">
                     {email}
                   </p>
                 </div>
@@ -117,7 +117,7 @@ export default function TwoFactorChallenge({
 
               <form noValidate onSubmit={handleSubmit}>
                 <label className="block min-w-0">
-                  <span className="mb-2 flex items-center justify-center gap-1 text-sm font-bold text-slate-700">
+                  <span className="mb-2 flex items-center justify-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
                     Authentication Code
                     <RequiredMark />
                   </span>
@@ -157,7 +157,7 @@ export default function TwoFactorChallenge({
               <div className="mt-5 flex justify-center">
                 <Link
                   href="/users/sign_in"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-cyan-600"
+                  className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-cyan-600 dark:text-slate-400 dark:hover:text-cyan-300"
                 >
                   <ArrowLeft size={16} />
                   Back to Sign In

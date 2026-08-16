@@ -11,7 +11,7 @@ import {
 
 export function IconBox({ icon: Icon }: { icon: LucideIcon }) {
   return (
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
       <Icon size={19} strokeWidth={2.4} />
     </div>
   );
@@ -19,7 +19,7 @@ export function IconBox({ icon: Icon }: { icon: LucideIcon }) {
 
 export function EmptyPanelMessage({ message }: { message: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 px-5 py-8 text-center text-sm leading-6 text-slate-400 sm:p-8">
+    <div className="rounded-xl bg-slate-50 px-5 py-8 text-center text-sm leading-6 text-slate-400 transition-colors dark:bg-slate-800/60 dark:text-slate-500 sm:p-8">
       {message}
     </div>
   );
@@ -28,17 +28,19 @@ export function EmptyPanelMessage({ message }: { message: string }) {
 export function DataBar({ label, width }: { label: string; width: string }) {
   return (
     <div className="min-w-0">
-      <div className="mb-2 flex flex-col gap-1 text-sm font-medium text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="mb-2 flex flex-col gap-1 text-sm font-medium text-slate-600 dark:text-slate-300 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <span className="min-w-0 wrap-break-word">{label}</span>
-        <span className="shrink-0 font-bold text-slate-500">{width}</span>
+        <span className="shrink-0 font-bold text-slate-500 dark:text-slate-400">
+          {width}
+        </span>
       </div>
 
-      <div className="h-5 overflow-hidden rounded-full bg-slate-100 sm:h-6">
+      <div className="h-5 overflow-hidden rounded-full bg-slate-100 transition-colors dark:bg-slate-800 sm:h-6">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width }}
           transition={{ duration: 0.45, ease: "easeOut" }}
-          className="h-full rounded-full bg-cyan-400"
+          className="h-full rounded-full bg-cyan-400 dark:bg-cyan-300"
         />
       </div>
     </div>

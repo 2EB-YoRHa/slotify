@@ -14,6 +14,7 @@ import type { LucideIcon } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
 import AuthFooter from "../../components/auth/AuthFooter";
 import PasswordChecklist from "../../components/auth/PasswordChecklist";
+import FlashMessages from "../../components/ui/FlashMessages";
 import LoadingButton from "../../components/ui/LoadingButton";
 import {
   FieldError,
@@ -121,38 +122,44 @@ export default function SignUp({
   }
 
   return (
-    <main className="min-h-dvh bg-slate-50 px-4 py-6 sm:px-6 sm:py-10">
+    <main className="min-h-dvh bg-slate-50 px-4 py-6 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 sm:px-6 sm:py-10">
+      <FlashMessages />
+
       <div className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-5xl flex-col sm:min-h-[calc(100vh-5rem)]">
         <header className="mb-6 flex justify-center sm:mb-10">
           <AuthBrand />
         </header>
 
         <section className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 lg:p-10">
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-8 lg:p-10">
             <div className="text-center">
-              <h1 className="text-2xl font-extrabold text-slate-950 sm:text-3xl">
+              <h1 className="text-2xl font-extrabold text-slate-950 dark:text-slate-100 sm:text-3xl">
                 {isInvitationSignup ? "Join Organization" : "Create Account"}
               </h1>
 
               {isInvitationSignup ? (
-                <p className="mt-3 leading-7 text-slate-500">
+                <p className="mt-3 leading-7 text-slate-500 dark:text-slate-400">
                   Complete your account to join{" "}
-                  <span className="font-bold text-slate-950">
+                  <span className="font-bold text-slate-950 dark:text-slate-100">
                     {invitation?.organization?.name}
                   </span>{" "}
                   as{" "}
-                  <span className="font-bold text-slate-950">
+                  <span className="font-bold text-slate-950 dark:text-slate-100">
                     {formatRole(invitation?.role?.name)}
                   </span>
                   .
                 </p>
               ) : (
-                <p className="mt-3 leading-7 text-slate-500">
+                <p className="mt-3 leading-7 text-slate-500 dark:text-slate-400">
                   Create your manager account and register your organization in
                   Slotify.
                 </p>
               )}
             </div>
+
+            {isInvitationSignup && invitation && (
+              <InvitationSummary invitation={invitation} />
+            )}
 
             <form noValidate onSubmit={handleSubmit} className="mt-8 space-y-5">
               <FieldError
@@ -161,61 +168,74 @@ export default function SignUp({
               />
 
               {!isInvitationSignup && (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <TextField
-                    label="Organization"
-                    icon={Building2}
-                    value={data.user.organization_name}
-                    placeholder="Enter organization name"
-                    disabled={processing}
-                    error={fieldError(errors, "organization_name")}
-                    helper="Use the public name of the coworking organization."
-                    onChange={(value) =>
-                      updateField("organization_name", value)
-                    }
-                  />
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition-colors dark:border-slate-700 dark:bg-slate-800/60 sm:p-5">
+                  <div className="mb-5">
+                    <p className="text-sm font-extrabold text-slate-950 dark:text-slate-100">
+                      Organization setup
+                    </p>
 
-                  <TextField
-                    label="Slug"
-                    icon={Hash}
-                    value={data.user.organization_slug}
-                    placeholder="Optional, generated from organization name"
-                    disabled={processing}
-                    required={false}
-                    error={fieldError(errors, "organization_slug")}
-                    helper="Optional. Use lowercase letters, numbers, and hyphens only."
-                    onChange={(value) =>
-                      updateField("organization_slug", value)
-                    }
-                  />
+                    <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
+                      These details create the workspace account your members
+                      will belong to.
+                    </p>
+                  </div>
 
-                  <TextField
-                    label="Phone"
-                    icon={Phone}
-                    value={data.user.organization_phone}
-                    placeholder="Enter phone number"
-                    disabled={processing}
-                    required={false}
-                    error={fieldError(errors, "organization_phone")}
-                    helper="Optional contact phone for the organization."
-                    onChange={(value) =>
-                      updateField("organization_phone", value)
-                    }
-                  />
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <TextField
+                      label="Organization"
+                      icon={Building2}
+                      value={data.user.organization_name}
+                      placeholder="Enter organization name"
+                      disabled={processing}
+                      error={fieldError(errors, "organization_name")}
+                      helper="Use the public name of the coworking organization."
+                      onChange={(value) =>
+                        updateField("organization_name", value)
+                      }
+                    />
 
-                  <TextField
-                    label="Address"
-                    icon={MapPin}
-                    value={data.user.organization_address}
-                    placeholder="Enter organization address"
-                    disabled={processing}
-                    required={false}
-                    error={fieldError(errors, "organization_address")}
-                    helper="Optional main physical location or business address."
-                    onChange={(value) =>
-                      updateField("organization_address", value)
-                    }
-                  />
+                    <TextField
+                      label="Slug"
+                      icon={Hash}
+                      value={data.user.organization_slug}
+                      placeholder="Optional, generated from name"
+                      disabled={processing}
+                      required={false}
+                      error={fieldError(errors, "organization_slug")}
+                      helper="Optional. Use lowercase letters, numbers, and hyphens only."
+                      onChange={(value) =>
+                        updateField("organization_slug", value)
+                      }
+                    />
+
+                    <TextField
+                      label="Phone"
+                      icon={Phone}
+                      value={data.user.organization_phone}
+                      placeholder="Enter phone number"
+                      disabled={processing}
+                      required={false}
+                      error={fieldError(errors, "organization_phone")}
+                      helper="Optional contact phone for the organization."
+                      onChange={(value) =>
+                        updateField("organization_phone", value)
+                      }
+                    />
+
+                    <TextField
+                      label="Address"
+                      icon={MapPin}
+                      value={data.user.organization_address}
+                      placeholder="Enter organization address"
+                      disabled={processing}
+                      required={false}
+                      error={fieldError(errors, "organization_address")}
+                      helper="Optional main physical location or business address."
+                      onChange={(value) =>
+                        updateField("organization_address", value)
+                      }
+                    />
+                  </div>
                 </div>
               )}
 
@@ -296,11 +316,11 @@ export default function SignUp({
               </LoadingButton>
             </form>
 
-            <div className="mt-8 text-center text-sm text-slate-500">
+            <div className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
               Already registered?{" "}
               <Link
                 href="/users/sign_in"
-                className="font-bold text-cyan-500 hover:text-cyan-600"
+                className="font-bold text-cyan-500 transition hover:text-cyan-600 dark:text-cyan-300 dark:hover:text-cyan-200"
               >
                 Sign in
               </Link>
@@ -311,6 +331,46 @@ export default function SignUp({
         <AuthFooter />
       </div>
     </main>
+  );
+}
+
+type InvitationSummaryProps = {
+  invitation: OrganizationInvitation;
+};
+
+function InvitationSummary({ invitation }: InvitationSummaryProps) {
+  return (
+    <div className="mt-6 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-left transition-colors dark:border-cyan-500/20 dark:bg-cyan-500/10 sm:p-5">
+      <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
+        Invitation details
+      </p>
+
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <SummaryItem
+          label="Organization"
+          value={invitation.organization?.name || "-"}
+        />
+        <SummaryItem label="Role" value={formatRole(invitation.role?.name)} />
+      </div>
+    </div>
+  );
+}
+
+type SummaryItemProps = {
+  label: string;
+  value: string;
+};
+
+function SummaryItem({ label, value }: SummaryItemProps) {
+  return (
+    <div className="min-w-0 rounded-xl bg-white p-4 transition-colors dark:bg-slate-900">
+      <p className="text-xs font-bold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 wrap-break-word text-sm font-extrabold text-slate-950 dark:text-slate-100">
+        {value}
+      </p>
+    </div>
   );
 }
 
@@ -345,7 +405,7 @@ function TextField({
 
   return (
     <label className="block min-w-0">
-      <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700">
+      <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
         {label}
         <RequiredMark show={required} />
       </span>
@@ -353,7 +413,7 @@ function TextField({
       <div className="relative">
         <Icon
           size={18}
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         />
 
         <input
@@ -361,7 +421,9 @@ function TextField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           className={`h-12 ${formInputClassName(hasError)} ${
-            readOnly ? "bg-slate-50 text-slate-500" : ""
+            readOnly
+              ? "bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+              : ""
           }`}
           placeholder={placeholder}
           readOnly={readOnly}
