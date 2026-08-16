@@ -19,13 +19,15 @@ export default function WorkspaceAmenitiesSection({
   onToggleAmenity,
 }: WorkspaceAmenitiesSectionProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-8 flex items-start justify-between">
-        <div className="flex items-start gap-4">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
           <IconBox icon={Sparkles} large />
 
-          <div>
-            <h2 className="text-2xl font-bold text-slate-950">Amenities</h2>
+          <div className="min-w-0">
+            <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+              Amenities
+            </h2>
 
             <p className="mt-2 text-sm leading-6 text-slate-500">
               Select the features available in this workspace.
@@ -33,7 +35,7 @@ export default function WorkspaceAmenitiesSection({
           </div>
         </div>
 
-        <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-600">
+        <span className="w-fit rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-600">
           {selectedAmenityIds.length} selected
         </span>
       </div>
@@ -41,7 +43,7 @@ export default function WorkspaceAmenitiesSection({
       {amenities.length === 0 ? (
         <EmptyAmenitiesState />
       ) : (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {amenities.map((amenity, index) => {
             const selected = selectedAmenityIds.includes(amenity.id);
 
@@ -66,7 +68,7 @@ export default function WorkspaceAmenitiesSection({
 
 function EmptyAmenitiesState() {
   return (
-    <div className="rounded-xl bg-slate-50 p-10 text-center">
+    <div className="rounded-xl bg-slate-50 px-5 py-10 text-center sm:p-10">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
         <Sparkles size={24} />
       </div>
@@ -105,7 +107,7 @@ function AmenityOption({
       transition={{ delay: index * 0.035 }}
       onClick={onToggle}
       disabled={disabled}
-      className={`flex items-center gap-3 rounded-xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${
+      className={`flex min-w-0 items-center gap-3 rounded-xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${
         selected
           ? "border-cyan-300 bg-cyan-50 ring-4 ring-cyan-50"
           : "border-slate-200 bg-white hover:border-cyan-100"
@@ -123,7 +125,9 @@ function AmenityOption({
         )}
       </div>
 
-      <span className="font-bold text-slate-900">{amenity.name}</span>
+      <span className="min-w-0 truncate font-bold text-slate-900">
+        {amenity.name}
+      </span>
     </motion.button>
   );
 }

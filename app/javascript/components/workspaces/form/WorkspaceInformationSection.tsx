@@ -63,12 +63,12 @@ export default function WorkspaceInformationSection({
   onExtraPhotosChange,
 }: WorkspaceInformationSectionProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-      <div className="mb-8 flex items-start gap-4">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
         <IconBox icon={Building2} large />
 
-        <div>
-          <h2 className="text-2xl font-bold text-slate-950">
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
             Workspace Information
           </h2>
 
@@ -78,7 +78,7 @@ export default function WorkspaceInformationSection({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <TextInput
           icon={Building2}
           label="Workspace Name"
@@ -97,6 +97,7 @@ export default function WorkspaceInformationSection({
           label="Workspace Type"
           value={data.workspace_type}
           disabled={processing}
+          required
           helper="Choose the category that best describes how this space is used."
           error={fieldError(errors, "workspace_type")}
           options={workspaceTypes}
@@ -110,6 +111,7 @@ export default function WorkspaceInformationSection({
           min="1"
           placeholder="Enter capacity"
           disabled={processing}
+          required
           helper="Maximum number of people allowed in this workspace."
           error={fieldError(errors, "capacity")}
           onChange={onCapacityChange}
@@ -123,6 +125,7 @@ export default function WorkspaceInformationSection({
           step="0.01"
           placeholder="Enter hourly rate"
           disabled={processing}
+          required
           helper="Price charged per reserved hour."
           error={fieldError(errors, "hourly_rate")}
           onChange={onHourlyRateChange}
@@ -152,7 +155,7 @@ export default function WorkspaceInformationSection({
           onChange={onZoneChange}
         />
 
-        <div className="col-span-2">
+        <div className="md:col-span-2">
           <TextInput
             icon={MapPin}
             label="Location"
@@ -167,7 +170,7 @@ export default function WorkspaceInformationSection({
           />
         </div>
 
-        <div className="col-span-2">
+        <div className="md:col-span-2">
           <TextAreaInput
             icon={StickyNote}
             label="Description"
@@ -181,7 +184,7 @@ export default function WorkspaceInformationSection({
           />
         </div>
 
-        <div className="col-span-2">
+        <div className="md:col-span-2">
           <WorkspacePhotoUpload
             selectedFile={data.photo}
             initialPreviewUrl={currentPhotoUrl}
@@ -192,7 +195,7 @@ export default function WorkspaceInformationSection({
           />
         </div>
 
-        <div className="col-span-2">
+        <div className="md:col-span-2">
           <WorkspaceExtraPhotosUpload
             enabled={multipleWorkspacePhotosEnabled}
             selectedFiles={data.extra_photos}

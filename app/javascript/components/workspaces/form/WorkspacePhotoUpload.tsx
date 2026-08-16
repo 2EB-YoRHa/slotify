@@ -88,13 +88,13 @@ export default function WorkspacePhotoUpload({
   const hasSelectedPhoto = Boolean(selectedFile);
 
   return (
-    <div className="block">
+    <div className="block min-w-0">
       <span className="mb-2 block text-sm font-bold text-slate-700">
         Workspace Photo
       </span>
 
-      <div className="rounded-xl border border-dashed border-cyan-300 bg-cyan-50/20 p-5">
-        <div className="grid gap-5 md:grid-cols-[220px_1fr]">
+      <div className="rounded-xl border border-dashed border-cyan-300 bg-cyan-50/20 p-4 sm:p-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-[220px_minmax(0,1fr)]">
           <div className="self-start overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="flex h-44 w-full items-center justify-center bg-slate-50">
               {previewUrl ? (
@@ -116,8 +116,8 @@ export default function WorkspacePhotoUpload({
           </div>
 
           <div className="flex min-w-0 flex-col justify-center">
-            <div className="mb-4 flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm">
+            <div className="mb-4 flex items-start gap-3 sm:gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm sm:h-12 sm:w-12">
                 <FileImage size={22} strokeWidth={2.4} />
               </div>
 
@@ -130,7 +130,7 @@ export default function WorkspacePhotoUpload({
                       : "Upload workspace photo"}
                 </p>
 
-                <p className="mt-1 text-xs font-semibold text-slate-400">
+                <p className="mt-1 text-xs font-semibold leading-5 text-slate-400">
                   PNG, JPG, JPEG or WEBP. Maximum size: 5MB.
                 </p>
               </div>
@@ -144,7 +144,7 @@ export default function WorkspacePhotoUpload({
               onChange={(event) =>
                 handleFileChange(event.target.files?.[0] || null)
               }
-              className="block w-full text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
+              className="block w-full min-w-0 text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
             />
 
             {selectedFile && (

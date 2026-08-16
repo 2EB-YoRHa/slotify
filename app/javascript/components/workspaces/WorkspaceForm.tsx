@@ -196,7 +196,7 @@ export default function WorkspaceForm({
 
   return (
     <>
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -205,7 +205,8 @@ export default function WorkspaceForm({
             disabled={processing}
             onClick={() => unsavedChangesGuard.guardedVisit(backHref)}
           >
-            {backLabel || (isEditing ? "Back to Workspace" : "Back to Workspaces")}
+            {backLabel ||
+              (isEditing ? "Back to Workspace" : "Back to Workspaces")}
           </GuardedBackButton>
         </motion.div>
 
@@ -213,7 +214,7 @@ export default function WorkspaceForm({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04 }}
-          className="mt-6 text-3xl font-bold text-slate-950"
+          className="mt-5 wrap-break-word text-2xl font-black leading-tight text-slate-950 sm:mt-6 sm:text-3xl"
         >
           {title || (isEditing ? "Edit Workspace" : "Create Workspace")}
         </motion.h1>
@@ -222,7 +223,7 @@ export default function WorkspaceForm({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="mt-2 max-w-2xl text-slate-500"
+          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base"
         >
           {description ||
             (isEditing
@@ -231,12 +232,16 @@ export default function WorkspaceForm({
         </motion.p>
       </div>
 
-      <form noValidate onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
+      <form
+        noValidate
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 gap-6 xl:grid-cols-3 xl:gap-8"
+      >
         <motion.section
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="col-span-2 space-y-8"
+          className="space-y-6 xl:col-span-2 xl:space-y-8"
         >
           <WorkspaceInformationSection
             data={data}
@@ -274,7 +279,7 @@ export default function WorkspaceForm({
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16 }}
-          className="space-y-6"
+          className="space-y-6 xl:sticky xl:top-24 xl:self-start"
         >
           <WorkspaceSummaryPanel
             workspace={workspace}

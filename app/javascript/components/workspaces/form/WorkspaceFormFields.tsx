@@ -17,10 +17,10 @@ export function IconBox({ icon: Icon, large = false }: IconBoxProps) {
   return (
     <div
       className={`flex shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 ${
-        large ? "h-14 w-14" : "h-10 w-10"
+        large ? "h-12 w-12 sm:h-14 sm:w-14" : "h-10 w-10"
       }`}
     >
-      <Icon size={large ? 26 : 19} strokeWidth={2.4} />
+      <Icon size={large ? 24 : 19} strokeWidth={2.4} />
     </div>
   );
 }
@@ -45,6 +45,7 @@ export function TextInput({
   placeholder,
   disabled,
   helper,
+  required = false,
   maxLength,
   error,
   onChange,
@@ -52,8 +53,8 @@ export function TextInput({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
-      <FieldLabel label={label} />
+    <label className="block min-w-0">
+      <FieldLabel label={label} required={required} />
 
       <div className="relative">
         <Icon
@@ -102,14 +103,15 @@ export function NumberInput({
   placeholder,
   disabled,
   helper,
+  required = false,
   error,
   onChange,
 }: NumberInputProps) {
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
-      <FieldLabel label={label} />
+    <label className="block min-w-0">
+      <FieldLabel label={label} required={required} />
 
       <div className="relative">
         <Icon
@@ -157,6 +159,7 @@ export function SelectInput({
   value,
   disabled,
   helper,
+  required = false,
   error,
   options,
   onChange,
@@ -164,8 +167,8 @@ export function SelectInput({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
-      <FieldLabel label={label} />
+    <label className="block min-w-0">
+      <FieldLabel label={label} required={required} />
 
       <div className="relative">
         <Icon
@@ -214,6 +217,7 @@ export function TextAreaInput({
   placeholder,
   disabled,
   helper,
+  required = false,
   maxLength,
   error,
   onChange,
@@ -221,8 +225,8 @@ export function TextAreaInput({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
-      <FieldLabel label={label} />
+    <label className="block min-w-0">
+      <FieldLabel label={label} required={required} />
 
       <div className="relative">
         <Icon
@@ -241,11 +245,11 @@ export function TextAreaInput({
         />
       </div>
 
-      <div className="mt-2 flex items-center justify-between gap-4">
+      <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <FormHelper helper={helper} />
 
         {maxLength && (
-          <span className="text-xs font-semibold text-slate-400">
+          <span className="shrink-0 text-xs font-semibold text-slate-400 sm:text-right">
             {value.length}/{maxLength}
           </span>
         )}
@@ -268,12 +272,12 @@ export function ToggleStatus({
   onChange,
 }: ToggleStatusProps) {
   return (
-    <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-5">
-      <div className="flex items-start justify-between gap-5">
-        <div className="flex items-start gap-3">
+    <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
+        <div className="flex min-w-0 items-start gap-3">
           <IconBox icon={Power} />
 
-          <div>
+          <div className="min-w-0">
             <p className="font-bold text-slate-950">Workspace Active</p>
 
             <p className="mt-1 text-sm leading-6 text-slate-500">
@@ -282,7 +286,7 @@ export function ToggleStatus({
           </div>
         </div>
 
-        <label className="flex cursor-pointer items-center gap-3">
+        <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm sm:w-auto sm:justify-start">
           <span
             className={`text-sm font-bold ${
               checked ? "text-cyan-600" : "text-slate-400"
@@ -311,8 +315,8 @@ type FieldLabelProps = {
 
 function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
-    <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
-      {label}
+    <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700">
+      <span className="truncate">{label}</span>
       <RequiredMark show={required} />
     </span>
   );

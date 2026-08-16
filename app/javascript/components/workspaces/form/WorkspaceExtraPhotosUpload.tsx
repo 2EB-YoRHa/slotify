@@ -115,21 +115,21 @@ export default function WorkspaceExtraPhotosUpload({
   }
 
   return (
-    <div className="block">
+    <div className="block min-w-0">
       <span className="mb-2 block text-sm font-bold text-slate-700">
         Extra Gallery Photos
       </span>
 
       <div
-        className={`rounded-xl border border-dashed p-5 ${
+        className={`rounded-xl border border-dashed p-4 sm:p-5 ${
           enabled
             ? "border-cyan-300 bg-cyan-50/20"
             : "border-slate-200 bg-slate-50"
         }`}
       >
-        <div className="mb-5 flex items-start gap-4">
+        <div className="mb-5 flex items-start gap-3 sm:gap-4">
           <div
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm ${
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm sm:h-12 sm:w-12 ${
               enabled ? "text-cyan-500" : "text-slate-400"
             }`}
           >
@@ -162,7 +162,7 @@ export default function WorkspaceExtraPhotosUpload({
           accept="image/png,image/jpg,image/jpeg,image/webp"
           disabled={disabled || !enabled || availableSlots <= 0}
           onChange={(event) => handleFileChange(event.target.files)}
-          className="block w-full text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
+          className="block w-full min-w-0 text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
         />
 
         {enabled && (
@@ -177,13 +177,13 @@ export default function WorkspaceExtraPhotosUpload({
               Current saved extra photos
             </p>
 
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
               {existingPhotos.map((photo) => (
                 <div
                   key={photo.id}
                   className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
                 >
-                  <div className="flex h-28 items-center justify-center bg-slate-50">
+                  <div className="flex h-24 items-center justify-center bg-slate-50 sm:h-28">
                     <img
                       src={photo.url}
                       alt={photo.filename}
@@ -198,7 +198,7 @@ export default function WorkspaceExtraPhotosUpload({
 
         {previews.length > 0 && (
           <div className="mt-5 rounded-xl border border-cyan-100 bg-white p-4">
-            <div className="mb-4 flex items-center justify-between gap-4">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
               <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
                 New photos selected
               </p>
@@ -207,20 +207,20 @@ export default function WorkspaceExtraPhotosUpload({
                 type="button"
                 disabled={disabled}
                 onClick={clearSelectedPhotos}
-                className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 transition hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-500 transition hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:border-0 sm:px-0"
               >
                 <X size={14} />
                 Clear all
               </button>
             </div>
 
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
               {previews.map((preview, index) => (
                 <div
                   key={`${preview.file.name}-${index}`}
                   className="group relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
                 >
-                  <div className="flex h-28 items-center justify-center bg-slate-50">
+                  <div className="flex h-24 items-center justify-center bg-slate-50 sm:h-28">
                     <img
                       src={preview.url}
                       alt={preview.file.name}
@@ -232,7 +232,7 @@ export default function WorkspaceExtraPhotosUpload({
                     type="button"
                     disabled={disabled}
                     onClick={() => removeSelectedPhoto(index)}
-                    className="absolute right-2 top-2 rounded-lg bg-white/90 p-1.5 text-slate-500 opacity-0 shadow-sm transition hover:text-red-500 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="absolute right-2 top-2 rounded-lg bg-white/90 p-1.5 text-slate-500 opacity-100 shadow-sm transition hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label={`Remove ${preview.file.name}`}
                   >
                     <X size={14} />
