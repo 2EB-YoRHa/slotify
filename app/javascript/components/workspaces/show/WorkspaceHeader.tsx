@@ -21,9 +21,9 @@ export default function WorkspaceHeader({
         >
           <Link
             href="/workspaces"
-            className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
+            className="inline-flex max-w-full items-center gap-2 text-sm font-bold text-cyan-500 transition hover:text-cyan-600 dark:text-cyan-300 dark:hover:text-cyan-200"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={16} className="shrink-0" />
             <span className="truncate">
               {isMember ? "Back to Browse Workspaces" : "Back to Workspaces"}
             </span>
@@ -34,7 +34,7 @@ export default function WorkspaceHeader({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04 }}
-          className="mt-5 wrap-break-word text-2xl font-black leading-tight text-slate-950 sm:mt-6 sm:text-3xl"
+          className="mt-5 wrap-break-word text-2xl font-black leading-tight text-slate-950 dark:text-slate-100 sm:mt-6 sm:text-3xl"
         >
           {workspace.name}
         </motion.h1>
@@ -43,7 +43,7 @@ export default function WorkspaceHeader({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base"
+          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base"
         >
           {isMember
             ? "Review capacity, amenities, pricing, and location before creating your reservation."
@@ -59,7 +59,7 @@ export default function WorkspaceHeader({
         {workspace.active && (
           <Link
             href={`/reservations/new?workspace_id=${workspace.id}`}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md xl:w-auto"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950 xl:w-auto"
           >
             <CalendarPlus size={18} />
             Reserve
@@ -70,7 +70,7 @@ export default function WorkspaceHeader({
           <>
             <Link
               href={`/workspaces/${workspace.id}/edit`}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 hover:shadow-md xl:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:shadow-slate-950/30 dark:hover:border-cyan-500/40 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300 xl:w-auto"
             >
               <Edit3 size={18} />
               Edit
@@ -78,7 +78,7 @@ export default function WorkspaceHeader({
 
             <Link
               href={`/workspaces/${workspace.id}/delete`}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-5 py-3 text-sm font-bold text-red-500 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-50 hover:shadow-md xl:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-5 py-3 text-sm font-bold text-red-500 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-50 hover:shadow-md dark:border-red-500/20 dark:bg-slate-900 dark:text-red-300 dark:shadow-slate-950/30 dark:hover:bg-red-500/10 xl:w-auto"
             >
               <Trash2 size={18} />
               Delete

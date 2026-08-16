@@ -17,17 +17,17 @@ export default function WorkspaceInformation({
   workspace,
 }: WorkspaceInformationProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3 sm:gap-4">
           <IconBox icon={Building2} />
 
           <div className="min-w-0">
-            <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+            <h2 className="text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
               Workspace Information
             </h2>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Main details used for reservations and availability.
             </p>
           </div>
@@ -37,8 +37,8 @@ export default function WorkspaceInformation({
       </div>
 
       {workspace.description && (
-        <div className="mb-6 rounded-xl border border-cyan-100 bg-cyan-50/50 p-4 sm:p-5">
-          <p className="text-sm leading-6 text-slate-600">
+        <div className="mb-6 rounded-xl border border-cyan-100 bg-cyan-50/50 p-4 transition-colors dark:border-cyan-500/20 dark:bg-cyan-500/10 sm:p-5">
+          <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
             {workspace.description}
           </p>
         </div>

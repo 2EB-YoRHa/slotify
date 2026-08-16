@@ -13,16 +13,16 @@ export default function RecentReservations({
   reservations,
 }: RecentReservationsProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
       <div className="mb-6 flex items-start gap-3 sm:gap-4">
         <IconBox icon={CalendarClock} />
 
         <div className="min-w-0">
-          <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+          <h2 className="text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
             Recent Reservations
           </h2>
 
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
             Latest bookings related to this workspace.
           </p>
         </div>
@@ -53,16 +53,16 @@ export default function RecentReservations({
 
 function EmptyReservationsState() {
   return (
-    <div className="rounded-xl bg-slate-50 px-5 py-10 text-center sm:p-8">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+    <div className="rounded-xl bg-slate-50 px-5 py-10 text-center transition-colors dark:bg-slate-800/60 sm:p-8">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 transition-colors dark:bg-slate-900 dark:text-slate-500">
         <CalendarClock size={24} />
       </div>
 
-      <h3 className="mt-4 text-lg font-bold text-slate-900">
+      <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-slate-100">
         No reservations yet
       </h3>
 
-      <p className="mt-2 text-sm text-slate-500">
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
         This workspace has no reservation history.
       </p>
     </div>
@@ -81,20 +81,20 @@ function RecentReservationCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.035 }}
-      className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+      className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/40"
     >
       <div className="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
             <UserRound size={18} strokeWidth={2.4} />
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-bold text-slate-950">
+            <p className="truncate text-sm font-bold text-slate-950 dark:text-slate-100">
               {reservation.user?.name || "Unknown user"}
             </p>
 
-            <p className="mt-1 truncate text-xs text-slate-400">
+            <p className="mt-1 truncate text-xs text-slate-400 dark:text-slate-500">
               {reservation.user?.email || "-"}
             </p>
           </div>
@@ -105,7 +105,7 @@ function RecentReservationCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:grid-cols-2">
         <InfoItem label="Date" value={formatDate(reservation.start_time)} />
 
         <InfoItem
@@ -129,7 +129,7 @@ function RecentReservationsTable({ reservations }: RecentReservationsProps) {
         <col className="w-[20%]" />
       </colgroup>
 
-      <thead className="bg-slate-50 text-slate-500">
+      <thead className="bg-slate-50 text-slate-500 transition-colors dark:bg-slate-800/70 dark:text-slate-400">
         <tr>
           <th className="px-4 py-4 text-left font-bold">Member</th>
           <th className="px-4 py-4 text-center font-bold">Date</th>
@@ -145,25 +145,25 @@ function RecentReservationsTable({ reservations }: RecentReservationsProps) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.035 }}
-            className="border-t border-slate-100 transition hover:bg-slate-50"
+            className="border-t border-slate-100 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50"
           >
             <td className="px-4 py-5 align-middle">
-              <p className="truncate font-bold text-slate-950">
+              <p className="truncate font-bold text-slate-950 dark:text-slate-100">
                 {reservation.user?.name || "Unknown user"}
               </p>
 
-              <p className="mt-1 truncate text-xs text-slate-400">
+              <p className="mt-1 truncate text-xs text-slate-400 dark:text-slate-500">
                 {reservation.user?.email || "-"}
               </p>
             </td>
 
-            <td className="px-4 py-5 text-center align-middle text-slate-600">
+            <td className="px-4 py-5 text-center align-middle text-slate-600 dark:text-slate-400">
               {formatDate(reservation.start_time)}
             </td>
 
-            <td className="px-4 py-5 text-center align-middle text-slate-600">
+            <td className="px-4 py-5 text-center align-middle text-slate-600 dark:text-slate-400">
               <div className="inline-flex items-center gap-2">
-                <Clock3 size={15} className="text-slate-400" />
+                <Clock3 size={15} className="text-slate-400 dark:text-slate-500" />
                 {formatTime(reservation.start_time)} -{" "}
                 {formatTime(reservation.end_time)}
               </div>
@@ -182,11 +182,11 @@ function RecentReservationsTable({ reservations }: RecentReservationsProps) {
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <p className="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">
+      <p className="text-[10px] font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         {label}
       </p>
 
-      <p className="mt-1 truncate text-sm font-extrabold text-slate-950">
+      <p className="mt-1 truncate text-sm font-extrabold text-slate-950 dark:text-slate-100">
         {value}
       </p>
     </div>
