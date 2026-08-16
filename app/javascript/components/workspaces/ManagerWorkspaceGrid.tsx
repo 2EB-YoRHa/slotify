@@ -73,9 +73,9 @@ export default function ManagerWorkspaceGrid({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.12 }}
-      className="rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30"
     >
-      <div className="border-b border-slate-200 p-4 sm:p-6">
+      <div className="border-b border-slate-200 p-4 transition-colors dark:border-slate-800 sm:p-6">
         <WorkspaceBrowserHeader
           title="Workspace Browser"
           description="Use the visual browser to review spaces, status, photos, and quick management actions."

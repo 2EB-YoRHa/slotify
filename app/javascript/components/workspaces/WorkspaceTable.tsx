@@ -52,13 +52,13 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.12 }}
-      className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30"
     >
-      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 transition-colors dark:border-slate-800 sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
         <div className="relative w-full lg:max-w-md lg:flex-1">
           <Search
             size={17}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
           />
 
           <input
@@ -66,12 +66,12 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search by name, type or location..."
-            className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+            className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20"
           />
         </div>
 
         <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3 lg:w-auto lg:shrink-0">
-          <div className="flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500">
+          <div className="flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500 transition-colors dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
             <SlidersHorizontal size={16} className="shrink-0" />
             <span>Filters</span>
           </div>
@@ -79,7 +79,7 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
           <select
             value={typeFilter}
             onChange={(event) => setTypeFilter(event.target.value)}
-            className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 sm:min-w-40"
+            className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20 sm:min-w-40"
           >
             <option value="all">All Types</option>
             <option value="meeting_room">Meeting Room</option>
@@ -92,7 +92,7 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
           <select
             value={capacityFilter}
             onChange={(event) => setCapacityFilter(event.target.value)}
-            className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 sm:min-w-44"
+            className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20 sm:min-w-44"
           >
             <option value="all">Any Capacity</option>
             <option value="1-4">1-4 people</option>
@@ -102,7 +102,7 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
         </div>
       </div>
 
-      <div className="border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-wide text-slate-400 sm:px-6">
+      <div className="border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-wide text-slate-400 transition-colors dark:border-slate-800 dark:bg-slate-800/70 dark:text-slate-500 sm:px-6">
         Showing {filteredWorkspaces.length} of {workspaces.length} workspaces
       </div>
 
@@ -132,15 +132,15 @@ export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
 function EmptyWorkspaces() {
   return (
     <div className="px-5 py-10 text-center sm:p-12">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 transition-colors dark:bg-slate-800 dark:text-slate-500">
         <Building2 size={24} />
       </div>
 
-      <h3 className="mt-4 text-lg font-bold text-slate-900">
+      <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-slate-100">
         No workspaces found
       </h3>
 
-      <p className="mt-2 text-sm leading-6 text-slate-500">
+      <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
         Try changing the search text or selected filters.
       </p>
     </div>
@@ -164,7 +164,7 @@ function WorkspaceDesktopTable({ workspaces }: WorkspaceDesktopTableProps) {
         <col className="w-[13%]" />
       </colgroup>
 
-      <thead className="bg-white text-slate-500">
+      <thead className="bg-white text-slate-500 transition-colors dark:bg-slate-900 dark:text-slate-400">
         <tr>
           <th className="px-6 py-4 text-left font-bold">Workspace</th>
           <th className="px-6 py-4 text-center font-bold">Type</th>
@@ -183,7 +183,7 @@ function WorkspaceDesktopTable({ workspaces }: WorkspaceDesktopTableProps) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.035 }}
-            className="border-t border-slate-100 transition hover:bg-slate-50"
+            className="border-t border-slate-100 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50"
           >
             <td className="px-6 py-5 align-middle">
               <WorkspaceIdentity workspace={workspace} />
@@ -194,22 +194,31 @@ function WorkspaceDesktopTable({ workspaces }: WorkspaceDesktopTableProps) {
             </td>
 
             <td className="px-6 py-5 text-center align-middle">
-              <div className="inline-flex items-center gap-2 font-bold text-slate-700">
-                <UsersRound size={16} className="text-slate-400" />
+              <div className="inline-flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
+                <UsersRound
+                  size={16}
+                  className="text-slate-400 dark:text-slate-500"
+                />
                 {workspace.capacity}
               </div>
             </td>
 
-            <td className="px-6 py-5 text-center align-middle text-slate-600">
+            <td className="px-6 py-5 text-center align-middle text-slate-600 dark:text-slate-400">
               <div className="inline-flex max-w-full items-center justify-center gap-2">
-                <MapPin size={16} className="shrink-0 text-slate-400" />
+                <MapPin
+                  size={16}
+                  className="shrink-0 text-slate-400 dark:text-slate-500"
+                />
                 <span className="truncate">{workspace.location || "-"}</span>
               </div>
             </td>
 
             <td className="px-6 py-5 text-center align-middle">
-              <div className="inline-flex items-center gap-1 font-bold text-slate-700">
-                <DollarSign size={15} className="text-slate-400" />
+              <div className="inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-200">
+                <DollarSign
+                  size={15}
+                  className="text-slate-400 dark:text-slate-500"
+                />
                 {workspace.hourly_rate || 0}/h
               </div>
             </td>
@@ -239,7 +248,7 @@ function WorkspaceMobileCard({ workspace, index }: WorkspaceMobileCardProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.035 }}
-      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/40"
     >
       <div className="p-4">
         <div className="mb-4 flex items-start justify-between gap-3">
@@ -247,15 +256,18 @@ function WorkspaceMobileCard({ workspace, index }: WorkspaceMobileCardProps) {
           <StatusBadge active={workspace.active} />
         </div>
 
-        <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
-          <MobileInfo label="Type" value={formatType(workspace.workspace_type)} />
+        <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:grid-cols-2">
+          <MobileInfo
+            label="Type"
+            value={formatType(workspace.workspace_type)}
+          />
           <MobileInfo label="Capacity" value={`${workspace.capacity} people`} />
           <MobileInfo label="Rate" value={`$${workspace.hourly_rate || 0}/h`} />
           <MobileInfo label="Location" value={workspace.location || "-"} />
         </div>
       </div>
 
-      <div className="border-t border-slate-100 bg-slate-50 px-4 py-3">
+      <div className="border-t border-slate-100 bg-slate-50 px-4 py-3 transition-colors dark:border-slate-800 dark:bg-slate-800/60">
         <WorkspaceActions workspaceId={workspace.id} mobile />
       </div>
     </motion.article>
@@ -270,15 +282,15 @@ function WorkspaceIdentity({ workspace }: { workspace: Workspace }) {
         photoUrl={workspace.photo_url}
         fit="contain"
         position="object-center"
-        className="h-12 w-16 shrink-0 rounded-xl border border-slate-100"
+        className="h-12 w-16 shrink-0 rounded-xl border border-slate-100 dark:border-slate-700"
       />
 
       <div className="min-w-0">
-        <div className="wrap-break-word font-bold text-slate-950">
+        <div className="wrap-break-word font-bold text-slate-950 dark:text-slate-100">
           {workspace.name}
         </div>
 
-        <div className="line-clamp-2 text-xs leading-5 text-slate-400">
+        <div className="line-clamp-2 text-xs leading-5 text-slate-400 dark:text-slate-500">
           {workspace.amenities && workspace.amenities.length > 0
             ? workspace.amenities.map((amenity) => amenity.name).join(", ")
             : "No amenities assigned"}
@@ -296,10 +308,10 @@ type MobileInfoProps = {
 function MobileInfo({ label, value }: MobileInfoProps) {
   return (
     <div className="min-w-0">
-      <p className="truncate text-xs font-extrabold uppercase tracking-wide text-slate-400">
+      <p className="truncate text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         {label}
       </p>
-      <p className="mt-1 wrap-break-word text-sm font-bold text-slate-900">
+      <p className="mt-1 wrap-break-word text-sm font-bold text-slate-900 dark:text-slate-100">
         {value}
       </p>
     </div>
@@ -308,7 +320,7 @@ function MobileInfo({ label, value }: MobileInfoProps) {
 
 function TypeBadge({ type }: { type?: string | null }) {
   return (
-    <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+    <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 transition-colors dark:bg-slate-800 dark:text-slate-300">
       {formatType(type)}
     </span>
   );
@@ -322,7 +334,9 @@ function StatusBadge({ active }: StatusBadgeProps) {
   return (
     <span
       className={`inline-flex min-w-20 shrink-0 justify-center rounded-full px-3 py-1 text-xs font-bold ${
-        active ? "bg-green-50 text-green-600" : "bg-slate-100 text-slate-500"
+        active
+          ? "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300"
+          : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
       }`}
     >
       {active ? "Active" : "Inactive"}
@@ -335,7 +349,10 @@ type WorkspaceActionsProps = {
   mobile?: boolean;
 };
 
-function WorkspaceActions({ workspaceId, mobile = false }: WorkspaceActionsProps) {
+function WorkspaceActions({
+  workspaceId,
+  mobile = false,
+}: WorkspaceActionsProps) {
   return (
     <div
       className={`flex items-center gap-2 ${
@@ -376,10 +393,10 @@ function ActionLink({ href, title, icon, danger = false }: ActionLinkProps) {
     <Link
       href={href}
       title={title}
-      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border bg-white transition hover:-translate-y-0.5 hover:shadow-sm ${
+      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border bg-white transition hover:-translate-y-0.5 hover:shadow-sm dark:bg-slate-900 ${
         danger
-          ? "border-red-100 text-red-500 hover:bg-red-50"
-          : "border-slate-200 text-slate-500 hover:border-cyan-100 hover:bg-cyan-50 hover:text-cyan-500"
+          ? "border-red-100 text-red-500 hover:bg-red-50 dark:border-red-500/20 dark:text-red-300 dark:hover:bg-red-500/10"
+          : "border-slate-200 text-slate-500 hover:border-cyan-100 hover:bg-cyan-50 hover:text-cyan-500 dark:border-slate-700 dark:text-slate-400 dark:hover:border-cyan-500/40 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
       }`}
     >
       {icon}

@@ -145,25 +145,27 @@ function WorkspaceStatCard({ stat, index }: WorkspaceStatCardProps) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-5 xl:p-6"
+      className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 dark:hover:border-slate-700 sm:p-5 xl:p-6"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-medium leading-5 text-slate-500">
+          <p className="text-sm font-medium leading-5 text-slate-500 dark:text-slate-400">
             {stat.label}
           </p>
 
-          <h2 className="mt-2 truncate text-2xl font-bold text-slate-950 sm:text-3xl">
+          <h2 className="mt-2 truncate text-2xl font-bold text-slate-950 dark:text-slate-100 sm:text-3xl">
             {stat.value}
           </h2>
         </div>
 
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
           <Icon size={19} strokeWidth={2.4} />
         </div>
       </div>
 
-      <p className="mt-3 text-xs leading-5 text-slate-500">{stat.helper}</p>
+      <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        {stat.helper}
+      </p>
     </motion.div>
   );
 }
@@ -175,7 +177,7 @@ type ViewModeToggleProps = {
 
 function ViewModeToggle({ viewMode, onChange }: ViewModeToggleProps) {
   return (
-    <div className="inline-flex w-full rounded-2xl border border-slate-200 bg-white p-1 shadow-sm sm:w-auto">
+    <div className="inline-flex w-full rounded-2xl border border-slate-200 bg-white p-1 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-900 dark:shadow-slate-950/30 sm:w-auto">
       <ViewModeButton
         label="Table"
         icon={List}
@@ -212,8 +214,8 @@ function ViewModeButton({
       onClick={onClick}
       className={`inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-extrabold transition sm:flex-none ${
         selected
-          ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100"
-          : "text-slate-500 hover:bg-cyan-50 hover:text-cyan-600"
+          ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
+          : "text-slate-500 hover:bg-cyan-50 hover:text-cyan-600 dark:text-slate-400 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
       }`}
     >
       <Icon size={16} className="shrink-0" />

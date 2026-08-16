@@ -141,9 +141,9 @@ export default function MemberWorkspaceGrid({
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.12 }}
-        className="rounded-xl border border-slate-200 bg-white shadow-sm"
+        className="rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30"
       >
-        <div className="border-b border-slate-200 p-4 sm:p-6">
+        <div className="border-b border-slate-200 p-4 transition-colors dark:border-slate-800 sm:p-6">
           <WorkspaceBrowserHeader
             title="Find a Workspace"
             description="Search by name, location, type, or amenity and reserve the space that fits your visit."
