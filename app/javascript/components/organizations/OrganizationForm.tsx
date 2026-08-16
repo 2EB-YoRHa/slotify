@@ -21,17 +21,13 @@ import {
   validateTextLength,
   type ValidationErrors,
 } from "../../utils/clientValidation";
-import type {
-  Organization,
-  OrganizationErrors,
-  OrganizationFormData,
-} from "../../types/organization";
+import type { Organization, OrganizationFormData } from "../../types/organization";
 
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 type OrganizationFormProps = {
   organization: Organization;
-  errors?: OrganizationErrors;
+  errors?: Partial<Record<string, string | string[]>>;
 };
 
 export default function OrganizationForm({
@@ -119,15 +115,15 @@ export default function OrganizationForm({
       <form
         noValidate
         onSubmit={handleSubmit}
-        className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
+        className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
       >
-        <div className="mb-8 flex items-start gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
-            <Building2 size={26} strokeWidth={2.4} />
+        <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-14 sm:w-14">
+            <Building2 size={24} strokeWidth={2.4} />
           </div>
 
-          <div>
-            <h2 className="text-2xl font-bold text-slate-950">
+          <div className="min-w-0">
+            <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
               Organization Details
             </h2>
 
@@ -137,7 +133,7 @@ export default function OrganizationForm({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <TextInput
             icon={Building2}
             label="Organization Name"
@@ -146,7 +142,7 @@ export default function OrganizationForm({
             disabled={processing}
             required
             helper="Use the official or public name of the organization."
-            error={errors.name}
+            error={fieldError(errors, "name")}
             onChange={(value) => updateField("name", value)}
           />
 
@@ -158,7 +154,7 @@ export default function OrganizationForm({
             disabled={processing}
             required
             helper="Use lowercase letters, numbers, and hyphens only."
-            error={errors.slug}
+            error={fieldError(errors, "slug")}
             onChange={(value) => updateField("slug", value)}
           />
 
@@ -170,7 +166,7 @@ export default function OrganizationForm({
             placeholder="Enter contact email"
             disabled={processing}
             helper="Optional. Used as the organization contact email."
-            error={errors.email}
+            error={fieldError(errors, "email")}
             onChange={(value) => updateField("email", value)}
           />
 
@@ -181,11 +177,11 @@ export default function OrganizationForm({
             placeholder="Enter contact phone"
             disabled={processing}
             helper="Optional. Use only numbers and basic phone symbols."
-            error={errors.phone}
+            error={fieldError(errors, "phone")}
             onChange={(value) => updateField("phone", value)}
           />
 
-          <label className="col-span-2 block">
+          <label className="block min-w-0 md:col-span-2">
             <FieldLabel label="Address" />
 
             <div className="relative">
@@ -197,41 +193,42 @@ export default function OrganizationForm({
               <textarea
                 value={data.address}
                 maxLength={200}
+                aria-invalid={hasFieldError(fieldError(errors, "address"))}
                 onChange={(event) => updateField("address", event.target.value)}
                 className={`${formInputClassName(
-                  hasFieldError(errors.address),
+                  hasFieldError(fieldError(errors, "address")),
                 )} min-h-32 resize-y`}
                 placeholder="Enter organization address"
                 disabled={processing}
               />
             </div>
 
-            <div className="mt-2 flex items-center justify-between gap-4">
+            <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
               <FieldHint>
                 Optional. Add the main physical location or business address.
               </FieldHint>
 
-              <span className="text-xs font-semibold text-slate-400">
+              <span className="shrink-0 text-xs font-semibold text-slate-400 sm:text-right">
                 {data.address.length}/200
               </span>
             </div>
 
-            <FieldError error={errors.address} label="Address" />
+            <FieldError error={fieldError(errors, "address")} label="Address" />
           </label>
         </div>
 
         {getBaseError(errors) && (
-          <div className="mt-6">
-            <FieldError error={getBaseError(errors)} label="Organization" />
+          <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm leading-6 text-red-600">
+            {getBaseError(errors)}
           </div>
         )}
 
-        <div className="mt-8 flex justify-end gap-4">
+        <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:gap-4">
           <button
             type="button"
             disabled={processing}
             onClick={() => unsavedChangesGuard.guardedVisit("/organization")}
-            className="rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             Cancel
           </button>
@@ -240,6 +237,7 @@ export default function OrganizationForm({
             type="submit"
             loading={processing}
             loadingText="Saving..."
+            className="w-full sm:w-auto"
           >
             Save Changes
           </LoadingButton>
@@ -288,7 +286,7 @@ function TextInput({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <FieldLabel label={label} required={required} />
 
       <div className="relative">
@@ -321,11 +319,18 @@ type FieldLabelProps = {
 
 function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
-    <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
-      {label}
+    <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700">
+      <span className="truncate">{label}</span>
       <RequiredMark show={required} />
     </span>
   );
+}
+
+function fieldError(
+  errors: Record<string, string | string[] | undefined>,
+  field: string,
+): string | string[] | undefined {
+  return errors[field] || errors[`organization.${field}`];
 }
 
 function getBaseError(
@@ -338,9 +343,7 @@ function getBaseError(
   return Array.isArray(error) ? error.join(", ") : error;
 }
 
-function validateOrganizationForm(
-  data: OrganizationFormData,
-): ValidationErrors {
+function validateOrganizationForm(data: OrganizationFormData): ValidationErrors {
   const errors: ValidationErrors = {};
 
   const nameError = validateTextLength(data.name, "Organization Name", {

@@ -26,7 +26,7 @@ export default function OrganizationMemberSidePanels({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.22 }}
-      className="space-y-6"
+      className="space-y-6 xl:sticky xl:top-24 xl:self-start"
     >
       <AccessControlPanel
         member={member}
@@ -68,7 +68,7 @@ function AccessControlPanel({
           {member.active ? "Deactivate Access" : "Activate Access"}
         </LoadingButton>
       ) : (
-        <div className="mt-6 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
+        <div className="mt-6 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-500">
           You cannot disable your own access.
         </div>
       )}

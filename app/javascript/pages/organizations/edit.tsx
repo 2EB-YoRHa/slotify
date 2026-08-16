@@ -16,7 +16,7 @@ export default function OrganizationEdit({
 }: OrganizationEditProps) {
   return (
     <AppLayout>
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -26,7 +26,7 @@ export default function OrganizationEdit({
             className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
           >
             <ArrowLeft size={16} />
-            Back to Organization
+            <span className="truncate">Back to Organization</span>
           </Link>
         </motion.div>
 
@@ -34,7 +34,7 @@ export default function OrganizationEdit({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04 }}
-          className="mt-6 text-3xl font-bold text-slate-950"
+          className="mt-5 break-words text-2xl font-black leading-tight text-slate-950 sm:mt-6 sm:text-3xl"
         >
           Edit Organization
         </motion.h1>
@@ -43,9 +43,10 @@ export default function OrganizationEdit({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="mt-2 max-w-2xl text-slate-500"
+          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base"
         >
-          Update organization contact information, address, and public workspace profile details.
+          Update organization contact information, address, and public workspace
+          profile details.
         </motion.p>
       </div>
 

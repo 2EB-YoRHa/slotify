@@ -22,30 +22,30 @@ export default function OrganizationMemberProfileCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.14 }}
-      className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
+      className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
     >
-      <div className="flex items-start gap-5">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-cyan-50 text-2xl font-extrabold text-cyan-500">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-cyan-50 text-xl font-extrabold text-cyan-500 sm:h-20 sm:w-20 sm:text-2xl">
           {initials(member.name)}
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold text-slate-950">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+            <div className="min-w-0">
+              <h2 className="break-words text-xl font-bold text-slate-950 sm:text-2xl">
                 {member.name}
               </h2>
 
-              <div className="mt-2 flex items-center gap-2 text-slate-500">
-                <Mail size={16} />
-                <span className="text-sm">{member.email}</span>
+              <div className="mt-2 flex min-w-0 items-start gap-2 text-slate-500">
+                <Mail size={16} className="mt-0.5 shrink-0" />
+                <span className="break-all text-sm">{member.email}</span>
               </div>
             </div>
 
             <StatusBadge active={member.active} />
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-4">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <InfoCard
               icon={ShieldCheck}
               label="Role"

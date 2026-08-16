@@ -19,22 +19,22 @@ export default function OrganizationMemberReservations({
       transition={{ delay: 0.18 }}
       className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
     >
-      <div className="flex items-center justify-between border-b border-slate-200 p-6">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:p-6">
+        <div className="flex min-w-0 items-start gap-3">
           <IconBox icon={CalendarCheck} />
 
-          <div>
+          <div className="min-w-0">
             <h2 className="text-xl font-bold text-slate-950">
               Recent Reservations
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-slate-500">
               Latest reservations created by this member.
             </p>
           </div>
         </div>
 
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500">
+        <span className="w-fit shrink-0 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500">
           {reservations.length} shown
         </span>
       </div>
@@ -42,7 +42,7 @@ export default function OrganizationMemberReservations({
       {reservations.length === 0 ? (
         <EmptyReservations />
       ) : (
-        <ReservationsTable reservations={reservations} />
+        <ReservationsContent reservations={reservations} />
       )}
     </motion.div>
   );
@@ -50,7 +50,7 @@ export default function OrganizationMemberReservations({
 
 function EmptyReservations() {
   return (
-    <div className="p-12 text-center">
+    <div className="px-5 py-10 text-center sm:p-12">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
         <CalendarCheck size={24} />
       </div>
@@ -59,10 +59,78 @@ function EmptyReservations() {
         No reservations yet
       </h3>
 
-      <p className="mt-2 text-sm text-slate-500">
+      <p className="mt-2 text-sm leading-6 text-slate-500">
         This member has not created any reservations.
       </p>
     </div>
+  );
+}
+
+function ReservationsContent({
+  reservations,
+}: OrganizationMemberReservationsProps) {
+  return (
+    <>
+      <div className="grid grid-cols-1 gap-4 p-4 lg:hidden">
+        {reservations.map((reservation, index) => (
+          <ReservationCard
+            key={reservation.id}
+            reservation={reservation}
+            index={index}
+          />
+        ))}
+      </div>
+
+      <div className="hidden overflow-x-auto lg:block">
+        <ReservationsTable reservations={reservations} />
+      </div>
+    </>
+  );
+}
+
+type ReservationCardProps = {
+  reservation: MemberReservation;
+  index: number;
+};
+
+function ReservationCard({ reservation, index }: ReservationCardProps) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.035 }}
+      className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+    >
+      <div className="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+            <Building2 size={18} strokeWidth={2.4} />
+          </div>
+
+          <div className="min-w-0">
+            <p className="break-words font-bold text-slate-950">
+              {reservation.workspace_name}
+            </p>
+
+            <p className="mt-1 text-sm font-semibold text-slate-500">
+              {formatDate(reservation.start_time)}
+            </p>
+          </div>
+        </div>
+
+        <ReservationStatusBadge status={reservation.status} />
+      </div>
+
+      <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">
+        <div className="flex min-w-0 items-center gap-2">
+          <Clock3 size={15} className="shrink-0 text-slate-400" />
+          <span className="break-words">
+            {formatTime(reservation.start_time)} -{" "}
+            {formatTime(reservation.end_time)}
+          </span>
+        </div>
+      </div>
+    </motion.article>
   );
 }
 
@@ -70,7 +138,7 @@ function ReservationsTable({
   reservations,
 }: OrganizationMemberReservationsProps) {
   return (
-    <table className="w-full table-fixed text-sm">
+    <table className="w-full min-w-[760px] table-fixed text-sm">
       <colgroup>
         <col className="w-[34%]" />
         <col className="w-[22%]" />
@@ -97,7 +165,7 @@ function ReservationsTable({
             className="border-t border-slate-100 transition hover:bg-slate-50"
           >
             <td className="px-6 py-5 align-middle">
-              <div className="flex items-center gap-3">
+              <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
                   <Building2 size={18} strokeWidth={2.4} />
                 </div>

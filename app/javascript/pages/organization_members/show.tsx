@@ -48,7 +48,7 @@ export default function OrganizationMemberShow({
       <OrganizationMemberHeader member={member} />
 
       {!can_toggle_access && (
-        <div className="mb-6 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm font-semibold text-yellow-700">
+        <div className="mb-6 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm font-semibold leading-6 text-yellow-700 sm:mb-8 sm:p-5">
           You cannot deactivate your own account.
         </div>
       )}
@@ -58,8 +58,8 @@ export default function OrganizationMemberShow({
         reservationCount={reservation_count}
       />
 
-      <section className="grid grid-cols-3 gap-8">
-        <div className="col-span-2 space-y-8">
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-3 xl:gap-8">
+        <div className="min-w-0 space-y-6 xl:col-span-2 xl:space-y-8">
           <OrganizationMemberProfileCard
             member={member}
             reservationCount={reservation_count}

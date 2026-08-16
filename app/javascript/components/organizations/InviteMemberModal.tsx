@@ -1,7 +1,7 @@
 import { useForm } from "@inertiajs/react";
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Mail, ShieldCheck } from "lucide-react";
+import { Mail, ShieldCheck, UserPlus, X } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
 import {
   FieldError,
@@ -58,8 +58,8 @@ export default function InviteMemberModal({
     ...clientErrors,
   };
 
-  const emailError = errors.email || errors["organization_invitation.email"];
-  const roleError = errors.role_id || errors["organization_invitation.role_id"];
+  const emailError = fieldError(errors, "email");
+  const roleError = fieldError(errors, "role_id");
 
   if (!open) return null;
 
@@ -118,15 +118,15 @@ export default function InviteMemberModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
-      <div className="w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-xl">
-        <div className="grid grid-cols-2">
-          <div className="border-r border-slate-200 bg-slate-50 p-8">
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-cyan-50 text-2xl text-cyan-500">
-              +
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 px-4 py-6 backdrop-blur-sm">
+      <div className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="border-b border-slate-200 bg-slate-50 p-5 sm:p-6 lg:border-b-0 lg:border-r lg:p-8">
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 sm:mb-6 sm:h-14 sm:w-14">
+              <UserPlus size={24} strokeWidth={2.4} />
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900">
+            <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
               Invite New Member
             </h2>
 
@@ -135,7 +135,7 @@ export default function InviteMemberModal({
               organization and access Slotify.
             </p>
 
-            <div className="mt-8 space-y-5 text-sm">
+            <div className="mt-6 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3 lg:mt-8 lg:grid-cols-1 lg:space-y-0">
               <InfoItem
                 title="Role-Based Access"
                 description="Assign member or manager permissions."
@@ -153,14 +153,14 @@ export default function InviteMemberModal({
             </div>
           </div>
 
-          <form noValidate onSubmit={handleSubmit} className="p-8">
-            <div className="mb-6 flex items-start justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-slate-900">
+          <form noValidate onSubmit={handleSubmit} className="p-5 sm:p-6 lg:p-8">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold text-slate-900 sm:text-xl">
                   Invitation Details
                 </h3>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm leading-6 text-slate-500">
                   Enter the email address and select the access level.
                 </p>
               </div>
@@ -169,13 +169,14 @@ export default function InviteMemberModal({
                 type="button"
                 onClick={closeModal}
                 disabled={processing}
-                className="text-xl text-slate-400 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-50 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Close invitation modal"
               >
-                ×
+                <X size={20} />
               </button>
             </div>
 
-            <label className="block">
+            <label className="block min-w-0">
               <span className="mb-2 flex items-center gap-1 text-sm font-semibold text-slate-700">
                 Email Address
                 <RequiredMark />
@@ -204,7 +205,7 @@ export default function InviteMemberModal({
               <FieldError error={emailError} label="Email Address" />
             </label>
 
-            <label className="mt-5 block">
+            <label className="mt-5 block min-w-0">
               <span className="mb-2 flex items-center gap-1 text-sm font-semibold text-slate-700">
                 Initial Role
                 <RequiredMark />
@@ -240,14 +241,14 @@ export default function InviteMemberModal({
               <FieldError error={roleError} label="Initial Role" />
             </label>
 
-            <div className="mt-8 flex gap-3">
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
               <LoadingButton
                 type="button"
                 variant="secondary"
                 loading={false}
                 disabled={processing}
                 onClick={closeModal}
-                className="flex-1"
+                className="w-full sm:flex-1"
               >
                 Cancel
               </LoadingButton>
@@ -256,7 +257,7 @@ export default function InviteMemberModal({
                 type="submit"
                 loading={processing}
                 loadingText="Sending..."
-                className="flex-1"
+                className="w-full sm:flex-1"
               >
                 Send Invitation
               </LoadingButton>
@@ -275,9 +276,9 @@ type InfoItemProps = {
 
 function InfoItem({ title, description }: InfoItemProps) {
   return (
-    <div>
-      <p className="font-bold text-slate-800">{title}</p>
-      <p className="mt-1 leading-6 text-slate-500">{description}</p>
+    <div className="min-w-0 rounded-xl bg-white p-4 lg:bg-transparent lg:p-0">
+      <p className="break-words font-bold text-slate-800">{title}</p>
+      <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
     </div>
   );
 }
@@ -307,6 +308,13 @@ function validateInvitationForm(data: InvitationFormData): ValidationErrors {
   }
 
   return errors;
+}
+
+function fieldError(
+  errors: Record<string, string | string[] | undefined>,
+  field: string,
+): string | string[] | undefined {
+  return errors[field] || errors[`organization_invitation.${field}`];
 }
 
 function formatRole(role: string): string {
