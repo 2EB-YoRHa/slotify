@@ -19,7 +19,7 @@ export function IconBox({ icon: Icon }: { icon: LucideIcon }) {
 
 export function EmptyPanelMessage({ message }: { message: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 p-8 text-center text-sm text-slate-400">
+    <div className="rounded-xl bg-slate-50 px-5 py-8 text-center text-sm leading-6 text-slate-400 sm:p-8">
       {message}
     </div>
   );
@@ -27,18 +27,18 @@ export function EmptyPanelMessage({ message }: { message: string }) {
 
 export function DataBar({ label, width }: { label: string; width: string }) {
   return (
-    <div>
-      <div className="mb-1 flex justify-between text-sm font-medium text-slate-600">
-        <span>{label}</span>
-        <span>{width}</span>
+    <div className="min-w-0">
+      <div className="mb-2 flex flex-col gap-1 text-sm font-medium text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <span className="min-w-0 wrap-break-word">{label}</span>
+        <span className="shrink-0 font-bold text-slate-500">{width}</span>
       </div>
 
-      <div className="h-6 overflow-hidden rounded-full bg-slate-100">
+      <div className="h-5 overflow-hidden rounded-full bg-slate-100 sm:h-6">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width }}
           transition={{ duration: 0.45, ease: "easeOut" }}
-          className="h-6 rounded-full bg-cyan-400"
+          className="h-full rounded-full bg-cyan-400"
         />
       </div>
     </div>

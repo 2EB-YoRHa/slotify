@@ -1,7 +1,7 @@
 import { useForm } from "@inertiajs/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Mail, ShieldCheck, UserPlus, X } from "lucide-react";
+import { Mail, Send, ShieldCheck, UserPlus, X } from "lucide-react";
 import LoadingButton from "../ui/LoadingButton";
 import {
   FieldError,
@@ -53,10 +53,38 @@ export default function InviteMemberModal({
     },
   });
 
+  useEffect(() => {
+    if (!open) return;
+
+    const scrollY = window.scrollY;
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalBodyPosition = document.body.style.position;
+    const originalBodyTop = document.body.style.top;
+    const originalBodyWidth = document.body.style.width;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.body.style.position = originalBodyPosition;
+      document.body.style.top = originalBodyTop;
+      document.body.style.width = originalBodyWidth;
+
+      window.scrollTo(0, scrollY);
+    };
+  }, [open]);
+
   const errors: Record<string, string | string[] | undefined> = {
     ...formErrors,
     ...clientErrors,
   };
+
+  const selectedRole = roles.find(
+    (role) => String(role.id) === String(data.organization_invitation.role_id),
+  );
 
   const emailError = fieldError(errors, "email");
   const roleError = fieldError(errors, "role_id");
@@ -118,66 +146,46 @@ export default function InviteMemberModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 px-4 py-6 backdrop-blur-sm">
-      <div className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-xl">
-        <div className="grid grid-cols-1 lg:grid-cols-2">
-          <div className="border-b border-slate-200 bg-slate-50 p-5 sm:p-6 lg:border-b-0 lg:border-r lg:p-8">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 sm:mb-6 sm:h-14 sm:w-14">
-              <UserPlus size={24} strokeWidth={2.4} />
-            </div>
-
-            <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
-              Invite New Member
-            </h2>
-
-            <p className="mt-3 text-sm leading-6 text-slate-500">
-              Send an invitation to a teammate so they can join this
-              organization and access Slotify.
-            </p>
-
-            <div className="mt-6 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3 lg:mt-8 lg:grid-cols-1 lg:space-y-0">
-              <InfoItem
-                title="Role-Based Access"
-                description="Assign member or manager permissions."
-              />
-
-              <InfoItem
-                title="Workspace Access"
-                description="Members can reserve active workspaces."
-              />
-
-              <InfoItem
-                title="Secure Invitation"
-                description="A unique token is generated for each invite."
-              />
-            </div>
-          </div>
-
-          <form noValidate onSubmit={handleSubmit} className="p-5 sm:p-6 lg:p-8">
-            <div className="mb-6 flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <h3 className="text-lg font-bold text-slate-900 sm:text-xl">
-                  Invitation Details
-                </h3>
-
-                <p className="mt-1 text-sm leading-6 text-slate-500">
-                  Enter the email address and select the access level.
-                </p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-slate-950/45 px-3 py-4 backdrop-blur-sm overscroll-contain sm:px-4 sm:py-6">
+      <form
+        noValidate
+        onSubmit={handleSubmit}
+        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl shadow-slate-950/20 overscroll-contain"
+      >
+        <header className="shrink-0 border-b border-slate-200 bg-white p-4 sm:p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-14 sm:w-14">
+                <UserPlus size={24} strokeWidth={2.4} />
               </div>
 
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={processing}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-50 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Close invitation modal"
-              >
-                <X size={20} />
-              </button>
+              <div className="min-w-0">
+                <h2 className="break-words text-xl font-black leading-tight text-slate-950 sm:text-2xl">
+                  Invite New Member
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  Send an invitation and assign the initial access level.
+                </p>
+              </div>
             </div>
 
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={processing}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-50 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label="Close invitation modal"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </header>
+
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
+          <div className="space-y-5">
             <label className="block min-w-0">
-              <span className="mb-2 flex items-center gap-1 text-sm font-semibold text-slate-700">
+              <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
                 Email Address
                 <RequiredMark />
               </span>
@@ -195,18 +203,19 @@ export default function InviteMemberModal({
                   className={formInputClassName(hasFieldError(emailError))}
                   placeholder="Enter member email"
                   disabled={processing}
+                  autoComplete="email"
                 />
               </div>
 
               <FieldHint>
-                The invitation will be linked to this exact email address.
+                The invitation will be sent to this email address.
               </FieldHint>
 
               <FieldError error={emailError} label="Email Address" />
             </label>
 
-            <label className="mt-5 block min-w-0">
-              <span className="mb-2 flex items-center gap-1 text-sm font-semibold text-slate-700">
+            <label className="block min-w-0">
+              <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
                 Initial Role
                 <RequiredMark />
               </span>
@@ -225,60 +234,80 @@ export default function InviteMemberModal({
                   )} appearance-none bg-white pr-10`}
                   disabled={processing}
                 >
-                  {roles.map((role) => (
-                    <option key={role.id} value={role.id}>
-                      {formatRole(role.name)}
-                    </option>
-                  ))}
+                  {roles.length === 0 ? (
+                    <option value="">No roles available</option>
+                  ) : (
+                    roles.map((role) => (
+                      <option key={role.id} value={role.id}>
+                        {formatRole(role.name)}
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
-
-              <FieldHint>
-                Members can book spaces. Managers can also administer the
-                organization.
-              </FieldHint>
 
               <FieldError error={roleError} label="Initial Role" />
             </label>
 
-            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
-              <LoadingButton
-                type="button"
-                variant="secondary"
-                loading={false}
-                disabled={processing}
-                onClick={closeModal}
-                className="w-full sm:flex-1"
-              >
-                Cancel
-              </LoadingButton>
-
-              <LoadingButton
-                type="submit"
-                loading={processing}
-                loadingText="Sending..."
-                className="w-full sm:flex-1"
-              >
-                Send Invitation
-              </LoadingButton>
-            </div>
-          </form>
+            <RolePreview role={selectedRole} />
+          </div>
         </div>
-      </div>
+
+        <footer className="shrink-0 border-t border-slate-200 bg-slate-50/80 p-4 sm:p-6">
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <LoadingButton
+              type="button"
+              variant="secondary"
+              loading={false}
+              disabled={processing}
+              onClick={closeModal}
+              className="w-full sm:w-auto"
+            >
+              Cancel
+            </LoadingButton>
+
+            <LoadingButton
+              type="submit"
+              loading={processing}
+              loadingText="Sending..."
+              className="w-full sm:w-auto"
+            >
+              <Send size={17} strokeWidth={2.4} />
+              Send Invitation
+            </LoadingButton>
+          </div>
+        </footer>
+      </form>
     </div>
   );
 }
 
-type InfoItemProps = {
-  title: string;
-  description: string;
+type RolePreviewProps = {
+  role?: Role | null;
 };
 
-function InfoItem({ title, description }: InfoItemProps) {
+function RolePreview({ role = null }: RolePreviewProps) {
+  if (!role) {
+    return (
+      <div className="rounded-2xl border border-yellow-100 bg-yellow-50 p-4 text-sm font-semibold leading-6 text-yellow-700">
+        Select a role before sending the invitation.
+      </div>
+    );
+  }
+
   return (
-    <div className="min-w-0 rounded-xl bg-white p-4 lg:bg-transparent lg:p-0">
-      <p className="break-words font-bold text-slate-800">{title}</p>
-      <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
+    <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4">
+      <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
+        Selected role
+      </p>
+
+      <p className="mt-2 break-words text-base font-black text-slate-950">
+        {formatRole(role.name)}
+      </p>
+
+      <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+        {roleDescription(role.name)}
+      </p>
     </div>
   );
 }
@@ -321,4 +350,12 @@ function formatRole(role: string): string {
   return role
     .replace(/_/g, " ")
     .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
+}
+
+function roleDescription(role: string): string {
+  if (role === "manager" || role === "coworking_owner") {
+    return "Can manage organization settings, workspaces, reservations, members, and invitations.";
+  }
+
+  return "Can browse available workspaces and manage their own reservations.";
 }

@@ -1,10 +1,16 @@
 import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
-import { ArrowRight, CalendarCheck } from "lucide-react";
+import {
+  ArrowRight,
+  Building2,
+  CalendarCheck,
+  Clock3,
+  UserRound,
+} from "lucide-react";
 import ReservationStatusBadge from "../reservations/ReservationStatusBadge";
 import { formatDate, formatTime } from "../../utils/dateTime";
 import { formatText } from "../../utils/reservationFormUtils";
-import { IconBox } from "./DashboardShared";
+import { EmptyPanelMessage, IconBox } from "./DashboardShared";
 import type { UpcomingReservation } from "../../types/dashboardTypes";
 
 type DashboardUpcomingReservationsProps = {
@@ -19,18 +25,18 @@ export default function DashboardUpcomingReservations({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.12 }}
-      className="col-span-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm xl:col-span-2"
     >
-      <div className="flex items-center justify-between border-b border-slate-200 p-6">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:p-6">
+        <div className="flex min-w-0 items-start gap-3">
           <IconBox icon={CalendarCheck} />
 
-          <div>
+          <div className="min-w-0">
             <h2 className="text-lg font-bold text-slate-950">
               Upcoming Reservations
             </h2>
 
-            <p className="text-sm text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-slate-500">
               Next confirmed or pending bookings.
             </p>
           </div>
@@ -38,47 +44,126 @@ export default function DashboardUpcomingReservations({
 
         <Link
           href="/reservations"
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600"
+          className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 sm:w-auto"
         >
           View All
           <ArrowRight size={16} />
         </Link>
       </div>
 
-      <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-slate-500">
-          <tr>
-            <th className="px-6 py-4 font-bold">User</th>
-            <th className="px-6 py-4 font-bold">Workspace</th>
-            <th className="px-6 py-4 font-bold">Date</th>
-            <th className="px-6 py-4 font-bold">Time Range</th>
-            <th className="px-6 py-4 text-center text-sm font-semibold text-slate-500">
-              Status
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {reservations.length === 0 ? (
-            <tr>
-              <td
-                colSpan={5}
-                className="px-6 py-10 text-center text-slate-400"
-              >
-                No upcoming reservations yet.
-              </td>
-            </tr>
-          ) : (
-            reservations.map((reservation) => (
-              <UpcomingReservationRow
+      {reservations.length === 0 ? (
+        <div className="p-4 sm:p-6">
+          <EmptyPanelMessage message="No upcoming reservations yet." />
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-4 p-4 lg:hidden">
+            {reservations.map((reservation, index) => (
+              <UpcomingReservationCard
                 key={reservation.id}
                 reservation={reservation}
+                index={index}
               />
-            ))
-          )}
-        </tbody>
-      </table>
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto lg:block">
+            <table className="w-full min-w-205 table-fixed text-left text-sm">
+              <colgroup>
+                <col className="w-[24%]" />
+                <col className="w-[26%]" />
+                <col className="w-[17%]" />
+                <col className="w-[21%]" />
+                <col className="w-[12%]" />
+              </colgroup>
+
+              <thead className="bg-slate-50 text-slate-500">
+                <tr>
+                  <th className="px-6 py-4 font-bold">User</th>
+                  <th className="px-6 py-4 font-bold">Workspace</th>
+                  <th className="px-6 py-4 font-bold">Date</th>
+                  <th className="px-6 py-4 font-bold">Time Range</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-slate-500">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {reservations.map((reservation) => (
+                  <UpcomingReservationRow
+                    key={reservation.id}
+                    reservation={reservation}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </motion.div>
+  );
+}
+
+type UpcomingReservationCardProps = {
+  reservation: UpcomingReservation;
+  index: number;
+};
+
+function UpcomingReservationCard({
+  reservation,
+  index,
+}: UpcomingReservationCardProps) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.035 }}
+      className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+    >
+      <div className="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+            <Building2 size={18} strokeWidth={2.4} />
+          </div>
+
+          <div className="min-w-0">
+            <p className="wrap-break-word font-bold text-slate-950">
+              {reservation.workspace?.name || "Workspace removed"}
+            </p>
+
+            <p className="mt-1 wrap-break-word text-xs font-bold uppercase tracking-wide text-slate-400">
+              {formatText(reservation.workspace?.workspace_type)}
+            </p>
+          </div>
+        </div>
+
+        <ReservationStatusBadge status={reservation.status} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
+        <CardLine
+          icon={UserRound}
+          label="User"
+          value={reservation.user?.name || "Unknown user"}
+          helper={reservation.user?.email || "-"}
+        />
+
+        <CardLine
+          icon={CalendarCheck}
+          label="Date"
+          value={formatDate(reservation.start_time)}
+        />
+
+        <CardLine
+          icon={Clock3}
+          label="Time"
+          value={`${formatTime(reservation.start_time)} - ${formatTime(
+            reservation.end_time,
+          )}`}
+        />
+      </div>
+    </motion.article>
   );
 }
 
@@ -90,21 +175,21 @@ function UpcomingReservationRow({
   return (
     <tr className="border-t border-slate-100 transition hover:bg-slate-50">
       <td className="px-6 py-4">
-        <div className="font-bold text-slate-900">
+        <div className="truncate font-bold text-slate-900">
           {reservation.user?.name || "Unknown user"}
         </div>
 
-        <div className="text-xs text-slate-400">
+        <div className="truncate text-xs text-slate-400">
           {reservation.user?.email || "-"}
         </div>
       </td>
 
       <td className="px-6 py-4">
-        <div className="font-bold text-slate-900">
+        <div className="truncate font-bold text-slate-900">
           {reservation.workspace?.name || "Workspace removed"}
         </div>
 
-        <div className="text-xs uppercase text-slate-400">
+        <div className="truncate text-xs uppercase text-slate-400">
           {formatText(reservation.workspace?.workspace_type)}
         </div>
       </td>
@@ -114,8 +199,7 @@ function UpcomingReservationRow({
       </td>
 
       <td className="px-6 py-4 text-slate-500">
-        {formatTime(reservation.start_time)} -{" "}
-        {formatTime(reservation.end_time)}
+        {formatTime(reservation.start_time)} - {formatTime(reservation.end_time)}
       </td>
 
       <td className="px-6 py-4 text-center align-middle">
@@ -124,5 +208,27 @@ function UpcomingReservationRow({
         </div>
       </td>
     </tr>
+  );
+}
+
+type CardLineProps = {
+  icon: typeof UserRound;
+  label: string;
+  value: string;
+  helper?: string;
+};
+
+function CardLine({ icon: Icon, label, value, helper }: CardLineProps) {
+  return (
+    <div className="min-w-0">
+      <div className="mb-1 flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+        <Icon size={14} className="shrink-0" />
+        <span className="truncate">{label}</span>
+      </div>
+
+      <p className="wrap-break-word text-sm font-bold text-slate-900">{value}</p>
+
+      {helper && <p className="mt-1 break-all text-xs text-slate-400">{helper}</p>}
+    </div>
   );
 }

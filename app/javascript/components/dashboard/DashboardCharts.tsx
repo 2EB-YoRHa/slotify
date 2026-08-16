@@ -16,7 +16,7 @@ export default function DashboardCharts({
   workspaceDistribution,
 }: DashboardChartsProps) {
   return (
-    <section className="grid grid-cols-2 gap-6">
+    <section className="grid grid-cols-1 gap-6 xl:grid-cols-2 xl:gap-8">
       <WeeklyOccupancyChart weeklyOccupancy={weeklyOccupancy} />
       <WorkspaceDistributionChart workspaceDistribution={workspaceDistribution} />
     </section>
@@ -33,17 +33,17 @@ function WeeklyOccupancyChart({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.26 }}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+      className="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
     >
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-6 flex min-w-0 items-start gap-3">
         <IconBox icon={Activity} />
 
-        <div>
+        <div className="min-w-0">
           <h2 className="text-lg font-bold text-slate-950">
             Weekly Occupancy
           </h2>
 
-          <p className="text-sm text-slate-500">
+          <p className="mt-1 text-sm leading-6 text-slate-500">
             Reservations distributed across the current week.
           </p>
         </div>
@@ -76,17 +76,17 @@ function WorkspaceDistributionChart({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+      className="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
     >
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-6 flex min-w-0 items-start gap-3">
         <IconBox icon={Building2} />
 
-        <div>
+        <div className="min-w-0">
           <h2 className="text-lg font-bold text-slate-950">
             Space Distribution
           </h2>
 
-          <p className="text-sm text-slate-500">
+          <p className="mt-1 text-sm leading-6 text-slate-500">
             Workspace categories registered in this organization.
           </p>
         </div>

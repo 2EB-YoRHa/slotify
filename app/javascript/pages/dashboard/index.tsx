@@ -66,13 +66,14 @@ export default function DashboardIndex({
       </AppLayout>
     );
   }
+
   return (
     <AppLayout>
       <DashboardHeader currentUser={current_user} />
 
       <DashboardStatsGrid stats={stats} />
 
-      <section className="grid grid-cols-3 gap-6">
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-3 xl:gap-8">
         <DashboardUpcomingReservations reservations={upcoming_reservations} />
 
         <DashboardSidebarPanels recentActivities={recent_activities} />

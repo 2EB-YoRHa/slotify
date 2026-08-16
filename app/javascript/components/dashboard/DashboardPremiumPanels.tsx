@@ -40,8 +40,8 @@ export default function DashboardPremiumPanels({
 
   return (
     <section className="mt-8 space-y-6">
-      <div>
-        <h2 className="text-2xl font-black text-slate-950">
+      <div className="min-w-0">
+        <h2 className="wrap-break-word text-xl font-black text-slate-950 sm:text-2xl">
           Availability insights
         </h2>
 
@@ -107,37 +107,37 @@ function LockedPremiumPanel({
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+      className="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
     >
-      <div className="grid grid-cols-[1fr_auto] gap-8">
-        <div>
-          <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_14rem] xl:gap-8">
+        <div className="min-w-0">
+          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
               <LockKeyhole size={22} strokeWidth={2.4} />
             </div>
 
-            <div>
-              <div className="flex items-center gap-3">
-                <h3 className="text-xl font-extrabold text-slate-950">
+            <div className="min-w-0">
+              <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+                <h3 className="wrap-break-word text-lg font-extrabold text-slate-950 sm:text-xl">
                   {title}
                 </h3>
 
-                <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-cyan-600">
+                <span className="w-fit shrink-0 rounded-full bg-cyan-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-cyan-600">
                   {badge}
                 </span>
               </div>
 
-              <p className="mt-1 text-sm leading-6 text-slate-500">
+              <p className="mt-2 text-sm leading-6 text-slate-500 sm:mt-1">
                 {description}
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {benefits.map((benefit) => (
               <div
                 key={benefit}
-                className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4"
               >
                 <Sparkles
                   size={16}
@@ -145,7 +145,7 @@ function LockedPremiumPanel({
                   strokeWidth={2.4}
                 />
 
-                <p className="text-xs font-bold leading-5 text-slate-600">
+                <p className="wrap-break-word text-xs font-bold leading-5 text-slate-600">
                   {benefit}
                 </p>
               </div>
@@ -153,8 +153,8 @@ function LockedPremiumPanel({
           </div>
         </div>
 
-        <div className="flex w-56 flex-col justify-between rounded-2xl border border-cyan-100 bg-cyan-50 p-5">
-          <div>
+        <div className="flex min-w-0 flex-col justify-between rounded-2xl border border-cyan-100 bg-cyan-50 p-5">
+          <div className="min-w-0">
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
               <Icon size={21} strokeWidth={2.4} />
             </div>
@@ -170,7 +170,7 @@ function LockedPremiumPanel({
 
           <Link
             href="/subscription"
-            className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
           >
             View Pro
             <ArrowRight size={16} />
@@ -193,18 +193,16 @@ function AvailabilityCommandCenterPreview({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.22 }}
-      className="rounded-xl border border-cyan-100 bg-white p-6 shadow-sm"
+      className="min-w-0 rounded-xl border border-cyan-100 bg-white p-5 shadow-sm sm:p-6"
     >
-      <div className="mb-6 flex items-start justify-between gap-6">
-        <div className="flex items-center gap-3">
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+        <div className="flex min-w-0 items-start gap-3">
           <IconBox icon={Zap} />
 
-          <div>
-            <div className="flex items-center gap-3">
-              <h3 className="text-xl font-extrabold text-slate-950">
-                Availability Command Center
-              </h3>
-            </div>
+          <div className="min-w-0">
+            <h3 className="wrap-break-word text-lg font-extrabold text-slate-950 sm:text-xl">
+              Availability Command Center
+            </h3>
 
             <p className="mt-1 text-sm leading-6 text-slate-500">
               Monitor availability, occupancy, and the next scheduled booking in
@@ -215,14 +213,14 @@ function AvailabilityCommandCenterPreview({
 
         <Link
           href="/reservations"
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600"
+          className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 sm:w-auto"
         >
           Manage Reservations
           <ArrowRight size={16} />
         </Link>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
         <CommandMetric
           icon={DoorOpen}
           label="Available Now"
@@ -273,16 +271,16 @@ function CommandMetric({
   helper,
 }: CommandMetricProps) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
         <Icon size={19} strokeWidth={2.4} />
       </div>
 
-      <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
+      <p className="truncate text-xs font-extrabold uppercase tracking-wide text-slate-400">
         {label}
       </p>
 
-      <p className="mt-2 truncate text-xl font-extrabold text-slate-950">
+      <p className="mt-2 wrap-break-word text-lg font-extrabold text-slate-950 sm:text-xl">
         {value}
       </p>
 
