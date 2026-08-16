@@ -8,6 +8,7 @@ import {
   ShieldAlert,
   UserRound,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import AuthBrand from "../../components/auth/AuthBrand";
 import AuthFooter from "../../components/auth/AuthFooter";
 import FlashMessages from "../../components/ui/FlashMessages";
@@ -24,11 +25,11 @@ export default function InactiveAccount({
   organization_name = null,
 }: InactiveAccountProps) {
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10">
+    <main className="min-h-dvh bg-slate-50 px-4 py-6 sm:px-6 sm:py-10">
       <FlashMessages />
 
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
-        <header className="mb-10 flex justify-center">
+      <div className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-5xl flex-col sm:min-h-[calc(100vh-5rem)]">
+        <header className="mb-6 flex justify-center sm:mb-10">
           <AuthBrand />
         </header>
 
@@ -37,13 +38,13 @@ export default function InactiveAccount({
             initial={{ opacity: 0, y: 18, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.25 }}
-            className="w-full max-w-xl rounded-3xl border border-red-100 bg-white p-10 text-center shadow-sm"
+            className="w-full max-w-xl rounded-3xl border border-red-100 bg-white p-5 text-center shadow-sm sm:p-8 lg:p-10"
           >
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-red-50 text-red-500">
-              <ShieldAlert size={38} strokeWidth={2.4} />
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-red-50 text-red-500 sm:mb-6 sm:h-20 sm:w-20">
+              <ShieldAlert size={32} strokeWidth={2.4} />
             </div>
 
-            <h1 className="text-3xl font-extrabold text-slate-950">
+            <h1 className="text-2xl font-extrabold text-slate-950 sm:text-3xl">
               Account access disabled
             </h1>
 
@@ -89,20 +90,20 @@ export default function InactiveAccount({
 }
 
 type InfoRowProps = {
-  icon: typeof UserRound;
+  icon: LucideIcon;
   label: string;
   value: string;
 };
 
 function InfoRow({ icon: Icon, label, value }: InfoRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-slate-200 py-3 last:border-0">
+    <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Icon size={15} />
-        {label}
+        <Icon size={15} className="shrink-0" />
+        <span>{label}</span>
       </div>
 
-      <span className="text-right text-sm font-bold text-slate-950">
+      <span className="wrap-break-word text-sm font-bold text-slate-950 sm:text-right">
         {value}
       </span>
     </div>

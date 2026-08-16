@@ -59,11 +59,13 @@ export default function PasswordChecklist({
         ready ? "border-green-100 bg-green-50" : "border-slate-200 bg-slate-50"
       }`}
     >
-      <div className="mb-3 flex items-center justify-between gap-4">
-        <span className="font-bold text-slate-700">Password requirements</span>
+      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <span className="font-bold text-slate-700">
+          Password requirements
+        </span>
 
         <span
-          className={`rounded-full px-3 py-1 text-xs font-bold ${
+          className={`w-fit rounded-full px-3 py-1 text-xs font-bold ${
             ready ? "bg-green-100 text-green-700" : "bg-white text-slate-500"
           }`}
         >
@@ -71,7 +73,7 @@ export default function PasswordChecklist({
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 text-xs text-slate-500">
+      <div className="grid grid-cols-1 gap-3 text-xs text-slate-500 sm:grid-cols-2">
         {checks.map((check) => (
           <CheckItem
             key={check.label}
@@ -92,7 +94,7 @@ type CheckItemProps = {
 function CheckItem({ checked, label }: CheckItemProps) {
   return (
     <div
-      className={`flex items-center gap-2 rounded-lg px-2 py-1.5 ${
+      className={`flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 ${
         checked ? "bg-white/70 text-green-700" : "text-slate-500"
       }`}
     >
@@ -102,7 +104,7 @@ function CheckItem({ checked, label }: CheckItemProps) {
         <Circle size={15} className="shrink-0" />
       )}
 
-      <span className="font-semibold">{label}</span>
+      <span className="truncate font-semibold">{label}</span>
     </div>
   );
 }

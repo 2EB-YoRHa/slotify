@@ -77,22 +77,22 @@ export default function TwoFactorChallenge({
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10">
+    <main className="min-h-dvh bg-slate-50 px-4 py-6 sm:px-6 sm:py-10">
       <FlashMessages />
 
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
-        <header className="mb-10 flex justify-center">
+      <div className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-5xl flex-col sm:min-h-[calc(100vh-5rem)]">
+        <header className="mb-6 flex justify-center sm:mb-10">
           <AuthBrand />
         </header>
 
         <section className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-md overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm">
-            <div className="bg-linear-to-b from-cyan-50 to-white px-8 pt-10 text-center">
-              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-white text-cyan-500 shadow-sm">
-                <ShieldCheck size={38} strokeWidth={2.4} />
+            <div className="bg-linear-to-b from-cyan-50 to-white px-5 pt-8 text-center sm:px-8 sm:pt-10">
+              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-cyan-500 shadow-sm sm:mb-6 sm:h-20 sm:w-20">
+                <ShieldCheck size={32} strokeWidth={2.4} />
               </div>
 
-              <h1 className="text-3xl font-black tracking-tight text-slate-950">
+              <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
                 Two-factor verification
               </h1>
 
@@ -102,7 +102,7 @@ export default function TwoFactorChallenge({
               </p>
             </div>
 
-            <div className="px-8 pb-8 pt-7">
+            <div className="px-5 pb-8 pt-7 sm:px-8">
               {email && (
                 <div className="mb-7 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-left">
                   <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
@@ -116,7 +116,7 @@ export default function TwoFactorChallenge({
               )}
 
               <form noValidate onSubmit={handleSubmit}>
-                <label className="block">
+                <label className="block min-w-0">
                   <span className="mb-2 flex items-center justify-center gap-1 text-sm font-bold text-slate-700">
                     Authentication Code
                     <RequiredMark />
@@ -129,7 +129,7 @@ export default function TwoFactorChallenge({
                     maxLength={6}
                     value={data.two_factor.code}
                     onChange={(event) => updateCode(event.target.value)}
-                    className={`h-14 text-center font-mono text-2xl font-black tracking-[0.45em] ${formInputClassName(
+                    className={`h-14 text-center font-mono text-xl font-black tracking-[0.22em] sm:text-2xl sm:tracking-[0.45em] ${formInputClassName(
                       hasFieldError(codeError),
                       false,
                     )}`}

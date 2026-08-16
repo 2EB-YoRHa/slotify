@@ -77,18 +77,18 @@ export default function ResendConfirmation({
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10">
+    <main className="min-h-dvh bg-slate-50 px-4 py-6 sm:px-6 sm:py-10">
       <FlashMessages />
 
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
-        <header className="mb-10 flex justify-center">
+      <div className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-5xl flex-col sm:min-h-[calc(100vh-5rem)]">
+        <header className="mb-6 flex justify-center sm:mb-10">
           <AuthBrand />
         </header>
 
         <section className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 lg:p-10">
             <div className="text-center">
-              <h1 className="text-3xl font-extrabold text-slate-950">
+              <h1 className="text-2xl font-extrabold text-slate-950 sm:text-3xl">
                 Confirm Your Email
               </h1>
 

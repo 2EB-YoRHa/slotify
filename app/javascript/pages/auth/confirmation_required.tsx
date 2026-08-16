@@ -50,11 +50,11 @@ export default function ConfirmationRequired({
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10">
+    <main className="min-h-dvh bg-slate-50 px-4 py-6 sm:px-6 sm:py-10">
       <FlashMessages />
 
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
-        <header className="mb-10 flex justify-center">
+      <div className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-5xl flex-col sm:min-h-[calc(100vh-5rem)]">
+        <header className="mb-6 flex justify-center sm:mb-10">
           <AuthBrand />
         </header>
 
@@ -65,12 +65,12 @@ export default function ConfirmationRequired({
             transition={{ duration: 0.25 }}
             className="w-full max-w-xl overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm"
           >
-            <div className="bg-linear-to-b from-cyan-50 to-white px-10 pt-10 text-center">
-              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-white text-cyan-500 shadow-sm">
-                <MailCheck size={38} strokeWidth={2.4} />
+            <div className="bg-linear-to-b from-cyan-50 to-white px-5 pt-8 text-center sm:px-10 sm:pt-10">
+              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-cyan-500 shadow-sm sm:mb-6 sm:h-20 sm:w-20">
+                <MailCheck size={32} strokeWidth={2.4} />
               </div>
 
-              <h1 className="text-3xl font-black tracking-tight text-slate-950">
+              <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
                 Confirm your email
               </h1>
 
@@ -80,7 +80,7 @@ export default function ConfirmationRequired({
               </p>
             </div>
 
-            <div className="px-10 pb-10 pt-7">
+            <div className="px-5 pb-8 pt-6 sm:px-10 sm:pb-10 sm:pt-7">
               {email && (
                 <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-5 text-center">
                   <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
@@ -106,10 +106,12 @@ export default function ConfirmationRequired({
 
                   <a
                     href={development_manual_links.confirmation_url}
-                    className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3 text-sm font-black text-cyan-600 shadow-sm transition hover:bg-cyan-50"
+                    className="mt-4 flex min-w-0 items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3 text-sm font-black text-cyan-600 shadow-sm transition hover:bg-cyan-50"
                   >
-                    <span>Confirm account now</span>
-                    <ExternalLink size={16} />
+                    <span className="min-w-0 truncate">
+                      Confirm account now
+                    </span>
+                    <ExternalLink size={16} className="shrink-0" />
                   </a>
                 </div>
               )}
@@ -120,7 +122,7 @@ export default function ConfirmationRequired({
                     <ShieldCheck size={20} strokeWidth={2.4} />
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-black text-slate-950">
                       Why this is required
                     </p>
@@ -134,11 +136,16 @@ export default function ConfirmationRequired({
               </div>
 
               <form noValidate onSubmit={handleResend} className="mt-6">
-                <input type="hidden" name="user[email]" value={data.user.email} readOnly />
+                <input
+                  type="hidden"
+                  name="user[email]"
+                  value={data.user.email}
+                  readOnly
+                />
 
                 <div className="rounded-2xl border border-slate-200 bg-white p-4">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="text-left">
+                    <div className="min-w-0 text-left">
                       <p className="text-sm font-black text-slate-950">
                         Did not receive the email?
                       </p>
@@ -154,7 +161,7 @@ export default function ConfirmationRequired({
                       loading={processing}
                       loadingText="Sending..."
                       variant="secondary"
-                      className="shrink-0 border-cyan-100 px-4 text-cyan-600 hover:bg-cyan-50"
+                      className="w-full shrink-0 border-cyan-100 px-4 text-cyan-600 hover:bg-cyan-50 sm:w-auto"
                     >
                       <RefreshCw size={16} />
                       Resend

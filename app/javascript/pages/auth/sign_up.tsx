@@ -121,16 +121,16 @@ export default function SignUp({
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10">
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col">
-        <header className="mb-10 flex justify-center">
+    <main className="min-h-dvh bg-slate-50 px-4 py-6 sm:px-6 sm:py-10">
+      <div className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-5xl flex-col sm:min-h-[calc(100vh-5rem)]">
+        <header className="mb-6 flex justify-center sm:mb-10">
           <AuthBrand />
         </header>
 
         <section className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 lg:p-10">
             <div className="text-center">
-              <h1 className="text-3xl font-extrabold text-slate-950">
+              <h1 className="text-2xl font-extrabold text-slate-950 sm:text-3xl">
                 {isInvitationSignup ? "Join Organization" : "Create Account"}
               </h1>
 
@@ -161,7 +161,7 @@ export default function SignUp({
               />
 
               {!isInvitationSignup && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <TextField
                     label="Organization"
                     icon={Building2}
@@ -219,7 +219,7 @@ export default function SignUp({
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <TextField
                   label="Full Name"
                   icon={UserRound}
@@ -249,7 +249,7 @@ export default function SignUp({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <TextField
                   label="Password"
                   icon={LockKeyhole}
@@ -344,8 +344,8 @@ function TextField({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="block">
-      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+    <label className="block min-w-0">
+      <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700">
         {label}
         <RequiredMark show={required} />
       </span>
