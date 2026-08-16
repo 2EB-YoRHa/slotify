@@ -44,7 +44,7 @@ export default function FlashMessages() {
   ].filter(Boolean) as ToastMessage[];
 
   return (
-    <div className="fixed right-6 top-6 z-[100] flex w-[420px] max-w-[calc(100vw-3rem)] flex-col gap-3">
+    <div className="fixed right-4 top-4 z-100 flex w-105 max-w-[calc(100vw-2rem)] flex-col gap-3 sm:right-6 sm:top-6 sm:max-w-[calc(100vw-3rem)]">
       <AnimatePresence>
         {messages.map((toast) => (
           <Toast key={toast.id} toast={toast} />
@@ -81,17 +81,19 @@ function Toast({ toast }: ToastProps) {
         ease: "easeOut",
       }}
       onAnimationComplete={() => setVisible(false)}
-      className={`overflow-hidden rounded-2xl border p-5 shadow-xl backdrop-blur ${
+      className={`overflow-hidden rounded-2xl border p-4 shadow-xl backdrop-blur sm:p-5 ${
         success
-          ? "border-green-100 bg-green-50/95 text-green-700 shadow-green-100/60"
-          : "border-red-100 bg-red-50/95 text-red-700 shadow-red-100/60"
+          ? "border-green-100 bg-green-50/95 text-green-700 shadow-green-100/60 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-300 dark:shadow-slate-950/30"
+          : "border-red-100 bg-red-50/95 text-red-700 shadow-red-100/60 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300 dark:shadow-slate-950/30"
       }`}
       role={success ? "status" : "alert"}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3 sm:gap-4">
         <div
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
-            success ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+            success
+              ? "bg-green-100 text-green-600 dark:bg-green-500/15 dark:text-green-300"
+              : "bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-300"
           }`}
         >
           {success ? (
@@ -104,15 +106,19 @@ function Toast({ toast }: ToastProps) {
         <div className="min-w-0 flex-1">
           <p
             className={`text-sm font-extrabold ${
-              success ? "text-green-700" : "text-red-700"
+              success
+                ? "text-green-700 dark:text-green-300"
+                : "text-red-700 dark:text-red-300"
             }`}
           >
             {toast.title}
           </p>
 
           <p
-            className={`mt-1 text-sm leading-6 ${
-              success ? "text-green-700" : "text-red-700"
+            className={`mt-1 wrap-break-word text-sm leading-6 ${
+              success
+                ? "text-green-700 dark:text-green-300/90"
+                : "text-red-700 dark:text-red-300/90"
             }`}
           >
             {toast.message}
@@ -122,10 +128,10 @@ function Toast({ toast }: ToastProps) {
         <button
           type="button"
           onClick={() => setVisible(false)}
-          className={`rounded-lg p-1 transition ${
+          className={`shrink-0 rounded-lg p-1 transition ${
             success
-              ? "text-green-500 hover:bg-green-100 hover:text-green-700"
-              : "text-red-500 hover:bg-red-100 hover:text-red-700"
+              ? "text-green-500 hover:bg-green-100 hover:text-green-700 dark:text-green-300 dark:hover:bg-green-500/15 dark:hover:text-green-200"
+              : "text-red-500 hover:bg-red-100 hover:text-red-700 dark:text-red-300 dark:hover:bg-red-500/15 dark:hover:text-red-200"
           }`}
           aria-label="Close notification"
         >
@@ -138,7 +144,7 @@ function Toast({ toast }: ToastProps) {
         animate={{ scaleX: 0 }}
         transition={{ duration: 3.6, delay: 0.35, ease: "linear" }}
         className={`mt-4 h-1 origin-left rounded-full ${
-          success ? "bg-green-300" : "bg-red-300"
+          success ? "bg-green-300 dark:bg-green-400" : "bg-red-300 dark:bg-red-400"
         }`}
       />
     </motion.div>

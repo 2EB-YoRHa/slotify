@@ -36,7 +36,7 @@ export default function Sidebar({
 
   return (
     <>
-      <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
+      <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white transition-colors dark:border-slate-800 dark:bg-slate-950 lg:flex">
         <SidebarContent
           currentUser={currentUser}
           currentUrl={url}
@@ -59,7 +59,7 @@ export default function Sidebar({
               type="button"
               aria-label="Close navigation menu"
               onClick={onCloseMobile}
-              className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm"
             />
 
             <motion.aside
@@ -67,13 +67,13 @@ export default function Sidebar({
               animate={{ x: 0 }}
               exit={{ x: -320 }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              className="relative flex h-full w-[min(20rem,calc(100vw-2rem))] flex-col border-r border-slate-200 bg-white shadow-2xl"
+              className="relative flex h-full w-[min(20rem,calc(100vw-2rem))] flex-col border-r border-slate-200 bg-white shadow-2xl transition-colors dark:border-slate-800 dark:bg-slate-950"
             >
               <button
                 type="button"
                 aria-label="Close navigation menu"
                 onClick={onCloseMobile}
-                className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50"
+                className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 <X size={17} strokeWidth={2.4} />
               </button>

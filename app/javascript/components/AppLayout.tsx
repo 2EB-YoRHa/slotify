@@ -18,7 +18,7 @@ export default function AppLayout({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-dvh bg-slate-50 text-slate-900 lg:h-screen lg:overflow-hidden">
+    <div className="min-h-dvh bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 lg:h-screen lg:overflow-hidden">
       <FlashMessages />
 
       <div className="flex min-h-dvh lg:h-full lg:min-h-0">

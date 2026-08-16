@@ -12,10 +12,10 @@ export default function UserAvatar({
 }: UserAvatarProps) {
   return (
     <div
-      className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-full text-sm font-extrabold ring-2 ring-transparent transition ${
+      className={`flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-extrabold ring-2 ring-transparent transition ${
         billingRequired
-          ? "bg-amber-50 text-amber-500"
-          : "bg-cyan-50 text-cyan-500"
+          ? "bg-amber-50 text-amber-500 dark:bg-amber-500/15 dark:text-amber-300"
+          : "bg-cyan-50 text-cyan-500 dark:bg-cyan-500/15 dark:text-cyan-300"
       }`}
     >
       {user?.avatar_url ? (

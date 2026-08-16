@@ -101,7 +101,7 @@ export default function ResetPassword({
   }
 
   return (
-    <main className="min-h-dvh bg-slate-50 px-4 py-6 sm:px-6 sm:py-10">
+    <main className="min-h-dvh bg-slate-50 px-4 py-6 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100 sm:px-6 sm:py-10">
       <FlashMessages />
 
       <div className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-5xl flex-col sm:min-h-[calc(100vh-5rem)]">
@@ -110,13 +110,13 @@ export default function ResetPassword({
         </header>
 
         <section className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 lg:p-10">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-8 lg:p-10">
             <div className="text-center">
-              <h1 className="text-2xl font-extrabold text-slate-950 sm:text-3xl">
+              <h1 className="text-2xl font-extrabold text-slate-950 dark:text-slate-100 sm:text-3xl">
                 Reset Password
               </h1>
 
-              <p className="mt-3 leading-7 text-slate-500">
+              <p className="mt-3 leading-7 text-slate-500 dark:text-slate-400">
                 Create a new password to restore access to your Slotify account.
               </p>
             </div>
@@ -131,7 +131,7 @@ export default function ResetPassword({
               <FieldError error={tokenError} label="Reset Token" />
 
               <label className="block min-w-0">
-                <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+                <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
                   New Password
                   <RequiredMark />
                 </span>
@@ -139,7 +139,7 @@ export default function ResetPassword({
                 <div className="relative">
                   <LockKeyhole
                     size={18}
-                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
                   />
 
                   <input
@@ -161,7 +161,7 @@ export default function ResetPassword({
               </label>
 
               <label className="block min-w-0">
-                <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+                <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
                   Confirm Password
                   <RequiredMark />
                 </span>
@@ -169,7 +169,7 @@ export default function ResetPassword({
                 <div className="relative">
                   <LockKeyhole
                     size={18}
-                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
                   />
 
                   <input
@@ -211,7 +211,7 @@ export default function ResetPassword({
             <div className="mt-8 text-center">
               <Link
                 href="/users/sign_in"
-                className="text-sm font-bold text-cyan-500 hover:text-cyan-600"
+                className="text-sm font-bold text-cyan-500 transition hover:text-cyan-600 dark:text-cyan-300 dark:hover:text-cyan-200"
               >
                 Back to Login
               </Link>

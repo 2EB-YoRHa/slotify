@@ -51,8 +51,8 @@ export default function HeaderProfileMenu({
       <button
         type="button"
         onClick={() => setMenuOpen((value) => !value)}
-        className={`flex h-10 items-center gap-1 rounded-full p-1 text-sm font-extrabold transition hover:bg-slate-100 sm:gap-2 sm:pr-2 ${
-          menuOpen ? "bg-slate-100" : ""
+        className={`flex h-10 items-center gap-1 rounded-full p-1 text-sm font-extrabold transition hover:bg-slate-100 dark:hover:bg-slate-800 sm:gap-2 sm:pr-2 ${
+          menuOpen ? "bg-slate-100 dark:bg-slate-800" : ""
         }`}
         aria-expanded={menuOpen}
         aria-haspopup="menu"
@@ -62,7 +62,7 @@ export default function HeaderProfileMenu({
 
         <ChevronDown
           size={15}
-          className={`hidden text-slate-400 transition sm:block ${
+          className={`hidden text-slate-400 transition dark:text-slate-500 sm:block ${
             menuOpen ? "rotate-180" : ""
           }`}
         />

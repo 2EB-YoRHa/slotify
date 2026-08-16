@@ -12,7 +12,7 @@ export default function SidebarBrand({
   return (
     <div className="flex h-16 items-center px-7">
       <Link href={href} onClick={onClick} className="group inline-block">
-        <span className="block text-2xl font-black tracking-[-0.055em] text-slate-950 transition group-hover:text-slate-800">
+        <span className="block text-2xl font-black tracking-[-0.055em] text-slate-950 transition group-hover:text-slate-800 dark:text-white dark:group-hover:text-slate-200">
           Slotify
         </span>
 

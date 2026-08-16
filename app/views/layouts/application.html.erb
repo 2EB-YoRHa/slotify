@@ -9,6 +9,21 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <script>
+      (() => {
+        try {
+          const storedTheme = localStorage.getItem("slotify-theme");
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          const shouldUseDark = storedTheme ? storedTheme === "dark" : prefersDark;
+
+          document.documentElement.classList.toggle("dark", shouldUseDark);
+          document.documentElement.dataset.theme = shouldUseDark ? "dark" : "light";
+        } catch (_error) {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
+
     <%= yield :head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>

@@ -52,8 +52,8 @@ export default function DatePickerField({
   }
 
   return (
-    <div>
-      <span className="mb-2 block text-sm font-bold text-slate-700">
+    <div className="min-w-0">
+      <span className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
         {label}
       </span>
 
@@ -63,19 +63,19 @@ export default function DatePickerField({
         whileTap={disabled ? undefined : { scale: 0.99 }}
         onClick={() => setOpen((current) => !current)}
         disabled={disabled}
-        className="flex h-12 w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 text-left outline-none transition hover:border-cyan-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 disabled:cursor-not-allowed disabled:bg-slate-50"
+        className="flex h-12 w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-left outline-none transition hover:border-cyan-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 disabled:cursor-not-allowed disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-cyan-500/50 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20 dark:disabled:bg-slate-900/60"
       >
-        <span className="flex items-center gap-3">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-50 text-cyan-500">
+        <span className="flex min-w-0 items-center gap-3">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-50 text-cyan-500 dark:bg-cyan-500/10 dark:text-cyan-300">
             <CalendarDays size={17} strokeWidth={2.4} />
           </span>
 
-          <span className="text-sm font-bold text-slate-800">
+          <span className="truncate text-sm font-bold text-slate-800 dark:text-slate-100">
             {formatDisplayDate(value)}
           </span>
         </span>
 
-        <span className="text-xs font-bold uppercase tracking-wide text-slate-400">
+        <span className="shrink-0 text-xs font-bold uppercase tracking-wide text-slate-400 dark:text-slate-500">
           {open ? "Close" : "Change"}
         </span>
       </motion.button>
@@ -87,25 +87,25 @@ export default function DatePickerField({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.18 }}
-            className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="mt-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-900 sm:p-4"
           >
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={goToPreviousMonth}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
               >
                 <ChevronLeft size={17} />
               </button>
 
-              <p className="text-sm font-extrabold text-slate-950">
+              <p className="min-w-0 truncate text-sm font-extrabold text-slate-950 dark:text-slate-100">
                 {monthLabel}
               </p>
 
               <button
                 type="button"
                 onClick={goToNextMonth}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
               >
                 <ChevronRight size={17} />
               </button>
@@ -115,7 +115,7 @@ export default function DatePickerField({
               {weekDays.map((day) => (
                 <div
                   key={day}
-                  className="py-2 text-center text-[10px] font-extrabold uppercase tracking-wide text-slate-400"
+                  className="py-2 text-center text-[10px] font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500"
                 >
                   {day}
                 </div>
@@ -131,15 +131,17 @@ export default function DatePickerField({
                   disabled={day.disabled}
                   className={`flex h-9 items-center justify-center rounded-xl text-sm font-bold transition ${
                     day.selected
-                      ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100"
+                      ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 dark:shadow-none"
                       : day.currentMonth
-                        ? "text-slate-700 hover:bg-cyan-50 hover:text-cyan-600"
-                        : "text-slate-300 hover:bg-slate-50"
+                        ? "text-slate-700 hover:bg-cyan-50 hover:text-cyan-600 dark:text-slate-300 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
+                        : "text-slate-300 hover:bg-slate-50 dark:text-slate-700 dark:hover:bg-slate-800"
                   } ${
-                    day.today && !day.selected ? "ring-1 ring-cyan-200" : ""
+                    day.today && !day.selected
+                      ? "ring-1 ring-cyan-200 dark:ring-cyan-500/40"
+                      : ""
                   } ${
                     day.disabled
-                      ? "cursor-not-allowed text-slate-200 hover:bg-transparent hover:text-slate-200"
+                      ? "cursor-not-allowed text-slate-200 hover:bg-transparent hover:text-slate-200 dark:text-slate-800 dark:hover:bg-transparent dark:hover:text-slate-800"
                       : ""
                   }`}
                 >
@@ -148,12 +150,12 @@ export default function DatePickerField({
               ))}
             </div>
 
-            <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-              <span className="text-xs font-bold uppercase tracking-wide text-slate-400">
+            <div className="mt-4 flex min-w-0 items-center justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800">
+              <span className="shrink-0 text-xs font-bold uppercase tracking-wide text-slate-400 dark:text-slate-500">
                 Selected
               </span>
 
-              <span className="text-sm font-extrabold text-slate-900">
+              <span className="min-w-0 truncate text-sm font-extrabold text-slate-900 dark:text-slate-100">
                 {formatDisplayDate(value)}
               </span>
             </div>
