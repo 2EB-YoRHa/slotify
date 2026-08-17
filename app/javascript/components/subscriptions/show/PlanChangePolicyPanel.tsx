@@ -37,19 +37,19 @@ export default function PlanChangePolicyPanel({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.18 }}
-      className="mb-10 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+      className="mb-10 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30"
     >
       <div className="mb-7 flex items-start justify-between gap-8">
         <div>
-          <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500">
+          <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500 dark:text-cyan-300">
             Plan Changes
           </p>
 
-          <h2 className="mt-2 text-2xl font-extrabold text-slate-950">
+          <h2 className="mt-2 text-2xl font-extrabold text-slate-950 dark:text-slate-100">
             Upgrade, downgrade, or cancel from the billing portal
           </h2>
 
-          <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-500">
+          <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-500 dark:text-slate-400">
             Slotify keeps your workspace data safe. Plan changes affect what
             the organization can create next, but existing workspaces,
             reservations, members, and history are not deleted.
@@ -62,8 +62,8 @@ export default function PlanChangePolicyPanel({
           onClick={openBillingPortal}
           className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition ${
             canManageBilling
-              ? "bg-slate-950 text-white shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md"
-              : "cursor-not-allowed bg-slate-100 text-slate-400"
+              ? "bg-slate-950 text-white shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md dark:bg-cyan-400 dark:text-slate-950 dark:shadow-none dark:hover:bg-cyan-300"
+              : "cursor-not-allowed bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
           }`}
         >
           <CreditCard size={17} />
@@ -73,18 +73,18 @@ export default function PlanChangePolicyPanel({
       </div>
 
       {overPlanLimits && (
-        <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 p-5">
+        <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 p-5 transition-colors dark:border-red-500/20 dark:bg-red-500/10">
           <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm transition-colors dark:bg-red-500/10 dark:text-red-300 dark:shadow-none">
               <AlertTriangle size={21} strokeWidth={2.4} />
             </div>
 
             <div>
-              <h3 className="text-base font-extrabold text-red-700">
+              <h3 className="text-base font-extrabold text-red-700 dark:text-red-300">
                 This organization is currently over its plan limits
               </h3>
 
-              <p className="mt-2 text-sm leading-6 text-red-600">
+              <p className="mt-2 text-sm leading-6 text-red-600 dark:text-red-300/90">
                 Existing data remains available, but creating more workspaces or
                 inviting more members is blocked until usage fits the current
                 plan or the organization upgrades to Pro.
@@ -135,18 +135,18 @@ export default function PlanChangePolicyPanel({
         />
       </div>
 
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+      <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-colors dark:border-slate-700 dark:bg-slate-800/60">
         <div className="flex items-start gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm transition-colors dark:bg-slate-900 dark:text-cyan-300 dark:shadow-none">
             <ShieldCheck size={21} strokeWidth={2.4} />
           </div>
 
           <div>
-            <h3 className="text-base font-extrabold text-slate-950">
+            <h3 className="text-base font-extrabold text-slate-950 dark:text-slate-100">
               Data safety rule
             </h3>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Plan changes never delete existing data. They only control future
               access, future creation limits, and premium feature availability.
             </p>
@@ -176,19 +176,25 @@ function PolicyCard({
 }: PolicyCardProps) {
   const toneClasses = {
     cyan: {
-      container: "border-cyan-100 bg-cyan-50",
-      icon: "text-cyan-500",
-      badge: "bg-cyan-100 text-cyan-700",
+      container:
+        "border-cyan-100 bg-cyan-50 dark:border-cyan-500/20 dark:bg-cyan-500/10",
+      icon: "text-cyan-500 dark:text-cyan-300",
+      badge:
+        "bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300",
     },
     amber: {
-      container: "border-amber-100 bg-amber-50",
-      icon: "text-amber-500",
-      badge: "bg-amber-100 text-amber-700",
+      container:
+        "border-amber-100 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/10",
+      icon: "text-amber-500 dark:text-amber-300",
+      badge:
+        "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
     },
     slate: {
-      container: "border-slate-200 bg-slate-50",
-      icon: "text-slate-500",
-      badge: "bg-white text-slate-600",
+      container:
+        "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60",
+      icon: "text-slate-500 dark:text-slate-400",
+      badge:
+        "bg-white text-slate-600 dark:bg-slate-900 dark:text-slate-300",
     },
   }[tone];
 
@@ -196,7 +202,7 @@ function PolicyCard({
     <div className={`rounded-2xl border p-5 ${toneClasses.container}`}>
       <div className="mb-4 flex items-start justify-between gap-4">
         <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ${toneClasses.icon}`}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm transition-colors dark:bg-slate-900 dark:shadow-none ${toneClasses.icon}`}
         >
           <Icon size={21} strokeWidth={2.4} />
         </div>
@@ -210,9 +216,13 @@ function PolicyCard({
         )}
       </div>
 
-      <h3 className="text-base font-extrabold text-slate-950">{title}</h3>
+      <h3 className="text-base font-extrabold text-slate-950 dark:text-slate-100">
+        {title}
+      </h3>
 
-      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+      <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
+        {description}
+      </p>
 
       <div className="mt-4 space-y-3">
         {items.map((item) => (
@@ -222,7 +232,7 @@ function PolicyCard({
               className={`mt-1 shrink-0 ${toneClasses.icon}`}
             />
 
-            <span className="text-xs font-semibold leading-5 text-slate-600">
+            <span className="text-xs font-semibold leading-5 text-slate-600 dark:text-slate-400">
               {item}
             </span>
           </div>

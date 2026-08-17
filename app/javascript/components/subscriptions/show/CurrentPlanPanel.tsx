@@ -61,19 +61,19 @@ export default function CurrentPlanPanel({
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.12 }}
-        className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+        className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30"
       >
         <div className="mb-7 flex items-start justify-between gap-6">
           <div>
-            <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500">
+            <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500 dark:text-cyan-300">
               Active Subscription
             </p>
 
-            <h2 className="mt-2 text-3xl font-extrabold text-slate-950">
+            <h2 className="mt-2 text-3xl font-extrabold text-slate-950 dark:text-slate-100">
               {currentPlanLabel}
             </h2>
 
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
               This plan controls workspace capacity, member slots, billing
               access, and the operational features available to the
               organization.
@@ -126,8 +126,8 @@ export default function CurrentPlanPanel({
             onClick={openBillingPortal}
             className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition ${
               canManageBilling
-                ? "bg-slate-950 text-white shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md"
-                : "cursor-not-allowed bg-slate-100 text-slate-400"
+                ? "bg-slate-950 text-white shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md dark:bg-cyan-400 dark:text-slate-950 dark:shadow-none dark:hover:bg-cyan-300"
+                : "cursor-not-allowed bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
             }`}
           >
             <CreditCard size={17} />
@@ -141,18 +141,18 @@ export default function CurrentPlanPanel({
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.16 }}
-        className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+        className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30"
       >
         <div className="mb-7">
-          <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500">
+          <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500 dark:text-cyan-300">
             Usage Health
           </p>
 
-          <h2 className="mt-2 text-2xl font-extrabold text-slate-950">
+          <h2 className="mt-2 text-2xl font-extrabold text-slate-950 dark:text-slate-100">
             Plan usage at a glance
           </h2>
 
-          <p className="mt-3 text-sm leading-6 text-slate-500">
+          <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
             Track how close the organization is to the current plan limits.
           </p>
         </div>
@@ -184,8 +184,8 @@ export default function CurrentPlanPanel({
         </div>
 
         {activePlan?.limits && activePlan.limits.length > 0 && (
-          <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-            <p className="mb-3 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+          <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-colors dark:border-slate-700 dark:bg-slate-800/60">
+            <p className="mb-3 text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
               Current Plan Limits
             </p>
 
@@ -217,18 +217,18 @@ function OverLimitNotice({ usage }: OverLimitNoticeProps) {
   );
 
   return (
-    <div className="mb-7 rounded-2xl border border-red-100 bg-red-50 p-5">
+    <div className="mb-7 rounded-2xl border border-red-100 bg-red-50 p-5 transition-colors dark:border-red-500/20 dark:bg-red-500/10">
       <div className="flex items-start gap-4">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm transition-colors dark:bg-red-500/10 dark:text-red-300 dark:shadow-none">
           <AlertTriangle size={22} strokeWidth={2.4} />
         </div>
 
         <div>
-          <h3 className="text-base font-extrabold text-red-700">
+          <h3 className="text-base font-extrabold text-red-700 dark:text-red-300">
             This organization is over the current plan limit
           </h3>
 
-          <p className="mt-2 text-sm leading-6 text-red-600">
+          <p className="mt-2 text-sm leading-6 text-red-600 dark:text-red-300/90">
             Existing data stays available, but creating new workspaces or
             inviting more members is blocked until usage fits the plan or the
             organization upgrades to Pro.
@@ -268,16 +268,16 @@ type OverLimitItemProps = {
 
 function OverLimitItem({ label, used, limit, overBy }: OverLimitItemProps) {
   return (
-    <div className="rounded-xl border border-red-100 bg-white p-4">
-      <p className="text-xs font-extrabold uppercase tracking-wide text-red-400">
+    <div className="rounded-xl border border-red-100 bg-white p-4 transition-colors dark:border-red-500/20 dark:bg-slate-900">
+      <p className="text-xs font-extrabold uppercase tracking-wide text-red-400 dark:text-red-300">
         {label}
       </p>
 
-      <p className="mt-2 text-lg font-extrabold text-slate-950">
+      <p className="mt-2 text-lg font-extrabold text-slate-950 dark:text-slate-100">
         {used} / {limit}
       </p>
 
-      <p className="mt-1 text-xs font-bold text-red-600">
+      <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-300">
         {overBy} over limit
       </p>
     </div>
@@ -293,18 +293,22 @@ type InfoCardProps = {
 
 function InfoCard({ icon: Icon, label, value, helper }: InfoCardProps) {
   return (
-    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
-      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
+    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-colors dark:border-slate-700 dark:bg-slate-800/60">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm transition-colors dark:bg-slate-900 dark:text-cyan-300 dark:shadow-none">
         <Icon size={19} strokeWidth={2.4} />
       </div>
 
-      <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
+      <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         {label}
       </p>
 
-      <p className="mt-2 text-xl font-extrabold text-slate-950">{value}</p>
+      <p className="mt-2 text-xl font-extrabold text-slate-950 dark:text-slate-100">
+        {value}
+      </p>
 
-      <p className="mt-2 text-xs leading-5 text-slate-500">{helper}</p>
+      <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        {helper}
+      </p>
     </div>
   );
 }
@@ -318,12 +322,12 @@ function StatusPill({ status }: StatusPillProps) {
 
   const className =
     normalized === "active"
-      ? "bg-green-50 text-green-600"
+      ? "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300"
       : normalized === "trialing"
-        ? "bg-cyan-50 text-cyan-600"
+        ? "bg-cyan-50 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300"
         : normalized === "past due"
-          ? "bg-amber-50 text-amber-600"
-          : "bg-slate-100 text-slate-500";
+          ? "bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300"
+          : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300";
 
   return (
     <span
