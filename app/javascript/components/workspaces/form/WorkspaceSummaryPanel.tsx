@@ -22,18 +22,18 @@ export default function WorkspaceSummaryPanel({
   onActiveChange,
 }: WorkspaceSummaryPanelProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
       <div className="mb-6 sm:mb-8">
-        <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+        <h2 className="text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
           {isEditing ? "Update Workspace" : "Create Workspace"}
         </h2>
 
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
           Review the workspace configuration before saving.
         </p>
       </div>
 
-      <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
+      <div className="rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:p-5">
         <SummaryRow label="Name" value={data.name || "Not set"} />
 
         <SummaryRow label="Type" value={formatText(data.workspace_type)} />
@@ -54,7 +54,7 @@ export default function WorkspaceSummaryPanel({
       />
 
       {getBaseError(errors) && (
-        <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm leading-6 text-red-600">
+        <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm leading-6 text-red-600 transition-colors dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
           {getBaseError(errors)}
         </div>
       )}
@@ -75,7 +75,7 @@ export default function WorkspaceSummaryPanel({
               ? `/workspaces/${workspace.id}`
               : "/workspaces"
           }
-          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
         >
           Cancel
         </a>
@@ -91,10 +91,10 @@ type SummaryRowProps = {
 
 function SummaryRow({ label, value }: SummaryRowProps) {
   return (
-    <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 sm:flex-row sm:justify-between sm:gap-4">
-      <span className="text-sm text-slate-500">{label}</span>
+    <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 dark:border-slate-700 sm:flex-row sm:justify-between sm:gap-4">
+      <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
 
-      <span className="wrap-break-word text-sm font-bold text-slate-950 sm:text-right">
+      <span className="wrap-break-word text-sm font-bold text-slate-950 dark:text-slate-100 sm:text-right">
         {value}
       </span>
     </div>

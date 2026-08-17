@@ -116,21 +116,23 @@ export default function WorkspaceExtraPhotosUpload({
 
   return (
     <div className="block min-w-0">
-      <span className="mb-2 block text-sm font-bold text-slate-700">
+      <span className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
         Extra Gallery Photos
       </span>
 
       <div
-        className={`rounded-xl border border-dashed p-4 sm:p-5 ${
+        className={`rounded-xl border border-dashed p-4 transition-colors sm:p-5 ${
           enabled
-            ? "border-cyan-300 bg-cyan-50/20"
-            : "border-slate-200 bg-slate-50"
+            ? "border-cyan-300 bg-cyan-50/20 dark:border-cyan-500/40 dark:bg-cyan-500/10"
+            : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60"
         }`}
       >
         <div className="mb-5 flex items-start gap-3 sm:gap-4">
           <div
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm sm:h-12 sm:w-12 ${
-              enabled ? "text-cyan-500" : "text-slate-400"
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900 dark:shadow-none sm:h-12 sm:w-12 ${
+              enabled
+                ? "text-cyan-500 dark:text-cyan-300"
+                : "text-slate-400 dark:text-slate-500"
             }`}
           >
             {enabled ? (
@@ -141,13 +143,13 @@ export default function WorkspaceExtraPhotosUpload({
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-slate-950">
+            <p className="text-sm font-bold text-slate-950 dark:text-slate-100">
               {enabled
                 ? "Add workspace gallery photos"
                 : "Extra photos are available on Pro"}
             </p>
 
-            <p className="mt-1 text-xs font-semibold leading-5 text-slate-400">
+            <p className="mt-1 text-xs font-semibold leading-5 text-slate-400 dark:text-slate-500">
               {enabled
                 ? `Add up to ${MAX_EXTRA_PHOTOS} extra photos. You can select more than once before saving.`
                 : "Starter keeps one main photo per workspace."}
@@ -162,18 +164,18 @@ export default function WorkspaceExtraPhotosUpload({
           accept="image/png,image/jpg,image/jpeg,image/webp"
           disabled={disabled || !enabled || availableSlots <= 0}
           onChange={(event) => handleFileChange(event.target.files)}
-          className="block w-full min-w-0 text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
+          className="block w-full min-w-0 text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-300 dark:file:bg-cyan-500/80 dark:hover:file:bg-cyan-300 dark:hover:file:text-slate-950"
         />
 
         {enabled && (
-          <p className="mt-3 text-xs font-semibold text-slate-500">
+          <p className="mt-3 text-xs font-semibold text-slate-500 dark:text-slate-400">
             {totalSelectedCount}/{MAX_EXTRA_PHOTOS} extra photos selected.
           </p>
         )}
 
         {existingPhotos.length > 0 && (
-          <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
-            <p className="mb-4 text-xs font-extrabold uppercase tracking-wide text-slate-500">
+          <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4 transition-colors dark:border-slate-700 dark:bg-slate-900">
+            <p className="mb-4 text-xs font-extrabold uppercase tracking-wide text-slate-500 dark:text-slate-400">
               Current saved extra photos
             </p>
 
@@ -181,9 +183,9 @@ export default function WorkspaceExtraPhotosUpload({
               {existingPhotos.map((photo) => (
                 <div
                   key={photo.id}
-                  className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
+                  className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800"
                 >
-                  <div className="flex h-24 items-center justify-center bg-slate-50 sm:h-28">
+                  <div className="flex h-24 items-center justify-center bg-slate-50 transition-colors dark:bg-slate-800 sm:h-28">
                     <img
                       src={photo.url}
                       alt={photo.filename}
@@ -197,9 +199,9 @@ export default function WorkspaceExtraPhotosUpload({
         )}
 
         {previews.length > 0 && (
-          <div className="mt-5 rounded-xl border border-cyan-100 bg-white p-4">
+          <div className="mt-5 rounded-xl border border-cyan-100 bg-white p-4 transition-colors dark:border-cyan-500/20 dark:bg-slate-900">
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
+              <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
                 New photos selected
               </p>
 
@@ -207,7 +209,7 @@ export default function WorkspaceExtraPhotosUpload({
                 type="button"
                 disabled={disabled}
                 onClick={clearSelectedPhotos}
-                className="inline-flex w-full items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-500 transition hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:border-0 sm:px-0"
+                className="inline-flex w-full items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-500 transition hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-red-500/10 dark:hover:text-red-300 sm:w-auto sm:border-0 sm:px-0 dark:sm:bg-transparent"
               >
                 <X size={14} />
                 Clear all
@@ -218,9 +220,9 @@ export default function WorkspaceExtraPhotosUpload({
               {previews.map((preview, index) => (
                 <div
                   key={`${preview.file.name}-${index}`}
-                  className="group relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
+                  className="group relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800"
                 >
-                  <div className="flex h-24 items-center justify-center bg-slate-50 sm:h-28">
+                  <div className="flex h-24 items-center justify-center bg-slate-50 transition-colors dark:bg-slate-800 sm:h-28">
                     <img
                       src={preview.url}
                       alt={preview.file.name}
@@ -232,7 +234,7 @@ export default function WorkspaceExtraPhotosUpload({
                     type="button"
                     disabled={disabled}
                     onClick={() => removeSelectedPhoto(index)}
-                    className="absolute right-2 top-2 rounded-lg bg-white/90 p-1.5 text-slate-500 opacity-100 shadow-sm transition hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60 lg:opacity-0 lg:group-hover:opacity-100"
+                    className="absolute right-2 top-2 rounded-lg bg-white/90 p-1.5 text-slate-500 opacity-100 shadow-sm transition hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-950/90 dark:text-slate-400 dark:hover:text-red-300 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label={`Remove ${preview.file.name}`}
                   >
                     <X size={14} />
@@ -244,7 +246,7 @@ export default function WorkspaceExtraPhotosUpload({
         )}
 
         {enabled && existingPhotos.length === 0 && previews.length === 0 && (
-          <div className="mt-5 flex h-28 flex-col items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400">
+          <div className="mt-5 flex h-28 flex-col items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500">
             <ImagePlus size={28} strokeWidth={2.4} />
 
             <span className="mt-2 text-xs font-bold">

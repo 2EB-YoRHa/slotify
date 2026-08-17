@@ -16,7 +16,7 @@ type IconBoxProps = {
 export function IconBox({ icon: Icon, large = false }: IconBoxProps) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 ${
+      className={`flex shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 ${
         large ? "h-12 w-12 sm:h-14 sm:w-14" : "h-10 w-10"
       }`}
     >
@@ -59,7 +59,7 @@ export function TextInput({
       <div className="relative">
         <Icon
           size={17}
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         />
 
         <input
@@ -116,7 +116,7 @@ export function NumberInput({
       <div className="relative">
         <Icon
           size={17}
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         />
 
         <input
@@ -173,14 +173,14 @@ export function SelectInput({
       <div className="relative">
         <Icon
           size={17}
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         />
 
         <select
           value={value}
           aria-invalid={hasError}
           onChange={(event) => onChange(event.target.value)}
-          className={`${fieldClassName(hasError)} appearance-none bg-white pr-10`}
+          className={`${fieldClassName(hasError)} appearance-none pr-10`}
           disabled={disabled}
         >
           {options.map((option) => (
@@ -231,7 +231,7 @@ export function TextAreaInput({
       <div className="relative">
         <Icon
           size={17}
-          className="pointer-events-none absolute left-4 top-4 text-slate-400"
+          className="pointer-events-none absolute left-4 top-4 text-slate-400 dark:text-slate-500"
         />
 
         <textarea
@@ -249,7 +249,7 @@ export function TextAreaInput({
         <FormHelper helper={helper} />
 
         {maxLength && (
-          <span className="shrink-0 text-xs font-semibold text-slate-400 sm:text-right">
+          <span className="shrink-0 text-xs font-semibold text-slate-400 dark:text-slate-500 sm:text-right">
             {value.length}/{maxLength}
           </span>
         )}
@@ -272,24 +272,28 @@ export function ToggleStatus({
   onChange,
 }: ToggleStatusProps) {
   return (
-    <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+    <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 transition-colors dark:border-slate-700 dark:bg-slate-800/60 sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
         <div className="flex min-w-0 items-start gap-3">
           <IconBox icon={Power} />
 
           <div className="min-w-0">
-            <p className="font-bold text-slate-950">Workspace Active</p>
+            <p className="font-bold text-slate-950 dark:text-slate-100">
+              Workspace Active
+            </p>
 
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Active workspaces can be selected when creating reservations.
             </p>
           </div>
         </div>
 
-        <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm sm:w-auto sm:justify-start">
+        <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm transition-colors dark:bg-slate-900 dark:shadow-none sm:w-auto sm:justify-start">
           <span
             className={`text-sm font-bold ${
-              checked ? "text-cyan-600" : "text-slate-400"
+              checked
+                ? "text-cyan-600 dark:text-cyan-300"
+                : "text-slate-400 dark:text-slate-500"
             }`}
           >
             {checked ? "Active" : "Inactive"}
@@ -300,7 +304,7 @@ export function ToggleStatus({
             checked={checked}
             onChange={(event) => onChange(event.target.checked)}
             disabled={disabled}
-            className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+            className="h-4 w-4 rounded border-slate-300 text-cyan-400 focus:ring-cyan-400 dark:border-slate-600 dark:bg-slate-900 dark:focus:ring-cyan-500/30"
           />
         </label>
       </div>
@@ -315,7 +319,7 @@ type FieldLabelProps = {
 
 function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
-    <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700">
+    <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
       <span className="truncate">{label}</span>
       <RequiredMark show={required} />
     </span>

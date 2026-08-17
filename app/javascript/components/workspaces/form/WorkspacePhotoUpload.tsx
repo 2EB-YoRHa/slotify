@@ -89,14 +89,14 @@ export default function WorkspacePhotoUpload({
 
   return (
     <div className="block min-w-0">
-      <span className="mb-2 block text-sm font-bold text-slate-700">
+      <span className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
         Workspace Photo
       </span>
 
-      <div className="rounded-xl border border-dashed border-cyan-300 bg-cyan-50/20 p-4 sm:p-5">
+      <div className="rounded-xl border border-dashed border-cyan-300 bg-cyan-50/20 p-4 transition-colors dark:border-cyan-500/40 dark:bg-cyan-500/10 sm:p-5">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-[220px_minmax(0,1fr)]">
-          <div className="self-start overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex h-44 w-full items-center justify-center bg-slate-50">
+          <div className="self-start overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
+            <div className="flex h-44 w-full items-center justify-center bg-slate-50 transition-colors dark:bg-slate-800">
               {previewUrl ? (
                 <img
                   src={previewUrl}
@@ -104,7 +104,7 @@ export default function WorkspacePhotoUpload({
                   className="h-full w-full object-contain"
                 />
               ) : (
-                <div className="flex h-full w-full flex-col items-center justify-center text-slate-400">
+                <div className="flex h-full w-full flex-col items-center justify-center text-slate-400 dark:text-slate-500">
                   <ImagePlus size={32} strokeWidth={2.4} />
 
                   <span className="mt-2 text-xs font-bold">
@@ -117,12 +117,12 @@ export default function WorkspacePhotoUpload({
 
           <div className="flex min-w-0 flex-col justify-center">
             <div className="mb-4 flex items-start gap-3 sm:gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm sm:h-12 sm:w-12">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 dark:shadow-none sm:h-12 sm:w-12">
                 <FileImage size={22} strokeWidth={2.4} />
               </div>
 
               <div className="min-w-0">
-                <p className="text-sm font-bold text-slate-950">
+                <p className="text-sm font-bold text-slate-950 dark:text-slate-100">
                   {hasSelectedPhoto
                     ? "New photo selected"
                     : hasCurrentPhoto
@@ -130,7 +130,7 @@ export default function WorkspacePhotoUpload({
                       : "Upload workspace photo"}
                 </p>
 
-                <p className="mt-1 text-xs font-semibold leading-5 text-slate-400">
+                <p className="mt-1 text-xs font-semibold leading-5 text-slate-400 dark:text-slate-500">
                   PNG, JPG, JPEG or WEBP. Maximum size: 5MB.
                 </p>
               </div>
@@ -144,22 +144,22 @@ export default function WorkspacePhotoUpload({
               onChange={(event) =>
                 handleFileChange(event.target.files?.[0] || null)
               }
-              className="block w-full min-w-0 text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
+              className="block w-full min-w-0 text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-300 dark:file:bg-cyan-500/80 dark:hover:file:bg-cyan-300 dark:hover:file:text-slate-950"
             />
 
             {selectedFile && (
-              <div className="mt-4 rounded-xl border border-cyan-100 bg-white p-4">
+              <div className="mt-4 rounded-xl border border-cyan-100 bg-white p-4 transition-colors dark:border-cyan-500/20 dark:bg-slate-900">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
+                    <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
                       Selected file
                     </p>
 
-                    <p className="mt-1 truncate text-sm font-bold text-slate-950">
+                    <p className="mt-1 truncate text-sm font-bold text-slate-950 dark:text-slate-100">
                       {selectedFile.name}
                     </p>
 
-                    <p className="mt-1 text-xs font-semibold text-slate-400">
+                    <p className="mt-1 text-xs font-semibold text-slate-400 dark:text-slate-500">
                       {formatFileSize(selectedFile.size)}
                     </p>
                   </div>
@@ -168,7 +168,7 @@ export default function WorkspacePhotoUpload({
                     type="button"
                     disabled={disabled}
                     onClick={clearSelectedPhoto}
-                    className="shrink-0 rounded-lg border border-slate-200 bg-white p-2 text-slate-400 transition hover:bg-slate-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="shrink-0 rounded-lg border border-slate-200 bg-white p-2 text-slate-400 transition hover:bg-slate-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500 dark:hover:bg-red-500/10 dark:hover:text-red-300"
                   >
                     <X size={16} />
                   </button>
@@ -177,7 +177,7 @@ export default function WorkspacePhotoUpload({
             )}
 
             {!selectedFile && currentFilename && (
-              <p className="mt-4 truncate text-xs font-bold text-slate-500">
+              <p className="mt-4 truncate text-xs font-bold text-slate-500 dark:text-slate-400">
                 Current file: {currentFilename}
               </p>
             )}

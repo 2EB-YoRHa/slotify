@@ -63,16 +63,16 @@ export default function WorkspaceInformationSection({
   onExtraPhotosChange,
 }: WorkspaceInformationSectionProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
       <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
         <IconBox icon={Building2} large />
 
         <div className="min-w-0">
-          <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+          <h2 className="text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
             Workspace Information
           </h2>
 
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
             Define the workspace name, category, capacity and physical location.
           </p>
         </div>
