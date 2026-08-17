@@ -123,25 +123,27 @@ function BookingStatCard({ stat, index }: BookingStatCardProps) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-5 xl:p-6"
+      className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 dark:hover:border-slate-700 sm:p-5 xl:p-6"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-bold leading-5 text-slate-500">
+          <p className="text-sm font-bold leading-5 text-slate-500 dark:text-slate-400">
             {stat.label}
           </p>
 
-          <h2 className="mt-2 text-3xl font-extrabold text-slate-950">
+          <h2 className="mt-2 truncate text-3xl font-extrabold text-slate-950 dark:text-slate-100">
             {stat.value}
           </h2>
         </div>
 
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
           <Icon size={20} strokeWidth={2.4} />
         </div>
       </div>
 
-      <p className="mt-3 text-xs leading-5 text-slate-500">{stat.helper}</p>
+      <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        {stat.helper}
+      </p>
     </motion.div>
   );
 }
@@ -152,20 +154,20 @@ function NextBookingPanel({ reservation }: { reservation: Reservation | null }) 
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.16 }}
-      className="mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm xl:mb-8"
+      className="mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 xl:mb-8"
     >
-      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 transition-colors dark:border-slate-800 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 sm:h-12 sm:w-12">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 sm:h-12 sm:w-12">
             <CalendarCheck size={22} strokeWidth={2.4} />
           </div>
 
           <div className="min-w-0">
-            <h2 className="text-lg font-extrabold text-slate-950 sm:text-xl">
+            <h2 className="text-lg font-extrabold text-slate-950 dark:text-slate-100 sm:text-xl">
               Next Booking
             </h2>
 
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
               The closest reservation on your schedule.
             </p>
           </div>
@@ -173,7 +175,7 @@ function NextBookingPanel({ reservation }: { reservation: Reservation | null }) 
 
         <Link
           href="/workspaces"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 sm:w-auto"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-cyan-500/40 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300 sm:w-auto"
         >
           Find another workspace
           <ArrowRight size={16} />
@@ -198,21 +200,21 @@ function NextBookingDetails({ reservation }: { reservation: Reservation }) {
         galleryPhotos={reservation.workspace?.gallery_photos || []}
         fit="cover"
         position="object-center"
-        className="h-56 w-full border-0 bg-slate-100 sm:h-72 lg:col-span-2 lg:h-full lg:min-h-80"
+        className="h-56 w-full border-0 bg-slate-100 transition-colors dark:bg-slate-800 sm:h-72 lg:col-span-2 lg:h-full lg:min-h-80"
       />
 
       <div className="p-5 sm:p-8 lg:col-span-3">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500 dark:text-cyan-300">
               {formatText(reservation.workspace?.workspace_type)}
             </p>
 
-            <h3 className="mt-2 text-2xl font-extrabold text-slate-950 sm:text-3xl">
+            <h3 className="mt-2 wrap-break-word text-2xl font-extrabold text-slate-950 dark:text-slate-100 sm:text-3xl">
               {reservation.workspace?.name || "Workspace removed"}
             </h3>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <p className="mt-2 wrap-break-word text-sm leading-6 text-slate-500 dark:text-slate-400">
               {reservation.workspace?.location || "Location not provided"}
             </p>
           </div>
@@ -220,7 +222,7 @@ function NextBookingDetails({ reservation }: { reservation: Reservation }) {
           <ReservationStatusBadge status={reservation.status} />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 rounded-2xl bg-slate-50 p-4 sm:p-5 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 rounded-2xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:p-5 lg:grid-cols-4">
           <SummaryItem label="Date" value={formatDate(reservation.start_time)} />
 
           <SummaryItem
@@ -244,7 +246,7 @@ function NextBookingDetails({ reservation }: { reservation: Reservation }) {
         <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Link
             href={`/reservations/${reservation.id}`}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
           >
             View Details
             <ArrowRight size={16} />
@@ -253,7 +255,7 @@ function NextBookingDetails({ reservation }: { reservation: Reservation }) {
           {reservation.can_modify && (
             <Link
               href={`/reservations/${reservation.id}/edit`}
-              className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               Edit Booking
             </Link>
@@ -267,22 +269,22 @@ function NextBookingDetails({ reservation }: { reservation: Reservation }) {
 function EmptyNextBooking() {
   return (
     <div className="px-5 py-10 text-center sm:p-12">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-16 sm:w-16">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 sm:h-16 sm:w-16">
         <CalendarPlus size={30} strokeWidth={2.4} />
       </div>
 
-      <h3 className="mt-5 text-lg font-extrabold text-slate-950 sm:text-xl">
+      <h3 className="mt-5 text-lg font-extrabold text-slate-950 dark:text-slate-100 sm:text-xl">
         No upcoming bookings yet
       </h3>
 
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
         Browse available workspaces and create your next reservation when you
         find the right space.
       </p>
 
       <Link
         href="/workspaces"
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md sm:w-auto"
+        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950 sm:w-auto"
       >
         Browse Workspaces
         <ArrowRight size={16} />
@@ -300,11 +302,11 @@ function SummaryItem({
 }) {
   return (
     <div className="min-w-0">
-      <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">
+      <p className="truncate text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         {label}
       </p>
 
-      <p className="mt-1 truncate text-sm font-extrabold text-slate-950">
+      <p className="mt-1 truncate text-sm font-extrabold text-slate-950 dark:text-slate-100">
         {value}
       </p>
     </div>

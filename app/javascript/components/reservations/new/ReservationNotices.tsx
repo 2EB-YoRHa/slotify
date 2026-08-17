@@ -1,8 +1,4 @@
-import {
-  AlertTriangle,
-  CalendarSearch,
-  CheckCircle2,
-} from "lucide-react";
+import { AlertTriangle, CalendarSearch, CheckCircle2 } from "lucide-react";
 
 export function BusinessRuleNotice({
   minNoticeViolation,
@@ -16,7 +12,7 @@ export function BusinessRuleNotice({
   if (!minNoticeViolation && !weekendViolation) return null;
 
   return (
-    <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+    <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600 transition-colors dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
       <AlertTriangle size={18} className="mt-0.5 shrink-0" />
 
       <div className="space-y-1">
@@ -52,7 +48,7 @@ export function AvailabilityMessage({
 }) {
   if (checkingAvailability) {
     return (
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm text-cyan-700">
+      <div className="mt-6 flex items-start gap-3 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm text-cyan-700 transition-colors dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-cyan-300">
         <CalendarSearch size={18} className="mt-0.5 shrink-0" />
         <span>
           Checking availability automatically for the selected time slot...
@@ -63,7 +59,7 @@ export function AvailabilityMessage({
 
   if (availabilityError) {
     return (
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+      <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600 transition-colors dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
         <AlertTriangle size={18} className="mt-0.5 shrink-0" />
         <span>{availabilityError}</span>
       </div>
@@ -72,7 +68,7 @@ export function AvailabilityMessage({
 
   if (!availabilityChecked) {
     return (
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700">
+      <div className="mt-6 flex items-start gap-3 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700 transition-colors dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-200">
         <AlertTriangle size={18} className="mt-0.5 shrink-0" />
         <span>
           Availability has not been checked yet. You must check availability
@@ -84,7 +80,7 @@ export function AvailabilityMessage({
 
   if (unavailableCount > 0) {
     return (
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+      <div className="mt-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600 transition-colors dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
         <AlertTriangle size={18} className="mt-0.5 shrink-0" />
         <span>
           Availability checked. {unavailableCount} workspace
@@ -95,7 +91,7 @@ export function AvailabilityMessage({
   }
 
   return (
-    <div className="mt-6 flex items-start gap-3 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
+    <div className="mt-6 flex items-start gap-3 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700 transition-colors dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-300">
       <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
       <span>All workspaces are available for this time slot.</span>
     </div>
@@ -119,7 +115,7 @@ export function ValidationNotice({
 }) {
   if (!availabilityChecked) {
     return (
-      <div className="mt-5 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700">
+      <div className="mt-5 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm text-yellow-700 transition-colors dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-200">
         Check availability before creating the reservation.
       </div>
     );
@@ -127,7 +123,7 @@ export function ValidationNotice({
 
   if (minNoticeViolation) {
     return (
-      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600 transition-colors dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
         Reservations must be booked at least {minNoticeMinutes} minutes in
         advance.
       </div>
@@ -136,7 +132,7 @@ export function ValidationNotice({
 
   if (weekendViolation) {
     return (
-      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600 transition-colors dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
         Weekend bookings are disabled for this organization.
       </div>
     );
@@ -144,7 +140,7 @@ export function ValidationNotice({
 
   if (selectedWorkspaceUnavailable) {
     return (
-      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600 transition-colors dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
         The selected workspace is not available for this time slot.
       </div>
     );
@@ -152,14 +148,14 @@ export function ValidationNotice({
 
   if (attendeesExceedCapacity) {
     return (
-      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+      <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600 transition-colors dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
         Attendees exceed the selected workspace capacity.
       </div>
     );
   }
 
   return (
-    <div className="mt-5 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
+    <div className="mt-5 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700 transition-colors dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-300">
       Reservation is ready to be created.
     </div>
   );

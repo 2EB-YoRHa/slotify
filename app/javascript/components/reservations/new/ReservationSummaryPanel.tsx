@@ -63,13 +63,13 @@ export default function ReservationSummaryPanel({
   const notesError = fieldError(errors, "notes");
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
       <div className="mb-6 sm:mb-8">
-        <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+        <h2 className="text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
           Reservation Summary
         </h2>
 
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
           Confirm the number of attendees and add any useful notes before
           creating the reservation.
         </p>
@@ -82,7 +82,7 @@ export default function ReservationSummaryPanel({
           <div className="relative">
             <UsersRound
               size={17}
-              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
             />
 
             <input
@@ -110,7 +110,7 @@ export default function ReservationSummaryPanel({
           <div className="relative">
             <StickyNote
               size={17}
-              className="pointer-events-none absolute left-4 top-4 text-slate-400"
+              className="pointer-events-none absolute left-4 top-4 text-slate-400 dark:text-slate-500"
             />
 
             <textarea
@@ -130,7 +130,7 @@ export default function ReservationSummaryPanel({
               Optional. Keep notes short and relevant for the booking.
             </FieldHint>
 
-            <span className="shrink-0 text-xs font-semibold text-slate-400">
+            <span className="shrink-0 text-xs font-semibold text-slate-400 dark:text-slate-500">
               {notes.length}/500
             </span>
           </div>
@@ -139,7 +139,7 @@ export default function ReservationSummaryPanel({
         </label>
       </div>
 
-      <div className="mt-6 rounded-xl bg-slate-50 p-4 sm:mt-8 sm:p-5">
+      <div className="mt-6 rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:mt-8 sm:p-5">
         <SummaryRow
           label="Workspace"
           value={selectedWorkspace?.name || "Not selected"}
@@ -191,7 +191,7 @@ export default function ReservationSummaryPanel({
           type="button"
           disabled={processing}
           onClick={onCancel}
-          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
         >
           Cancel
         </button>
@@ -207,10 +207,12 @@ type SummaryRowProps = {
 
 function SummaryRow({ label, value }: SummaryRowProps) {
   return (
-    <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 sm:flex-row sm:justify-between sm:gap-4">
-      <span className="text-sm text-slate-500">{label}</span>
+    <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 dark:border-slate-700 sm:flex-row sm:justify-between sm:gap-4">
+      <span className="text-sm text-slate-500 dark:text-slate-400">
+        {label}
+      </span>
 
-      <span className="wrap-break-word text-sm font-bold text-slate-950 sm:text-right">
+      <span className="wrap-break-word text-sm font-bold text-slate-950 dark:text-slate-100 sm:text-right">
         {value}
       </span>
     </div>
@@ -224,7 +226,7 @@ type FieldLabelProps = {
 
 function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
-    <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+    <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
       {label}
       <RequiredMark show={required} />
     </span>

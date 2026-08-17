@@ -37,20 +37,20 @@ export default function ReservationWorkspacePanel({
         fit="contain"
         position="object-center"
         showThumbnails
-        className="h-64 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm sm:h-96 xl:h-105"
+        className="h-64 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-800 dark:shadow-slate-950/30 sm:h-96 xl:h-105"
       />
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
         <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-3 sm:gap-4">
             <IconBox icon={Building2} />
 
             <div className="min-w-0">
-              <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+              <h2 className="text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
                 Workspace Information
               </h2>
 
-              <p className="mt-2 text-sm leading-6 text-slate-500">
+              <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
                 Details about the space assigned to this reservation.
               </p>
             </div>
@@ -106,23 +106,23 @@ export default function ReservationWorkspacePanel({
             />
           </div>
 
-          <div className="border-t border-slate-100 pt-6 sm:col-span-2 xl:col-span-3">
+          <div className="border-t border-slate-100 pt-6 transition-colors dark:border-slate-800 sm:col-span-2 xl:col-span-3">
             <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-3">
                 <IconBox icon={Sparkles} size="sm" />
 
                 <div className="min-w-0">
-                  <h3 className="font-bold text-slate-950">
+                  <h3 className="font-bold text-slate-950 dark:text-slate-100">
                     Amenities Included
                   </h3>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     Features available with this workspace reservation.
                   </p>
                 </div>
               </div>
 
-              <span className="w-fit rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-400">
+              <span className="w-fit rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-400 transition-colors dark:bg-slate-800 dark:text-slate-500">
                 {workspaceAmenities.length} assigned
               </span>
             </div>
@@ -142,7 +142,7 @@ type AmenityChipsProps = {
 function AmenityChips({ amenities }: AmenityChipsProps) {
   if (amenities.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-sm font-semibold text-slate-400">
+      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-sm font-semibold text-slate-400 transition-colors dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500">
         No amenities assigned to this workspace.
       </div>
     );
@@ -153,9 +153,12 @@ function AmenityChips({ amenities }: AmenityChipsProps) {
       {amenities.map((amenity) => (
         <span
           key={amenity.id}
-          className="inline-flex max-w-full items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-slate-600 ring-1 ring-slate-200"
+          className="inline-flex max-w-full items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-slate-600 ring-1 ring-slate-200 transition-colors dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700"
         >
-          <Sparkles size={13} className="shrink-0 text-cyan-500" />
+          <Sparkles
+            size={13}
+            className="shrink-0 text-cyan-500 dark:text-cyan-300"
+          />
           <span className="truncate">{amenity.name}</span>
         </span>
       ))}

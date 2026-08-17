@@ -18,22 +18,22 @@ export default function ReservationSummaryPanel({
   canModify,
 }: ReservationSummaryPanelProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
       <div className="mb-6 sm:mb-8">
         <div className="mb-4">
           <IconBox icon={CalendarCheck} />
         </div>
 
-        <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+        <h2 className="text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
           Booking Summary
         </h2>
 
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
           Quick overview of this reservation.
         </p>
       </div>
 
-      <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
+      <div className="rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:p-5">
         <SummaryRow
           label="Workspace"
           value={reservation.workspace?.name || "Workspace removed"}
@@ -66,7 +66,7 @@ export default function ReservationSummaryPanel({
       </div>
 
       {!canModify && (
-        <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm leading-6 text-slate-500">
+        <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm leading-6 text-slate-500 transition-colors dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400">
           This reservation can no longer be modified.
         </div>
       )}

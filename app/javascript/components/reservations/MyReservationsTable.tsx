@@ -96,21 +96,21 @@ export default function MyReservationsTable({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30"
     >
-      <div className="border-b border-slate-200 p-4 sm:p-6">
+      <div className="border-b border-slate-200 p-4 transition-colors dark:border-slate-800 sm:p-6">
         <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <h2 className="text-lg font-extrabold text-slate-950 sm:text-xl">
+            <h2 className="text-lg font-extrabold text-slate-950 dark:text-slate-100 sm:text-xl">
               Booking History
             </h2>
 
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Search, filter, and manage your personal reservations.
             </p>
           </div>
 
-          <div className="w-fit rounded-full bg-slate-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+          <div className="w-fit rounded-full bg-slate-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-slate-400 transition-colors dark:bg-slate-800 dark:text-slate-500">
             {filteredReservations.length} of {reservations.length} shown
           </div>
         </div>
@@ -119,7 +119,7 @@ export default function MyReservationsTable({
           <div className="relative w-full min-w-0">
             <Search
               size={17}
-              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
             />
 
             <input
@@ -127,12 +127,12 @@ export default function MyReservationsTable({
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search by workspace, type, location, or status..."
-              className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+              className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20"
             />
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr] xl:flex xl:items-center">
-            <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500 sm:flex">
+            <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500 transition-colors dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 sm:flex">
               <SlidersHorizontal size={16} />
               Filters
             </div>
@@ -142,7 +142,7 @@ export default function MyReservationsTable({
               onChange={(event) =>
                 setStatusFilter(event.target.value as StatusFilter)
               }
-              className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 xl:w-44"
+              className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20 xl:w-44"
             >
               <option value="all">All Statuses</option>
               <option value="confirmed">Confirmed</option>
@@ -154,7 +154,7 @@ export default function MyReservationsTable({
               <button
                 type="button"
                 onClick={clearFilters}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 xl:w-auto"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 xl:w-auto"
               >
                 <XCircle size={16} />
                 Clear
@@ -174,8 +174,8 @@ export default function MyReservationsTable({
                 onClick={() => setDateFilter(filter.value)}
                 className={`rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-wide transition ${
                   selected
-                    ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100"
-                    : "bg-slate-100 text-slate-500 hover:bg-cyan-50 hover:text-cyan-600"
+                    ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
+                    : "bg-slate-100 text-slate-500 hover:bg-cyan-50 hover:text-cyan-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
                 }`}
               >
                 {filter.label}
@@ -222,7 +222,7 @@ function ReservationCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.035 }}
-      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-100 hover:shadow-md"
+      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-100 hover:shadow-md dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-slate-950/30 dark:hover:border-cyan-500/30"
     >
       <div className="grid grid-cols-1 lg:grid-cols-5">
         <WorkspacePhoto
@@ -231,30 +231,35 @@ function ReservationCard({
           galleryPhotos={reservation.workspace?.gallery_photos || []}
           fit="cover"
           position="object-center"
-          className="h-48 w-full border-0 bg-slate-100 sm:h-60 lg:col-span-2 lg:h-full lg:min-h-52"
+          className="h-48 w-full border-0 bg-slate-100 transition-colors dark:bg-slate-800 sm:h-60 lg:col-span-2 lg:h-full lg:min-h-52"
         />
 
         <div className="p-4 sm:p-5 lg:col-span-3">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <p className="truncate text-xs font-extrabold uppercase tracking-wide text-cyan-500">
+              <p className="truncate text-xs font-extrabold uppercase tracking-wide text-cyan-500 dark:text-cyan-300">
                 {formatText(reservation.workspace?.workspace_type)}
               </p>
 
-              <h3 className="mt-1 truncate text-lg font-extrabold text-slate-950">
+              <h3 className="mt-1 wrap-break-word text-lg font-extrabold text-slate-950 dark:text-slate-100">
                 {reservation.workspace?.name || "Workspace removed"}
               </h3>
 
-              <p className="mt-1 flex items-center gap-1.5 truncate text-sm text-slate-500">
-                <MapPin size={15} className="shrink-0 text-slate-400" />
-                {reservation.workspace?.location || "Location not provided"}
+              <p className="mt-1 flex min-w-0 items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+                <MapPin
+                  size={15}
+                  className="shrink-0 text-slate-400 dark:text-slate-500"
+                />
+                <span className="truncate">
+                  {reservation.workspace?.location || "Location not provided"}
+                </span>
               </p>
             </div>
 
             <ReservationStatusBadge status={reservation.status} />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 rounded-2xl bg-slate-50 p-4">
+          <div className="grid grid-cols-2 gap-3 rounded-2xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60">
             <InfoItem
               icon={CalendarDays}
               label="Date"
@@ -322,12 +327,14 @@ type InfoItemProps = {
 function InfoItem({ icon: Icon, label, value }: InfoItemProps) {
   return (
     <div className="min-w-0">
-      <div className="mb-1 flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+      <div className="mb-1 flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         <Icon size={13} />
         {label}
       </div>
 
-      <p className="truncate text-sm font-extrabold text-slate-950">{value}</p>
+      <p className="truncate text-sm font-extrabold text-slate-950 dark:text-slate-100">
+        {value}
+      </p>
     </div>
   );
 }
@@ -352,10 +359,10 @@ function ActionButton({
       href={href}
       className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-extrabold transition hover:-translate-y-0.5 hover:shadow-sm ${
         primary
-          ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:bg-cyan-500"
+          ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:bg-cyan-500 dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
           : danger
-            ? "border border-red-100 bg-white text-red-500 hover:bg-red-50"
-            : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            ? "border border-red-100 bg-white text-red-500 hover:bg-red-50 dark:border-red-500/20 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-500/10"
+            : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
       }`}
     >
       <Icon size={15} />
@@ -377,23 +384,23 @@ function ReservationsEmptyState({
 }: ReservationsEmptyStateProps) {
   if (!hasReservations) {
     return (
-      <div className="rounded-2xl bg-slate-50 px-5 py-10 text-center sm:p-12">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-16 sm:w-16">
+      <div className="rounded-2xl bg-slate-50 px-5 py-10 text-center transition-colors dark:bg-slate-800/60 sm:p-12">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 sm:h-16 sm:w-16">
           <CalendarDays size={28} strokeWidth={2.4} />
         </div>
 
-        <h3 className="mt-5 text-lg font-extrabold text-slate-950 sm:text-xl">
+        <h3 className="mt-5 text-lg font-extrabold text-slate-950 dark:text-slate-100 sm:text-xl">
           You do not have bookings yet
         </h3>
 
-        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
           Browse workspaces and create your first reservation when you find a
           space that works for you.
         </p>
 
         <Link
           href="/workspaces"
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md sm:w-auto"
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950 sm:w-auto"
         >
           Browse Workspaces
           <ArrowRight size={16} />
@@ -403,16 +410,16 @@ function ReservationsEmptyState({
   }
 
   return (
-    <div className="rounded-2xl bg-slate-50 px-5 py-10 text-center sm:p-12">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 sm:h-16 sm:w-16">
+    <div className="rounded-2xl bg-slate-50 px-5 py-10 text-center transition-colors dark:bg-slate-800/60 sm:p-12">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 transition-colors dark:bg-slate-900 dark:text-slate-500 sm:h-16 sm:w-16">
         <Search size={28} strokeWidth={2.4} />
       </div>
 
-      <h3 className="mt-5 text-lg font-extrabold text-slate-950 sm:text-xl">
+      <h3 className="mt-5 text-lg font-extrabold text-slate-950 dark:text-slate-100 sm:text-xl">
         No bookings match your filters
       </h3>
 
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
         Try changing the search text, date filter, or status filter.
       </p>
 
@@ -420,7 +427,7 @@ function ReservationsEmptyState({
         <button
           type="button"
           onClick={onClearFilters}
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 sm:w-auto"
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:w-auto"
         >
           <XCircle size={16} />
           Clear Filters
