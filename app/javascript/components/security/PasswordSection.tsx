@@ -22,7 +22,7 @@ export default function PasswordSection({
   onFieldChange,
 }: PasswordSectionProps) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
       <SectionHeader
         title="Change password"
         description="Use a strong password with uppercase, lowercase, number, and symbol."
@@ -68,7 +68,7 @@ export default function PasswordSection({
           passwordConfirmation={data.user.password_confirmation}
         />
 
-        <div className="flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 border-t border-slate-100 pt-6 transition-colors dark:border-slate-800 sm:flex-row sm:items-center">
           <LoadingButton
             type="submit"
             loading={processing}
@@ -79,7 +79,7 @@ export default function PasswordSection({
             Update Password
           </LoadingButton>
 
-          <p className="text-xs font-semibold leading-5 text-slate-400">
+          <p className="text-xs font-semibold leading-5 text-slate-400 dark:text-slate-500">
             You will stay signed in after the password is updated.
           </p>
         </div>

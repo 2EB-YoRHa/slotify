@@ -17,11 +17,11 @@ export function SectionHeader({
 }) {
   return (
     <div className="min-w-0">
-      <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
+      <h2 className="text-xl font-black text-slate-950 dark:text-slate-100 sm:text-2xl">
         {title}
       </h2>
 
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
         {description}
       </p>
     </div>
@@ -30,12 +30,12 @@ export function SectionHeader({
 
 export function DetailCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-slate-100 bg-slate-50 p-4 sm:p-5">
-      <p className="truncate text-xs font-extrabold uppercase tracking-wide text-slate-400">
+    <div className="min-w-0 rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-colors dark:border-slate-700 dark:bg-slate-800/60 sm:p-5">
+      <p className="truncate text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         {label}
       </p>
 
-      <p className="mt-2 wrap-break-word text-sm font-black text-slate-950">
+      <p className="mt-2 wrap-break-word text-sm font-black text-slate-950 dark:text-slate-100">
         {value}
       </p>
     </div>
@@ -71,7 +71,7 @@ export function ProfileTextField({
 
   return (
     <label className="block min-w-0">
-      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
         {label}
         <RequiredMark show={required} />
       </span>
@@ -79,7 +79,7 @@ export function ProfileTextField({
       <div className="relative">
         <Icon
           size={18}
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         />
 
         <input

@@ -10,13 +10,13 @@ import {
 
 export function SecurityHero() {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-8">
       <div className="max-w-2xl">
-        <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-4xl">
+        <h1 className="text-2xl font-black tracking-tight text-slate-950 dark:text-slate-100 sm:text-4xl">
           Security
         </h1>
 
-        <p className="mt-3 text-sm leading-7 text-slate-500">
+        <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
           Manage your password and protect your Slotify account with an
           authenticator app.
         </p>
@@ -34,11 +34,11 @@ export function SectionHeader({
 }) {
   return (
     <div className="min-w-0">
-      <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
+      <h2 className="text-xl font-black text-slate-950 dark:text-slate-100 sm:text-2xl">
         {title}
       </h2>
 
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
         {description}
       </p>
     </div>
@@ -66,7 +66,7 @@ export function PasswordField({
 
   return (
     <label className="block min-w-0">
-      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
         {label}
         <RequiredMark />
       </span>
@@ -74,7 +74,7 @@ export function PasswordField({
       <div className="relative">
         <LockKeyhole
           size={18}
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         />
 
         <input
@@ -108,7 +108,7 @@ export function CodeField({
 
   return (
     <label className="block min-w-0">
-      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
         Authenticator Code
         <RequiredMark />
       </span>
@@ -143,8 +143,8 @@ export function InlineNote({
   text: string;
 }) {
   const toneClasses = {
-    green: "text-green-700",
-    amber: "text-amber-700",
+    green: "text-green-700 dark:text-green-300",
+    amber: "text-amber-700 dark:text-amber-200/90",
   };
 
   const Icon: LucideIcon = tone === "green" ? CheckCircle2 : Info;

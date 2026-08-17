@@ -8,7 +8,7 @@ export default function ProfileOrganizationSection({
   profile: UserProfile;
 }) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
       <SectionHeader
         title="Organization details"
         description="This information comes from the organization connected to your account."

@@ -37,8 +37,8 @@ export default function TwoFactorSection({
   onFieldChange,
 }: TwoFactorSectionProps) {
   return (
-    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-100 p-5 sm:p-6 lg:p-8">
+    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30">
+      <div className="border-b border-slate-100 p-5 transition-colors dark:border-slate-800 sm:p-6 lg:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <SectionHeader
             title={
@@ -58,7 +58,7 @@ export default function TwoFactorSection({
       </div>
 
       {!twoFactor.enabled && (
-        <div className="border-b border-slate-100 bg-cyan-50 p-5 sm:p-6 lg:p-8">
+        <div className="border-b border-slate-100 bg-cyan-50 p-5 transition-colors dark:border-slate-800 dark:bg-cyan-500/10 sm:p-6 lg:p-8">
           <TwoFactorSetupPanel
             twoFactor={twoFactor}
             copied={copied}
@@ -68,7 +68,7 @@ export default function TwoFactorSection({
       )}
 
       {twoFactor.enabled && (
-        <div className="border-b border-slate-100 bg-green-50 px-5 py-5 sm:px-6 lg:px-8">
+        <div className="border-b border-slate-100 bg-green-50 px-5 py-5 transition-colors dark:border-slate-800 dark:bg-green-500/10 sm:px-6 lg:px-8">
           <InlineNote
             tone="green"
             text="Two-factor authentication is enabled. Your next login will require your password and an authenticator code."
@@ -126,7 +126,7 @@ export default function TwoFactorSection({
             )}
           </LoadingButton>
 
-          <p className="text-xs font-semibold leading-5 text-slate-400">
+          <p className="text-xs font-semibold leading-5 text-slate-400 dark:text-slate-500">
             {twoFactor.enabled
               ? "A valid code is required before this protection can be disabled."
               : "The authenticator code refreshes every 30 seconds."}
