@@ -74,7 +74,7 @@ export default function BookingTimeSlotList({
           return (
             <div
               key={slot.id}
-              className="min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+              className="min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-slate-950/30 sm:p-5"
             >
               {editing ? (
                 <BookingTimeSlotForm
@@ -159,22 +159,22 @@ function TimeSlotCard({ slot, onEdit, onDelete }: TimeSlotCardProps) {
       <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
         <div className="min-w-0">
           <div className="mb-2 flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
-            <h3 className="min-w-0 wrap-break-word text-lg font-black text-slate-950 sm:text-xl">
+            <h3 className="min-w-0 wrap-break-word text-lg font-black text-slate-950 dark:text-slate-100 sm:text-xl">
               {slot.name}
             </h3>
 
             <span
               className={`w-fit shrink-0 rounded-full px-3 py-1 text-xs font-black ${
                 slot.active
-                  ? "bg-green-50 text-green-600"
-                  : "bg-slate-100 text-slate-500"
+                  ? "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300"
+                  : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
               }`}
             >
               {slot.active ? "Active" : "Inactive"}
             </span>
           </div>
 
-          <p className="wrap-break-word text-sm font-semibold leading-6 text-slate-500">
+          <p className="wrap-break-word text-sm font-semibold leading-6 text-slate-500 dark:text-slate-400">
             {formatDays(slot.days || daysFromString(slot.days_of_week))}
           </p>
         </div>
@@ -249,10 +249,10 @@ function IconButton({
       title={title}
       disabled={disabled}
       onClick={onClick}
-      className={`inline-flex h-10 w-full items-center justify-center rounded-xl border bg-white transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-10 ${
+      className={`inline-flex h-10 w-full items-center justify-center rounded-xl border bg-white transition disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-900 sm:w-10 ${
         danger
-          ? "border-red-100 text-red-500 hover:bg-red-50"
-          : "border-slate-200 text-slate-500 hover:border-cyan-200 hover:text-cyan-600"
+          ? "border-red-100 text-red-500 hover:bg-red-50 dark:border-red-500/20 dark:text-red-300 dark:hover:bg-red-500/10"
+          : "border-slate-200 text-slate-500 hover:border-cyan-200 hover:text-cyan-600 dark:border-slate-700 dark:text-slate-400 dark:hover:border-cyan-500/40 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
       }`}
     >
       {children}
@@ -268,13 +268,15 @@ type MetricProps = {
 
 function Metric({ icon: Icon, label, value }: MetricProps) {
   return (
-    <div className="min-w-0 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
-      <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
-        <Icon size={15} className="shrink-0 text-cyan-500" />
+    <div className="min-w-0 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition-colors dark:border-slate-700 dark:bg-slate-800/60">
+      <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-slate-400 dark:text-slate-500">
+        <Icon size={15} className="shrink-0 text-cyan-500 dark:text-cyan-300" />
         <span className="truncate">{label}</span>
       </div>
 
-      <p className="wrap-break-word text-lg font-black text-slate-950">{value}</p>
+      <p className="wrap-break-word text-lg font-black text-slate-950 dark:text-slate-100">
+        {value}
+      </p>
     </div>
   );
 }

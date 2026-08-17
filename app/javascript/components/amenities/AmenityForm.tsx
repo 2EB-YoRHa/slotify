@@ -95,37 +95,37 @@ export default function AmenityForm({
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6"
     >
-      <div className="grid gap-6 lg:grid-cols-[320px_1fr] lg:items-center">
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-center">
+        <div className="flex min-w-0 items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
             <PlusCircle size={22} strokeWidth={2.4} />
           </div>
 
-          <div>
-            <h2 className="text-xl font-black text-slate-950">
+          <div className="min-w-0">
+            <h2 className="text-xl font-black text-slate-950 dark:text-slate-100">
               Create Amenity
             </h2>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Add a reusable feature that can be assigned to workspaces.
             </p>
           </div>
         </div>
 
-        <label className="block">
-          <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
-            Amenity Name
+        <label className="block min-w-0">
+          <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
+            <span className="truncate">Amenity Name</span>
             <RequiredMark />
           </span>
 
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-start">
-            <div>
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+            <div className="min-w-0">
               <div className="relative">
                 <Sparkles
                   size={17}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
                 />
 
                 <input
@@ -134,7 +134,7 @@ export default function AmenityForm({
                   onChange={(event) => updateName(event.target.value)}
                   className={`h-12 ${formInputClassName(
                     hasFieldError(nameError),
-                  )}`}
+                  )} dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20`}
                   placeholder="Enter amenity name"
                   disabled={processing}
                 />
@@ -152,7 +152,7 @@ export default function AmenityForm({
               type="submit"
               loading={processing}
               loadingText="Creating..."
-              className="h-12 px-8"
+              className="h-12 w-full px-8 sm:w-auto"
             >
               Create Amenity
             </LoadingButton>

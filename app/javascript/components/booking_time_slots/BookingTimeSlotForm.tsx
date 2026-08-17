@@ -200,14 +200,14 @@ export default function BookingTimeSlotForm({
     <>
       <form noValidate onSubmit={handleSubmit} className="space-y-5">
         {disabled && (
-          <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+          <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 transition-colors dark:border-amber-500/20 dark:bg-amber-500/10">
             <div className="flex items-start gap-3">
               <LockKeyhole
                 size={18}
-                className="mt-0.5 shrink-0 text-amber-500"
+                className="mt-0.5 shrink-0 text-amber-500 dark:text-amber-300"
               />
 
-              <p className="text-sm font-semibold leading-6 text-amber-700">
+              <p className="text-sm font-semibold leading-6 text-amber-700 dark:text-amber-200/90">
                 Upgrade to Pro to create and manage custom time slots.
               </p>
             </div>
@@ -259,7 +259,7 @@ export default function BookingTimeSlotForm({
         </div>
 
         <div>
-          <div className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-950">
+          <div className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-950 dark:text-slate-100">
             Active Days
             <RequiredMark show />
           </div>
@@ -276,8 +276,8 @@ export default function BookingTimeSlotForm({
                   onClick={() => toggleDay(day.value)}
                   className={`rounded-xl border px-3 py-3 text-sm font-extrabold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                     selected
-                      ? "border-cyan-200 bg-cyan-50 text-cyan-600"
-                      : "border-slate-200 bg-white text-slate-500 hover:border-cyan-100 hover:text-cyan-600"
+                      ? "border-cyan-200 bg-cyan-50 text-cyan-600 dark:border-cyan-500/40 dark:bg-cyan-500/10 dark:text-cyan-300"
+                      : "border-slate-200 bg-white text-slate-500 hover:border-cyan-100 hover:text-cyan-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-cyan-500/40 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
                   }`}
                 >
                   {day.label}
@@ -293,32 +293,36 @@ export default function BookingTimeSlotForm({
         </div>
 
         <div
-          className={`rounded-2xl border p-4 sm:p-5 ${
+          className={`rounded-2xl border p-4 transition-colors sm:p-5 ${
             data.active
-              ? "border-cyan-100 bg-cyan-50"
-              : "border-slate-200 bg-slate-50"
+              ? "border-cyan-100 bg-cyan-50 dark:border-cyan-500/30 dark:bg-cyan-500/10"
+              : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60"
           }`}
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm transition-colors dark:bg-slate-900 dark:text-cyan-300 dark:shadow-none">
                 <ToggleLeft size={19} strokeWidth={2.4} />
               </div>
 
               <div className="min-w-0">
-                <p className="font-bold text-slate-950">Time Slot Status</p>
+                <p className="font-bold text-slate-950 dark:text-slate-100">
+                  Time Slot Status
+                </p>
 
-                <p className="mt-1 text-sm leading-6 text-slate-500">
+                <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
                   Inactive time slots stay saved but should not be used for new
                   scheduling options.
                 </p>
               </div>
             </div>
 
-            <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm sm:w-auto sm:justify-start">
+            <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm transition-colors dark:bg-slate-900 dark:shadow-none sm:w-auto sm:justify-start">
               <span
                 className={`text-sm font-bold ${
-                  data.active ? "text-cyan-600" : "text-slate-400"
+                  data.active
+                    ? "text-cyan-600 dark:text-cyan-300"
+                    : "text-slate-400 dark:text-slate-500"
                 }`}
               >
                 {data.active ? "Active" : "Inactive"}
@@ -329,7 +333,7 @@ export default function BookingTimeSlotForm({
                 checked={data.active}
                 disabled={locked}
                 onChange={(event) => setData("active", event.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+                className="h-4 w-4 rounded border-slate-300 text-cyan-400 focus:ring-cyan-400 dark:border-slate-600 dark:bg-slate-900 dark:focus:ring-cyan-500/30"
               />
             </label>
           </div>
@@ -341,7 +345,7 @@ export default function BookingTimeSlotForm({
               type="button"
               disabled={processing}
               onClick={requestCancel}
-              className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:w-auto"
             >
               Cancel
             </button>
@@ -411,7 +415,7 @@ function TextInput({
 
   return (
     <label className="block min-w-0">
-      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-950">
+      <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-950 dark:text-slate-100">
         {label}
         <RequiredMark show={required} />
       </span>
@@ -419,7 +423,7 @@ function TextInput({
       <div className="relative">
         <Icon
           size={18}
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         />
 
         <input

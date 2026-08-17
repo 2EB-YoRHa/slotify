@@ -129,19 +129,19 @@ export default function BookingRuleForm({
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
+      className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8"
     >
       <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-14 sm:w-14">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 sm:h-14 sm:w-14">
           <CalendarClock size={24} strokeWidth={2.4} />
         </div>
 
         <div className="min-w-0">
-          <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+          <h2 className="text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
             Booking Rules
           </h2>
 
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
             Configure how members can create, schedule, and cancel reservations.
             Your current plan controls the allowed rule ranges.
           </p>
@@ -219,7 +219,7 @@ export default function BookingRuleForm({
         </div>
       )}
 
-      <div className="mt-6 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm leading-6 text-cyan-700 sm:mt-8 sm:p-5">
+      <div className="mt-6 rounded-xl border border-cyan-100 bg-cyan-50 p-4 text-sm leading-6 text-cyan-700 transition-colors dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-cyan-300 sm:mt-8 sm:p-5">
         <div className="flex items-start gap-3">
           <AlertTriangle size={18} className="mt-0.5 shrink-0" />
 
@@ -238,7 +238,7 @@ export default function BookingRuleForm({
       <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:gap-4">
         <a
           href="/booking_rule"
-          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 sm:w-auto"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:w-auto"
         >
           Cancel
         </a>
@@ -284,16 +284,18 @@ function RuleInput({
   const hasError = hasFieldError(error);
 
   return (
-    <label className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+    <label className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4 transition-colors dark:border-slate-700 dark:bg-slate-800/60 sm:p-5">
       <div className="mb-4 flex min-w-0 items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
           <Icon size={19} strokeWidth={2.4} />
         </div>
 
         <div className="min-w-0">
           <FieldLabel label={label} required />
 
-          <p className="mt-1 text-xs leading-5 text-slate-500">{helper}</p>
+          <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+            {helper}
+          </p>
         </div>
       </div>
 
@@ -308,7 +310,7 @@ function RuleInput({
         disabled={disabled}
       />
 
-      <div className="mt-2 flex justify-between gap-4 text-xs font-semibold text-slate-400">
+      <div className="mt-2 flex justify-between gap-4 text-xs font-semibold text-slate-400 dark:text-slate-500">
         <span>Min: {min}</span>
         <span>Max: {max}</span>
       </div>
@@ -340,28 +342,34 @@ function ToggleCard({
   return (
     <div
       className={`rounded-xl border p-4 transition sm:p-5 ${
-        checked ? "border-cyan-200 bg-cyan-50" : "border-slate-200 bg-slate-50"
+        checked
+          ? "border-cyan-200 bg-cyan-50 dark:border-cyan-500/40 dark:bg-cyan-500/10"
+          : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60"
       }`}
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-500 shadow-sm transition-colors dark:bg-slate-900 dark:text-cyan-300 dark:shadow-none">
             <Icon size={19} strokeWidth={2.4} />
           </div>
 
           <div className="min-w-0">
-            <p className="font-bold text-slate-950">{title}</p>
+            <p className="font-bold text-slate-950 dark:text-slate-100">
+              {title}
+            </p>
 
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
               {description}
             </p>
           </div>
         </div>
 
-        <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm sm:w-auto sm:justify-start">
+        <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 shadow-sm transition-colors dark:bg-slate-900 dark:shadow-none sm:w-auto sm:justify-start">
           <span
             className={`text-sm font-bold ${
-              checked ? "text-cyan-600" : "text-slate-400"
+              checked
+                ? "text-cyan-600 dark:text-cyan-300"
+                : "text-slate-400 dark:text-slate-500"
             }`}
           >
             {label}
@@ -372,7 +380,7 @@ function ToggleCard({
             checked={checked}
             onChange={(event) => onChange(event.target.checked)}
             disabled={disabled}
-            className="h-4 w-4 rounded border-slate-300 text-cyan-400"
+            className="h-4 w-4 rounded border-slate-300 text-cyan-400 focus:ring-cyan-400 dark:border-slate-600 dark:bg-slate-900 dark:focus:ring-cyan-500/30"
           />
         </label>
       </div>
@@ -387,7 +395,7 @@ type FieldLabelProps = {
 
 function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
-    <span className="flex items-center gap-1 font-bold text-slate-950">
+    <span className="flex items-center gap-1 font-bold text-slate-950 dark:text-slate-100">
       {label}
       <RequiredMark show={required} />
     </span>
