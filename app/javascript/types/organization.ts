@@ -17,6 +17,7 @@ export type OrganizationUser = {
   name: string;
   email: string;
   active: boolean;
+  avatar_url?: string | null;
   role?: Role | null;
 };
 

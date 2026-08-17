@@ -84,21 +84,7 @@ function RecentReservationCard({
       className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/40"
     >
       <div className="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
-            <UserRound size={18} strokeWidth={2.4} />
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-bold text-slate-950 dark:text-slate-100">
-              {reservation.user?.name || "Unknown user"}
-            </p>
-
-            <p className="mt-1 truncate text-xs text-slate-400 dark:text-slate-500">
-              {reservation.user?.email || "-"}
-            </p>
-          </div>
-        </div>
+        <UserIdentity reservation={reservation} avatarSize="large" />
 
         <div className="shrink-0 self-start">
           <ReservationStatusBadge status={reservation.status} />
@@ -148,13 +134,7 @@ function RecentReservationsTable({ reservations }: RecentReservationsProps) {
             className="border-t border-slate-100 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50"
           >
             <td className="px-4 py-5 align-middle">
-              <p className="truncate font-bold text-slate-950 dark:text-slate-100">
-                {reservation.user?.name || "Unknown user"}
-              </p>
-
-              <p className="mt-1 truncate text-xs text-slate-400 dark:text-slate-500">
-                {reservation.user?.email || "-"}
-              </p>
+              <UserIdentity reservation={reservation} />
             </td>
 
             <td className="px-4 py-5 text-center align-middle text-slate-600 dark:text-slate-400">
@@ -163,7 +143,10 @@ function RecentReservationsTable({ reservations }: RecentReservationsProps) {
 
             <td className="px-4 py-5 text-center align-middle text-slate-600 dark:text-slate-400">
               <div className="inline-flex items-center gap-2">
-                <Clock3 size={15} className="text-slate-400 dark:text-slate-500" />
+                <Clock3
+                  size={15}
+                  className="text-slate-400 dark:text-slate-500"
+                />
                 {formatTime(reservation.start_time)} -{" "}
                 {formatTime(reservation.end_time)}
               </div>
@@ -176,6 +159,59 @@ function RecentReservationsTable({ reservations }: RecentReservationsProps) {
         ))}
       </tbody>
     </table>
+  );
+}
+
+function UserIdentity({
+  reservation,
+  avatarSize = "default",
+}: {
+  reservation: WorkspaceReservation;
+  avatarSize?: "default" | "large";
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-3">
+      <UserAvatar reservation={reservation} size={avatarSize} />
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-bold text-slate-950 dark:text-slate-100">
+          {reservation.user?.name || "Unknown user"}
+        </p>
+
+        <p className="mt-1 truncate text-xs text-slate-400 dark:text-slate-500">
+          {reservation.user?.email || "-"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function UserAvatar({
+  reservation,
+  size,
+}: {
+  reservation: WorkspaceReservation;
+  size: "default" | "large";
+}) {
+  const sizeClass = size === "large" ? "h-11 w-11" : "h-10 w-10";
+  const radiusClass = size === "large" ? "rounded-2xl" : "rounded-xl";
+
+  if (reservation.user?.avatar_url) {
+    return (
+      <img
+        src={reservation.user.avatar_url}
+        alt={reservation.user.name || "User"}
+        className={`${sizeClass} shrink-0 ${radiusClass} object-cover ring-4 ring-cyan-50 dark:ring-cyan-500/10`}
+      />
+    );
+  }
+
+  return (
+    <div
+      className={`flex ${sizeClass} shrink-0 items-center justify-center ${radiusClass} bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300`}
+    >
+      <UserRound size={18} strokeWidth={2.4} />
+    </div>
   );
 }
 

@@ -334,17 +334,26 @@ class WorkspacesController < InertiaController
     def serialize_workspace_reservations
       @workspace
         .reservations
-        .includes(:user)
+        .includes(user: { avatar_attachment: :blob })
         .order(start_time: :desc)
         .limit(10)
-        .as_json(
-          only: %i[id start_time end_time status],
-          include: {
-            user: {
-              only: %i[id name email]
-            }
-          }
-        )
+        .map do |reservation|
+          reservation.as_json(
+            only: %i[id start_time end_time status]
+          ).merge(
+            user: serialize_reservation_user(reservation.user)
+          )
+        end
+    end
+
+    def serialize_reservation_user(user)
+      return nil unless user.present?
+
+      user.as_json(
+        only: %i[id name email]
+      ).merge(
+        avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil
+      )
     end
 
     def delete_error_for(can_delete)

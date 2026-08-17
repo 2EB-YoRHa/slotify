@@ -5,7 +5,7 @@ class OrganizationsController < InertiaController
     organization = current_organization
 
     users = organization.users
-                        .includes(:role)
+                        .includes(:role, avatar_attachment: :blob)
                         .order(:name)
 
     invitations = organization.organization_invitations
@@ -19,59 +19,33 @@ class OrganizationsController < InertiaController
 
     roles = Role.where(name: [ "member", "manager" ]).order(:name)
 
+    props = {
+      organization: organization.as_json(
+        only: [ :id, :name, :slug, :email, :phone, :address ]
+      ),
+      users: serialize_users(users),
+      invitations: invitations.as_json(
+        only: [ :id, :email, :status, :token, :expires_at, :created_at ],
+        include: {
+          role: { only: [ :id, :name ] },
+          invited_by: { only: [ :id, :name, :email ] }
+        }
+      ),
+      roles: roles.as_json(only: [ :id, :name ]),
+      booking_rule: organization.booking_rule,
+      subscription: subscription,
+      current_user_role: current_user.role&.name,
+      current_user_email: current_user.email,
+      can_manage_organization: admin? || manager?
+    }
+
     respond_to do |format|
       format.html do
-        render inertia: "organizations/show", props: {
-          organization: organization.as_json(
-            only: [ :id, :name, :slug, :email, :phone, :address ]
-          ),
-          users: users.as_json(
-            only: [ :id, :name, :email, :active ],
-            include: {
-              role: { only: [ :id, :name ] }
-            }
-          ),
-          invitations: invitations.as_json(
-            only: [ :id, :email, :status, :token, :expires_at, :created_at ],
-            include: {
-              role: { only: [ :id, :name ] },
-              invited_by: { only: [ :id, :name, :email ] }
-            }
-          ),
-          roles: roles.as_json(only: [ :id, :name ]),
-          booking_rule: organization.booking_rule,
-          subscription: subscription,
-          current_user_role: current_user.role&.name,
-          current_user_email: current_user.email,
-          can_manage_organization: admin? || manager?
-        }
+        render inertia: "organizations/show", props: props
       end
 
       format.json do
-        render json: {
-          organization: organization.as_json(
-            only: [ :id, :name, :slug, :email, :phone, :address ]
-          ),
-          users: users.as_json(
-            only: [ :id, :name, :email, :active ],
-            include: {
-              role: { only: [ :id, :name ] }
-            }
-          ),
-          invitations: invitations.as_json(
-            only: [ :id, :email, :status, :token, :expires_at, :created_at ],
-            include: {
-              role: { only: [ :id, :name ] },
-              invited_by: { only: [ :id, :name, :email ] }
-            }
-          ),
-          roles: roles.as_json(only: [ :id, :name ]),
-          booking_rule: organization.booking_rule,
-          subscription: subscription,
-          current_user_role: current_user.role&.name,
-          current_user_email: current_user.email,
-          can_manage_organization: admin? || manager?
-        }
+        render json: props
       end
     end
   end
@@ -127,5 +101,18 @@ class OrganizationsController < InertiaController
       :phone,
       :address
     )
+  end
+
+  def serialize_users(users)
+    users.map do |user|
+      user.as_json(
+        only: [ :id, :name, :email, :active ],
+        include: {
+          role: { only: [ :id, :name ] }
+        }
+      ).merge(
+        avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil
+      )
+    end
   end
 end

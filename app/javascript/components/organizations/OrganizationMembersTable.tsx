@@ -119,7 +119,7 @@ export default function OrganizationMembersTable({
                   >
                     <td className="px-6 py-4 text-left align-middle">
                       <div className="flex min-w-0 items-center gap-3">
-                        <Avatar name={user.name} />
+                        <Avatar name={user.name} avatarUrl={user.avatar_url} />
 
                         <div className="min-w-0 text-left">
                           <div className="truncate font-semibold text-slate-900 dark:text-slate-100">
@@ -180,7 +180,7 @@ function MemberCard({
   return (
     <article className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/40">
       <div className="mb-4 flex min-w-0 items-start gap-3">
-        <Avatar name={user.name} />
+        <Avatar name={user.name} avatarUrl={user.avatar_url} />
 
         <div className="min-w-0 flex-1">
           <p className="truncate font-bold text-slate-950 dark:text-slate-100">
@@ -221,7 +221,23 @@ function MemberCard({
   );
 }
 
-function Avatar({ name }: { name?: string | null }) {
+function Avatar({
+  name,
+  avatarUrl,
+}: {
+  name?: string | null;
+  avatarUrl?: string | null;
+}) {
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={name || "User"}
+        className="h-11 w-11 shrink-0 rounded-full object-cover ring-4 ring-cyan-50 dark:ring-cyan-500/10"
+      />
+    );
+  }
+
   return (
     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cyan-50 font-bold text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
       {initials(name)}

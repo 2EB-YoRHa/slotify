@@ -12,7 +12,10 @@ import ReservationStatusBadge from "../reservations/ReservationStatusBadge";
 import { formatDate, formatTime } from "../../utils/dateTime";
 import { formatText } from "../../utils/reservationFormUtils";
 import { EmptyPanelMessage, IconBox } from "./DashboardShared";
-import type { UpcomingReservation } from "../../types/dashboardTypes";
+import type {
+  DashboardUser,
+  UpcomingReservation,
+} from "../../types/dashboardTypes";
 
 type DashboardUpcomingReservationsProps = {
   reservations: UpcomingReservation[];
@@ -142,14 +145,11 @@ function UpcomingReservationCard({
         <ReservationStatusBadge status={reservation.status} />
       </div>
 
-      <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:grid-cols-2">
-        <CardLine
-          icon={UserRound}
-          label="User"
-          value={reservation.user?.name || "Unknown user"}
-          helper={reservation.user?.email || "-"}
-        />
+      <div className="mb-3 rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60">
+        <UserIdentity user={reservation.user} />
+      </div>
 
+      <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:grid-cols-2">
         <CardLine
           icon={CalendarCheck}
           label="Date"
@@ -176,13 +176,7 @@ function UpcomingReservationRow({
   return (
     <tr className="border-t border-slate-100 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50">
       <td className="px-6 py-4">
-        <div className="truncate font-bold text-slate-900 dark:text-slate-100">
-          {reservation.user?.name || "Unknown user"}
-        </div>
-
-        <div className="truncate text-xs text-slate-400 dark:text-slate-500">
-          {reservation.user?.email || "-"}
-        </div>
+        <UserIdentity user={reservation.user} />
       </td>
 
       <td className="px-6 py-4">
@@ -209,6 +203,46 @@ function UpcomingReservationRow({
         </div>
       </td>
     </tr>
+  );
+}
+
+type UserIdentityProps = {
+  user?: DashboardUser | null;
+};
+
+function UserIdentity({ user }: UserIdentityProps) {
+  return (
+    <div className="flex min-w-0 items-center gap-3">
+      <UserAvatar user={user} />
+
+      <div className="min-w-0">
+        <div className="truncate font-bold text-slate-900 dark:text-slate-100">
+          {user?.name || "Unknown user"}
+        </div>
+
+        <div className="truncate text-xs text-slate-400 dark:text-slate-500">
+          {user?.email || "-"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function UserAvatar({ user }: UserIdentityProps) {
+  if (user?.avatar_url) {
+    return (
+      <img
+        src={user.avatar_url}
+        alt={user.name || "User"}
+        className="h-10 w-10 shrink-0 rounded-2xl object-cover ring-4 ring-cyan-50 dark:ring-cyan-500/10"
+      />
+    );
+  }
+
+  return (
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
+      <UserRound size={18} strokeWidth={2.4} />
+    </div>
   );
 }
 

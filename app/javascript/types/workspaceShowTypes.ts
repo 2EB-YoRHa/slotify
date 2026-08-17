@@ -14,5 +14,6 @@ export type WorkspaceReservation = {
     id: number;
     name: string;
     email?: string | null;
+    avatar_url?: string | null;
   } | null;
 };
