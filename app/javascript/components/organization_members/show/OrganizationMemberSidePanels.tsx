@@ -52,7 +52,7 @@ function AccessControlPanel({
 }: AccessControlPanelProps) {
   return (
     <SidePanel title="Access Control" icon={member.active ? Power : PowerOff}>
-      <p className="text-sm leading-6 text-slate-500">
+      <p className="text-sm leading-6 text-slate-500 dark:text-slate-400">
         Deactivating a member prevents them from signing in, but keeps their
         historical reservations available for reports and audit.
       </p>
@@ -68,7 +68,7 @@ function AccessControlPanel({
           {member.active ? "Deactivate Access" : "Activate Access"}
         </LoadingButton>
       ) : (
-        <div className="mt-6 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-500">
+        <div className="mt-6 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-500 transition-colors dark:bg-slate-800/60 dark:text-slate-400">
           You cannot disable your own access.
         </div>
       )}

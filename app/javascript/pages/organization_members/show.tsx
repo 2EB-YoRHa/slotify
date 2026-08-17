@@ -48,7 +48,7 @@ export default function OrganizationMemberShow({
       <OrganizationMemberHeader member={member} />
 
       {!can_toggle_access && (
-        <div className="mb-6 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm font-semibold leading-6 text-yellow-700 sm:mb-8 sm:p-5">
+        <div className="mb-6 rounded-xl border border-yellow-100 bg-yellow-50 p-4 text-sm font-semibold leading-6 text-yellow-700 transition-colors dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-200 sm:mb-8 sm:p-5">
           You cannot deactivate your own account.
         </div>
       )}

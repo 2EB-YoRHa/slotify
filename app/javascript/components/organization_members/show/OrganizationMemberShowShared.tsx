@@ -10,7 +10,7 @@ export type IconBoxProps = {
 export function IconBox({ icon: Icon, large = false }: IconBoxProps) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 ${
+      className={`flex shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 ${
         large ? "h-12 w-12 sm:h-14 sm:w-14" : "h-10 w-10"
       }`}
     >
@@ -39,15 +39,15 @@ export function MemberStatCard({ stat, index }: MemberStatCardProps) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-5 xl:p-6"
+      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 dark:hover:border-slate-700 sm:p-5 xl:p-6"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-medium leading-5 text-slate-500">
+          <p className="text-sm font-medium leading-5 text-slate-500 dark:text-slate-400">
             {stat.label}
           </p>
 
-          <h2 className="mt-2 truncate text-2xl font-bold text-slate-950 sm:text-3xl">
+          <h2 className="mt-2 truncate text-2xl font-bold text-slate-950 dark:text-slate-100 sm:text-3xl">
             {stat.value}
           </h2>
         </div>
@@ -55,7 +55,9 @@ export function MemberStatCard({ stat, index }: MemberStatCardProps) {
         <IconBox icon={Icon} />
       </div>
 
-      <p className="mt-3 text-xs leading-5 text-slate-500">{stat.helper}</p>
+      <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        {stat.helper}
+      </p>
     </motion.div>
   );
 }
@@ -68,15 +70,17 @@ type InfoCardProps = {
 
 export function InfoCard({ icon: Icon, label, value }: InfoCardProps) {
   return (
-    <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50 p-4 sm:p-5">
-      <div className="mb-3 flex items-center gap-2 text-slate-400">
+    <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50 p-4 transition-colors dark:border-slate-700 dark:bg-slate-800/60 sm:p-5">
+      <div className="mb-3 flex items-center gap-2 text-slate-400 dark:text-slate-500">
         <Icon size={16} className="shrink-0" />
         <p className="truncate text-xs font-bold uppercase tracking-wide">
           {label}
         </p>
       </div>
 
-      <p className="wrap-break-word text-sm font-bold text-slate-900">{value}</p>
+      <p className="wrap-break-word text-sm font-bold text-slate-900 dark:text-slate-100">
+        {value}
+      </p>
     </div>
   );
 }
@@ -89,11 +93,11 @@ type SidePanelProps = {
 
 export function SidePanel({ title, icon: Icon, children }: SidePanelProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
       <div className="mb-5 flex min-w-0 items-center gap-3">
         <IconBox icon={Icon} />
 
-        <h2 className="min-w-0 wrap-break-word text-lg font-bold text-slate-950">
+        <h2 className="min-w-0 wrap-break-word text-lg font-bold text-slate-950 dark:text-slate-100">
           {title}
         </h2>
       </div>
@@ -110,10 +114,12 @@ type SummaryRowProps = {
 
 export function SummaryRow({ label, value }: SummaryRowProps) {
   return (
-    <div className="flex flex-col gap-1 border-b border-slate-100 py-3 last:border-0 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-      <span className="text-sm text-slate-500">{label}</span>
+    <div className="flex flex-col gap-1 border-b border-slate-100 py-3 last:border-0 dark:border-slate-700 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+      <span className="text-sm text-slate-500 dark:text-slate-400">
+        {label}
+      </span>
 
-      <span className="wrap-break-word text-sm font-bold text-slate-950 sm:text-right">
+      <span className="wrap-break-word text-sm font-bold text-slate-950 dark:text-slate-100 sm:text-right">
         {value}
       </span>
     </div>
@@ -124,7 +130,9 @@ export function StatusBadge({ active }: { active: boolean }) {
   return (
     <span
       className={`inline-flex w-fit shrink-0 rounded-full px-3 py-1 text-xs font-bold ${
-        active ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
+        active
+          ? "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300"
+          : "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-300"
       }`}
     >
       {active ? "Active" : "Inactive"}

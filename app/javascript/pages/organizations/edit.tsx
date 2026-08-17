@@ -23,7 +23,7 @@ export default function OrganizationEdit({
         >
           <Link
             href="/organization"
-            className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 hover:text-cyan-600"
+            className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 transition hover:text-cyan-600 dark:text-cyan-300 dark:hover:text-cyan-200"
           >
             <ArrowLeft size={16} />
             <span className="truncate">Back to Organization</span>
@@ -34,7 +34,7 @@ export default function OrganizationEdit({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04 }}
-          className="mt-5 break-words text-2xl font-black leading-tight text-slate-950 sm:mt-6 sm:text-3xl"
+          className="mt-5 wrap-break-word text-2xl font-black leading-tight text-slate-950 dark:text-slate-100 sm:mt-6 sm:text-3xl"
         >
           Edit Organization
         </motion.h1>
@@ -43,7 +43,7 @@ export default function OrganizationEdit({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base"
+          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base"
         >
           Update organization contact information, address, and public workspace
           profile details.

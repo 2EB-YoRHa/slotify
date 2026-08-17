@@ -115,19 +115,19 @@ export default function OrganizationForm({
       <form
         noValidate
         onSubmit={handleSubmit}
-        className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
+        className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8"
       >
         <div className="mb-6 flex items-start gap-3 sm:mb-8 sm:gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-14 sm:w-14">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 sm:h-14 sm:w-14">
             <Building2 size={24} strokeWidth={2.4} />
           </div>
 
           <div className="min-w-0">
-            <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
+            <h2 className="text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
               Organization Details
             </h2>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Update the organization profile information shown across Slotify.
             </p>
           </div>
@@ -187,7 +187,7 @@ export default function OrganizationForm({
             <div className="relative">
               <MapPin
                 size={17}
-                className="pointer-events-none absolute left-4 top-4 text-slate-400"
+                className="pointer-events-none absolute left-4 top-4 text-slate-400 dark:text-slate-500"
               />
 
               <textarea
@@ -208,7 +208,7 @@ export default function OrganizationForm({
                 Optional. Add the main physical location or business address.
               </FieldHint>
 
-              <span className="shrink-0 text-xs font-semibold text-slate-400 sm:text-right">
+              <span className="shrink-0 text-xs font-semibold text-slate-400 dark:text-slate-500 sm:text-right">
                 {data.address.length}/200
               </span>
             </div>
@@ -218,7 +218,7 @@ export default function OrganizationForm({
         </div>
 
         {getBaseError(errors) && (
-          <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm leading-6 text-red-600">
+          <div className="mt-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm leading-6 text-red-600 transition-colors dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
             {getBaseError(errors)}
           </div>
         )}
@@ -228,7 +228,7 @@ export default function OrganizationForm({
             type="button"
             disabled={processing}
             onClick={() => unsavedChangesGuard.guardedVisit("/organization")}
-            className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:w-auto"
           >
             Cancel
           </button>
@@ -292,7 +292,7 @@ function TextInput({
       <div className="relative">
         <Icon
           size={17}
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         />
 
         <input
@@ -319,7 +319,7 @@ type FieldLabelProps = {
 
 function FieldLabel({ label, required = false }: FieldLabelProps) {
   return (
-    <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700">
+    <span className="mb-2 flex min-w-0 items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
       <span className="truncate">{label}</span>
       <RequiredMark show={required} />
     </span>

@@ -32,14 +32,14 @@ export default function OrganizationMembersTable({
   });
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30">
+      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 transition-colors dark:border-slate-800 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <h2 className="text-lg font-bold text-slate-900 sm:text-xl">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 sm:text-xl">
             Team Members
           </h2>
 
-          <p className="mt-1 text-sm leading-6 text-slate-500">
+          <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
             Users assigned to this organization.
           </p>
         </div>
@@ -47,7 +47,7 @@ export default function OrganizationMembersTable({
         <div className="relative w-full lg:w-80">
           <Search
             size={17}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
           />
 
           <input
@@ -55,22 +55,22 @@ export default function OrganizationMembersTable({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search members..."
-            className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 text-sm font-medium outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50"
+            className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20"
           />
         </div>
       </div>
 
       {filteredUsers.length === 0 ? (
         <div className="px-5 py-10 text-center sm:p-12">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 transition-colors dark:bg-slate-800 dark:text-slate-500">
             <UserRound size={24} />
           </div>
 
-          <h3 className="mt-4 text-lg font-bold text-slate-900">
+          <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-slate-100">
             No members found
           </h3>
 
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             Try changing the search text.
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function OrganizationMembersTable({
           </div>
 
           <div className="hidden overflow-x-auto md:block">
-            <table className="min-w-[760px] w-full table-fixed text-sm">
+            <table className="min-w-190 w-full table-fixed text-sm">
               <colgroup>
                 <col className="w-[46%]" />
                 <col className="w-[18%]" />
@@ -91,7 +91,7 @@ export default function OrganizationMembersTable({
                 <col className="w-[18%]" />
               </colgroup>
 
-              <thead className="bg-slate-50 text-slate-500">
+              <thead className="bg-slate-50 text-slate-500 transition-colors dark:bg-slate-800/70 dark:text-slate-400">
                 <tr>
                   <th className="px-6 py-4 text-left align-middle font-medium">
                     Members
@@ -115,18 +115,18 @@ export default function OrganizationMembersTable({
                 {filteredUsers.map((user) => (
                   <tr
                     key={user.id}
-                    className="h-18 border-t border-slate-100 hover:bg-slate-50"
+                    className="h-18 border-t border-slate-100 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50"
                   >
                     <td className="px-6 py-4 text-left align-middle">
                       <div className="flex min-w-0 items-center gap-3">
                         <Avatar name={user.name} />
 
                         <div className="min-w-0 text-left">
-                          <div className="truncate font-semibold text-slate-900">
+                          <div className="truncate font-semibold text-slate-900 dark:text-slate-100">
                             {user.name}
                           </div>
 
-                          <div className="truncate text-xs text-slate-400">
+                          <div className="truncate text-xs text-slate-400 dark:text-slate-500">
                             {user.email}
                           </div>
                         </div>
@@ -149,12 +149,12 @@ export default function OrganizationMembersTable({
                       {canManage ? (
                         <Link
                           href={`/organization/members/${user.id}`}
-                          className="text-sm font-bold text-cyan-500 hover:text-cyan-600"
+                          className="text-sm font-bold text-cyan-500 transition hover:text-cyan-600 dark:text-cyan-300 dark:hover:text-cyan-200"
                         >
                           Manage
                         </Link>
                       ) : (
-                        <span className="text-sm font-semibold text-slate-300">
+                        <span className="text-sm font-semibold text-slate-300 dark:text-slate-600">
                           -
                         </span>
                       )}
@@ -178,18 +178,22 @@ function MemberCard({
   canManage: boolean;
 }) {
   return (
-    <article className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <article className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/40">
       <div className="mb-4 flex min-w-0 items-start gap-3">
         <Avatar name={user.name} />
 
         <div className="min-w-0 flex-1">
-          <p className="truncate font-bold text-slate-950">{user.name}</p>
+          <p className="truncate font-bold text-slate-950 dark:text-slate-100">
+            {user.name}
+          </p>
 
-          <p className="mt-1 truncate text-xs text-slate-400">{user.email}</p>
+          <p className="mt-1 truncate text-xs text-slate-400 dark:text-slate-500">
+            {user.email}
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4">
+      <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60">
         <InfoLine
           icon={<ShieldCheck size={15} />}
           label="Role"
@@ -208,7 +212,7 @@ function MemberCard({
       {canManage && (
         <Link
           href={`/organization/members/${user.id}`}
-          className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-cyan-400 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:bg-cyan-500"
+          className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-cyan-400 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:bg-cyan-500 dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
         >
           Manage Member
         </Link>
@@ -219,7 +223,7 @@ function MemberCard({
 
 function Avatar({ name }: { name?: string | null }) {
   return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cyan-50 font-bold text-cyan-500">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cyan-50 font-bold text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
       {initials(name)}
     </div>
   );
@@ -227,7 +231,7 @@ function Avatar({ name }: { name?: string | null }) {
 
 function RoleBadge({ role }: { role?: string | null }) {
   return (
-    <span className="inline-flex min-w-24 justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+    <span className="inline-flex min-w-24 justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
       {formatRole(role)}
     </span>
   );
@@ -237,7 +241,9 @@ function StatusBadge({ active }: { active: boolean }) {
   return (
     <span
       className={`inline-flex min-w-24 justify-center rounded-full px-3 py-1 text-xs font-bold ${
-        active ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
+        active
+          ? "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300"
+          : "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-300"
       }`}
     >
       {active ? "Active" : "Inactive"}
@@ -256,12 +262,14 @@ function InfoLine({
 }) {
   return (
     <div className="flex min-w-0 items-center justify-between gap-4">
-      <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+      <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         {icon}
         {label}
       </div>
 
-      <p className="truncate text-sm font-bold text-slate-950">{value}</p>
+      <p className="truncate text-sm font-bold text-slate-950 dark:text-slate-100">
+        {value}
+      </p>
     </div>
   );
 }

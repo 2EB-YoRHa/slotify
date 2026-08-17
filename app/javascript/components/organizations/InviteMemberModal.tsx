@@ -150,21 +150,21 @@ export default function InviteMemberModal({
       <form
         noValidate
         onSubmit={handleSubmit}
-        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl shadow-slate-950/20 overscroll-contain"
+        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl shadow-slate-950/20 overscroll-contain transition-colors dark:bg-slate-900 dark:shadow-slate-950/50"
       >
-        <header className="shrink-0 border-b border-slate-200 bg-white p-4 sm:p-6">
+        <header className="shrink-0 border-b border-slate-200 bg-white p-4 transition-colors dark:border-slate-800 dark:bg-slate-900 sm:p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 sm:h-14 sm:w-14">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 sm:h-14 sm:w-14">
                 <UserPlus size={24} strokeWidth={2.4} />
               </div>
 
               <div className="min-w-0">
-                <h2 className="break-words text-xl font-black leading-tight text-slate-950 sm:text-2xl">
+                <h2 className="wrap-break-word text-xl font-black leading-tight text-slate-950 dark:text-slate-100 sm:text-2xl">
                   Invite New Member
                 </h2>
 
-                <p className="mt-2 text-sm leading-6 text-slate-500">
+                <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
                   Send an invitation and assign the initial access level.
                 </p>
               </div>
@@ -174,7 +174,7 @@ export default function InviteMemberModal({
               type="button"
               onClick={closeModal}
               disabled={processing}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-50 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-50 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
               aria-label="Close invitation modal"
             >
               <X size={20} />
@@ -185,7 +185,7 @@ export default function InviteMemberModal({
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
           <div className="space-y-5">
             <label className="block min-w-0">
-              <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+              <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
                 Email Address
                 <RequiredMark />
               </span>
@@ -193,7 +193,7 @@ export default function InviteMemberModal({
               <div className="relative">
                 <Mail
                   size={17}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
                 />
 
                 <input
@@ -215,7 +215,7 @@ export default function InviteMemberModal({
             </label>
 
             <label className="block min-w-0">
-              <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700">
+              <span className="mb-2 flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300">
                 Initial Role
                 <RequiredMark />
               </span>
@@ -223,7 +223,7 @@ export default function InviteMemberModal({
               <div className="relative">
                 <ShieldCheck
                   size={17}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
                 />
 
                 <select
@@ -231,7 +231,7 @@ export default function InviteMemberModal({
                   onChange={(event) => updateRole(event.target.value)}
                   className={`${formInputClassName(
                     hasFieldError(roleError),
-                  )} appearance-none bg-white pr-10`}
+                  )} appearance-none bg-white pr-10 dark:bg-slate-900`}
                   disabled={processing}
                 >
                   {roles.length === 0 ? (
@@ -253,7 +253,7 @@ export default function InviteMemberModal({
           </div>
         </div>
 
-        <footer className="shrink-0 border-t border-slate-200 bg-slate-50/80 p-4 sm:p-6">
+        <footer className="shrink-0 border-t border-slate-200 bg-slate-50/80 p-4 transition-colors dark:border-slate-800 dark:bg-slate-950/60 sm:p-6">
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <LoadingButton
               type="button"
@@ -289,23 +289,23 @@ type RolePreviewProps = {
 function RolePreview({ role = null }: RolePreviewProps) {
   if (!role) {
     return (
-      <div className="rounded-2xl border border-yellow-100 bg-yellow-50 p-4 text-sm font-semibold leading-6 text-yellow-700">
+      <div className="rounded-2xl border border-yellow-100 bg-yellow-50 p-4 text-sm font-semibold leading-6 text-yellow-700 transition-colors dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-200">
         Select a role before sending the invitation.
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4">
-      <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600">
+    <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4 transition-colors dark:border-cyan-500/20 dark:bg-cyan-500/10">
+      <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
         Selected role
       </p>
 
-      <p className="mt-2 break-words text-base font-black text-slate-950">
+      <p className="mt-2 wrap-break-word text-base font-black text-slate-950 dark:text-slate-100">
         {formatRole(role.name)}
       </p>
 
-      <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+      <p className="mt-2 text-sm font-semibold leading-6 text-slate-500 dark:text-slate-400">
         {roleDescription(role.name)}
       </p>
     </div>
