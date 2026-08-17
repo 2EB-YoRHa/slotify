@@ -24,19 +24,21 @@ export default function AvailablePlansSection({
         <div className="min-w-0">
           <p
             className={`text-sm font-extrabold uppercase tracking-wide ${
-              billingRequired ? "text-amber-500" : "text-cyan-500"
+              billingRequired
+                ? "text-amber-500 dark:text-amber-300"
+                : "text-cyan-500 dark:text-cyan-300"
             }`}
           >
             {billingRequired ? "Available Plans" : "Plan Options"}
           </p>
 
-          <h2 className="mt-2 text-xl font-bold text-slate-950 sm:text-2xl">
+          <h2 className="mt-2 text-xl font-bold text-slate-950 dark:text-slate-100 sm:text-2xl">
             {billingRequired
               ? "Choose a plan to activate the organization"
               : "Change or review the organization plan"}
           </h2>
 
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500 dark:text-slate-400">
             {billingRequired
               ? "Select Starter or Pro to enable workspaces, reservations, members, and booking rules."
               : "Review the plans available for this organization. Upgrading to Pro keeps existing data and unlocks higher limits and advanced tools."}

@@ -109,19 +109,19 @@ export default function PlanFeatureComparisonPanel({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.22 }}
-      className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
+      className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8"
     >
       <div className="mb-6 flex flex-col gap-4 lg:mb-7 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
         <div className="min-w-0">
-          <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500">
+          <p className="text-sm font-extrabold uppercase tracking-wide text-cyan-500 dark:text-cyan-300">
             Plan Comparison
           </p>
 
-          <h2 className="mt-2 text-xl font-extrabold text-slate-950 sm:text-2xl">
+          <h2 className="mt-2 text-xl font-extrabold text-slate-950 dark:text-slate-100 sm:text-2xl">
             Compare limits and features
           </h2>
 
-          <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-500">
+          <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-500 dark:text-slate-400">
             Use this table to confirm which limits and tools are included in
             each plan.
           </p>
@@ -134,17 +134,17 @@ export default function PlanFeatureComparisonPanel({
         ))}
       </div>
 
-      <div className="hidden overflow-hidden rounded-2xl border border-slate-200 lg:block">
-        <div className="grid grid-cols-[1.3fr_0.85fr_0.85fr] bg-slate-50">
-          <div className="border-r border-slate-200 px-5 py-4 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+      <div className="hidden overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 lg:block">
+        <div className="grid grid-cols-[1.3fr_0.85fr_0.85fr] bg-slate-50 transition-colors dark:bg-slate-800/70">
+          <div className="border-r border-slate-200 px-5 py-4 text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:border-slate-700 dark:text-slate-500">
             Capability
           </div>
 
-          <div className="border-r border-slate-200 px-5 py-4 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+          <div className="border-r border-slate-200 px-5 py-4 text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:border-slate-700 dark:text-slate-500">
             Starter
           </div>
 
-          <div className="px-5 py-4 text-xs font-extrabold uppercase tracking-wide text-cyan-500">
+          <div className="px-5 py-4 text-xs font-extrabold uppercase tracking-wide text-cyan-500 dark:text-cyan-300">
             Pro
           </div>
         </div>
@@ -173,13 +173,13 @@ function ComparisonMobileCard({ row }: ComparisonRowProps) {
   const Icon = row.icon;
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-slate-950/30">
       <div className="mb-4 flex min-w-0 items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
           <Icon size={17} strokeWidth={2.4} />
         </div>
 
-        <p className="min-w-0 text-sm font-extrabold text-slate-950">
+        <p className="min-w-0 text-sm font-extrabold text-slate-950 dark:text-slate-100">
           {row.label}
         </p>
       </div>
@@ -201,13 +201,13 @@ function ComparisonRow({ row }: ComparisonRowProps) {
   const Icon = row.icon;
 
   return (
-    <div className="grid grid-cols-[1.3fr_0.85fr_0.85fr] border-t border-slate-200 bg-white">
-      <div className="flex items-center gap-3 border-r border-slate-200 px-5 py-4">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-cyan-500">
+    <div className="grid grid-cols-[1.3fr_0.85fr_0.85fr] border-t border-slate-200 bg-white transition-colors dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex items-center gap-3 border-r border-slate-200 px-5 py-4 dark:border-slate-700">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-cyan-500 transition-colors dark:bg-slate-800 dark:text-cyan-300">
           <Icon size={17} strokeWidth={2.4} />
         </div>
 
-        <span className="text-sm font-extrabold text-slate-950">
+        <span className="text-sm font-extrabold text-slate-950 dark:text-slate-100">
           {row.label}
         </span>
       </div>
@@ -233,13 +233,13 @@ function MobilePlanValue({
 }: PlanValueProps & { label: string }) {
   return (
     <div
-      className={`min-w-0 rounded-xl border p-4 ${
+      className={`min-w-0 rounded-xl border p-4 transition-colors ${
         highlighted
-          ? "border-cyan-100 bg-cyan-50 text-cyan-700"
-          : "border-slate-100 bg-slate-50 text-slate-700"
+          ? "border-cyan-100 bg-cyan-50 text-cyan-700 dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-cyan-300"
+          : "border-slate-100 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300"
       }`}
     >
-      <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+      <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         {label}
       </p>
 
@@ -255,12 +255,12 @@ function PlanValue({
 }: PlanValueProps) {
   return (
     <div
-      className={`flex items-center border-r border-slate-200 px-5 py-4 text-sm font-bold ${
+      className={`flex items-center border-r border-slate-200 px-5 py-4 text-sm font-bold dark:border-slate-700 ${
         highlighted
-          ? "text-cyan-600"
+          ? "text-cyan-600 dark:text-cyan-300"
           : muted
-            ? "text-slate-400"
-            : "text-slate-700"
+            ? "text-slate-400 dark:text-slate-500"
+            : "text-slate-700 dark:text-slate-300"
       }`}
     >
       <PlanValueContent value={value} highlighted={highlighted} muted={muted} />
@@ -274,10 +274,10 @@ function PlanValueContent({
   muted = false,
 }: PlanValueProps) {
   const className = highlighted
-    ? "text-cyan-600"
+    ? "text-cyan-600 dark:text-cyan-300"
     : muted
-      ? "text-slate-400"
-      : "text-slate-700";
+      ? "text-slate-400 dark:text-slate-500"
+      : "text-slate-700 dark:text-slate-300";
 
   if (typeof value === "boolean") {
     return (
@@ -285,9 +285,15 @@ function PlanValueContent({
         className={`flex min-w-0 items-center gap-2 text-sm font-bold ${className}`}
       >
         {value ? (
-          <CheckCircle2 size={18} className="shrink-0 text-cyan-500" />
+          <CheckCircle2
+            size={18}
+            className="shrink-0 text-cyan-500 dark:text-cyan-300"
+          />
         ) : (
-          <XCircle size={18} className="shrink-0 text-slate-300" />
+          <XCircle
+            size={18}
+            className="shrink-0 text-slate-300 dark:text-slate-600"
+          />
         )}
 
         <span className="wrap-break-word">

@@ -41,34 +41,36 @@ export default function BillingRequiredActivationPanel() {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="mb-8 rounded-3xl border border-amber-100 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
+      className="mb-8 rounded-3xl border border-amber-100 bg-white p-5 shadow-sm transition-colors dark:border-amber-500/20 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8"
     >
       <div className="mb-6 flex flex-col gap-5 lg:mb-8 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
         <div className="min-w-0">
-          <div className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-amber-600">
+          <div className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-amber-600 transition-colors dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
             <LockKeyhole size={14} className="shrink-0" />
             <span className="truncate">Activation Required</span>
           </div>
 
-          <h2 className="text-xl font-extrabold leading-tight text-slate-950 sm:text-2xl">
+          <h2 className="text-xl font-extrabold leading-tight text-slate-950 dark:text-slate-100 sm:text-2xl">
             Choose Starter or Pro to activate this organization
           </h2>
 
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-500">
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-500 dark:text-slate-400">
             Your account has been created successfully. Subscription activation
             unlocks the operational tools needed to manage workspaces,
             reservations, members, and booking rules.
           </p>
         </div>
 
-        <div className="w-full shrink-0 rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4 text-left lg:w-auto lg:text-right">
-          <p className="text-xs font-extrabold uppercase tracking-wide text-amber-500">
+        <div className="w-full shrink-0 rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4 text-left transition-colors dark:border-amber-500/20 dark:bg-amber-500/10 lg:w-auto lg:text-right">
+          <p className="text-xs font-extrabold uppercase tracking-wide text-amber-500 dark:text-amber-300">
             Current Access
           </p>
 
-          <p className="mt-1 text-xl font-extrabold text-slate-950">Locked</p>
+          <p className="mt-1 text-xl font-extrabold text-slate-950 dark:text-slate-100">
+            Locked
+          </p>
 
-          <p className="mt-1 text-xs font-semibold text-slate-500">
+          <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
             Plan selection required
           </p>
         </div>
@@ -107,15 +109,19 @@ function UnlockCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.16 + index * 0.04 }}
-      className="min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-5"
+      className="min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-colors dark:border-slate-700 dark:bg-slate-800/60"
     >
-      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-amber-500 shadow-sm">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-amber-500 shadow-sm transition-colors dark:bg-slate-900 dark:text-amber-300 dark:shadow-none">
         <Icon size={20} strokeWidth={2.4} />
       </div>
 
-      <h3 className="text-sm font-extrabold text-slate-950">{title}</h3>
+      <h3 className="text-sm font-extrabold text-slate-950 dark:text-slate-100">
+        {title}
+      </h3>
 
-      <p className="mt-2 text-xs leading-5 text-slate-500">{description}</p>
+      <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        {description}
+      </p>
     </motion.div>
   );
 }

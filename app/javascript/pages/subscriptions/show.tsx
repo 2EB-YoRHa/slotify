@@ -116,25 +116,27 @@ function CollapsibleSection({
   return (
     <details
       open={defaultOpen}
-      className="group mb-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:mb-8 sm:p-6"
+      className="group mb-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:mb-8 sm:p-6"
     >
       <summary className="flex cursor-pointer list-none items-start justify-between gap-4 sm:gap-6">
         <div className="min-w-0">
-          <h2 className="text-lg font-extrabold text-slate-950 sm:text-xl">
+          <h2 className="text-lg font-extrabold text-slate-950 dark:text-slate-100 sm:text-xl">
             {title}
           </h2>
 
-          <p className="mt-1 text-sm leading-6 text-slate-500">
+          <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
             {description}
           </p>
         </div>
 
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-open:rotate-180">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-open:rotate-180 dark:bg-slate-800 dark:text-slate-400">
           <ChevronDown size={18} strokeWidth={2.4} />
         </div>
       </summary>
 
-      <div className="mt-6 border-t border-slate-100 pt-6">{children}</div>
+      <div className="mt-6 border-t border-slate-100 pt-6 transition-colors dark:border-slate-800">
+        {children}
+      </div>
     </details>
   );
 }

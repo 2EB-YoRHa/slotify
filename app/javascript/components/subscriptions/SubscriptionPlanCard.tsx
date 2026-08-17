@@ -142,62 +142,66 @@ export default function SubscriptionPlanCard({
   return (
     <>
       <div
-        className={`relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
+        className={`relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:bg-slate-900 dark:shadow-slate-950/30 dark:hover:border-slate-700 ${
           highlighted
-            ? "border-cyan-200 ring-4 ring-cyan-50"
-            : "border-slate-200"
+            ? "border-cyan-200 ring-4 ring-cyan-50 dark:border-cyan-500/40 dark:ring-cyan-500/15"
+            : "border-slate-200 dark:border-slate-800"
         }`}
       >
         {highlighted && (
-          <div className="absolute right-4 top-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-cyan-400 px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm sm:right-5 sm:top-5 sm:px-4">
+          <div className="absolute right-4 top-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-cyan-400 px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm dark:bg-cyan-300 dark:text-slate-950 dark:shadow-none sm:right-5 sm:top-5 sm:px-4">
             {badge || "Recommended"}
           </div>
         )}
 
         {!highlighted && badge && (
-          <div className="absolute right-4 top-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-slate-100 px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-slate-500 sm:right-5 sm:top-5 sm:px-4">
+          <div className="absolute right-4 top-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-slate-100 px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-slate-500 transition-colors dark:bg-slate-800 dark:text-slate-300 sm:right-5 sm:top-5 sm:px-4">
             {badge}
           </div>
         )}
 
         <div
-          className={`p-5 pt-16 sm:p-7 ${
+          className={`p-5 pt-16 transition-colors sm:p-7 ${
             highlighted
-              ? "bg-linear-to-br from-cyan-50 to-white"
-              : "bg-linear-to-br from-slate-50 to-white"
+              ? "bg-linear-to-br from-cyan-50 to-white dark:from-cyan-500/10 dark:to-slate-900"
+              : "bg-linear-to-br from-slate-50 to-white dark:from-slate-800/60 dark:to-slate-900"
           }`}
         >
-          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm sm:mb-6 sm:h-14 sm:w-14">
+          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm transition-colors dark:bg-slate-900 dark:text-cyan-300 dark:shadow-none sm:mb-6 sm:h-14 sm:w-14">
             <Icon size={24} strokeWidth={2.4} />
           </div>
 
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
-            <h3 className="text-xl font-extrabold text-slate-950 sm:text-2xl">{name}</h3>
+            <h3 className="text-xl font-extrabold text-slate-950 dark:text-slate-100 sm:text-2xl">
+              {name}
+            </h3>
 
             {current && (
-              <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
+              <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600 dark:bg-green-500/15 dark:text-green-300">
                 Current
               </span>
             )}
           </div>
 
-          <p className="mt-3 text-sm leading-6 text-slate-600 sm:min-h-12">
+          <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400 sm:min-h-12">
             {description}
           </p>
 
           {bestFor && (
-            <div className="mt-5 rounded-2xl border border-white bg-white/80 p-4 text-sm leading-6 text-slate-600 shadow-sm">
-              <span className="font-extrabold text-slate-950">Best for: </span>
+            <div className="mt-5 rounded-2xl border border-white bg-white/80 p-4 text-sm leading-6 text-slate-600 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 dark:shadow-none">
+              <span className="font-extrabold text-slate-950 dark:text-slate-100">
+                Best for:{" "}
+              </span>
               {bestFor}
             </div>
           )}
 
           <div className="mt-6 flex flex-wrap items-end gap-1">
-            <span className="text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl">
+            <span className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-slate-100 sm:text-5xl">
               {price}
             </span>
 
-            <span className="pb-2 text-sm font-bold text-slate-400">
+            <span className="pb-2 text-sm font-bold text-slate-400 dark:text-slate-500">
               /month
             </span>
           </div>
@@ -209,7 +213,7 @@ export default function SubscriptionPlanCard({
               {highlights.map((highlight) => (
                 <div
                   key={highlight}
-                  className="flex min-w-0 items-start gap-2 rounded-xl border border-cyan-100 bg-cyan-50 px-3 py-2 text-xs font-extrabold text-cyan-700"
+                  className="flex min-w-0 items-start gap-2 rounded-xl border border-cyan-100 bg-cyan-50 px-3 py-2 text-xs font-extrabold text-cyan-700 transition-colors dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-cyan-300"
                 >
                   <Sparkles size={14} className="shrink-0" />
                   {highlight}
@@ -219,8 +223,8 @@ export default function SubscriptionPlanCard({
           )}
 
           {limits.length > 0 && (
-            <div className="mb-7 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <p className="mb-3 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+            <div className="mb-7 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition-colors dark:border-slate-700 dark:bg-slate-800/60">
+              <p className="mb-3 text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
                 Plan Limits
               </p>
 
@@ -229,10 +233,10 @@ export default function SubscriptionPlanCard({
                   <div key={limit} className="flex items-start gap-2">
                     <CheckCircle2
                       size={16}
-                      className="mt-0.5 shrink-0 text-cyan-500"
+                      className="mt-0.5 shrink-0 text-cyan-500 dark:text-cyan-300"
                     />
 
-                    <span className="min-w-0 wrap-break-word text-sm font-semibold leading-6 text-slate-700">
+                    <span className="min-w-0 wrap-break-word text-sm font-semibold leading-6 text-slate-700 dark:text-slate-300">
                       {limit}
                     </span>
                   </div>
@@ -244,7 +248,7 @@ export default function SubscriptionPlanCard({
           <div className="space-y-6">
             {visibleFeatureGroups.map((group) => (
               <div key={group.title}>
-                <p className="mb-3 text-sm font-extrabold text-slate-950">
+                <p className="mb-3 text-sm font-extrabold text-slate-950 dark:text-slate-100">
                   {group.title}
                 </p>
 
@@ -253,10 +257,10 @@ export default function SubscriptionPlanCard({
                     <div key={feature} className="flex items-start gap-3">
                       <CheckCircle2
                         size={18}
-                        className="mt-0.5 shrink-0 text-cyan-500"
+                        className="mt-0.5 shrink-0 text-cyan-500 dark:text-cyan-300"
                       />
 
-                      <span className="min-w-0 wrap-break-word text-sm leading-6 text-slate-600">
+                      <span className="min-w-0 wrap-break-word text-sm leading-6 text-slate-600 dark:text-slate-400">
                         {feature}
                       </span>
                     </div>
@@ -267,14 +271,14 @@ export default function SubscriptionPlanCard({
           </div>
 
           {!checkoutReady && (
-            <div className="mt-6 rounded-2xl border border-amber-100 bg-amber-50 p-4">
+            <div className="mt-6 rounded-2xl border border-amber-100 bg-amber-50 p-4 transition-colors dark:border-amber-500/20 dark:bg-amber-500/10">
               <div className="flex items-start gap-3">
                 <XCircle
                   size={18}
-                  className="mt-0.5 shrink-0 text-amber-500"
+                  className="mt-0.5 shrink-0 text-amber-500 dark:text-amber-300"
                 />
 
-                <p className="text-sm font-semibold leading-6 text-amber-700">
+                <p className="text-sm font-semibold leading-6 text-amber-700 dark:text-amber-200/90">
                   Stripe price is not configured for this plan yet.
                 </p>
               </div>
@@ -282,8 +286,8 @@ export default function SubscriptionPlanCard({
           )}
 
           {action.helper && (
-            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs font-bold leading-5 text-slate-500">
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition-colors dark:border-slate-700 dark:bg-slate-800/60">
+              <p className="text-xs font-bold leading-5 text-slate-500 dark:text-slate-400">
                 {action.helper}
               </p>
             </div>
@@ -295,12 +299,12 @@ export default function SubscriptionPlanCard({
             onClick={handleAction}
             className={`mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition ${
               current
-                ? "bg-green-50 text-green-600"
+                ? "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300"
                 : canSubmit
                   ? highlighted
-                    ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md"
-                    : "bg-slate-950 text-white shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md"
-                  : "cursor-not-allowed bg-slate-100 text-slate-400"
+                    ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md dark:bg-cyan-400 dark:text-slate-950 dark:shadow-none dark:hover:bg-cyan-300"
+                    : "bg-slate-950 text-white shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md dark:bg-cyan-400 dark:text-slate-950 dark:shadow-none dark:hover:bg-cyan-300"
+                  : "cursor-not-allowed bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
             }`}
           >
             {current ? (
@@ -451,24 +455,26 @@ function PlanChangeConfirmationModal({
   const confirmLabel = isUpgrade ? "Continue to Stripe" : "Schedule in Stripe";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/40 px-4 py-6 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-3xl bg-white p-5 shadow-2xl sm:p-7">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/40 px-4 py-6 backdrop-blur-sm dark:bg-slate-950/70">
+      <div className="w-full max-w-lg rounded-3xl bg-white p-5 shadow-2xl transition-colors dark:bg-slate-900 dark:shadow-slate-950/50 sm:p-7">
         <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
             <AlertTriangle size={24} strokeWidth={2.4} />
           </div>
 
           <div>
-            <h2 className="text-xl font-extrabold text-slate-950">{title}</h2>
+            <h2 className="text-xl font-extrabold text-slate-950 dark:text-slate-100">
+              {title}
+            </h2>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
               {description}
             </p>
           </div>
         </div>
 
         {isUpgrade && (
-          <div className="mb-5 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-sm font-semibold leading-6 text-cyan-700">
+          <div className="mb-5 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-sm font-semibold leading-6 text-cyan-700 transition-colors dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-cyan-300">
             You may not be asked to enter a card again if Stripe already has a
             valid payment method. Stripe will still show the plan update before
             confirming the charge.
@@ -476,7 +482,7 @@ function PlanChangeConfirmationModal({
         )}
 
         {isDowngrade && (
-          <div className="mb-5 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-700">
+          <div className="mb-5 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-700 transition-colors dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200/90">
             No Pro features are removed immediately. The downgrade is scheduled
             for the end of the paid period.
           </div>
@@ -487,7 +493,7 @@ function PlanChangeConfirmationModal({
             type="button"
             disabled={processing}
             onClick={onCancel}
-            className="w-full rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            className="w-full rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:w-auto"
           >
             Cancel
           </button>
@@ -496,7 +502,7 @@ function PlanChangeConfirmationModal({
             type="button"
             disabled={processing}
             onClick={onConfirm}
-            className="w-full rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            className="w-full rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-cyan-400 dark:text-slate-950 dark:hover:bg-cyan-300 sm:w-auto"
           >
             {processing ? "Redirecting..." : confirmLabel}
           </button>
