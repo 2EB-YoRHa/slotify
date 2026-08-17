@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import {
   AlertTriangle,
-  ArrowLeft,
   Building2,
   CalendarClock,
   CheckCircle2,
@@ -20,6 +19,7 @@ import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import LoadingButton from "../../components/ui/LoadingButton";
+import BackLinkButton from "../../components/ui/BackLinkButton";
 import type { Amenity } from "../../types/amenity";
 import type { Workspace } from "../../types/workspace";
 
@@ -73,13 +73,9 @@ export default function DeleteWorkspace({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Link
-            href={`/workspaces/${workspace.id}`}
-            className="inline-flex max-w-full items-center gap-2 text-sm font-bold text-cyan-500 transition hover:text-cyan-600 dark:text-cyan-300 dark:hover:text-cyan-200"
-          >
-            <ArrowLeft size={16} className="shrink-0" />
-            <span className="truncate">Back to Workspace</span>
-          </Link>
+          <BackLinkButton href={`/workspaces/${workspace.id}`}>
+            Back to Workspace
+          </BackLinkButton>
         </motion.div>
 
         <motion.h1
@@ -199,6 +195,14 @@ export default function DeleteWorkspace({
                 value={workspace.active ? "Active" : "Inactive"}
               />
 
+              <div className="sm:col-span-2">
+                <InfoCard
+                  icon={Layers3}
+                  label="Description"
+                  value={workspace.description || "No description available."}
+                />
+              </div>
+
               <InfoCard
                 icon={CalendarClock}
                 label="Reservations"
@@ -287,6 +291,11 @@ export default function DeleteWorkspace({
                 label="Status"
                 value={workspace.active ? "Active" : "Inactive"}
               />
+
+              <SummaryRow
+                label="Description"
+                value={workspace.description || "No description available."}
+              />
             </div>
 
             {blocked ? (
@@ -369,7 +378,9 @@ type SummaryRowProps = {
 function SummaryRow({ label, value }: SummaryRowProps) {
   return (
     <div className="flex flex-col gap-1 border-b border-slate-200 py-3 last:border-0 dark:border-slate-700 sm:flex-row sm:justify-between sm:gap-4">
-      <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
+      <span className="text-sm text-slate-500 dark:text-slate-400">
+        {label}
+      </span>
 
       <span className="wrap-break-word text-sm font-bold text-slate-950 dark:text-slate-100 sm:text-right">
         {value}

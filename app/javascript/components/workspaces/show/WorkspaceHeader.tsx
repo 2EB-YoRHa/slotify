@@ -1,6 +1,7 @@
 import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
-import { ArrowLeft, CalendarPlus, Edit3, Trash2 } from "lucide-react";
+import { CalendarPlus, Edit3, Trash2 } from "lucide-react";
+import BackLinkButton from "../../ui/BackLinkButton";
 import type { WorkspaceWithAmenities } from "../../../types/workspaceShowTypes";
 
 type WorkspaceHeaderProps = {
@@ -19,15 +20,9 @@ export default function WorkspaceHeader({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Link
-            href="/workspaces"
-            className="inline-flex max-w-full items-center gap-2 text-sm font-bold text-cyan-500 transition hover:text-cyan-600 dark:text-cyan-300 dark:hover:text-cyan-200"
-          >
-            <ArrowLeft size={16} className="shrink-0" />
-            <span className="truncate">
-              {isMember ? "Back to Browse Workspaces" : "Back to Workspaces"}
-            </span>
-          </Link>
+          <BackLinkButton href="/workspaces">
+            {isMember ? "Back to Browse Workspaces" : "Back to Workspaces"}
+          </BackLinkButton>
         </motion.div>
 
         <motion.h1
