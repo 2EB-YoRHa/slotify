@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Building2 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { Building2, ChevronLeft, ChevronRight } from "lucide-react";
 import type { WorkspacePhotoItem } from "../../types/workspace";
 
 type WorkspacePhotoFit = "cover" | "contain" | "fill";
@@ -43,6 +44,13 @@ export default function WorkspacePhoto({
   const selectedPhoto =
     photos.find((photo) => photo.id === selectedPhotoId) || photos[0];
 
+  const selectedIndex = Math.max(
+    0,
+    photos.findIndex((photo) => photo.id === selectedPhoto?.id),
+  );
+
+  const multiplePhotos = photos.length > 1;
+
   const fitClass = {
     cover: "object-cover",
     contain: "object-contain",
@@ -51,27 +59,71 @@ export default function WorkspacePhoto({
 
   const shouldShowBlurredBackground = selectedPhoto?.url && fit === "contain";
 
+  function selectPreviousPhoto() {
+    if (!multiplePhotos) return;
+
+    const nextIndex = selectedIndex === 0 ? photos.length - 1 : selectedIndex - 1;
+    setSelectedPhotoId(photos[nextIndex].id);
+  }
+
+  function selectNextPhoto() {
+    if (!multiplePhotos) return;
+
+    const nextIndex = selectedIndex === photos.length - 1 ? 0 : selectedIndex + 1;
+    setSelectedPhotoId(photos[nextIndex].id);
+  }
+
   return (
     <div className="space-y-3">
       <div
-        className={`relative flex items-center justify-center overflow-hidden bg-slate-100 transition-colors dark:bg-slate-800 ${className}`}
+        className={`group relative flex items-center justify-center overflow-hidden bg-slate-100 transition-colors dark:bg-slate-800 ${className}`}
       >
         {selectedPhoto?.url ? (
           <>
-            {shouldShowBlurredBackground && (
-              <img
-                src={selectedPhoto.url}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 h-full w-full scale-110 object-cover opacity-20 blur-xl dark:opacity-25"
-              />
-            )}
+            <AnimatePresence mode="wait">
+              {shouldShowBlurredBackground && (
+                <motion.img
+                  key={`background-${selectedPhoto.id}`}
+                  src={selectedPhoto.url}
+                  alt=""
+                  aria-hidden="true"
+                  initial={{ opacity: 0, scale: 1.08 }}
+                  animate={{ opacity: 0.22, scale: 1.12 }}
+                  exit={{ opacity: 0, scale: 1.08 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="absolute inset-0 h-full w-full object-cover blur-xl dark:opacity-25"
+                />
+              )}
+            </AnimatePresence>
 
-            <img
-              src={selectedPhoto.url}
-              alt={selectedPhoto.filename || name}
-              className={`relative z-10 h-full w-full ${fitClass} ${position} ${imageClassName}`}
-            />
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={`photo-${selectedPhoto.id}`}
+                src={selectedPhoto.url}
+                alt={selectedPhoto.filename || name}
+                initial={{ opacity: 0, scale: 0.985 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.015 }}
+                transition={{ duration: 0.28, ease: "easeOut" }}
+                className={`relative z-10 h-full w-full ${fitClass} ${position} ${imageClassName}`}
+              />
+            </AnimatePresence>
+
+            {multiplePhotos && (
+              <>
+                <CarouselButton
+                  label="Previous workspace photo"
+                  direction="left"
+                  onClick={selectPreviousPhoto}
+                />
+
+                <CarouselButton
+                  label="Next workspace photo"
+                  direction="right"
+                  onClick={selectNextPhoto}
+                />
+              </>
+            )}
           </>
         ) : (
           <div
@@ -92,7 +144,7 @@ export default function WorkspacePhoto({
                 key={photo.id}
                 type="button"
                 onClick={() => setSelectedPhotoId(photo.id)}
-                className={`overflow-hidden rounded-xl border bg-white p-1 transition dark:bg-slate-900 ${
+                className={`overflow-hidden rounded-xl border bg-white p-1 transition hover:-translate-y-0.5 dark:bg-slate-900 ${
                   selected
                     ? "border-cyan-300 ring-4 ring-cyan-50 dark:border-cyan-400 dark:ring-cyan-500/20"
                     : "border-slate-200 hover:border-cyan-200 dark:border-slate-700 dark:hover:border-cyan-500/40"
@@ -111,6 +163,28 @@ export default function WorkspacePhoto({
         </div>
       )}
     </div>
+  );
+}
+
+type CarouselButtonProps = {
+  label: string;
+  direction: "left" | "right";
+  onClick: () => void;
+};
+
+function CarouselButton({ label, direction, onClick }: CarouselButtonProps) {
+  const Icon = direction === "left" ? ChevronLeft : ChevronRight;
+  const positionClass = direction === "left" ? "left-3" : "right-3";
+
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className={`absolute top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-slate-950/55 text-white shadow-lg shadow-slate-950/20 backdrop-blur-md transition hover:scale-105 hover:bg-cyan-400 hover:text-slate-950 focus:outline-none focus:ring-4 focus:ring-cyan-300/30 dark:border-white/10 dark:bg-slate-950/70 dark:hover:bg-cyan-300 ${positionClass} sm:h-12 sm:w-12`}
+    >
+      <Icon size={22} strokeWidth={2.6} />
+    </button>
   );
 }
 
