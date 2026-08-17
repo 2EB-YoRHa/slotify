@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import {
   AlertTriangle,
-  ArrowLeft,
   Ban,
   Building2,
   CalendarX,
@@ -16,6 +15,7 @@ import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import LoadingButton from "../../components/ui/LoadingButton";
+import BackLinkButton from "../../components/ui/BackLinkButton";
 import { formatDate, formatTime, duration } from "../../utils/dateTime";
 import type { Reservation } from "../../types/reservation";
 
@@ -49,13 +49,9 @@ export default function CancelReservation({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Link
-            href={`/reservations/${reservation.id}`}
-            className="inline-flex max-w-full items-center gap-2 text-sm font-bold text-cyan-500 transition hover:text-cyan-600 dark:text-cyan-300 dark:hover:text-cyan-200"
-          >
-            <ArrowLeft size={16} className="shrink-0" />
-            <span className="truncate">Back to Reservation</span>
-          </Link>
+          <BackLinkButton href={`/reservations/${reservation.id}`}>
+            Back to Reservation
+          </BackLinkButton>
         </motion.div>
 
         <motion.h1

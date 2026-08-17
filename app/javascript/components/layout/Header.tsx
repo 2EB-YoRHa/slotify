@@ -63,7 +63,9 @@ export default function Header({ actions = null, onOpenSidebar }: HeaderProps) {
 
       {actions && (
         <div className="border-t border-slate-100 px-3 py-3 dark:border-slate-800 sm:px-6 lg:px-8 xl:hidden">
-          <div className="flex flex-wrap justify-end gap-3">{actions}</div>
+          <div className="flex flex-wrap justify-center gap-3 sm:justify-end">
+            {actions}
+          </div>
         </div>
       )}
     </header>
