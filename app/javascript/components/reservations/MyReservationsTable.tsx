@@ -11,7 +11,6 @@ import {
   MapPin,
   Pencil,
   Search,
-  SlidersHorizontal,
   UsersRound,
   XCircle,
 } from "lucide-react";
@@ -28,11 +27,18 @@ type DateFilter = "all" | "active" | "upcoming" | "past" | "cancelled";
 type StatusFilter = "all" | "confirmed" | "cancelled" | "concluded";
 
 const DATE_FILTERS: { value: DateFilter; label: string }[] = [
-  { value: "all", label: "All" },
+  { value: "all", label: "All Dates" },
   { value: "upcoming", label: "Upcoming" },
   { value: "active", label: "Active Now" },
   { value: "past", label: "Past" },
   { value: "cancelled", label: "Cancelled" },
+];
+
+const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
+  { value: "all", label: "All Statuses" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "concluded", label: "Concluded" },
 ];
 
 export default function MyReservationsTable({
@@ -115,7 +121,7 @@ export default function MyReservationsTable({
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(18rem,1fr)_auto] xl:items-center">
           <div className="relative w-full min-w-0">
             <Search
               size={17}
@@ -126,62 +132,37 @@ export default function MyReservationsTable({
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search by workspace, type, location, or status..."
+              placeholder="Search bookings..."
               className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20"
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr] xl:flex xl:items-center">
-            <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500 transition-colors dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 sm:flex">
-              <SlidersHorizontal size={16} />
-              Filters
-            </div>
+          <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 xl:w-auto xl:grid-cols-[minmax(0,12rem)_minmax(0,12rem)_auto]">
+            <FilterSelect
+              label="Date"
+              value={dateFilter}
+              options={DATE_FILTERS}
+              onChange={(value) => setDateFilter(value as DateFilter)}
+            />
 
-            <select
+            <FilterSelect
+              label="Status"
               value={statusFilter}
-              onChange={(event) =>
-                setStatusFilter(event.target.value as StatusFilter)
-              }
-              className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20 xl:w-44"
-            >
-              <option value="all">All Statuses</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="concluded">Concluded</option>
-            </select>
+              options={STATUS_FILTERS}
+              onChange={(value) => setStatusFilter(value as StatusFilter)}
+            />
 
             {hasFilters && (
               <button
                 type="button"
                 onClick={clearFilters}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 xl:w-auto"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:col-span-2 xl:col-span-1 xl:w-auto"
               >
                 <XCircle size={16} />
                 Clear
               </button>
             )}
           </div>
-        </div>
-
-        <div className="mt-5 flex flex-wrap gap-2">
-          {DATE_FILTERS.map((filter) => {
-            const selected = dateFilter === filter.value;
-
-            return (
-              <button
-                key={filter.value}
-                type="button"
-                onClick={() => setDateFilter(filter.value)}
-                className={`rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-wide transition ${
-                  selected
-                    ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
-                    : "bg-slate-100 text-slate-500 hover:bg-cyan-50 hover:text-cyan-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
-                }`}
-              >
-                {filter.label}
-              </button>
-            );
-          })}
         </div>
       </div>
 
@@ -315,6 +296,38 @@ function ReservationCard({
         </div>
       </div>
     </motion.article>
+  );
+}
+
+type FilterOption = {
+  value: string;
+  label: string;
+};
+
+type FilterSelectProps = {
+  label: string;
+  value: string;
+  options: FilterOption[];
+  onChange: (value: string) => void;
+};
+
+function FilterSelect({ label, value, options, onChange }: FilterSelectProps) {
+  return (
+    <label className="block min-w-0">
+      <span className="sr-only">{label}</span>
+
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none transition hover:border-cyan-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-cyan-500/40 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 

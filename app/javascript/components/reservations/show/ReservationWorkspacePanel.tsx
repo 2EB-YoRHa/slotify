@@ -37,6 +37,7 @@ export default function ReservationWorkspacePanel({
         fit="contain"
         position="object-center"
         showThumbnails
+        showControls
         className="h-64 rounded-2xl border border-slate-200 bg-slate-100 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-800 dark:shadow-slate-950/30 sm:h-96 xl:h-105"
       />
 

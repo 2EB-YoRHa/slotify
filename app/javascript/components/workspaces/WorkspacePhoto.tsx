@@ -15,6 +15,7 @@ type WorkspacePhotoProps = {
   fit?: WorkspacePhotoFit;
   position?: string;
   showThumbnails?: boolean;
+  showControls?: boolean;
 };
 
 export default function WorkspacePhoto({
@@ -27,6 +28,7 @@ export default function WorkspacePhoto({
   fit = "contain",
   position = "object-center",
   showThumbnails = false,
+  showControls = false,
 }: WorkspacePhotoProps) {
   const photos = useMemo(
     () => normalizedPhotos(name, photoUrl, galleryPhotos),
@@ -50,6 +52,7 @@ export default function WorkspacePhoto({
   );
 
   const multiplePhotos = photos.length > 1;
+  const canNavigate = showControls && multiplePhotos;
 
   const fitClass = {
     cover: "object-cover",
@@ -60,14 +63,14 @@ export default function WorkspacePhoto({
   const shouldShowBlurredBackground = selectedPhoto?.url && fit === "contain";
 
   function selectPreviousPhoto() {
-    if (!multiplePhotos) return;
+    if (!canNavigate) return;
 
     const nextIndex = selectedIndex === 0 ? photos.length - 1 : selectedIndex - 1;
     setSelectedPhotoId(photos[nextIndex].id);
   }
 
   function selectNextPhoto() {
-    if (!multiplePhotos) return;
+    if (!canNavigate) return;
 
     const nextIndex = selectedIndex === photos.length - 1 ? 0 : selectedIndex + 1;
     setSelectedPhotoId(photos[nextIndex].id);
@@ -109,7 +112,7 @@ export default function WorkspacePhoto({
               />
             </AnimatePresence>
 
-            {multiplePhotos && (
+            {canNavigate && (
               <>
                 <CarouselButton
                   label="Previous workspace photo"

@@ -1,6 +1,6 @@
 import { Link } from "@inertiajs/react";
 import type { LucideIcon } from "lucide-react";
-import { Search, Sparkles, XCircle } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 import type { Workspace } from "../../../types/workspace";
 
 export function WorkspaceStatusBadge({ active }: { active: boolean }) {
@@ -120,10 +120,8 @@ export function WorkspaceAction({
 }
 
 export function EmptyWorkspaceBrowser({
-  title = "No workspaces match your filters",
+  title = "No workspaces found",
   description,
-  hasFilters,
-  onClear,
 }: {
   title?: string;
   description: string;
@@ -131,29 +129,18 @@ export function EmptyWorkspaceBrowser({
   onClear: () => void;
 }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-5 py-10 text-center transition-colors dark:bg-slate-800/60 sm:p-12">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 transition-colors dark:bg-slate-900 dark:text-slate-500 sm:h-16 sm:w-16">
-        <Search size={28} strokeWidth={2.4} />
+    <div className="px-5 py-10 text-center sm:p-12">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 transition-colors dark:bg-slate-800 dark:text-slate-500">
+        <Search size={24} />
       </div>
 
-      <h3 className="mt-5 wrap-break-word text-lg font-extrabold text-slate-950 dark:text-slate-100 sm:text-xl">
+      <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-slate-100">
         {title}
       </h3>
 
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
+      <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
         {description}
       </p>
-
-      {hasFilters && (
-        <button
-          type="button"
-          onClick={onClear}
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:w-auto"
-        >
-          <XCircle size={16} className="shrink-0" />
-          Clear Filters
-        </button>
-      )}
     </div>
   );
 }
