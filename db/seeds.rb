@@ -2,9 +2,6 @@
 # This file resets the database and creates a complete presentation environment.
 # Use only on local/demo databases.
 
-require "stringio"
-require "zlib"
-
 PASSWORD = "Password123!"
 
 if defined?(ActionMailer::Base)
@@ -208,104 +205,6 @@ def previous_weekday_time(hour:, minute: 0, days_ago: 3)
   end
 end
 
-def hex_to_rgb(hex)
-  normalized = hex.delete("#")
-
-  [
-    normalized[0..1].to_i(16),
-    normalized[2..3].to_i(16),
-    normalized[4..5].to_i(16)
-  ]
-end
-
-def png_chunk(type, data)
-  [ data.bytesize ].pack("N") + type + data + [ Zlib.crc32(type + data) ].pack("N")
-end
-
-def demo_png_bytes(width:, height:, from:, to:)
-  from_rgb = hex_to_rgb(from)
-  to_rgb = hex_to_rgb(to)
-  raw = +"".b
-
-  height.times do |y|
-    raw << 0
-
-    width.times do |x|
-      ratio = ((x.to_f / [ width - 1, 1 ].max) * 0.68) +
-              ((y.to_f / [ height - 1, 1 ].max) * 0.32)
-
-      r = (from_rgb[0] + ((to_rgb[0] - from_rgb[0]) * ratio)).round
-      g = (from_rgb[1] + ((to_rgb[1] - from_rgb[1]) * ratio)).round
-      b = (from_rgb[2] + ((to_rgb[2] - from_rgb[2]) * ratio)).round
-
-      if ((x + y) / 96).even?
-        r = [ r + 10, 255 ].min
-        g = [ g + 10, 255 ].min
-        b = [ b + 10, 255 ].min
-      end
-
-      raw << r << g << b
-    end
-  end
-
-  +"\x89PNG\r\n\x1a\n".b +
-    png_chunk("IHDR", [ width, height, 8, 2, 0, 0, 0 ].pack("NNCCCCC")) +
-    png_chunk("IDAT", Zlib.deflate(raw)) +
-    png_chunk("IEND", "")
-end
-
-def attach_demo_png!(record, attachment_name, filename:, from:, to:, width: 960, height: 640)
-  record.public_send(attachment_name).attach(
-    io: StringIO.new(
-      demo_png_bytes(
-        width: width,
-        height: height,
-        from: from,
-        to: to
-      )
-    ),
-    filename: filename,
-    content_type: "image/png"
-  )
-end
-
-def attach_workspace_gallery!(workspace, palette)
-  attach_demo_png!(
-    workspace,
-    :photo,
-    filename: "#{workspace.name.parameterize}-main.png",
-    from: palette[:main][0],
-    to: palette[:main][1]
-  )
-
-  Array(palette[:extra]).each_with_index do |colors, index|
-    workspace.extra_photos.attach(
-      io: StringIO.new(
-        demo_png_bytes(
-          width: 960,
-          height: 640,
-          from: colors[0],
-          to: colors[1]
-        )
-      ),
-      filename: "#{workspace.name.parameterize}-gallery-#{index + 1}.png",
-      content_type: "image/png"
-    )
-  end
-end
-
-def attach_avatar!(user, from:, to:)
-  attach_demo_png!(
-    user,
-    :avatar,
-    filename: "#{user.name.parameterize}-avatar.png",
-    from: from,
-    to: to,
-    width: 256,
-    height: 256
-  )
-end
-
 # -----------------------------------------------------------------------------
 # Organizations, subscriptions and rules
 # -----------------------------------------------------------------------------
@@ -421,17 +320,6 @@ starter_member = create_user!(
   name: "Megan Wilson",
   email: "starter-member@slotify.test"
 )
-
-puts "Attaching demo avatars..."
-
-attach_avatar!(pro_manager, from: "#06B6D4", to: "#0F172A")
-attach_avatar!(pro_admin, from: "#8B5CF6", to: "#1E1B4B")
-attach_avatar!(pro_member, from: "#22C55E", to: "#064E3B")
-attach_avatar!(pro_member_two, from: "#F97316", to: "#7C2D12")
-attach_avatar!(pro_member_three, from: "#EC4899", to: "#831843")
-attach_avatar!(inactive_member, from: "#94A3B8", to: "#334155")
-attach_avatar!(starter_manager, from: "#14B8A6", to: "#134E4A")
-attach_avatar!(starter_member, from: "#F59E0B", to: "#78350F")
 
 # -----------------------------------------------------------------------------
 # Workspaces
@@ -601,72 +489,6 @@ starter_booth = create_workspace!(
     amenities["High-Speed WiFi"],
     amenities["Soundproofing"]
   ]
-)
-
-puts "Attaching demo workspace photos..."
-
-attach_workspace_gallery!(
-  focus_room,
-  main: [ "#06B6D4", "#0F172A" ],
-  extra: [
-    [ "#22D3EE", "#164E63" ],
-    [ "#38BDF8", "#075985" ]
-  ]
-)
-
-attach_workspace_gallery!(
-  board_room,
-  main: [ "#8B5CF6", "#1E1B4B" ],
-  extra: [
-    [ "#A78BFA", "#312E81" ],
-    [ "#C084FC", "#581C87" ],
-    [ "#6366F1", "#312E81" ]
-  ]
-)
-
-attach_workspace_gallery!(
-  open_desk,
-  main: [ "#22C55E", "#064E3B" ],
-  extra: [ [ "#86EFAC", "#166534" ] ]
-)
-
-attach_workspace_gallery!(
-  training_lab,
-  main: [ "#F97316", "#7C2D12" ],
-  extra: [
-    [ "#FDBA74", "#9A3412" ],
-    [ "#FB923C", "#7C2D12" ]
-  ]
-)
-
-attach_workspace_gallery!(
-  phone_booth,
-  main: [ "#EC4899", "#831843" ],
-  extra: [ [ "#F9A8D4", "#9D174D" ] ]
-)
-
-attach_workspace_gallery!(
-  inactive_workspace,
-  main: [ "#94A3B8", "#334155" ],
-  extra: []
-)
-
-attach_workspace_gallery!(
-  starter_desk,
-  main: [ "#14B8A6", "#134E4A" ],
-  extra: []
-)
-
-attach_workspace_gallery!(
-  starter_meeting,
-  main: [ "#F59E0B", "#78350F" ],
-  extra: []
-)
-
-attach_workspace_gallery!(
-  starter_booth,
-  main: [ "#64748B", "#0F172A" ],
-  extra: []
 )
 
 # -----------------------------------------------------------------------------
