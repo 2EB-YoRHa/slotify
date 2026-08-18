@@ -7,6 +7,11 @@ require "zlib"
 
 PASSWORD = "Password123!"
 
+if defined?(ActionMailer::Base)
+  ActionMailer::Base.perform_deliveries = false
+  ActionMailer::Base.delivery_method = :test
+end
+
 puts "Cleaning database..."
 
 ActiveStorage::VariantRecord.delete_all if defined?(ActiveStorage::VariantRecord)
