@@ -35,7 +35,6 @@ Role.delete_all
 puts "Creating roles..."
 
 roles = {
-  admin: Role.create!(name: "admin"),
   manager: Role.create!(name: "manager"),
   member: Role.create!(name: "member")
 }
@@ -261,13 +260,6 @@ pro_manager = create_user!(
   role: roles[:manager],
   name: "Emily Carter",
   email: "manager@slotify.test"
-)
-
-pro_admin = create_user!(
-  organization: pro_org,
-  role: roles[:admin],
-  name: "Michael Anderson",
-  email: "admin@slotify.test"
 )
 
 pro_member = create_user!(
@@ -539,9 +531,6 @@ puts "Creating reservations..."
 current_start = Time.current - 35.minutes
 current_end = Time.current + 55.minutes
 
-# This record represents an already-running reservation. It bypasses creation-time
-# validations because the start time is already in the past, which is expected for
-# an in-progress demo record.
 create_reservation!(
   organization: pro_org,
   user: pro_member_three,
@@ -583,13 +572,13 @@ create_reservation!(
 
 create_reservation!(
   organization: pro_org,
-  user: pro_admin,
+  user: pro_manager,
   workspace: open_desk,
   start_time: second_morning_start,
   end_time: second_morning_start + 3.hours,
   status: "confirmed",
   attendees_count: 1,
-  notes: "Individual work block for usage insights."
+  notes: "Manager individual booking for usage insights."
 )
 
 create_reservation!(
@@ -708,7 +697,7 @@ OrganizationInvitation.create!(
 OrganizationInvitation.create!(
   organization: pro_org,
   role: roles[:manager],
-  invited_by: pro_admin,
+  invited_by: pro_manager,
   email: "rebecca.white@slotify.test",
   status: "pending",
   expires_at: 5.days.from_now
@@ -729,7 +718,6 @@ puts ""
 puts "Demo login credentials"
 puts "--------------------------------------------------"
 puts "Pro Manager:        manager@slotify.test / #{PASSWORD}           (Emily Carter)"
-puts "Pro Admin:          admin@slotify.test / #{PASSWORD}             (Michael Anderson)"
 puts "Pro Member:         member@slotify.test / #{PASSWORD}            (Sarah Mitchell)"
 puts "Pro Member 2:       james@slotify.test / #{PASSWORD}             (James Parker)"
 puts "Pro Member 3:       olivia@slotify.test / #{PASSWORD}            (Olivia Bennett)"
