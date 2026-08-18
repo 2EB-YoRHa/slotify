@@ -1,6 +1,6 @@
 import { usePage } from "@inertiajs/react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, X } from "lucide-react";
 
 type Flash = {
@@ -21,33 +21,53 @@ type ToastMessage = {
   message: string;
 };
 
-export default function FlashMessages() {
-  const { flash } = usePage<SharedPageProps>().props;
+const TOAST_DURATION = 4200;
 
-  const messages: ToastMessage[] = [
-    flash?.notice
-      ? {
-          id: `notice-${flash.notice}`,
-          type: "notice",
-          title: "Success",
-          message: flash.notice,
-        }
-      : null,
-    flash?.alert
-      ? {
-          id: `alert-${flash.alert}`,
-          type: "alert",
-          title: "Attention",
-          message: flash.alert,
-        }
-      : null,
-  ].filter(Boolean) as ToastMessage[];
+export default function FlashMessages() {
+  const { props, url } = usePage<SharedPageProps>();
+  const flash = props.flash;
+
+  const incomingMessages = useMemo(() => {
+    const messages: ToastMessage[] = [];
+
+    if (flash?.notice) {
+      messages.push({
+        id: `notice-${url}-${flash.notice}`,
+        type: "notice",
+        title: "Success",
+        message: flash.notice,
+      });
+    }
+
+    if (flash?.alert) {
+      messages.push({
+        id: `alert-${url}-${flash.alert}`,
+        type: "alert",
+        title: "Attention",
+        message: flash.alert,
+      });
+    }
+
+    return messages;
+  }, [flash?.notice, flash?.alert, url]);
+
+  const [messages, setMessages] = useState<ToastMessage[]>([]);
+
+  useEffect(() => {
+    setMessages(incomingMessages);
+  }, [incomingMessages]);
+
+  function dismissToast(id: string) {
+    setMessages((currentMessages) =>
+      currentMessages.filter((message) => message.id !== id),
+    );
+  }
 
   return (
-    <div className="fixed right-4 top-4 z-100 flex w-105 max-w-[calc(100vw-2rem)] flex-col gap-3 sm:right-6 sm:top-6 sm:max-w-[calc(100vw-3rem)]">
-      <AnimatePresence>
+    <div className="pointer-events-none fixed left-3 right-3 top-20 z-100 mx-auto flex max-w-sm flex-col gap-3 sm:left-auto sm:right-6 sm:top-6 sm:mx-0 sm:w-105 sm:max-w-[calc(100vw-3rem)]">
+      <AnimatePresence mode="popLayout">
         {messages.map((toast) => (
-          <Toast key={toast.id} toast={toast} />
+          <Toast key={toast.id} toast={toast} onDismiss={dismissToast} />
         ))}
       </AnimatePresence>
     </div>
@@ -56,39 +76,53 @@ export default function FlashMessages() {
 
 type ToastProps = {
   toast: ToastMessage;
+  onDismiss: (id: string) => void;
 };
 
-function Toast({ toast }: ToastProps) {
-  const [visible, setVisible] = useState(true);
-
-  if (!visible) return null;
-
+function Toast({ toast, onDismiss }: ToastProps) {
   const success = toast.type === "notice";
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      onDismiss(toast.id);
+    }, TOAST_DURATION);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [toast.id, onDismiss]);
 
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, x: 90, scale: 0.98 }}
+      initial={{
+        opacity: 0,
+        y: -18,
+        scale: 0.96,
+        filter: "blur(6px)",
+      }}
       animate={{
-        opacity: [0, 1, 1, 0],
-        x: [90, 0, 0, 60],
-        scale: [0.98, 1, 1, 0.98],
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
       }}
-      exit={{ opacity: 0, x: 90, scale: 0.98 }}
+      exit={{
+        opacity: 0,
+        y: -18,
+        scale: 0.96,
+        filter: "blur(8px)",
+      }}
       transition={{
-        duration: 4.2,
-        times: [0, 0.08, 0.86, 1],
-        ease: "easeOut",
+        duration: 0.28,
+        ease: [0.22, 1, 0.36, 1],
       }}
-      onAnimationComplete={() => setVisible(false)}
-      className={`overflow-hidden rounded-2xl border p-4 shadow-xl backdrop-blur sm:p-5 ${
+      className={`pointer-events-auto overflow-hidden rounded-2xl border p-4 shadow-xl backdrop-blur-xl transition-colors sm:p-5 ${
         success
           ? "border-green-100 bg-green-50/95 text-green-700 shadow-green-100/60 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-300 dark:shadow-slate-950/30"
           : "border-red-100 bg-red-50/95 text-red-700 shadow-red-100/60 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300 dark:shadow-slate-950/30"
       }`}
       role={success ? "status" : "alert"}
     >
-      <div className="flex items-start gap-3 sm:gap-4">
+      <div className="flex min-w-0 items-start gap-3 sm:gap-4">
         <div
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
             success
@@ -105,7 +139,7 @@ function Toast({ toast }: ToastProps) {
 
         <div className="min-w-0 flex-1">
           <p
-            className={`text-sm font-extrabold ${
+            className={`truncate text-sm font-extrabold ${
               success
                 ? "text-green-700 dark:text-green-300"
                 : "text-red-700 dark:text-red-300"
@@ -127,7 +161,7 @@ function Toast({ toast }: ToastProps) {
 
         <button
           type="button"
-          onClick={() => setVisible(false)}
+          onClick={() => onDismiss(toast.id)}
           className={`shrink-0 rounded-lg p-1 transition ${
             success
               ? "text-green-500 hover:bg-green-100 hover:text-green-700 dark:text-green-300 dark:hover:bg-green-500/15 dark:hover:text-green-200"
@@ -140,11 +174,16 @@ function Toast({ toast }: ToastProps) {
       </div>
 
       <motion.div
-        initial={{ scaleX: 1 }}
-        animate={{ scaleX: 0 }}
-        transition={{ duration: 3.6, delay: 0.35, ease: "linear" }}
+        initial={{ scaleX: 1, opacity: 1 }}
+        animate={{ scaleX: 0, opacity: 0.85 }}
+        transition={{
+          duration: TOAST_DURATION / 1000,
+          ease: "linear",
+        }}
         className={`mt-4 h-1 origin-left rounded-full ${
-          success ? "bg-green-300 dark:bg-green-400" : "bg-red-300 dark:bg-red-400"
+          success
+            ? "bg-green-300 dark:bg-green-400"
+            : "bg-red-300 dark:bg-red-400"
         }`}
       />
     </motion.div>
