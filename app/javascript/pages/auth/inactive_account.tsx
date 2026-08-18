@@ -1,9 +1,7 @@
 import { Link } from "@inertiajs/react";
 import { motion } from "motion/react";
 import {
-  ArrowLeft,
   Building2,
-  LockKeyhole,
   Mail,
   ShieldAlert,
   UserRound,
@@ -66,18 +64,9 @@ export default function InactiveAccount({
             <div className="mt-8 flex flex-col gap-3">
               <Link
                 href="/users/sign_in"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:bg-cyan-500 dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
+                className="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:bg-cyan-500 dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
               >
-                <LockKeyhole size={17} />
                 Back to Sign In
-              </Link>
-
-              <Link
-                href="/users/password/new"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-              >
-                <ArrowLeft size={17} />
-                Reset password instead
               </Link>
             </div>
           </motion.div>
