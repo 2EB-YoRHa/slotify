@@ -75,8 +75,9 @@ class WorkspacesController < InertiaController
         workspace.extra_photos.attach(extra_photos) if extra_photos.any?
 
         format.html do
-          redirect_to workspaces_path,
-                      notice: "Workspace created successfully"
+            redirect_to workspaces_path,
+                        notice: "Workspace created successfully",
+                        status: :see_other
         end
 
         format.json do
@@ -134,7 +135,8 @@ class WorkspacesController < InertiaController
 
         format.html do
           redirect_to workspaces_path,
-                      notice: "Workspace updated successfully"
+                      notice: "Workspace updated successfully",
+                      status: :see_other
         end
 
         format.json do
@@ -170,8 +172,9 @@ class WorkspacesController < InertiaController
 
     respond_to do |format|
       format.html do
-        redirect_to workspaces_path,
-                    notice: "Workspace deleted successfully"
+          redirect_to workspaces_path,
+                      notice: "Workspace deleted successfully",
+                      status: :see_other
       end
 
       format.json do
