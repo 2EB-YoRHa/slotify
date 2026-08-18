@@ -12,6 +12,10 @@ if defined?(ActionMailer::Base)
   ActionMailer::Base.delivery_method = :test
 end
 
+if defined?(ActiveJob::Base)
+  ActiveJob::Base.queue_adapter = :test
+end
+
 puts "Cleaning database..."
 
 ActiveStorage::VariantRecord.delete_all if defined?(ActiveStorage::VariantRecord)
