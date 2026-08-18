@@ -41,6 +41,8 @@ export type WorkspaceFormData = {
   amenity_ids: number[];
   photo: File | null;
   extra_photos: File[];
+  remove_photo: boolean;
+  remove_extra_photo_ids: number[];
 };
 
 export type WorkspaceErrors = Partial<

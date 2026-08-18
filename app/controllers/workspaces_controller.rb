@@ -1,6 +1,13 @@
 class WorkspacesController < InertiaController
   before_action :require_manager_or_admin!, except: %i[index show]
-  before_action :set_workspace, only: %i[show edit update destroy delete_confirmation]
+  before_action :set_workspace,
+                only: %i[
+                  show
+                  edit
+                  update
+                  destroy
+                  delete_confirmation
+                ]
   before_action :ensure_workspace_slot_available!, only: %i[new create]
 
   def index
@@ -54,7 +61,12 @@ class WorkspacesController < InertiaController
     validation_error = validate_extra_photos(workspace, extra_photos)
 
     if validation_error.present?
-      render_workspace_form_error(workspace, validation_error, page: "workspaces/new")
+      render_workspace_form_error(
+        workspace,
+        validation_error,
+        page: "workspaces/new"
+      )
+
       return
     end
 
@@ -95,15 +107,29 @@ class WorkspacesController < InertiaController
 
   def update
     extra_photos = extra_photo_files
-    validation_error = validate_extra_photos(@workspace, extra_photos)
+    removed_extra_photo_ids = remove_extra_photo_ids
+
+    validation_error = validate_extra_photos(
+      @workspace,
+      extra_photos,
+      removed_attachment_ids: removed_extra_photo_ids
+    )
 
     if validation_error.present?
-      render_workspace_form_error(@workspace, validation_error, page: "workspaces/edit")
+      render_workspace_form_error(
+        @workspace,
+        validation_error,
+        page: "workspaces/edit"
+      )
+
       return
     end
 
     respond_to do |format|
       if @workspace.update(workspace_attributes)
+        purge_workspace_photo_if_requested
+        purge_removed_extra_photos(removed_extra_photo_ids)
+
         @workspace.extra_photos.attach(extra_photos) if extra_photos.any?
 
         format.html do
@@ -206,6 +232,23 @@ class WorkspacesController < InertiaController
       )
     end
 
+    def workspace_photo_file
+      params.dig(:workspace, :photo)
+    end
+
+    def remove_workspace_photo?
+      ActiveModel::Type::Boolean.new.cast(
+        params.dig(:workspace, :remove_photo)
+      )
+    end
+
+    def remove_extra_photo_ids
+      raw_ids = params.dig(:workspace, :remove_extra_photo_ids)
+      raw_ids = raw_ids.values if raw_ids.is_a?(ActionController::Parameters)
+
+      Array(raw_ids).reject(&:blank?).map(&:to_i)
+    end
+
     def extra_photo_files
       raw_files = params.dig(:workspace, :extra_photos)
       raw_files = raw_files.values if raw_files.is_a?(ActionController::Parameters)
@@ -213,12 +256,35 @@ class WorkspacesController < InertiaController
       Array(raw_files).reject(&:blank?)
     end
 
-    def validate_extra_photos(workspace, files)
+    def purge_workspace_photo_if_requested
+      return unless remove_workspace_photo?
+      return if workspace_photo_file.present?
+      return unless @workspace.photo.attached?
+
+      @workspace.photo.purge
+    end
+
+    def purge_removed_extra_photos(attachment_ids)
+      return if attachment_ids.blank?
+
+      @workspace
+        .extra_photos
+        .attachments
+        .where(id: attachment_ids)
+        .find_each(&:purge)
+    end
+
+    def validate_extra_photos(
+      workspace,
+      files,
+      removed_attachment_ids: []
+    )
       Workspaces::ExtraPhotosValidator
         .new(
           organization: current_organization,
           workspace: workspace,
-          files: files
+          files: files,
+          removed_attachment_ids: removed_attachment_ids
         )
         .error_message
     end

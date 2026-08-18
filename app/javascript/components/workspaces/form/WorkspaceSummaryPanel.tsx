@@ -11,15 +11,16 @@ type WorkspaceSummaryPanelProps = {
   isEditing: boolean;
   processing: boolean;
   onActiveChange: (checked: boolean) => void;
+  onCancel: () => void;
 };
 
 export default function WorkspaceSummaryPanel({
-  workspace,
   data,
   errors,
   isEditing,
   processing,
   onActiveChange,
+  onCancel,
 }: WorkspaceSummaryPanelProps) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
@@ -69,16 +70,14 @@ export default function WorkspaceSummaryPanel({
           {isEditing ? "Save Changes" : "Create Workspace"}
         </LoadingButton>
 
-        <a
-          href={
-            isEditing && workspace?.id
-              ? `/workspaces/${workspace.id}`
-              : "/workspaces"
-          }
-          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+        <button
+          type="button"
+          disabled={processing}
+          onClick={onCancel}
+          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
         >
           Cancel
-        </a>
+        </button>
       </div>
     </div>
   );

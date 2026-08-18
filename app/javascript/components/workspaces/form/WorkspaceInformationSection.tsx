@@ -39,7 +39,9 @@ type WorkspaceInformationSectionProps = {
   onLocationChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onPhotoChange: (file: File | null) => void;
+  onRemovePhotoChange: (removePhoto: boolean) => void;
   onExtraPhotosChange: (files: File[]) => void;
+  onRemovedExtraPhotoIdsChange: (ids: number[]) => void;
 };
 
 export default function WorkspaceInformationSection({
@@ -60,7 +62,9 @@ export default function WorkspaceInformationSection({
   onLocationChange,
   onDescriptionChange,
   onPhotoChange,
+  onRemovePhotoChange,
   onExtraPhotosChange,
+  onRemovedExtraPhotoIdsChange,
 }: WorkspaceInformationSectionProps) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6 lg:p-8">
@@ -189,9 +193,11 @@ export default function WorkspaceInformationSection({
             selectedFile={data.photo}
             initialPreviewUrl={currentPhotoUrl}
             currentFilename={currentPhotoFilename}
+            removePhoto={data.remove_photo}
             disabled={processing}
             error={fieldError(errors, "photo")}
             onPhotoChange={onPhotoChange}
+            onRemovePhotoChange={onRemovePhotoChange}
           />
         </div>
 
@@ -201,9 +207,11 @@ export default function WorkspaceInformationSection({
             selectedFiles={data.extra_photos}
             existingPhotos={existingExtraPhotos}
             existingPhotoCount={existingExtraPhotoCount}
+            removedPhotoIds={data.remove_extra_photo_ids}
             disabled={processing}
             error={fieldError(errors, "extra_photos")}
             onPhotosChange={onExtraPhotosChange}
+            onRemovedPhotoIdsChange={onRemovedExtraPhotoIdsChange}
           />
         </div>
       </div>

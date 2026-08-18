@@ -81,6 +81,8 @@ export default function WorkspaceForm({
     amenity_ids: initialAmenityIds,
     photo: null,
     extra_photos: [],
+    remove_photo: false,
+    remove_extra_photo_ids: [],
   };
 
   const {
@@ -141,6 +143,14 @@ export default function WorkspaceForm({
         payload.extra_photos = formData.extra_photos;
       }
 
+      if (formData.remove_photo) {
+        payload.remove_photo = true;
+      }
+
+      if (formData.remove_extra_photo_ids.length > 0) {
+        payload.remove_extra_photo_ids = formData.remove_extra_photo_ids;
+      }
+
       return {
         workspace: payload,
       };
@@ -169,6 +179,36 @@ export default function WorkspaceForm({
       ...currentData,
       [field]: value,
     }));
+  }
+
+  function updatePhoto(file: File | null) {
+    clearClientError("photo");
+
+    setData((currentData) => ({
+      ...currentData,
+      photo: file,
+      remove_photo: file ? false : currentData.remove_photo,
+    }));
+  }
+
+  function updateRemovePhoto(removePhoto: boolean) {
+    clearClientError("photo");
+
+    setData((currentData) => ({
+      ...currentData,
+      photo: removePhoto ? null : currentData.photo,
+      remove_photo: removePhoto,
+    }));
+  }
+
+  function updateExtraPhotos(files: File[]) {
+    clearClientError("extra_photos");
+    updateField("extra_photos", files);
+  }
+
+  function updateRemovedExtraPhotoIds(ids: number[]) {
+    clearClientError("extra_photos");
+    updateField("remove_extra_photo_ids", ids);
   }
 
   function toggleAmenity(amenityId: number) {
@@ -262,8 +302,10 @@ export default function WorkspaceForm({
             onZoneChange={(value) => updateField("zone", value)}
             onLocationChange={(value) => updateField("location", value)}
             onDescriptionChange={(value) => updateField("description", value)}
-            onPhotoChange={(file) => updateField("photo", file)}
-            onExtraPhotosChange={(files) => updateField("extra_photos", files)}
+            onPhotoChange={updatePhoto}
+            onRemovePhotoChange={updateRemovePhoto}
+            onExtraPhotosChange={updateExtraPhotos}
+            onRemovedExtraPhotoIdsChange={updateRemovedExtraPhotoIds}
           />
 
           <WorkspaceAmenitiesSection
@@ -288,6 +330,13 @@ export default function WorkspaceForm({
             isEditing={isEditing}
             processing={processing}
             onActiveChange={(checked) => updateField("active", checked)}
+            onCancel={() =>
+              unsavedChangesGuard.guardedVisit(
+                isEditing && workspace?.id
+                  ? `/workspaces/${workspace.id}`
+                  : "/workspaces",
+              )
+            }
           />
         </motion.aside>
       </form>
@@ -390,6 +439,8 @@ function workspaceFormChanged(
     Boolean(data.active) !== Boolean(initialData.active) ||
     !sameNumberArray(data.amenity_ids, initialData.amenity_ids) ||
     data.photo instanceof File ||
-    data.extra_photos.length > 0
+    data.extra_photos.length > 0 ||
+    data.remove_photo ||
+    data.remove_extra_photo_ids.length > 0
   );
 }

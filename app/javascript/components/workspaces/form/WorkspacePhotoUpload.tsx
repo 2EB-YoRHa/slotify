@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { FileImage, ImagePlus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { FileImage, ImagePlus, RotateCcw, Trash2, X } from "lucide-react";
 import { FormError } from "./WorkspaceFormFields";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -15,36 +15,59 @@ type WorkspacePhotoUploadProps = {
   selectedFile: File | null;
   initialPreviewUrl?: string | null;
   currentFilename?: string | null;
+  removePhoto: boolean;
   disabled: boolean;
   error?: string | string[];
   onPhotoChange: (file: File | null) => void;
+  onRemovePhotoChange: (removePhoto: boolean) => void;
 };
 
 export default function WorkspacePhotoUpload({
   selectedFile,
   initialPreviewUrl = null,
   currentFilename = null,
+  removePhoto,
   disabled,
   error,
   onPhotoChange,
+  onRemovePhotoChange,
 }: WorkspacePhotoUploadProps) {
   const [inputKey, setInputKey] = useState(0);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    initialPreviewUrl,
+  const [selectedPreviewUrl, setSelectedPreviewUrl] = useState<string | null>(
+    null,
   );
   const [clientError, setClientError] = useState<string | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (selectedPreviewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(selectedPreviewUrl);
+      }
+    };
+  }, [selectedPreviewUrl]);
+
+  const previewUrl = selectedFile
+    ? selectedPreviewUrl
+    : removePhoto
+      ? null
+      : initialPreviewUrl;
+
+  const displayError = clientError || error;
+  const hasCurrentPhoto = Boolean(initialPreviewUrl) && !removePhoto;
+  const hasSelectedPhoto = Boolean(selectedFile);
+  const photoMarkedForRemoval = Boolean(initialPreviewUrl) && removePhoto;
+
   function handleFileChange(file: File | null) {
-    revokeBlobPreview();
+    revokeSelectedPreview();
 
     if (!file) {
-      resetToInitialPhoto();
+      clearSelectedPhoto();
       return;
     }
 
     if (!ALLOWED_FILE_TYPES.includes(file.type)) {
       onPhotoChange(null);
-      setPreviewUrl(initialPreviewUrl);
+      setSelectedPreviewUrl(null);
       setClientError("The photo must be a PNG, JPG, JPEG, or WEBP image.");
       setInputKey((currentKey) => currentKey + 1);
       return;
@@ -52,7 +75,7 @@ export default function WorkspacePhotoUpload({
 
     if (file.size > MAX_FILE_SIZE) {
       onPhotoChange(null);
-      setPreviewUrl(initialPreviewUrl);
+      setSelectedPreviewUrl(null);
       setClientError("The photo must be less than 5MB.");
       setInputKey((currentKey) => currentKey + 1);
       return;
@@ -60,32 +83,42 @@ export default function WorkspacePhotoUpload({
 
     const nextPreviewUrl = URL.createObjectURL(file);
 
-    setPreviewUrl(nextPreviewUrl);
+    setSelectedPreviewUrl(nextPreviewUrl);
     setClientError(null);
+    onRemovePhotoChange(false);
     onPhotoChange(file);
   }
 
   function clearSelectedPhoto() {
-    revokeBlobPreview();
-    resetToInitialPhoto();
+    revokeSelectedPreview();
+    setSelectedPreviewUrl(null);
+    setClientError(null);
+    onPhotoChange(null);
+    onRemovePhotoChange(false);
     setInputKey((currentKey) => currentKey + 1);
   }
 
-  function resetToInitialPhoto() {
-    onPhotoChange(null);
-    setPreviewUrl(initialPreviewUrl);
+  function removeCurrentPhoto() {
+    revokeSelectedPreview();
+    setSelectedPreviewUrl(null);
     setClientError(null);
+    onPhotoChange(null);
+    onRemovePhotoChange(true);
+    setInputKey((currentKey) => currentKey + 1);
   }
 
-  function revokeBlobPreview() {
-    if (previewUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(previewUrl);
+  function restoreCurrentPhoto() {
+    setClientError(null);
+    onPhotoChange(null);
+    onRemovePhotoChange(false);
+    setInputKey((currentKey) => currentKey + 1);
+  }
+
+  function revokeSelectedPreview() {
+    if (selectedPreviewUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(selectedPreviewUrl);
     }
   }
-
-  const displayError = clientError || error;
-  const hasCurrentPhoto = Boolean(initialPreviewUrl);
-  const hasSelectedPhoto = Boolean(selectedFile);
 
   return (
     <div className="block min-w-0">
@@ -108,7 +141,9 @@ export default function WorkspacePhotoUpload({
                   <ImagePlus size={32} strokeWidth={2.4} />
 
                   <span className="mt-2 text-xs font-bold">
-                    No photo selected
+                    {photoMarkedForRemoval
+                      ? "Photo will be removed"
+                      : "No photo selected"}
                   </span>
                 </div>
               )}
@@ -125,9 +160,11 @@ export default function WorkspacePhotoUpload({
                 <p className="text-sm font-bold text-slate-950 dark:text-slate-100">
                   {hasSelectedPhoto
                     ? "New photo selected"
-                    : hasCurrentPhoto
-                      ? "Current workspace photo"
-                      : "Upload workspace photo"}
+                    : photoMarkedForRemoval
+                      ? "Current photo marked for removal"
+                      : hasCurrentPhoto
+                        ? "Current workspace photo"
+                        : "Upload workspace photo"}
                 </p>
 
                 <p className="mt-1 text-xs font-semibold leading-5 text-slate-400 dark:text-slate-500">
@@ -169,6 +206,7 @@ export default function WorkspacePhotoUpload({
                     disabled={disabled}
                     onClick={clearSelectedPhoto}
                     className="shrink-0 rounded-lg border border-slate-200 bg-white p-2 text-slate-400 transition hover:bg-slate-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+                    aria-label="Remove selected photo"
                   >
                     <X size={16} />
                   </button>
@@ -176,10 +214,40 @@ export default function WorkspacePhotoUpload({
               </div>
             )}
 
-            {!selectedFile && currentFilename && (
+            {!selectedFile && currentFilename && !photoMarkedForRemoval && (
               <p className="mt-4 truncate text-xs font-bold text-slate-500 dark:text-slate-400">
                 Current file: {currentFilename}
               </p>
+            )}
+
+            {photoMarkedForRemoval && (
+              <div className="mt-4 rounded-xl border border-red-100 bg-red-50 p-4 transition-colors dark:border-red-500/20 dark:bg-red-500/10">
+                <p className="text-sm font-bold text-red-600 dark:text-red-300">
+                  This photo will be removed when you save changes.
+                </p>
+
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={restoreCurrentPhoto}
+                  className="mt-3 inline-flex items-center gap-2 rounded-xl border border-red-100 bg-white px-3 py-2 text-xs font-bold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/20 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-500/10"
+                >
+                  <RotateCcw size={14} />
+                  Keep current photo
+                </button>
+              </div>
+            )}
+
+            {initialPreviewUrl && !selectedFile && !photoMarkedForRemoval && (
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={removeCurrentPhoto}
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-4 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/20 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-500/10 sm:w-auto"
+              >
+                <Trash2 size={16} />
+                Remove current photo
+              </button>
             )}
 
             <FormError error={displayError} />

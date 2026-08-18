@@ -1,9 +1,15 @@
 module Workspaces
   class ExtraPhotosValidator
-    def initialize(organization:, workspace:, files:)
+    def initialize(
+      organization:,
+      workspace:,
+      files:,
+      removed_attachment_ids: []
+    )
       @organization = organization
       @workspace = workspace
       @files = Array(files)
+      @removed_attachment_ids = Array(removed_attachment_ids).map(&:to_i)
     end
 
     def error_message
@@ -19,7 +25,10 @@ module Workspaces
 
     private
 
-      attr_reader :organization, :workspace, :files
+      attr_reader :organization,
+                  :workspace,
+                  :files,
+                  :removed_attachment_ids
 
       def next_photo_count
         current_photo_count + files.size
@@ -28,7 +37,12 @@ module Workspaces
       def current_photo_count
         return 0 unless workspace.persisted?
 
-        workspace.extra_photos.attachments.size
+        workspace
+          .extra_photos
+          .attachments
+          .where
+          .not(id: removed_attachment_ids)
+          .size
       end
 
       def invalid_file

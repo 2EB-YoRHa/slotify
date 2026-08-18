@@ -351,14 +351,10 @@ type WorkspaceActionsProps = {
 
 function WorkspaceActions({
   workspaceId,
-  mobile = false,
+  mobile: _mobile = false,
 }: WorkspaceActionsProps) {
   return (
-    <div
-      className={`flex items-center gap-2 ${
-        mobile ? "justify-end" : "justify-center"
-      }`}
-    >
+    <div className="flex items-center justify-center gap-2">
       <ActionLink
         href={`/workspaces/${workspaceId}`}
         title="View"
