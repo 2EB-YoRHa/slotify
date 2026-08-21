@@ -712,6 +712,163 @@ OrganizationInvitation.create!(
   expires_at: 7.days.from_now
 )
 
+# -----------------------------------------------------------------------------
+# Downgraded organization demo: Pro -> Starter while over plan limits
+# -----------------------------------------------------------------------------
+
+puts "Creating downgraded Starter organization..."
+
+downgraded_org = create_organization!(
+  name: "Harbor Works",
+  slug: "harbor-works",
+  email: "hello@harbor-works.test",
+  phone: "+1 555 0300",
+  address: "Seattle, Washington"
+)
+
+# -----------------------------------------------------------------------------
+# Subscription history
+# -----------------------------------------------------------------------------
+
+puts "Creating subscription history for Harbor Works..."
+
+# Historical Pro subscription.
+# This represents the period when Harbor Works was allowed unlimited
+# workspaces and member slots.
+pro_plan = SubscriptionPlan.find!("pro")
+
+previous_pro_subscription = Subscription.create!(
+  organization: downgraded_org,
+  plan_name: "pro",
+  status: "cancelled",
+  starts_at: 90.days.ago,
+  ends_at: 2.days.ago,
+  workspace_limit: pro_plan[:workspace_limit],
+  user_limit: pro_plan[:user_limit],
+  stripe_subscription_id: "sub_demo_harbor_works_pro",
+  stripe_price_id: "price_demo_pro"
+)
+
+Payment.create!(
+  subscription: previous_pro_subscription,
+  amount: pro_plan[:amount_cents].to_i / 100.0,
+  currency: "USD",
+  status: "paid",
+  payment_provider: "demo",
+  provider_payment_id: "pay_demo_harbor_works_pro",
+  paid_at: 89.days.ago
+)
+
+# Current Starter subscription.
+# The downgrade has already taken effect.
+starter_plan = SubscriptionPlan.find!("starter")
+
+current_starter_subscription = Subscription.create!(
+  organization: downgraded_org,
+  plan_name: "starter",
+  status: "active",
+  starts_at: 2.days.ago,
+  ends_at: 28.days.from_now,
+  workspace_limit: starter_plan[:workspace_limit],
+  user_limit: starter_plan[:user_limit],
+  stripe_subscription_id: "sub_demo_harbor_works_starter",
+  stripe_price_id: "price_demo_starter"
+)
+
+Payment.create!(
+  subscription: current_starter_subscription,
+  amount: starter_plan[:amount_cents].to_i / 100.0,
+  currency: "USD",
+  status: "paid",
+  payment_provider: "demo",
+  provider_payment_id: "pay_demo_harbor_works_starter",
+  paid_at: 2.days.ago
+)
+
+# -----------------------------------------------------------------------------
+# Booking rules
+# -----------------------------------------------------------------------------
+
+create_booking_rule!(
+  organization: downgraded_org,
+  max_hours: 4,
+  min_notice: 0,
+  cancellation_limit: 24,
+  weekends: false
+)
+
+# -----------------------------------------------------------------------------
+# Users
+# -----------------------------------------------------------------------------
+
+puts "Creating Harbor Works users..."
+
+downgraded_manager = create_user!(
+  organization: downgraded_org,
+  role: roles[:manager],
+  name: "Marcus Reed",
+  email: "downgraded-manager@slotify.test"
+)
+
+# Starter currently allows 15 user/member slots.
+#
+# Organization#member_slots_used counts existing users + pending invitations.
+#
+# 1 Manager + 15 Members = 16 used slots.
+#
+# Therefore Harbor Works will show:
+#
+# 16 / 15
+#
+# which puts the organization one slot over the Starter limit.
+
+downgraded_members = 15.times.map do |index|
+  create_user!(
+    organization: downgraded_org,
+    role: roles[:member],
+    name: "Harbor Member #{index + 1}",
+    email: "harbor-member-#{index + 1}@slotify.test"
+  )
+end
+
+# -----------------------------------------------------------------------------
+# Workspaces
+# -----------------------------------------------------------------------------
+
+puts "Creating Harbor Works workspaces..."
+
+# Starter allows a maximum of 10 workspaces.
+#
+# Harbor Works already had 12 while subscribed to Pro.
+#
+# The existing workspaces are intentionally preserved after the downgrade,
+# making the organization:
+#
+# 12 / 10 workspaces
+#
+# Slotify should preserve these existing records but block the creation
+# of additional workspaces.
+
+downgraded_workspaces = 12.times.map do |index|
+  create_workspace!(
+    organization: downgraded_org,
+    name: "Harbor Workspace #{index + 1}",
+    workspace_type: index.even? ? "private_office" : "meeting_room",
+    capacity: index.even? ? 4 : 8,
+    floor: "#{(index / 4) + 1}",
+    zone: index < 6 ? "Waterfront Wing" : "City Wing",
+    location: "Harbor Works - Floor #{(index / 4) + 1}",
+    description: "Workspace retained after Harbor Works downgraded from Pro to Starter.",
+    hourly_rate: index.even? ? 35 : 60,
+    active: true,
+    amenities: [
+      amenities["High-Speed WiFi"],
+      amenities["Air Conditioning"],
+      amenities[index.even? ? "Natural Light" : "Whiteboard"]
+    ]
+  )
+end
+
 puts ""
 puts "Seed completed."
 puts ""
