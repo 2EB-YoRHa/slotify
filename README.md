@@ -1,68 +1,68 @@
-# Slotify — Sistema de reservas para coworking (MicroSaaS)
+# Slotify — Coworking Reservation System (MicroSaaS)
 
-## Descripción
+## Description
 
-Slotify es una aplicación web tipo SaaS enfocada en la gestión de reservas de espacios de coworking. Permite que múltiples empresas (coworkings) puedan administrar sus propios espacios de trabajo, mientras que los usuarios pueden registrarse, consultar disponibilidad y realizar reservas según fecha y hora.
+Slotify is a SaaS web application focused on managing coworking space reservations. It allows multiple coworking organizations to manage their own workspaces, while users can check availability and make reservations based on date and time.
 
-El sistema está diseñado como una solución multiempresa, donde cada organización gestiona sus propios datos de forma independiente dentro de la misma plataforma.
+The system is designed as a multi-tenant solution, where each organization manages its own data independently within the same platform.
 
 ---
 
 ## Live Demo
 
-Slotify se encuentra desplegado en **Render** y puede probarse directamente desde el navegador.
+Slotify is deployed on **Render** and can be tested directly from a web browser.
 
-**Aplicación desplegada:**
-`PENDIENTE: agregar URL pública de Render`
+**Deployed application:**
+`https://slotify-xgmu.onrender.com`
 
-> **Nota:** si el servicio de Render se encuentra inactivo, la primera carga puede tardar algunos segundos mientras la aplicación vuelve a iniciar.
+> **Note:** If the Render service is inactive, the first request may take a few seconds while the application starts again.
 
-Las cuentas disponibles para probar los diferentes flujos de la aplicación se encuentran en la sección **Cuentas de prueba** de este README.
+The accounts available for testing the different application flows are listed in the **Test Accounts** section of this README.
 
 ---
 
-## Video de presentación
+## Presentation Video
 
-Se preparó un video de presentación y demostración de Slotify donde se muestra el funcionamiento completo de la aplicación.
+A presentation and demonstration video was created to showcase the complete functionality of Slotify.
 
-El video incluye, entre otros flujos:
+The video includes, among other flows:
 
-* Creación de cuentas.
-* Confirmación de correo electrónico.
-* Recuperación de contraseña.
-* Manejo de cuentas sin confirmar.
-* Manejo de cuentas inactivas.
-* Autenticación con Two-Factor Authentication (2FA).
-* Administración de organizaciones.
-* Gestión de miembros.
-* Invitaciones por correo.
-* Gestión de amenities.
-* Creación y administración de workspaces.
+* Account creation.
+* Email confirmation.
+* Password recovery.
+* Unconfirmed account handling.
+* Inactive account handling.
+* Two-Factor Authentication (2FA).
+* Organization management.
+* Member management.
+* Email invitations.
+* Amenity management.
+* Workspace creation and management.
 * Booking Rules.
 * Custom Time Slots.
-* Creación, edición y cancelación de reservas.
-* Validación de disponibilidad.
-* Prevención de reservas solapadas.
-* Experiencia del rol Member.
-* Suscripción al plan Starter.
-* Upgrade de Starter a Pro.
-* Integración con Stripe.
-* Restricciones por plan.
-* Escenario de downgrade de Pro a Starter excediendo los límites del nuevo plan.
-* Diseño responsive y experiencia de usuario.
+* Reservation creation, editing, and cancellation.
+* Availability validation.
+* Overlapping reservation prevention.
+* Complete Member experience.
+* Starter plan subscription.
+* Upgrade from Starter to Pro.
+* Stripe integration.
+* Subscription-based restrictions.
+* Pro to Starter downgrade scenario where the organization exceeds the new plan limits.
+* Responsive design and user experience.
 
-**Video de presentación:**
-`PENDIENTE: agregar URL del video`
+**Presentation video:**
+`https://youtu.be/kfdYKqco2yU`
 
 ---
 
-## Cuentas de prueba
+## Test Accounts
 
-Las siguientes cuentas fueron creadas exclusivamente para probar los diferentes roles, estados, planes y reglas de negocio de Slotify.
+The following accounts were created exclusively to test different roles, account states, subscription plans, and business rules in Slotify.
 
-### Contraseña
+### Password
 
-Todas las cuentas de prueba utilizan la siguiente contraseña:
+All test accounts use the following password:
 
 ```text
 Password123!
@@ -70,78 +70,80 @@ Password123!
 
 ### Accounts
 
-| Escenario               | Correo                            | Uso principal                                                                                 |
-| ----------------------- | --------------------------------- | --------------------------------------------------------------------------------------------- |
-| Manager — Pro           | `manager@slotify.test`            | Probar el flujo completo de administración de una organización con plan Pro                   |
-| Member — Pro            | `member@slotify.test`             | Probar la experiencia del rol Member, workspaces y reservas                                   |
-| Member inactivo         | `inactive-member@slotify.test`    | Probar el bloqueo de acceso de una cuenta desactivada                                         |
-| Member sin confirmar    | `unconfirmed-member@slotify.test` | Probar el comportamiento de una cuenta que todavía no ha confirmado su correo                 |
-| Manager — Starter       | `starter-manager@slotify.test`    | Probar los límites y funcionalidades disponibles en el plan Starter                           |
-| Member — Starter        | `starter-member@slotify.test`     | Probar la experiencia de Member dentro de una organización con plan Starter                   |
-| Manager — Pro → Starter | `downgraded-manager@slotify.test` | Probar una organización que anteriormente utilizaba Pro y ahora excede los límites de Starter |
+| Scenario                | Email                             | Main Purpose                                                                        |
+| ----------------------- | --------------------------------- | ----------------------------------------------------------------------------------- |
+| Manager — Pro           | `manager@slotify.test`            | Test the complete organization management flow with a Pro subscription              |
+| Member — Pro            | `member@slotify.test`             | Test the Member experience, workspace browsing, and reservations                    |
+| Inactive Member         | `inactive-member@slotify.test`    | Test access restrictions for a deactivated account                                  |
+| Unconfirmed Member      | `unconfirmed-member@slotify.test` | Test the behavior of an account that has not yet confirmed its email                |
+| Manager — Starter       | `starter-manager@slotify.test`    | Test Starter plan limits and available functionality                                |
+| Member — Starter        | `starter-member@slotify.test`     | Test the Member experience inside a Starter organization                            |
+| Manager — Pro → Starter | `downgraded-manager@slotify.test` | Test an organization that previously used Pro and now exceeds the limits of Starter |
 
-### Escenario Pro → Starter
+### Pro → Starter Scenario
 
-La cuenta:
+The account:
 
 ```text
 downgraded-manager@slotify.test
 ```
 
-pertenece a una organización que anteriormente utilizaba el plan **Pro** y posteriormente realizó un downgrade al plan **Starter**.
+belongs to an organization that previously used the **Pro** plan and later downgraded to the **Starter** plan.
 
-Mientras utilizaba Pro, la organización creó más recursos de los permitidos por Starter.
+While using Pro, the organization created more resources than Starter allows.
 
-Después del downgrade, Slotify **no elimina automáticamente los datos existentes**.
+After the downgrade, Slotify **does not automatically delete existing data**.
 
-En cambio, conserva los recursos creados anteriormente y aplica las restricciones del nuevo plan a futuras acciones.
+Instead, it preserves the resources that were previously created and applies the restrictions of the new plan to future actions.
 
-Este escenario permite comprobar que Slotify:
+This scenario demonstrates that Slotify:
 
-* Conserva los datos existentes después de un downgrade.
-* Detecta cuando una organización excede los límites de su plan actual.
-* Mantiene accesibles los workspaces existentes.
-* Mantiene los usuarios existentes.
-* Bloquea la creación de nuevos workspaces cuando se supera el límite permitido.
-* Bloquea nuevas invitaciones cuando se supera el límite de usuarios.
-* Permite regresar a un plan superior para recuperar la capacidad de crecimiento.
+* Preserves existing data after a downgrade.
+* Detects when an organization exceeds the limits of its current plan.
+* Keeps existing workspaces accessible.
+* Keeps existing users.
+* Blocks the creation of new workspaces when the workspace limit has already been exceeded.
+* Blocks new invitations when the user limit has already been exceeded.
+* Allows the organization to upgrade again in order to restore growth capacity.
 
-> Estas credenciales existen únicamente con fines de demostración y testing.
-
----
-
-## Objetivo del proyecto
-
-El objetivo es desarrollar una aplicación completa utilizando Ruby on Rails como backend y React (Vite + Inertia) como frontend, aplicando conceptos como arquitectura MVC, autenticación, autorización, modelado de base de datos, testing y despliegue.
+> These credentials exist exclusively for demonstration and testing purposes.
 
 ---
 
-## Problema que se busca resolver
+## Project Objective
 
-En muchos casos, la gestión de reservas en espacios de coworking se realiza de forma manual o con herramientas poco eficientes, lo que puede generar:
-
-* Conflictos de horarios.
-* Mala organización de los espacios.
-* Falta de control sobre las reservas.
-* Dificultad para consultar disponibilidad.
-
-Slotify busca centralizar este proceso en una sola plataforma, permitiendo a cada empresa gestionar sus espacios de forma ordenada y eficiente.
+The objective of Slotify is to develop a complete application using Ruby on Rails as the backend and React with Vite and Inertia as the frontend, applying concepts such as MVC architecture, authentication, authorization, database modeling, automated testing, and deployment.
 
 ---
 
-## Modelo de negocio
+## Problem Statement
 
-Slotify funciona bajo un modelo SaaS, donde cada empresa de coworking puede suscribirse a la plataforma para gestionar sus espacios, usuarios y reservas.
+Coworking reservations are often managed manually or through tools that are not designed specifically for this purpose.
 
-El cliente principal de Slotify es la organización de coworking.
+This can create problems such as:
 
-Los miembros utilizan la plataforma dentro de la organización a la que pertenecen, mientras que la organización es responsable de su suscripción.
+* Scheduling conflicts.
+* Poor workspace organization.
+* Lack of control over reservations.
+* Difficulty checking workspace availability.
 
-Los planes de suscripción también controlan límites y funcionalidades disponibles dentro de la aplicación.
+Slotify centralizes this process in a single platform, allowing each organization to manage its spaces, members, policies, and reservations in a structured and efficient way.
 
 ---
 
-## Tecnologías utilizadas
+## Business Model
+
+Slotify operates under a SaaS model where each coworking organization can subscribe to the platform to manage its workspaces, users, and reservations.
+
+The primary customer of Slotify is the coworking organization.
+
+Members use the platform within the organization they belong to, while the organization is responsible for the subscription.
+
+Subscription plans also control limits and functionality available throughout the application.
+
+---
+
+## Technologies Used
 
 ### Backend
 
@@ -163,7 +165,7 @@ Los planes de suscripción también controlan límites y funcionalidades disponi
 * Motion
 * Lucide React
 
-### Deployment e integraciones
+### Deployment and Integrations
 
 * Render
 * PostgreSQL
@@ -174,34 +176,34 @@ Los planes de suscripción también controlan límites y funcionalidades disponi
 
 ---
 
-## Arquitectura
+## Architecture
 
-Slotify utiliza Ruby on Rails como backend principal.
+Slotify uses Ruby on Rails as its primary backend.
 
-Rails se encarga de:
+Rails is responsible for:
 
 * Routing.
 * Models.
 * Controllers.
-* Validaciones.
-* Autenticación.
-* Autorización.
-* Reglas de negocio.
-* Reservas.
-* Suscripciones.
-* Integraciones externas.
+* Validations.
+* Authentication.
+* Authorization.
+* Business rules.
+* Reservations.
+* Subscriptions.
+* External integrations.
 
-React con TypeScript se utiliza para construir la interfaz de usuario.
+React with TypeScript is used to build the user interface.
 
-Inertia.js funciona como puente entre Rails y React, permitiendo obtener una experiencia similar a una SPA sin necesidad de mantener una API REST independiente para esta versión del proyecto.
+Inertia.js acts as the bridge between Rails and React, providing an SPA-like user experience without requiring a separate REST API for the current version of the project.
 
-PostgreSQL almacena los datos relacionales de la aplicación.
+PostgreSQL stores the application's relational business data.
 
 ---
 
-## Modelos principales
+## Main Models
 
-Entre los principales modelos del sistema se encuentran:
+The main models in the system include:
 
 * User
 * Role
@@ -217,67 +219,69 @@ Entre los principales modelos del sistema se encuentran:
 
 ---
 
-## Roles del sistema
+## System Roles
 
 ### Manager
 
-El Manager administra una organización de coworking.
+The Manager operates a coworking organization.
 
-Puede gestionar:
+A Manager can manage:
 
 * Workspaces.
 * Amenities.
 * Booking Rules.
 * Custom Time Slots.
-* Miembros.
-* Invitaciones.
-* Reservas.
-* Información de suscripción.
-* Configuración de la organización.
+* Members.
+* Invitations.
+* Reservations.
+* Subscription information.
+* Organization settings.
 
 ### Member
 
-El Member utiliza Slotify principalmente para reservar espacios.
+The Member primarily uses Slotify to reserve workspaces.
 
-Puede:
+A Member can:
 
-* Consultar workspaces activos.
-* Revisar información de los espacios.
-* Consultar disponibilidad.
-* Crear reservas.
-* Editar sus propias reservas cuando las reglas lo permiten.
-* Cancelar sus propias reservas cuando las políticas lo permiten.
-* Consultar su historial de reservas.
-* Administrar su perfil y seguridad.
+* Browse active workspaces.
+* Review workspace information.
+* Check availability.
+* Create reservations.
+* Edit their own reservations when allowed by the organization's rules.
+* Cancel their own reservations when allowed by the cancellation policy.
+* Review their reservation history.
+* Manage their profile and security settings.
 
 ---
 
-## Autenticación y seguridad
+## Authentication and Security
 
-Slotify utiliza **Devise** para administrar la autenticación.
+Slotify uses **Devise** to manage authentication.
 
-La aplicación incluye:
+The application includes:
 
 * Sign Up.
 * Sign In.
 * Sign Out.
-* Confirmación de correo electrónico.
-* Recuperación de contraseña.
-* Manejo de cuentas inactivas.
-* Validaciones de contraseña.
+* Email confirmation.
+* Password recovery.
+* Inactive account handling.
+* Password validations.
 * Two-Factor Authentication.
 
-La autenticación de dos factores utiliza códigos de un solo uso generados mediante aplicaciones de autenticación compatibles con TOTP.
+Two-factor authentication uses time-based one-time passwords generated by TOTP-compatible authenticator applications.
+
+The authenticator code is verified by the backend before access is granted.
 
 ---
 
-## Organización y multi-tenancy
+## Organization and Multi-Tenancy
 
-Slotify utiliza una arquitectura basada en organizaciones.
+Slotify uses an organization-based architecture.
 
-Cada coworking funciona como una organización independiente dentro de la misma aplicación.
+Each coworking company operates as an independent organization within the same application.
 
-Los principales recursos están asociados a una organización, incluyendo:
+The main resources are associated with an organization, including:
 
 * Users.
 * Workspaces.
@@ -287,53 +291,64 @@ Los principales recursos están asociados a una organización, incluyendo:
 * Invitations.
 * Subscriptions.
 
-Esto permite que múltiples organizaciones utilicen Slotify manteniendo sus datos separados.
+This architecture allows multiple coworking organizations to use Slotify while keeping their data isolated.
+
+A Manager operates only within their own organization, while Members interact only with the organization they belong to.
 
 ---
 
-## Workspaces y Amenities
+## Workspaces and Amenities
 
-Los Managers pueden crear y administrar los espacios disponibles dentro de su coworking.
+Managers can create and manage the reservable spaces available within their coworking organization.
 
-Cada workspace puede incluir información como:
+Each workspace can include information such as:
 
-* Nombre.
-* Tipo.
-* Capacidad.
-* Piso.
-* Zona.
-* Ubicación.
-* Descripción.
-* Precio por hora.
-* Estado activo o inactivo.
+* Name.
+* Type.
+* Capacity.
+* Floor.
+* Zone.
+* Location.
+* Description.
+* Hourly rate.
+* Active or inactive status.
 * Amenities.
-* Imagen principal.
-* Galería de imágenes según el plan.
+* Main image.
+* Additional gallery images depending on the subscription plan.
 
-Los Amenities son reutilizables y pueden asignarse a múltiples workspaces.
+Amenities are reusable resources and can be assigned to multiple workspaces.
+
+Examples include:
+
+* High-Speed WiFi.
+* Projector.
+* Whiteboard.
+* Soundproofing.
+* Air Conditioning.
+* Natural Light.
 
 ---
 
-## Sistema de reservas
+## Reservation System
 
-Slotify permite crear reservas para los workspaces disponibles.
+Slotify allows users to create reservations for available workspaces.
 
-Antes de guardar una reserva, el backend valida diferentes reglas de negocio.
+Before storing a reservation, the backend validates several business rules.
 
-Entre ellas:
+These include:
 
-* El workspace debe pertenecer a la organización correspondiente.
-* El workspace debe estar activo.
-* La cantidad de asistentes no puede superar la capacidad.
-* La hora final debe ser posterior a la hora inicial.
-* La reserva debe cumplir las Booking Rules.
-* La reserva debe respetar Custom Time Slots cuando correspondan.
-* El workspace debe estar disponible.
-* No puede existir otra reserva confirmada que se solape con el mismo horario.
+* The workspace must belong to the correct organization.
+* The workspace must be active.
+* The attendee count cannot exceed the workspace capacity.
+* The end time must be later than the start time.
+* The reservation must comply with the organization's Booking Rules.
+* The reservation must comply with Custom Time Slots when applicable.
+* The workspace must be available.
+* Another confirmed reservation cannot overlap the requested time range.
 
-### Prevención de reservas solapadas
+### Overlapping Reservation Prevention
 
-Slotify considera que dos reservas se solapan cuando:
+Slotify determines that two reservations overlap when:
 
 ```text
 existing_start < new_end
@@ -341,177 +356,221 @@ AND
 existing_end > new_start
 ```
 
-Esto permite reservas consecutivas.
+This allows back-to-back reservations.
 
-Por ejemplo:
+For example:
 
 ```text
 09:00 - 10:00
 10:00 - 11:00
 ```
 
-son válidas.
+is valid.
 
-Mientras que:
+However:
 
 ```text
 09:00 - 11:00
 10:00 - 12:00
 ```
 
-representan un conflicto.
+represents an overlap and is rejected.
+
+The frontend helps guide the user by displaying availability information, but the backend remains responsible for enforcing the actual reservation rules.
 
 ---
 
 ## Booking Rules
 
-Cada organización puede definir políticas para controlar cómo se realizan las reservas.
+Each organization can define policies that control how reservations are created and managed.
 
-Entre ellas:
+These rules include:
 
-* Máximo de horas por reserva.
-* Tiempo mínimo de anticipación.
-* Límite para cancelar reservas.
-* Reservas durante fines de semana.
+* Maximum reservation duration.
+* Minimum advance booking notice.
+* Cancellation deadline.
+* Weekend booking policy.
 
-Estas reglas se validan en el backend al crear o modificar una reserva.
+These rules are validated by the backend whenever a reservation is created or modified.
+
+The available configuration ranges can also depend on the organization's subscription plan.
 
 ---
 
 ## Custom Time Slots
 
-Las organizaciones con acceso a esta funcionalidad pueden definir bloques de horario reutilizables.
+Organizations with access to this functionality can define reusable booking blocks.
 
-Por ejemplo:
+For example:
 
 * Morning Session.
 * Afternoon Session.
 * Weekend Session.
 
-Esto permite que un coworking controle de forma más estricta los horarios disponibles para reservar determinados espacios.
+This allows a coworking organization to control the schedule blocks that Members are allowed to reserve instead of allowing completely arbitrary times.
+
+Custom Time Slots are also validated as part of the reservation workflow.
 
 ---
 
-## Suscripciones
+## Subscription System
 
-Slotify utiliza Stripe para administrar el flujo de suscripciones.
+Slotify uses Stripe to manage the subscription workflow.
 
 ### Stripe Checkout
 
-Cuando una organización todavía no posee una suscripción activa, Slotify puede crear una sesión de **Stripe Checkout** para activar un plan.
+When an organization does not yet have an active subscription, Slotify can create a **Stripe Checkout** session to activate a plan.
+
+Stripe handles the secure payment process rather than Slotify directly processing sensitive payment information.
 
 ### Stripe Customer Portal
 
-Las organizaciones que ya poseen una suscripción pueden utilizar **Stripe Customer Portal** para administrar su facturación y cambios de plan.
+Organizations that already have an active Stripe subscription can use the **Stripe Customer Portal** to manage billing and subscription changes.
 
 ### Stripe Webhooks
 
-Stripe Webhooks permiten sincronizar eventos del ciclo de vida de las suscripciones con Slotify.
+Stripe Webhooks allow subscription lifecycle events to be synchronized back into Slotify.
 
-La aplicación utiliza el estado de la suscripción para controlar límites y funcionalidades.
+These events allow the application to update the local subscription state when events such as subscription creation, updates, upgrades, downgrades, or cancellations occur.
+
+Slotify then uses the subscription state to control application limits and feature access.
 
 ---
 
-## Planes
+## Subscription Plans
 
-Slotify cuenta con diferentes niveles de suscripción.
+Slotify includes different subscription levels.
 
 ### Starter
 
-Incluye las funcionalidades principales para administrar una organización de coworking, pero establece límites sobre determinados recursos y funcionalidades.
+Starter includes the core functionality required to operate a coworking organization but applies limits to certain resources and features.
+
+It is designed for smaller organizations that require standard workspace and reservation management functionality.
 
 ### Pro
 
-Amplía las capacidades de la aplicación y permite acceso a funcionalidades como:
+Pro expands the capabilities of the platform and provides access to functionality such as:
 
 * Custom Time Slots.
 * Advanced Booking Rules.
 * Usage Insights.
 * Availability Command Center.
 * Multiple Workspace Photos.
-* Mayores límites de recursos.
+* Higher or unlimited resource limits.
+* Additional operational capabilities.
+
+The subscription plan is not only a visual label.
+
+It directly affects what the organization can create, configure, and access throughout the application.
 
 ---
 
-## Casos de uso principales
+## Subscription Downgrade Protection
 
-1. Registro de Manager y organización.
-2. Confirmación de cuenta.
-3. Inicio de sesión.
-4. Recuperación de contraseña.
+Slotify also handles organizations that downgrade from a higher plan to a more restrictive plan.
+
+For example, an organization may create more workspaces and users while subscribed to Pro and later downgrade to Starter.
+
+If the organization is now above the Starter limits, Slotify preserves the existing data instead of automatically deleting resources.
+
+However, actions that would increase usage are blocked.
+
+For example:
+
+```text
+Starter Workspace Limit: 10
+Current Workspaces:       12
+```
+
+The existing 12 workspaces remain available, but another workspace cannot be created.
+
+The same principle applies to member limits and invitations.
+
+This design protects customer data while still enforcing the restrictions of the organization's current subscription plan.
+
+---
+
+## Main Use Cases
+
+1. Manager and organization registration.
+2. Email confirmation.
+3. Sign in.
+4. Password recovery.
 5. Two-Factor Authentication.
-6. Manejo de cuentas inactivas.
-7. Invitación de miembros.
-8. Registro de Member mediante invitación.
-9. Administración de organización.
-10. Administración de Amenities.
-11. Administración de Workspaces.
-12. Validación de disponibilidad.
-13. Creación de reservas.
-14. Edición de reservas.
-15. Cancelación de reservas.
-16. Consulta del historial.
+6. Inactive account handling.
+7. Member invitations.
+8. Member registration through an invitation.
+9. Organization management.
+10. Amenity management.
+11. Workspace management.
+12. Availability validation.
+13. Reservation creation.
+14. Reservation editing.
+15. Reservation cancellation.
+16. Reservation history.
 17. Booking Rules.
 18. Custom Time Slots.
-19. Suscripción mediante Stripe.
-20. Upgrade de plan.
-21. Downgrade de plan.
-22. Aplicación de límites según suscripción.
+19. Stripe subscription.
+20. Plan upgrade.
+21. Plan downgrade.
+22. Subscription-based limit enforcement.
 
 ---
 
-## Interfaz y experiencia de usuario
+## User Interface and Experience
 
-La interfaz de Slotify fue desarrollada con React y TypeScript.
+The Slotify interface was developed using React and TypeScript.
 
-Entre las características de experiencia de usuario se incluyen:
+User experience features include:
 
-* Diseño responsive.
+* Responsive design.
 * Dark Mode.
 * Loading skeletons.
 * Toast notifications.
 * Confirmation dialogs.
 * Empty states.
-* Animaciones y transiciones.
-* Componentes reutilizables.
-* Interfaces diferenciadas para Manager y Member.
+* Animations and transitions.
+* Reusable components.
+* Different interfaces and workflows for Managers and Members.
+
+The responsive interface allows Managers to operate the platform from desktop environments while Members can comfortably browse workspaces and manage reservations from smaller screens.
 
 ---
 
 ## Deployment
 
-Slotify se encuentra desplegado en **Render** utilizando PostgreSQL como base de datos.
+Slotify is deployed on **Render** using PostgreSQL as its relational database.
 
-La configuración sensible se administra mediante variables de entorno, incluyendo información como:
+Sensitive configuration is managed through environment variables, including information such as:
 
 * Database URL.
 * Rails Secret Key Base.
 * Stripe credentials.
 * Email provider credentials.
 
-Los secretos y credenciales de producción no deben almacenarse directamente dentro del código fuente.
+Production secrets and credentials should never be stored directly in the source code.
 
 ---
 
-## Checklist del proyecto
+## Project Checklist
 
-* [x] Tiene autenticación
-* [x] Tiene autorización por roles
-* [x] Tiene mínimo 5 modelos
-* [x] Tiene mínimo 6 casos de uso
-* [x] Usa Rails como backend
-* [x] Usa React como frontend
-* [x] Tiene base de datos relacional
-* [x] Tiene CRUD funcional
-* [x] Tiene validaciones
-* [x] Tiene pruebas automatizadas
-* [x] Tiene README
-* [x] Tiene presentación final
+* [x] Authentication implemented
+* [x] Role-based authorization implemented
+* [x] At least 5 models
+* [x] At least 6 use cases
+* [x] Rails backend
+* [x] React frontend
+* [x] Relational database
+* [x] Functional CRUD operations
+* [x] Validations
+* [x] Automated tests
+* [x] README
+* [x] Final presentation
 
 ---
 
-## Estado del proyecto
+## Project Status
 
-Proyecto final desarrollado como **MicroSaaS para la gestión de reservas de espacios de coworking**.
+Final project developed as a **MicroSaaS for coworking workspace reservation management**.
 
-Slotify integra frontend, backend, base de datos, autenticación, autorización, reglas de negocio, sistema de reservas, suscripciones y despliegue en una sola aplicación.
+Slotify integrates frontend, backend, relational database, authentication, authorization, business rules, reservation management, subscription billing, and deployment into a single application.
