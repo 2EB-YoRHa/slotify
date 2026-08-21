@@ -1,0 +1,74 @@
+import { Link } from "@inertiajs/react";
+import { motion } from "motion/react";
+import { Ban, Edit3 } from "lucide-react";
+import BackLinkButton from "../../ui/BackLinkButton";
+import type { ReservationShowData } from "../../../types/reservationShowTypes";
+
+type ReservationHeaderProps = {
+  reservation: ReservationShowData;
+  canModify: boolean;
+  backHref: string;
+  backLabel: string;
+};
+
+export default function ReservationHeader({
+  reservation,
+  canModify,
+  backHref,
+  backLabel,
+}: ReservationHeaderProps) {
+  return (
+    <div className="mb-6 flex flex-col gap-5 sm:mb-8 xl:flex-row xl:items-start xl:justify-between">
+      <div className="min-w-0">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <BackLinkButton href={backHref}>{backLabel}</BackLinkButton>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 }}
+          className="mt-5 wrap-break-word text-2xl font-black leading-tight text-slate-950 dark:text-slate-100 sm:mt-6 sm:text-3xl"
+        >
+          Reservation for {reservation.workspace?.name || "Workspace"}
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base"
+        >
+          Review the booking schedule, workspace details, attendees, and notes.
+        </motion.p>
+      </div>
+
+      {canModify && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:flex xl:shrink-0"
+        >
+          <Link
+            href={`/reservations/${reservation.id}/edit`}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:shadow-slate-950/30 dark:hover:border-cyan-500/40 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300 xl:w-auto"
+          >
+            <Edit3 size={18} />
+            Edit
+          </Link>
+
+          <Link
+            href={`/reservations/${reservation.id}/cancel`}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-red-100 transition hover:-translate-y-0.5 hover:bg-red-600 hover:shadow-md dark:shadow-none dark:hover:bg-red-400 xl:w-auto"
+          >
+            <Ban size={18} />
+            Cancel
+          </Link>
+        </motion.div>
+      )}
+    </div>
+  );
+}

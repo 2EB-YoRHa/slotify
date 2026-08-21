@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_10_011909) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_12_025424) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "amenities", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -29,6 +57,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_011909) do
     t.bigint "organization_id", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_booking_rules_on_organization_id"
+  end
+
+  create_table "booking_time_slots", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "days_of_week", default: "monday,tuesday,wednesday,thursday,friday", null: false
+    t.integer "end_minute", null: false
+    t.string "name", null: false
+    t.bigint "organization_id", null: false
+    t.integer "start_minute", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id", "active"], name: "index_booking_time_slots_on_organization_id_and_active"
+    t.index ["organization_id", "name"], name: "index_booking_time_slots_on_organization_id_and_name", unique: true
+    t.index ["organization_id"], name: "index_booking_time_slots_on_organization_id"
   end
 
   create_table "organization_invitations", force: :cascade do |t|
@@ -54,7 +96,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_011909) do
     t.string "name"
     t.string "phone"
     t.string "slug"
+    t.string "stripe_customer_id"
     t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_organizations_on_slug_unique", unique: true
   end
 
   create_table "payments", force: :cascade do |t|
@@ -99,24 +143,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_011909) do
     t.string "plan_name"
     t.datetime "starts_at"
     t.string "status"
+    t.string "stripe_checkout_session_id"
+    t.string "stripe_price_id"
+    t.string "stripe_subscription_id"
     t.datetime "updated_at", null: false
     t.integer "user_limit"
     t.integer "workspace_limit"
     t.index ["organization_id"], name: "index_subscriptions_on_organization_id"
+    t.index ["organization_id"], name: "index_subscriptions_one_active_per_organization", unique: true, where: "((status)::text = ANY (ARRAY[('active'::character varying)::text, ('trialing'::character varying)::text]))"
+    t.index ["stripe_checkout_session_id"], name: "index_subscriptions_on_unique_stripe_checkout_session_id", unique: true, where: "((stripe_checkout_session_id IS NOT NULL) AND ((stripe_checkout_session_id)::text <> ''::text))"
+    t.index ["stripe_subscription_id"], name: "index_subscriptions_on_unique_stripe_subscription_id", unique: true, where: "((stripe_subscription_id IS NOT NULL) AND ((stripe_subscription_id)::text <> ''::text))"
   end
 
   create_table "users", force: :cascade do |t|
     t.boolean "active", default: true, null: false
+    t.datetime "confirmation_sent_at"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "name", null: false
     t.bigint "organization_id"
+    t.integer "otp_last_used_at"
+    t.boolean "otp_required_for_login", default: false, null: false
+    t.string "otp_secret"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.bigint "role_id", null: false
+    t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["organization_id"], name: "index_users_on_organization_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -148,7 +206,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_011909) do
     t.index ["organization_id"], name: "index_workspaces_on_organization_id"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "booking_rules", "organizations"
+  add_foreign_key "booking_time_slots", "organizations"
   add_foreign_key "organization_invitations", "organizations"
   add_foreign_key "organization_invitations", "roles"
   add_foreign_key "organization_invitations", "users", column: "invited_by_id"

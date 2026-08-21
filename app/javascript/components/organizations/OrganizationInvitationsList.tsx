@@ -1,85 +1,240 @@
 import { router } from "@inertiajs/react";
+import { useState } from "react";
+import {
+  CheckCircle2,
+  Copy,
+  ExternalLink,
+  Send,
+  Trash2,
+} from "lucide-react";
+import ConfirmDialog from "../ui/ConfirmDialog";
 import type { OrganizationInvitation } from "../../types/organization";
 
 type OrganizationInvitationsListProps = {
   invitations: OrganizationInvitation[];
+  canManage?: boolean;
 };
 
 export default function OrganizationInvitationsList({
   invitations,
+  canManage = false,
 }: OrganizationInvitationsListProps) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-5 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">
-            Pending Invitations
-          </h2>
+  const [selectedInvitation, setSelectedInvitation] =
+    useState<OrganizationInvitation | null>(null);
 
-          <p className="mt-1 text-sm text-slate-500">
-            Invitations sent to people who have not joined yet.
+  const [processing, setProcessing] = useState(false);
+  const [copiedInvitationId, setCopiedInvitationId] = useState<number | null>(
+    null,
+  );
+
+  function confirmRemoveInvitation() {
+    if (!selectedInvitation) return;
+
+    setProcessing(true);
+
+    router.delete(`/organization_invitations/${selectedInvitation.id}`, {
+      onFinish: () => {
+        setProcessing(false);
+        setSelectedInvitation(null);
+      },
+    });
+  }
+
+  async function copyInviteLink(invitation: OrganizationInvitation) {
+    const inviteUrl = invitationUrlFor(invitation);
+
+    await navigator.clipboard.writeText(inviteUrl);
+
+    setCopiedInvitationId(invitation.id);
+
+    window.setTimeout(() => {
+      setCopiedInvitationId((currentId) =>
+        currentId === invitation.id ? null : currentId,
+      );
+    }, 1800);
+  }
+
+  return (
+    <>
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 sm:p-6">
+        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 sm:text-xl">
+              Pending Invitations
+            </h2>
+
+            <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
+              Invitations sent to people who have not joined yet.
+            </p>
+          </div>
+
+          <span className="w-fit rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-500 dark:bg-cyan-500/10 dark:text-cyan-300">
+            {invitations.length} total
+          </span>
+        </div>
+
+        {invitations.length === 0 ? (
+          <EmptyInvitations />
+        ) : (
+          <div className="space-y-4">
+            {invitations.map((invitation) => {
+              const copied = copiedInvitationId === invitation.id;
+              const inviteUrl = invitationUrlFor(invitation);
+
+              return (
+                <InvitationCard
+                  key={invitation.id}
+                  invitation={invitation}
+                  inviteUrl={inviteUrl}
+                  copied={copied}
+                  canManage={canManage}
+                  onCopy={() => copyInviteLink(invitation)}
+                  onRemove={() => setSelectedInvitation(invitation)}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <ConfirmDialog
+        open={Boolean(selectedInvitation)}
+        title="Remove invitation?"
+        description={`This will remove the pending invitation for ${
+          selectedInvitation?.email || "this user"
+        }. They will no longer be able to accept this invite.`}
+        confirmText="Remove Invitation"
+        cancelText="Keep Invitation"
+        danger
+        processing={processing}
+        onCancel={() => setSelectedInvitation(null)}
+        onConfirm={confirmRemoveInvitation}
+      />
+    </>
+  );
+}
+
+function EmptyInvitations() {
+  return (
+    <div className="rounded-xl bg-slate-50 px-5 py-10 text-center transition-colors dark:bg-slate-800/60 sm:p-8">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 transition-colors dark:bg-slate-900 dark:text-slate-500">
+        <Send size={24} />
+      </div>
+
+      <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-slate-100">
+        No pending invitations
+      </h3>
+
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+        New invitations will appear here until they are accepted.
+      </p>
+    </div>
+  );
+}
+
+function InvitationCard({
+  invitation,
+  inviteUrl,
+  copied,
+  canManage,
+  onCopy,
+  onRemove,
+}: {
+  invitation: OrganizationInvitation;
+  inviteUrl: string;
+  copied: boolean;
+  canManage: boolean;
+  onCopy: () => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="min-w-0 rounded-xl border border-slate-100 p-4 transition-colors dark:border-slate-700 dark:bg-slate-950/40">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <p className="break-all font-bold text-slate-900 dark:text-slate-100">
+            {invitation.email}
+          </p>
+
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Role: {formatRole(invitation.role?.name)}
+          </p>
+
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+            Expires: {formatDate(invitation.expires_at)}
           </p>
         </div>
 
-        <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-500">
-          {invitations.length} total
-        </span>
+        {canManage && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-red-100 px-3 py-2 text-xs font-bold text-red-500 transition hover:bg-red-50 dark:border-red-500/20 dark:text-red-300 dark:hover:bg-red-500/10 sm:w-auto"
+          >
+            <Trash2 size={14} />
+            Remove
+          </button>
+        )}
       </div>
 
-      {invitations.length === 0 ? (
-        <div className="rounded-xl bg-slate-50 p-8 text-center text-sm text-slate-400">
-          No pending invitations yet.
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {invitations.map((invitation) => (
-            <div
-              key={invitation.id}
-              className="rounded-xl border border-slate-100 p-4"
+      <div className="mt-4 rounded-xl border border-cyan-100 bg-cyan-50 p-4 transition-colors dark:border-cyan-500/20 dark:bg-cyan-500/10">
+        <div className="mb-3 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
+              Manual Invite Link
+            </p>
+
+            <p className="mt-1 text-xs leading-5 text-cyan-700 dark:text-cyan-200/90">
+              If the email does not arrive, copy this link and send it manually.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:shrink-0">
+            <button
+              type="button"
+              onClick={onCopy}
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-extrabold transition ${
+                copied
+                  ? "bg-green-500 text-white dark:bg-green-400 dark:text-slate-950"
+                  : "bg-white text-cyan-600 hover:bg-cyan-100 dark:bg-slate-900 dark:text-cyan-300 dark:hover:bg-cyan-500/10"
+              }`}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-bold text-slate-900">
-                    {invitation.email}
-                  </p>
+              {copied ? (
+                <>
+                  <CheckCircle2 size={14} />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy size={14} />
+                  Copy Link
+                </>
+              )}
+            </button>
 
-                  <p className="mt-1 text-sm text-slate-500">
-                    Role: {formatRole(invitation.role?.name)}
-                  </p>
-
-                  <p className="mt-1 text-xs text-slate-400">
-                    Expires: {formatDate(invitation.expires_at)}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    router.delete(
-                      `/organization_invitations/${invitation.id}`
-                    )
-                  }
-                  className="rounded-lg border border-red-100 px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50"
-                >
-                  Remove
-                </button>
-              </div>
-
-              <div className="mt-4 rounded-lg bg-slate-50 p-3">
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                  Invite Token
-                </p>
-
-                <p className="mt-1 break-all text-xs text-slate-500">
-                  {invitation.token}
-                </p>
-              </div>
-            </div>
-          ))}
+            <a
+              href={inviteUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              <ExternalLink size={14} />
+              Open
+            </a>
+          </div>
         </div>
-      )}
+
+        <p className="break-all rounded-lg bg-white px-3 py-2 text-xs font-semibold leading-5 text-slate-500 transition-colors dark:bg-slate-900 dark:text-slate-400">
+          {inviteUrl}
+        </p>
+      </div>
     </div>
   );
+}
+
+function invitationUrlFor(invitation: OrganizationInvitation): string {
+  return `${window.location.origin}/organization_invitations/accept/${encodeURIComponent(
+    invitation.token,
+  )}`;
 }
 
 function formatRole(role?: string | null): string {

@@ -1,0 +1,15 @@
+Confirm your Slotify email
+
+Hello <%= @resource.email %>,
+
+<% if @resource.try(:unconfirmed_email).present? %>
+You requested to change the email address on your Slotify account.
+Confirm the new address using the link below.
+<% else %>
+Welcome to Slotify. Please confirm your email before signing in.
+<% end %>
+
+Confirm email:
+<%= confirmation_url(@resource, confirmation_token: @token) %>
+
+If you did not create or update a Slotify account, you can ignore this email.

@@ -1,0 +1,145 @@
+import { motion } from "motion/react";
+import {
+  Building2,
+  CalendarPlus,
+  DollarSign,
+  Edit3,
+  Eye,
+  Grid3X3,
+  Layers3,
+  MapPin,
+  Trash2,
+  UsersRound,
+} from "lucide-react";
+import WorkspacePhoto from "../WorkspacePhoto";
+import type { Workspace } from "../../../types/workspace";
+import { formatText } from "../../../utils/reservationFormUtils";
+import {
+  AmenityPreview,
+  SmallInfo,
+  WorkspaceAction,
+  WorkspaceStatusBadge,
+} from "../browser/WorkspaceBrowserShared";
+
+export default function ManagerWorkspaceCard({
+  workspace,
+  index,
+}: {
+  workspace: Workspace;
+  index: number;
+}) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.035 }}
+      className="flex min-h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-cyan-100 hover:shadow-md dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-slate-950/30 dark:hover:border-cyan-500/30"
+    >
+      <div className="relative overflow-hidden bg-slate-100 dark:bg-slate-800">
+        <WorkspacePhoto
+          name={workspace.name}
+          photoUrl={workspace.photo_url}
+          galleryPhotos={workspace.gallery_photos || []}
+          fit="contain"
+          position="object-center"
+          className="h-48 w-full border-0 bg-slate-100 p-2 dark:bg-slate-800 sm:h-60"
+        />
+
+        <WorkspaceStatusBadge active={workspace.active} />
+      </div>
+
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <div className="mb-4 flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
+            <Building2 size={20} strokeWidth={2.4} />
+          </div>
+
+          <div className="min-w-0">
+            <h3 className="truncate text-base font-extrabold text-slate-950 dark:text-slate-100 sm:text-lg">
+              {workspace.name}
+            </h3>
+
+            <p className="mt-1 text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+              {formatText(workspace.workspace_type)}
+            </p>
+          </div>
+        </div>
+
+        {workspace.description && (
+          <p className="mb-5 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
+            {workspace.description}
+          </p>
+        )}
+
+        <div className="grid grid-cols-2 gap-3">
+          <SmallInfo
+            icon={UsersRound}
+            label="Capacity"
+            value={`${workspace.capacity} people`}
+          />
+
+          <SmallInfo
+            icon={DollarSign}
+            label="Rate"
+            value={`$${Number(workspace.hourly_rate || 0).toFixed(2)}/h`}
+          />
+
+          <SmallInfo
+            icon={Layers3}
+            label="Floor"
+            value={workspace.floor || "-"}
+          />
+
+          <SmallInfo
+            icon={Grid3X3}
+            label="Zone"
+            value={workspace.zone || "-"}
+          />
+        </div>
+
+        {workspace.location && (
+          <div className="mt-4 flex min-w-0 items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-500 transition-colors dark:bg-slate-800/60 dark:text-slate-400">
+            <MapPin
+              size={15}
+              className="shrink-0 text-slate-400 dark:text-slate-500"
+            />
+
+            <span className="truncate">{workspace.location}</span>
+          </div>
+        )}
+
+        <AmenityPreview workspace={workspace} />
+
+        <div className="mt-auto grid grid-cols-1 gap-3 pt-6 sm:grid-cols-2">
+          <WorkspaceAction
+            href={`/workspaces/${workspace.id}`}
+            icon={Eye}
+            label="View"
+            primary
+          />
+
+          <WorkspaceAction
+            href={`/workspaces/${workspace.id}/edit`}
+            icon={Edit3}
+            label="Edit"
+          />
+
+          {workspace.active && (
+            <WorkspaceAction
+              href={`/reservations/new?workspace_id=${workspace.id}`}
+              icon={CalendarPlus}
+              label="Reserve"
+            />
+          )}
+
+          <WorkspaceAction
+            href={`/workspaces/${workspace.id}/delete`}
+            icon={Trash2}
+            label="Delete"
+            danger
+          />
+        </div>
+      </div>
+    </motion.article>
+  );
+}

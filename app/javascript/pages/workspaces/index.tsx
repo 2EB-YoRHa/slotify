@@ -1,8 +1,33 @@
-import { Link } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
+import { motion } from "motion/react";
+import { useState } from "react";
+import HeaderActionButton from "../../components/ui/HeaderActionButton";
+import {
+  Building2,
+  DollarSign,
+  PlusCircle,
+  UsersRound,
+  CheckCircle2,
+  Grid3X3,
+  List,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
-import WorkspaceEmptyState from "../../components/workspaces/WorkspaceEmptyState";
+import MemberWorkspaceGrid from "../../components/workspaces/MemberWorkspaceGrid";
+import ManagerWorkspaceGrid from "../../components/workspaces/ManagerWorkspaceGrid";
 import WorkspaceTable from "../../components/workspaces/WorkspaceTable";
 import type { Workspace } from "../../types/workspace";
+
+type CurrentUser = {
+  id: number;
+  name: string;
+  email: string;
+  role?: string | null;
+};
+
+type SharedPageProps = {
+  current_user?: CurrentUser | null;
+};
 
 type WorkspacesIndexProps = {
   workspaces?: Workspace[];
@@ -11,30 +36,190 @@ type WorkspacesIndexProps = {
 export default function WorkspacesIndex({
   workspaces = [],
 }: WorkspacesIndexProps) {
+  const { current_user } = usePage<SharedPageProps>().props;
+  const isMember = current_user?.role === "member";
+
+  if (isMember) {
+    return <MemberWorkspacesIndex workspaces={workspaces} />;
+  }
+
+  return <ManagerWorkspacesIndex workspaces={workspaces} />;
+}
+
+function MemberWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
   return (
     <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Workspaces</h1>
+      <MemberWorkspaceGrid workspaces={workspaces} />
+    </AppLayout>
+  );
+}
 
-          <p className="mt-1 text-slate-500">
-            Manage your organization's desks, rooms, and studios.
-          </p>
-        </div>
+function ManagerWorkspacesIndex({ workspaces }: { workspaces: Workspace[] }) {
+  const [viewMode, setViewMode] = useState<"table" | "browse">("table");
+  const activeWorkspaces = workspaces.filter((workspace) => workspace.active);
 
-        <Link
-          href="/workspaces/new"
-          className="rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
-        >
-          + Add Workspace
-        </Link>
+  const totalCapacity = workspaces.reduce(
+    (sum, workspace) => sum + Number(workspace.capacity || 0),
+    0,
+  );
+
+  const averageRate =
+    workspaces.length > 0
+      ? workspaces.reduce(
+          (sum, workspace) => sum + Number(workspace.hourly_rate || 0),
+          0,
+        ) / workspaces.length
+      : 0;
+
+  const stats = [
+    {
+      label: "Total Spaces",
+      value: workspaces.length,
+      helper: "Registered workspaces",
+      icon: Building2,
+    },
+    {
+      label: "Active Spaces",
+      value: activeWorkspaces.length,
+      helper: "Available for reservations",
+      icon: CheckCircle2,
+    },
+    {
+      label: "Total Capacity",
+      value: totalCapacity,
+      helper: "Maximum people supported",
+      icon: UsersRound,
+    },
+    {
+      label: "Average Rate",
+      value: `$${averageRate.toFixed(2)}`,
+      helper: "Average hourly price",
+      icon: DollarSign,
+    },
+  ];
+
+  return (
+    <AppLayout
+      headerActions={
+        <HeaderActionButton href="/workspaces/new" icon={PlusCircle}>
+          New Workspace
+        </HeaderActionButton>
+      }
+    >
+      <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:mb-8 xl:grid-cols-4 xl:gap-6">
+        {stats.map((stat, index) => (
+          <WorkspaceStatCard key={stat.label} stat={stat} index={index} />
+        ))}
+      </section>
+
+      <div className="mb-6 flex justify-center sm:justify-end">
+        <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
       </div>
 
-      {workspaces.length === 0 ? (
-        <WorkspaceEmptyState />
-      ) : (
+      {viewMode === "table" ? (
         <WorkspaceTable workspaces={workspaces} />
+      ) : (
+        <ManagerWorkspaceGrid workspaces={workspaces} />
       )}
     </AppLayout>
+  );
+}
+
+type WorkspaceStat = {
+  label: string;
+  value: string | number;
+  helper: string;
+  icon: LucideIcon;
+};
+
+type WorkspaceStatCardProps = {
+  stat: WorkspaceStat;
+  index: number;
+};
+
+function WorkspaceStatCard({ stat, index }: WorkspaceStatCardProps) {
+  const Icon = stat.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06 }}
+      className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 dark:hover:border-slate-700 sm:p-5 xl:p-6"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-medium leading-5 text-slate-500 dark:text-slate-400">
+            {stat.label}
+          </p>
+
+          <h2 className="mt-2 truncate text-2xl font-bold text-slate-950 dark:text-slate-100 sm:text-3xl">
+            {stat.value}
+          </h2>
+        </div>
+
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
+          <Icon size={19} strokeWidth={2.4} />
+        </div>
+      </div>
+
+      <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        {stat.helper}
+      </p>
+    </motion.div>
+  );
+}
+
+type ViewModeToggleProps = {
+  viewMode: "table" | "browse";
+  onChange: (viewMode: "table" | "browse") => void;
+};
+
+function ViewModeToggle({ viewMode, onChange }: ViewModeToggleProps) {
+  return (
+    <div className="inline-flex w-full rounded-2xl border border-slate-200 bg-white p-1 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-900 dark:shadow-slate-950/30 sm:w-auto">
+      <ViewModeButton
+        label="Table"
+        icon={List}
+        selected={viewMode === "table"}
+        onClick={() => onChange("table")}
+      />
+
+      <ViewModeButton
+        label="Browse"
+        icon={Grid3X3}
+        selected={viewMode === "browse"}
+        onClick={() => onChange("browse")}
+      />
+    </div>
+  );
+}
+
+type ViewModeButtonProps = {
+  label: string;
+  icon: LucideIcon;
+  selected: boolean;
+  onClick: () => void;
+};
+
+function ViewModeButton({
+  label,
+  icon: Icon,
+  selected,
+  onClick,
+}: ViewModeButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-extrabold transition sm:flex-none ${
+        selected
+          ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
+          : "text-slate-500 hover:bg-cyan-50 hover:text-cyan-600 dark:text-slate-400 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
+      }`}
+    >
+      <Icon size={16} className="shrink-0" />
+      <span className="truncate">{label}</span>
+    </button>
   );
 }

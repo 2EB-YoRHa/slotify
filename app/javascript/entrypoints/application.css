@@ -3,6 +3,46 @@
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: #f8fafc;
+}
+
+html.dark body {
+  background: #020617;
+}
+
+::selection {
+  background: rgb(34 211 238 / 0.25);
+}
+
+html.dark ::selection {
+  background: rgb(34 211 238 / 0.35);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225) transparent;
+}
+
+html.dark * {
+  scrollbar-color: rgb(51 65 85) transparent;
+}
+
 .input {
   width: 100%;
   border-radius: 0.5rem;
@@ -15,4 +55,14 @@
 .input:focus {
   border-color: #22d3ee;
   box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+}
+
+html.dark .input {
+  border-color: #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+html.dark .input::placeholder {
+  color: #64748b;
 }

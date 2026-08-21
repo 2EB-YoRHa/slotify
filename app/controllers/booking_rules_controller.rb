@@ -5,21 +5,17 @@ class BookingRulesController < InertiaController
   def show
     respond_to do |format|
       format.html do
-        render inertia: "booking_rules/show", props: {
-          booking_rule: @booking_rule
-        }
+        render inertia: "booking_rules/show", props: booking_rule_props
       end
 
       format.json do
-        render json: @booking_rule
+        render json: booking_rule_props
       end
     end
   end
 
   def edit
-    render inertia: "booking_rules/edit", props: {
-      booking_rule: @booking_rule
-    }
+    render inertia: "booking_rules/edit", props: booking_rule_props
   end
 
   def update
@@ -36,10 +32,9 @@ class BookingRulesController < InertiaController
       else
         format.html do
           render inertia: "booking_rules/edit",
-                 props: {
-                   booking_rule: @booking_rule,
+                 props: booking_rule_props.merge(
                    errors: @booking_rule.errors.to_hash
-                 },
+                 ),
                  status: :unprocessable_entity
         end
 
@@ -58,12 +53,23 @@ class BookingRulesController < InertiaController
 
     return if @booking_rule.present?
 
+    constraints = current_organization.booking_rule_constraints
+
     @booking_rule = current_organization.create_booking_rule!(
-      max_hours_per_reservation: 4,
-      min_notice_minutes: 30,
-      cancellation_limit_hours: 24,
+      max_hours_per_reservation: [ 2, constraints[:max_hours_per_reservation_max] ].min,
+      min_notice_minutes: constraints[:min_notice_minutes_min],
+      cancellation_limit_hours: [ 24, constraints[:cancellation_limit_hours_max] ].min,
       allow_weekend_bookings: false
     )
+  end
+
+  def booking_rule_props
+    {
+      booking_rule: @booking_rule,
+      current_plan: current_organization.current_plan,
+      plan_entitlements: current_organization.plan_entitlements,
+      booking_rule_constraints: current_organization.booking_rule_constraints
+    }
   end
 
   def booking_rule_params

@@ -1,7 +1,15 @@
-import { Link } from "@inertiajs/react";
+import { motion } from "motion/react";
+import {
+  CalendarCheck,
+  CalendarPlus,
+  Clock3,
+  ListChecks,
+  XCircle,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
-import ReservationsEmptyState from "../../components/reservations/ReservationsEmptyState";
 import ReservationsTable from "../../components/reservations/ReservationsTable";
+import HeaderActionButton from "../../components/ui/HeaderActionButton";
 import type { Reservation } from "../../types/reservation";
 
 type ReservationsIndexProps = {
@@ -11,32 +19,107 @@ type ReservationsIndexProps = {
 export default function ReservationsIndex({
   reservations = [],
 }: ReservationsIndexProps) {
-  return (
-    <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">
-            Reservations Management
-          </h1>
+  const upcomingReservations = reservations.filter(
+    (reservation) =>
+      reservation.status !== "cancelled" &&
+      new Date(reservation.start_time).getTime() >= Date.now(),
+  );
 
-          <p className="mt-1 text-slate-500">
-            Review, update, and manage workspace reservations.
+  const confirmedReservations = reservations.filter(
+    (reservation) => reservation.status === "confirmed",
+  );
+
+  const cancelledReservations = reservations.filter(
+    (reservation) => reservation.status === "cancelled",
+  );
+
+  const stats = [
+    {
+      label: "Total Reservations",
+      value: reservations.length,
+      helper: "All bookings in the organization",
+      icon: ListChecks,
+    },
+    {
+      label: "Upcoming",
+      value: upcomingReservations.length,
+      helper: "Future active reservations",
+      icon: Clock3,
+    },
+    {
+      label: "Confirmed",
+      value: confirmedReservations.length,
+      helper: "Approved bookings",
+      icon: CalendarCheck,
+    },
+    {
+      label: "Cancelled",
+      value: cancelledReservations.length,
+      helper: "Cancelled bookings",
+      icon: XCircle,
+    },
+  ];
+
+  return (
+    <AppLayout
+      headerActions={
+        <HeaderActionButton href="/reservations/new" icon={CalendarPlus}>
+          New Reservation
+        </HeaderActionButton>
+      }
+    >
+      <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:mb-8 xl:grid-cols-4 xl:gap-6">
+        {stats.map((stat, index) => (
+          <ReservationStatCard key={stat.label} stat={stat} index={index} />
+        ))}
+      </section>
+
+      <ReservationsTable reservations={reservations} />
+    </AppLayout>
+  );
+}
+
+type ReservationStat = {
+  label: string;
+  value: string | number;
+  helper: string;
+  icon: LucideIcon;
+};
+
+type ReservationStatCardProps = {
+  stat: ReservationStat;
+  index: number;
+};
+
+function ReservationStatCard({ stat, index }: ReservationStatCardProps) {
+  const Icon = stat.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06 }}
+      className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 dark:hover:border-slate-700 sm:p-5 xl:p-6"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-bold leading-5 text-slate-500 dark:text-slate-400">
+            {stat.label}
           </p>
+
+          <h2 className="mt-2 truncate text-3xl font-extrabold text-slate-950 dark:text-slate-100">
+            {stat.value}
+          </h2>
         </div>
 
-        <Link
-          href="/reservations/new"
-          className="rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
-        >
-          + New Reservation
-        </Link>
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
+          <Icon size={19} strokeWidth={2.4} />
+        </div>
       </div>
 
-      {reservations.length === 0 ? (
-        <ReservationsEmptyState />
-      ) : (
-        <ReservationsTable reservations={reservations} />
-      )}
-    </AppLayout>
+      <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        {stat.helper}
+      </p>
+    </motion.div>
   );
 }

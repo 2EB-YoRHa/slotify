@@ -17,6 +17,7 @@ export type OrganizationUser = {
   name: string;
   email: string;
   active: boolean;
+  avatar_url?: string | null;
   role?: Role | null;
 };
 
@@ -55,6 +56,7 @@ export type OrganizationInvitation = {
   token: string;
   expires_at?: string | null;
   created_at?: string | null;
+  organization?: Organization | null;
   role?: Role | null;
   invited_by?: {
     id: number;

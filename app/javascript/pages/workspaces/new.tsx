@@ -1,31 +1,29 @@
 import AppLayout from "../../components/AppLayout";
 import WorkspaceForm from "../../components/workspaces/WorkspaceForm";
-import type { Amenity, WorkspaceErrors } from "../../types/workspace";
+import type { Amenity } from "../../types/amenity";
 
 type NewWorkspaceProps = {
   amenities?: Amenity[];
-  errors?: WorkspaceErrors;
+  multiple_workspace_photos_enabled?: boolean;
+  errors?: Partial<Record<string, string | string[]>>;
 };
 
 export default function NewWorkspace({
   amenities = [],
+  multiple_workspace_photos_enabled = false,
   errors = {},
 }: NewWorkspaceProps) {
   return (
     <AppLayout>
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">
-            Add New Workspace
-          </h1>
-
-          <p className="mt-1 text-slate-500">
-            Create a new bookable spot for your team.
-          </p>
-        </div>
-
-        <WorkspaceForm mode="create" amenities={amenities} errors={errors} />
-      </div>
+      <WorkspaceForm
+        amenities={amenities}
+        multipleWorkspacePhotosEnabled={multiple_workspace_photos_enabled}
+        errors={errors}
+        backHref="/workspaces"
+        backLabel="Back to Workspaces"
+        title="Create Workspace"
+        description="Add a bookable space with capacity, pricing, location details, and amenities."
+      />
     </AppLayout>
   );
 }

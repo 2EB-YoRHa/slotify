@@ -1,6 +1,19 @@
 import { Link } from "@inertiajs/react";
+import { motion } from "motion/react";
+import {
+  ArrowRight,
+  CalendarCheck,
+  CalendarPlus,
+  CheckCircle2,
+  Clock3,
+  ListChecks,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
+import HeaderActionButton from "../../components/ui/HeaderActionButton";
+import MyReservationsTable from "../../components/reservations/MyReservationsTable";
 import ReservationStatusBadge from "../../components/reservations/ReservationStatusBadge";
+import WorkspacePhoto from "../../components/workspaces/WorkspacePhoto";
 import { duration, formatDate, formatTime } from "../../utils/dateTime";
 import type { Reservation } from "../../types/reservation";
 
@@ -11,196 +24,240 @@ type MyReservationsProps = {
 export default function MyReservations({
   reservations = [],
 }: MyReservationsProps) {
-  const activeReservations = reservations.filter(
-    (reservation) => reservation.status !== "cancelled"
+  const now = Date.now();
+
+  const activeReservations = reservations.filter((reservation) => {
+    const start = new Date(reservation.start_time).getTime();
+    const end = new Date(reservation.end_time).getTime();
+
+    return reservation.status !== "cancelled" && start <= now && end >= now;
+  });
+
+  const upcomingReservations = reservations
+    .filter(
+      (reservation) =>
+        reservation.status !== "cancelled" &&
+        new Date(reservation.start_time).getTime() > now,
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.start_time).getTime() - new Date(b.start_time).getTime(),
+    );
+
+  const completedReservations = reservations.filter(
+    (reservation) => reservation.status === "concluded",
   );
 
   const cancelledReservations = reservations.filter(
-    (reservation) => reservation.status === "cancelled"
+    (reservation) => reservation.status === "cancelled",
   );
 
+  const nextReservation =
+    upcomingReservations[0] || activeReservations[0] || null;
+
+  const stats = [
+    {
+      label: "Total Bookings",
+      value: reservations.length,
+      helper: "All reservations created by you",
+      icon: ListChecks,
+    },
+    {
+      label: "Upcoming",
+      value: upcomingReservations.length,
+      helper: "Future confirmed bookings",
+      icon: CalendarCheck,
+    },
+    {
+      label: "Active Now",
+      value: activeReservations.length,
+      helper: "Bookings currently in progress",
+      icon: Clock3,
+    },
+    {
+      label: "Completed",
+      value: completedReservations.length,
+      helper: `${cancelledReservations.length} cancelled`,
+      icon: CheckCircle2,
+    },
+  ];
+
   return (
-    <AppLayout>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">
-            My Reservations
-          </h1>
+    <AppLayout
+      headerActions={
+        <HeaderActionButton href="/reservations/new" icon={CalendarPlus}>
+          New Booking
+        </HeaderActionButton>
+      }
+    >
+      <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:mb-8 xl:grid-cols-4 xl:gap-6">
+        {stats.map((stat, index) => (
+          <BookingStatCard key={stat.label} stat={stat} index={index} />
+        ))}
+      </section>
 
-          <p className="mt-1 text-slate-500">
-            View and manage the workspaces you have booked.
-          </p>
-        </div>
+      <NextBookingPanel reservation={nextReservation} />
 
-        <Link
-          href="/reservations/new"
-          className="rounded-lg bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
-        >
-          + New Reservation
-        </Link>
-      </div>
-
-      {reservations.length === 0 ? (
-        <NoMyReservations />
-      ) : (
-        <div className="grid grid-cols-3 gap-8">
-          <section className="col-span-2 space-y-6">
-            <ReservationSection
-              title="Upcoming Bookings"
-              description="Your active workspace reservations."
-              badge={`${activeReservations.length} active`}
-              reservations={activeReservations}
-              emptyMessage="You do not have active reservations."
-            />
-
-            {cancelledReservations.length > 0 && (
-              <ReservationSection
-                title="Cancelled Reservations"
-                description="These bookings remain visible for history."
-                reservations={cancelledReservations}
-                emptyMessage="You do not have cancelled reservations."
-              />
-            )}
-          </section>
-
-          <aside className="space-y-6">
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-slate-900">
-                Reservation Summary
-              </h2>
-
-              <div className="mt-5 space-y-4 text-sm">
-                <SummaryItem label="Total" value={reservations.length} />
-                <SummaryItem label="Active" value={activeReservations.length} />
-                <SummaryItem
-                  label="Cancelled"
-                  value={cancelledReservations.length}
-                />
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-cyan-100 bg-cyan-50 p-6">
-              <h2 className="font-bold text-slate-800">Quick Tip</h2>
-
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                You can cancel an active reservation from this page. Cancelled
-                reservations are not deleted; they remain in your history.
-              </p>
-            </div>
-          </aside>
-        </div>
-      )}
+      <MyReservationsTable reservations={reservations} />
     </AppLayout>
   );
 }
 
-type ReservationSectionProps = {
-  title: string;
-  description: string;
-  reservations: Reservation[];
-  emptyMessage: string;
-  badge?: string;
+type BookingStat = {
+  label: string;
+  value: string | number;
+  helper: string;
+  icon: LucideIcon;
 };
 
-function ReservationSection({
-  title,
-  description,
-  reservations,
-  emptyMessage,
-  badge,
-}: ReservationSectionProps) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+type BookingStatCardProps = {
+  stat: BookingStat;
+  index: number;
+};
 
-          <p className="mt-1 text-sm text-slate-500">{description}</p>
+function BookingStatCard({ stat, index }: BookingStatCardProps) {
+  const Icon = stat.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06 }}
+      className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 dark:hover:border-slate-700 sm:p-5 xl:p-6"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-bold leading-5 text-slate-500 dark:text-slate-400">
+            {stat.label}
+          </p>
+
+          <h2 className="mt-2 truncate text-3xl font-extrabold text-slate-950 dark:text-slate-100">
+            {stat.value}
+          </h2>
         </div>
 
-        {badge && (
-          <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-500">
-            {badge}
-          </span>
-        )}
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
+          <Icon size={20} strokeWidth={2.4} />
+        </div>
       </div>
 
-      {reservations.length === 0 ? (
-        <div className="rounded-xl bg-slate-50 p-8 text-center text-sm text-slate-400">
-          {emptyMessage}
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {reservations.map((reservation) => (
-            <ReservationCard key={reservation.id} reservation={reservation} />
-          ))}
-        </div>
-      )}
-    </div>
+      <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        {stat.helper}
+      </p>
+    </motion.div>
   );
 }
 
-type ReservationCardProps = {
-  reservation: Reservation;
-};
-
-function ReservationCard({ reservation }: ReservationCardProps) {
-  const isCancelled = reservation.status === "cancelled";
-
+function NextBookingPanel({ reservation }: { reservation: Reservation | null }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex items-start justify-between gap-5">
-        <div>
-          <div className="mb-3 flex items-center gap-3">
-            <h3 className="text-lg font-bold text-slate-900">
+    <motion.section
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.16 }}
+      className="mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30 xl:mb-8"
+    >
+      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 transition-colors dark:border-slate-800 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 sm:h-12 sm:w-12">
+            <CalendarCheck size={22} strokeWidth={2.4} />
+          </div>
+
+          <div className="min-w-0">
+            <h2 className="text-lg font-extrabold text-slate-950 dark:text-slate-100 sm:text-xl">
+              Next Booking
+            </h2>
+
+            <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
+              The closest reservation on your schedule.
+            </p>
+          </div>
+        </div>
+
+        <Link
+          href="/workspaces"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-cyan-500/40 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300 sm:w-auto"
+        >
+          Find another workspace
+          <ArrowRight size={16} />
+        </Link>
+      </div>
+
+      {reservation ? (
+        <NextBookingDetails reservation={reservation} />
+      ) : (
+        <EmptyNextBooking />
+      )}
+    </motion.section>
+  );
+}
+
+function NextBookingDetails({ reservation }: { reservation: Reservation }) {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-5">
+      <WorkspacePhoto
+        name={reservation.workspace?.name || "Workspace"}
+        photoUrl={reservation.workspace?.photo_url}
+        galleryPhotos={reservation.workspace?.gallery_photos || []}
+        fit="cover"
+        position="object-center"
+        className="h-56 w-full border-0 bg-slate-100 transition-colors dark:bg-slate-800 sm:h-72 lg:col-span-2 lg:h-full lg:min-h-80"
+      />
+
+      <div className="p-5 sm:p-8 lg:col-span-3">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500 dark:text-cyan-300">
+              {formatText(reservation.workspace?.workspace_type)}
+            </p>
+
+            <h3 className="mt-2 wrap-break-word text-2xl font-extrabold text-slate-950 dark:text-slate-100 sm:text-3xl">
               {reservation.workspace?.name || "Workspace removed"}
             </h3>
 
-            <ReservationStatusBadge status={reservation.status} />
+            <p className="mt-2 wrap-break-word text-sm leading-6 text-slate-500 dark:text-slate-400">
+              {reservation.workspace?.location || "Location not provided"}
+            </p>
           </div>
 
-          <p className="text-sm text-slate-500">
-            {formatType(reservation.workspace?.workspace_type)}
-          </p>
-
-          <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
-            <InfoItem label="Date" value={formatDate(reservation.start_time)} />
-
-            <InfoItem
-              label="Time"
-              value={`${formatTime(reservation.start_time)} - ${formatTime(
-                reservation.end_time
-              )}`}
-            />
-
-            <InfoItem
-              label="Duration"
-              value={duration(reservation.start_time, reservation.end_time)}
-            />
-          </div>
-
-          <p className="mt-4 text-sm text-slate-500">
-            Attendees:{" "}
-            <span className="font-bold text-slate-800">
-              {reservation.attendees_count || 1}
-            </span>
-          </p>
+          <ReservationStatusBadge status={reservation.status} />
         </div>
 
-        <div className="flex min-w-32 flex-col gap-3">
+        <div className="grid grid-cols-2 gap-4 rounded-2xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:p-5 lg:grid-cols-4">
+          <SummaryItem label="Date" value={formatDate(reservation.start_time)} />
+
+          <SummaryItem
+            label="Time"
+            value={`${formatTime(reservation.start_time)} - ${formatTime(
+              reservation.end_time,
+            )}`}
+          />
+
+          <SummaryItem
+            label="Duration"
+            value={duration(reservation.start_time, reservation.end_time)}
+          />
+
+          <SummaryItem
+            label="Attendees"
+            value={reservation.attendees_count || 1}
+          />
+        </div>
+
+        <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Link
             href={`/reservations/${reservation.id}`}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-center text-sm font-bold text-slate-700 hover:bg-slate-50"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
           >
-            View
+            View Details
+            <ArrowRight size={16} />
           </Link>
 
-          {!isCancelled && (
+          {reservation.can_modify && (
             <Link
-              href={`/reservations/${reservation.id}/cancel`}
-              className="rounded-lg bg-red-500 px-4 py-2 text-center text-sm font-bold text-white hover:bg-red-600"
+              href={`/reservations/${reservation.id}/edit`}
+              className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              Cancel
+              Edit Booking
             </Link>
           )}
         </div>
@@ -209,82 +266,57 @@ function ReservationCard({ reservation }: ReservationCardProps) {
   );
 }
 
-function NoMyReservations() {
+function EmptyNextBooking() {
   return (
-    <div className="flex min-h-[650px] items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="max-w-lg text-center">
-        <div className="relative mx-auto mb-8 flex h-32 w-32 items-center justify-center rounded-full border border-dashed border-slate-300 bg-cyan-50 text-6xl text-cyan-400">
-          ◴
-
-          <div className="absolute -right-2 bottom-4 flex h-9 w-9 items-center justify-center rounded-full bg-indigo-400 text-lg text-white">
-            +
-          </div>
-        </div>
-
-        <h2 className="text-3xl font-bold text-slate-900">
-          No reservations yet
-        </h2>
-
-        <p className="mt-4 text-lg leading-8 text-slate-500">
-          You have not booked any workspaces yet. Create your first reservation
-          and it will appear here.
-        </p>
-
-        <div className="mt-8 flex justify-center gap-4">
-          <Link
-            href="/reservations/new"
-            className="rounded-lg bg-cyan-400 px-7 py-3 text-sm font-bold text-white shadow-sm hover:bg-cyan-500"
-          >
-            + Create Reservation
-          </Link>
-
-          <Link
-            href="/workspaces"
-            className="rounded-lg border border-slate-200 bg-white px-7 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
-          >
-            Browse Workspaces
-          </Link>
-        </div>
+    <div className="px-5 py-10 text-center sm:p-12">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 sm:h-16 sm:w-16">
+        <CalendarPlus size={30} strokeWidth={2.4} />
       </div>
+
+      <h3 className="mt-5 text-lg font-extrabold text-slate-950 dark:text-slate-100 sm:text-xl">
+        No upcoming bookings yet
+      </h3>
+
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
+        Browse available workspaces and create your next reservation when you
+        find the right space.
+      </p>
+
+      <Link
+        href="/workspaces"
+        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-md dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950 sm:w-auto"
+      >
+        Browse Workspaces
+        <ArrowRight size={16} />
+      </Link>
     </div>
   );
 }
 
-type InfoItemProps = {
+function SummaryItem({
+  label,
+  value,
+}: {
   label: string;
   value: string | number;
-};
-
-function InfoItem({ label, value }: InfoItemProps) {
+}) {
   return (
-    <div className="rounded-xl bg-slate-50 p-4">
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+    <div className="min-w-0">
+      <p className="truncate text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
         {label}
       </p>
 
-      <p className="mt-1 font-bold text-slate-900">{value}</p>
+      <p className="mt-1 truncate text-sm font-extrabold text-slate-950 dark:text-slate-100">
+        {value}
+      </p>
     </div>
   );
 }
 
-type SummaryItemProps = {
-  label: string;
-  value: string | number;
-};
+function formatText(value?: string | null): string {
+  if (!value) return "Workspace";
 
-function SummaryItem({ label, value }: SummaryItemProps) {
-  return (
-    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-      <span className="text-slate-500">{label}</span>
-      <span className="font-bold text-slate-900">{value}</span>
-    </div>
-  );
-}
-
-function formatType(type?: string | null): string {
-  if (!type) return "-";
-
-  return type
+  return value
     .replace(/_/g, " ")
     .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }

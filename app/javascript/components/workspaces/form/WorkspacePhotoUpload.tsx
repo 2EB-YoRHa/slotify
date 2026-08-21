@@ -1,0 +1,265 @@
+import { useEffect, useState } from "react";
+import { FileImage, ImagePlus, RotateCcw, Trash2, X } from "lucide-react";
+import { FormError } from "./WorkspaceFormFields";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+const ALLOWED_FILE_TYPES = [
+  "image/png",
+  "image/jpg",
+  "image/jpeg",
+  "image/webp",
+];
+
+type WorkspacePhotoUploadProps = {
+  selectedFile: File | null;
+  initialPreviewUrl?: string | null;
+  currentFilename?: string | null;
+  removePhoto: boolean;
+  disabled: boolean;
+  error?: string | string[];
+  onPhotoChange: (file: File | null) => void;
+  onRemovePhotoChange: (removePhoto: boolean) => void;
+};
+
+export default function WorkspacePhotoUpload({
+  selectedFile,
+  initialPreviewUrl = null,
+  currentFilename = null,
+  removePhoto,
+  disabled,
+  error,
+  onPhotoChange,
+  onRemovePhotoChange,
+}: WorkspacePhotoUploadProps) {
+  const [inputKey, setInputKey] = useState(0);
+  const [selectedPreviewUrl, setSelectedPreviewUrl] = useState<string | null>(
+    null,
+  );
+  const [clientError, setClientError] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (selectedPreviewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(selectedPreviewUrl);
+      }
+    };
+  }, [selectedPreviewUrl]);
+
+  const previewUrl = selectedFile
+    ? selectedPreviewUrl
+    : removePhoto
+      ? null
+      : initialPreviewUrl;
+
+  const displayError = clientError || error;
+  const hasCurrentPhoto = Boolean(initialPreviewUrl) && !removePhoto;
+  const hasSelectedPhoto = Boolean(selectedFile);
+  const photoMarkedForRemoval = Boolean(initialPreviewUrl) && removePhoto;
+
+  function handleFileChange(file: File | null) {
+    revokeSelectedPreview();
+
+    if (!file) {
+      clearSelectedPhoto();
+      return;
+    }
+
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      onPhotoChange(null);
+      setSelectedPreviewUrl(null);
+      setClientError("The photo must be a PNG, JPG, JPEG, or WEBP image.");
+      setInputKey((currentKey) => currentKey + 1);
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      onPhotoChange(null);
+      setSelectedPreviewUrl(null);
+      setClientError("The photo must be less than 5MB.");
+      setInputKey((currentKey) => currentKey + 1);
+      return;
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(file);
+
+    setSelectedPreviewUrl(nextPreviewUrl);
+    setClientError(null);
+    onRemovePhotoChange(false);
+    onPhotoChange(file);
+  }
+
+  function clearSelectedPhoto() {
+    revokeSelectedPreview();
+    setSelectedPreviewUrl(null);
+    setClientError(null);
+    onPhotoChange(null);
+    onRemovePhotoChange(false);
+    setInputKey((currentKey) => currentKey + 1);
+  }
+
+  function removeCurrentPhoto() {
+    revokeSelectedPreview();
+    setSelectedPreviewUrl(null);
+    setClientError(null);
+    onPhotoChange(null);
+    onRemovePhotoChange(true);
+    setInputKey((currentKey) => currentKey + 1);
+  }
+
+  function restoreCurrentPhoto() {
+    setClientError(null);
+    onPhotoChange(null);
+    onRemovePhotoChange(false);
+    setInputKey((currentKey) => currentKey + 1);
+  }
+
+  function revokeSelectedPreview() {
+    if (selectedPreviewUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(selectedPreviewUrl);
+    }
+  }
+
+  return (
+    <div className="block min-w-0">
+      <span className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
+        Workspace Photo
+      </span>
+
+      <div className="rounded-xl border border-dashed border-cyan-300 bg-cyan-50/20 p-4 transition-colors dark:border-cyan-500/40 dark:bg-cyan-500/10 sm:p-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-[220px_minmax(0,1fr)]">
+          <div className="self-start overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
+            <div className="flex h-44 w-full items-center justify-center bg-slate-50 transition-colors dark:bg-slate-800">
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="Workspace preview"
+                  className="h-full w-full object-contain"
+                />
+              ) : (
+                <div className="flex h-full w-full flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+                  <ImagePlus size={32} strokeWidth={2.4} />
+
+                  <span className="mt-2 text-xs font-bold">
+                    {photoMarkedForRemoval
+                      ? "Photo will be removed"
+                      : "No photo selected"}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex min-w-0 flex-col justify-center">
+            <div className="mb-4 flex items-start gap-3 sm:gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-cyan-500 shadow-sm transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 dark:shadow-none sm:h-12 sm:w-12">
+                <FileImage size={22} strokeWidth={2.4} />
+              </div>
+
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-slate-950 dark:text-slate-100">
+                  {hasSelectedPhoto
+                    ? "New photo selected"
+                    : photoMarkedForRemoval
+                      ? "Current photo marked for removal"
+                      : hasCurrentPhoto
+                        ? "Current workspace photo"
+                        : "Upload workspace photo"}
+                </p>
+
+                <p className="mt-1 text-xs font-semibold leading-5 text-slate-400 dark:text-slate-500">
+                  PNG, JPG, JPEG or WEBP. Maximum size: 5MB.
+                </p>
+              </div>
+            </div>
+
+            <input
+              key={inputKey}
+              type="file"
+              accept="image/png,image/jpg,image/jpeg,image/webp"
+              disabled={disabled}
+              onChange={(event) =>
+                handleFileChange(event.target.files?.[0] || null)
+              }
+              className="block w-full min-w-0 text-sm font-medium text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-300 dark:file:bg-cyan-500/80 dark:hover:file:bg-cyan-300 dark:hover:file:text-slate-950"
+            />
+
+            {selectedFile && (
+              <div className="mt-4 rounded-xl border border-cyan-100 bg-white p-4 transition-colors dark:border-cyan-500/20 dark:bg-slate-900">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
+                      Selected file
+                    </p>
+
+                    <p className="mt-1 truncate text-sm font-bold text-slate-950 dark:text-slate-100">
+                      {selectedFile.name}
+                    </p>
+
+                    <p className="mt-1 text-xs font-semibold text-slate-400 dark:text-slate-500">
+                      {formatFileSize(selectedFile.size)}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={clearSelectedPhoto}
+                    className="shrink-0 rounded-lg border border-slate-200 bg-white p-2 text-slate-400 transition hover:bg-slate-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+                    aria-label="Remove selected photo"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!selectedFile && currentFilename && !photoMarkedForRemoval && (
+              <p className="mt-4 truncate text-xs font-bold text-slate-500 dark:text-slate-400">
+                Current file: {currentFilename}
+              </p>
+            )}
+
+            {photoMarkedForRemoval && (
+              <div className="mt-4 rounded-xl border border-red-100 bg-red-50 p-4 transition-colors dark:border-red-500/20 dark:bg-red-500/10">
+                <p className="text-sm font-bold text-red-600 dark:text-red-300">
+                  This photo will be removed when you save changes.
+                </p>
+
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={restoreCurrentPhoto}
+                  className="mt-3 inline-flex items-center gap-2 rounded-xl border border-red-100 bg-white px-3 py-2 text-xs font-bold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/20 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-500/10"
+                >
+                  <RotateCcw size={14} />
+                  Keep current photo
+                </button>
+              </div>
+            )}
+
+            {initialPreviewUrl && !selectedFile && !photoMarkedForRemoval && (
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={removeCurrentPhoto}
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-4 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/20 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-500/10 sm:w-auto"
+              >
+                <Trash2 size={16} />
+                Remove current photo
+              </button>
+            )}
+
+            <FormError error={displayError} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function formatFileSize(size: number): string {
+  const sizeInMb = size / 1024 / 1024;
+
+  return `${sizeInMb.toFixed(2)} MB`;
+}

@@ -1,120 +1,328 @@
 import { Link } from "@inertiajs/react";
+import { motion } from "motion/react";
+import {
+  Building2,
+  DollarSign,
+  Eye,
+  MapPin,
+  Pencil,
+  Search,
+  SlidersHorizontal,
+  Trash2,
+  UsersRound,
+} from "lucide-react";
+import { useState } from "react";
+import type { ReactNode } from "react";
 import type { Workspace } from "../../types/workspace";
+import WorkspacePhoto from "./WorkspacePhoto";
 
 type WorkspaceTableProps = {
   workspaces: Workspace[];
 };
 
 export default function WorkspaceTable({ workspaces }: WorkspaceTableProps) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-slate-200 p-5">
-        <input
-          type="text"
-          placeholder="Search by name or location..."
-          className="w-96 rounded-lg border border-slate-200 px-4 py-2 text-sm outline-none focus:border-cyan-400"
-        />
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [capacityFilter, setCapacityFilter] = useState("all");
 
-        <div className="flex gap-3">
-          <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-cyan-400">
-            <option>All Types</option>
-            <option>Desk</option>
-            <option>Meeting Room</option>
-            <option>Private Office</option>
-            <option>Studio</option>
+  const filteredWorkspaces = workspaces.filter((workspace) => {
+    const query = search.toLowerCase();
+    const capacity = Number(workspace.capacity);
+
+    const matchesSearch =
+      query.length === 0 ||
+      workspace.name.toLowerCase().includes(query) ||
+      workspace.workspace_type.toLowerCase().includes(query) ||
+      (workspace.location || "").toLowerCase().includes(query);
+
+    const matchesType =
+      typeFilter === "all" || workspace.workspace_type === typeFilter;
+
+    const matchesCapacity =
+      capacityFilter === "all" ||
+      (capacityFilter === "1-4" && capacity >= 1 && capacity <= 4) ||
+      (capacityFilter === "5-10" && capacity >= 5 && capacity <= 10) ||
+      (capacityFilter === "10+" && capacity > 10);
+
+    return matchesSearch && matchesType && matchesCapacity;
+  });
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.12 }}
+      className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30"
+    >
+      <div className="flex flex-col gap-4 border-b border-slate-200 p-4 transition-colors dark:border-slate-800 sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+        <div className="relative w-full lg:max-w-md lg:flex-1">
+          <Search
+            size={17}
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
+          />
+
+          <input
+            type="text"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by name, type or location..."
+            className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20"
+          />
+        </div>
+
+        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3 lg:w-auto lg:shrink-0">
+          <div className="flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500 transition-colors dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
+            <SlidersHorizontal size={16} className="shrink-0" />
+            <span>Filters</span>
+          </div>
+
+          <select
+            value={typeFilter}
+            onChange={(event) => setTypeFilter(event.target.value)}
+            className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20 sm:min-w-40"
+          >
+            <option value="all">All Types</option>
+            <option value="meeting_room">Meeting Room</option>
+            <option value="private_office">Private Office</option>
+            <option value="hot_desk">Hot Desk</option>
+            <option value="event_space">Event Space</option>
+            <option value="training_room">Training Room</option>
           </select>
 
-          <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-cyan-400">
-            <option>Any Capacity</option>
-            <option>1-4 people</option>
-            <option>5-10 people</option>
-            <option>10+ people</option>
+          <select
+            value={capacityFilter}
+            onChange={(event) => setCapacityFilter(event.target.value)}
+            className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-sm font-bold text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20 sm:min-w-44"
+          >
+            <option value="all">Any Capacity</option>
+            <option value="1-4">1-4 people</option>
+            <option value="5-10">5-10 people</option>
+            <option value="10+">10+ people</option>
           </select>
         </div>
       </div>
 
-      <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-slate-500">
-          <tr>
-            <th className="px-6 py-4 font-medium">Workspace Name</th>
-            <th className="px-6 py-4 font-medium">Type</th>
-            <th className="px-6 py-4 font-medium">Capacity</th>
-            <th className="px-6 py-4 font-medium">Location</th>
-            <th className="px-6 py-4 font-medium">Rate</th>
-            <th className="px-6 py-4 font-medium">Status</th>
-            <th className="px-6 py-4 text-right font-medium">Actions</th>
-          </tr>
-        </thead>
+      <div className="border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-wide text-slate-400 transition-colors dark:border-slate-800 dark:bg-slate-800/70 dark:text-slate-500 sm:px-6">
+        Showing {filteredWorkspaces.length} of {workspaces.length} workspaces
+      </div>
 
-        <tbody>
-          {workspaces.map((workspace) => (
-            <tr
-              key={workspace.id}
-              className="border-t border-slate-100 hover:bg-slate-50"
-            >
-              <td className="px-6 py-4">
-                <div className="font-semibold text-slate-900">
-                  {workspace.name}
-                </div>
+      {filteredWorkspaces.length === 0 ? (
+        <EmptyWorkspaces />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-4 p-4 lg:hidden">
+            {filteredWorkspaces.map((workspace, index) => (
+              <WorkspaceMobileCard
+                key={workspace.id}
+                workspace={workspace}
+                index={index}
+              />
+            ))}
+          </div>
 
-                <div className="text-xs text-slate-400">
-                  {workspace.amenities && workspace.amenities.length > 0
-                    ? workspace.amenities
-                        .map((amenity) => amenity.name)
-                        .join(", ")
-                    : "No amenities"}
-                </div>
-              </td>
+          <div className="hidden overflow-x-auto lg:block">
+            <WorkspaceDesktopTable workspaces={filteredWorkspaces} />
+          </div>
+        </>
+      )}
+    </motion.div>
+  );
+}
 
-              <td className="px-6 py-4 text-slate-600">
-                {formatType(workspace.workspace_type)}
-              </td>
+function EmptyWorkspaces() {
+  return (
+    <div className="px-5 py-10 text-center sm:p-12">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 transition-colors dark:bg-slate-800 dark:text-slate-500">
+        <Building2 size={24} />
+      </div>
 
-              <td className="px-6 py-4 text-slate-600">
-                {workspace.capacity} people
-              </td>
+      <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-slate-100">
+        No workspaces found
+      </h3>
 
-              <td className="px-6 py-4 text-slate-600">
-                {workspace.location || "-"}
-              </td>
-
-              <td className="px-6 py-4 text-slate-600">
-                ${workspace.hourly_rate || 0}/hour
-              </td>
-
-              <td className="px-6 py-4">
-                <StatusBadge active={workspace.active} />
-              </td>
-
-              <td className="px-6 py-4">
-                <div className="flex justify-end gap-3">
-                  <Link
-                    href={`/workspaces/${workspace.id}`}
-                    className="text-slate-500 hover:text-cyan-500"
-                  >
-                    View
-                  </Link>
-
-                  <Link
-                    href={`/workspaces/${workspace.id}/edit`}
-                    className="text-slate-500 hover:text-cyan-500"
-                  >
-                    Edit
-                  </Link>
-
-                  <Link
-                    href={`/workspaces/${workspace.id}/delete`}
-                    className="text-red-500 hover:text-red-600"
-                  >
-                    Delete
-                  </Link>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
+        Try changing the search text or selected filters.
+      </p>
     </div>
+  );
+}
+
+type WorkspaceDesktopTableProps = {
+  workspaces: Workspace[];
+};
+
+function WorkspaceDesktopTable({ workspaces }: WorkspaceDesktopTableProps) {
+  return (
+    <table className="w-full min-w-245 table-fixed text-sm">
+      <colgroup>
+        <col className="w-[28%]" />
+        <col className="w-[13%]" />
+        <col className="w-[10%]" />
+        <col className="w-[17%]" />
+        <col className="w-[10%]" />
+        <col className="w-[9%]" />
+        <col className="w-[13%]" />
+      </colgroup>
+
+      <thead className="bg-white text-slate-500 transition-colors dark:bg-slate-900 dark:text-slate-400">
+        <tr>
+          <th className="px-6 py-4 text-left font-bold">Workspace</th>
+          <th className="px-6 py-4 text-center font-bold">Type</th>
+          <th className="px-6 py-4 text-center font-bold">Capacity</th>
+          <th className="px-6 py-4 text-center font-bold">Location</th>
+          <th className="px-6 py-4 text-center font-bold">Rate</th>
+          <th className="px-6 py-4 text-center font-bold">Status</th>
+          <th className="px-4 py-4 text-center font-bold">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {workspaces.map((workspace, index) => (
+          <motion.tr
+            key={workspace.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.035 }}
+            className="border-t border-slate-100 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50"
+          >
+            <td className="px-6 py-5 align-middle">
+              <WorkspaceIdentity workspace={workspace} />
+            </td>
+
+            <td className="px-6 py-5 text-center align-middle">
+              <TypeBadge type={workspace.workspace_type} />
+            </td>
+
+            <td className="px-6 py-5 text-center align-middle">
+              <div className="inline-flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
+                <UsersRound
+                  size={16}
+                  className="text-slate-400 dark:text-slate-500"
+                />
+                {workspace.capacity}
+              </div>
+            </td>
+
+            <td className="px-6 py-5 text-center align-middle text-slate-600 dark:text-slate-400">
+              <div className="inline-flex max-w-full items-center justify-center gap-2">
+                <MapPin
+                  size={16}
+                  className="shrink-0 text-slate-400 dark:text-slate-500"
+                />
+                <span className="truncate">{workspace.location || "-"}</span>
+              </div>
+            </td>
+
+            <td className="px-6 py-5 text-center align-middle">
+              <div className="inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-200">
+                <DollarSign
+                  size={15}
+                  className="text-slate-400 dark:text-slate-500"
+                />
+                {workspace.hourly_rate || 0}/h
+              </div>
+            </td>
+
+            <td className="px-6 py-5 text-center align-middle">
+              <StatusBadge active={workspace.active} />
+            </td>
+
+            <td className="px-4 py-5 text-center align-middle">
+              <WorkspaceActions workspaceId={workspace.id} />
+            </td>
+          </motion.tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+type WorkspaceMobileCardProps = {
+  workspace: Workspace;
+  index: number;
+};
+
+function WorkspaceMobileCard({ workspace, index }: WorkspaceMobileCardProps) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.035 }}
+      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/40"
+    >
+      <div className="p-4">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <WorkspaceIdentity workspace={workspace} />
+          <StatusBadge active={workspace.active} />
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 transition-colors dark:bg-slate-800/60 sm:grid-cols-2">
+          <MobileInfo
+            label="Type"
+            value={formatType(workspace.workspace_type)}
+          />
+          <MobileInfo label="Capacity" value={`${workspace.capacity} people`} />
+          <MobileInfo label="Rate" value={`$${workspace.hourly_rate || 0}/h`} />
+          <MobileInfo label="Location" value={workspace.location || "-"} />
+        </div>
+      </div>
+
+      <div className="border-t border-slate-100 bg-slate-50 px-4 py-3 transition-colors dark:border-slate-800 dark:bg-slate-800/60">
+        <WorkspaceActions workspaceId={workspace.id} mobile />
+      </div>
+    </motion.article>
+  );
+}
+
+function WorkspaceIdentity({ workspace }: { workspace: Workspace }) {
+  return (
+    <div className="flex min-w-0 items-center gap-3">
+      <WorkspacePhoto
+        name={workspace.name}
+        photoUrl={workspace.photo_url}
+        fit="contain"
+        position="object-center"
+        className="h-12 w-16 shrink-0 rounded-xl border border-slate-100 dark:border-slate-700"
+      />
+
+      <div className="min-w-0">
+        <div className="wrap-break-word font-bold text-slate-950 dark:text-slate-100">
+          {workspace.name}
+        </div>
+
+        <div className="line-clamp-2 text-xs leading-5 text-slate-400 dark:text-slate-500">
+          {workspace.amenities && workspace.amenities.length > 0
+            ? workspace.amenities.map((amenity) => amenity.name).join(", ")
+            : "No amenities assigned"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type MobileInfoProps = {
+  label: string;
+  value: string | number;
+};
+
+function MobileInfo({ label, value }: MobileInfoProps) {
+  return (
+    <div className="min-w-0">
+      <p className="truncate text-xs font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 wrap-break-word text-sm font-bold text-slate-900 dark:text-slate-100">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function TypeBadge({ type }: { type?: string | null }) {
+  return (
+    <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 transition-colors dark:bg-slate-800 dark:text-slate-300">
+      {formatType(type)}
+    </span>
   );
 }
 
@@ -125,12 +333,70 @@ type StatusBadgeProps = {
 function StatusBadge({ active }: StatusBadgeProps) {
   return (
     <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-        active ? "bg-green-50 text-green-600" : "bg-slate-100 text-slate-500"
+      className={`inline-flex min-w-20 shrink-0 justify-center rounded-full px-3 py-1 text-xs font-bold ${
+        active
+          ? "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300"
+          : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
       }`}
     >
       {active ? "Active" : "Inactive"}
     </span>
+  );
+}
+
+type WorkspaceActionsProps = {
+  workspaceId: number;
+  mobile?: boolean;
+};
+
+function WorkspaceActions({
+  workspaceId,
+  mobile: _mobile = false,
+}: WorkspaceActionsProps) {
+  return (
+    <div className="flex items-center justify-center gap-2">
+      <ActionLink
+        href={`/workspaces/${workspaceId}`}
+        title="View"
+        icon={<Eye size={16} />}
+      />
+
+      <ActionLink
+        href={`/workspaces/${workspaceId}/edit`}
+        title="Edit"
+        icon={<Pencil size={16} />}
+      />
+
+      <ActionLink
+        href={`/workspaces/${workspaceId}/delete`}
+        title="Delete"
+        danger
+        icon={<Trash2 size={16} />}
+      />
+    </div>
+  );
+}
+
+type ActionLinkProps = {
+  href: string;
+  title: string;
+  icon: ReactNode;
+  danger?: boolean;
+};
+
+function ActionLink({ href, title, icon, danger = false }: ActionLinkProps) {
+  return (
+    <Link
+      href={href}
+      title={title}
+      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border bg-white transition hover:-translate-y-0.5 hover:shadow-sm dark:bg-slate-900 ${
+        danger
+          ? "border-red-100 text-red-500 hover:bg-red-50 dark:border-red-500/20 dark:text-red-300 dark:hover:bg-red-500/10"
+          : "border-slate-200 text-slate-500 hover:border-cyan-100 hover:bg-cyan-50 hover:text-cyan-500 dark:border-slate-700 dark:text-slate-400 dark:hover:border-cyan-500/40 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
+      }`}
+    >
+      {icon}
+    </Link>
   );
 }
 

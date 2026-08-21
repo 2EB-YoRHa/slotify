@@ -1,117 +1,532 @@
 import { Link } from "@inertiajs/react";
+import { motion } from "motion/react";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import WorkspacePhoto from "../workspaces/WorkspacePhoto";
+import {
+  Ban,
+  Clock3,
+  Eye,
+  Pencil,
+  Search,
+  UserRound,
+  XCircle,
+} from "lucide-react";
 import { duration, formatDate, formatTime } from "../../utils/dateTime";
 import type { Reservation } from "../../types/reservation";
 import ReservationStatusBadge from "./ReservationStatusBadge";
+import ReservationsEmptyState from "./ReservationsEmptyState";
 
 type ReservationsTableProps = {
   reservations: Reservation[];
 };
 
+type StatusFilter = "all" | "confirmed" | "cancelled" | "concluded";
+
+const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
+  { value: "all", label: "All Statuses" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "concluded", label: "Concluded" },
+];
+
 export default function ReservationsTable({
   reservations,
 }: ReservationsTableProps) {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+
+  const filteredReservations = reservations.filter((reservation) => {
+    const query = search.trim().toLowerCase();
+
+    const workspaceName = reservation.workspace?.name || "";
+    const workspaceType = reservation.workspace?.workspace_type || "";
+    const userName = reservation.user?.name || "";
+    const userEmail = reservation.user?.email || "";
+
+    const matchesSearch =
+      query.length === 0 ||
+      workspaceName.toLowerCase().includes(query) ||
+      workspaceType.toLowerCase().includes(query) ||
+      userName.toLowerCase().includes(query) ||
+      userEmail.toLowerCase().includes(query) ||
+      reservation.status.toLowerCase().includes(query);
+
+    const matchesStatus =
+      statusFilter === "all" || reservation.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const hasFilters = search.trim().length > 0 || statusFilter !== "all";
+
+  function clearFilters() {
+    setSearch("");
+    setStatusFilter("all");
+  }
+
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-slate-500">
-          <tr>
-            <th className="px-6 py-4 font-medium">User</th>
-            <th className="px-6 py-4 font-medium">Workspace</th>
-            <th className="px-6 py-4 font-medium">Date</th>
-            <th className="px-6 py-4 font-medium">Time</th>
-            <th className="px-6 py-4 font-medium">Duration</th>
-            <th className="px-6 py-4 font-medium">Status</th>
-            <th className="px-6 py-4 text-right font-medium">Actions</th>
-          </tr>
-        </thead>
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.12 }}
+      className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-slate-950/30"
+    >
+      <div className="border-b border-slate-200 p-4 transition-colors dark:border-slate-800 sm:p-5">
+        <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(18rem,34rem)_auto] xl:items-center xl:justify-between">
+          <div className="relative w-full min-w-0">
+            <Search
+              size={17}
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
+            />
 
-        <tbody>
-          {reservations.map((reservation) => {
-            const isCancelled = reservation.status === "cancelled";
+            <input
+              type="text"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search user, workspace, status..."
+              className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20"
+            />
+          </div>
 
-            return (
-              <tr
-                key={reservation.id}
-                className="border-t border-slate-100 hover:bg-slate-50"
+          <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-[minmax(0,13rem)_auto] xl:w-auto xl:justify-end">
+            <FilterSelect
+              label="Status"
+              value={statusFilter}
+              options={STATUS_OPTIONS}
+              onChange={(value) => setStatusFilter(value as StatusFilter)}
+            />
+
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:w-auto"
               >
-                <td className="px-6 py-4">
-                  <div className="font-semibold text-slate-900">
-                    {reservation.user?.name || "Unknown user"}
-                  </div>
+                <XCircle size={16} />
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
 
-                  <div className="text-xs text-slate-400">
-                    {reservation.user?.email || "-"}
-                  </div>
-                </td>
+      <div className="border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-wide text-slate-400 transition-colors dark:border-slate-800 dark:bg-slate-800/70 dark:text-slate-500 sm:px-6">
+        Showing {filteredReservations.length} of {reservations.length}{" "}
+        reservations
+      </div>
 
-                <td className="px-6 py-4">
-                  <div className="font-semibold text-slate-900">
-                    {reservation.workspace?.name || "Workspace removed"}
-                  </div>
+      {filteredReservations.length === 0 ? (
+        <ReservationsEmptyState
+          hasReservations={reservations.length > 0}
+          hasFilters={hasFilters}
+        />
+      ) : (
+        <>
+          <div className="grid gap-4 p-4 lg:hidden">
+            {filteredReservations.map((reservation, index) => (
+              <ReservationMobileCard
+                key={reservation.id}
+                reservation={reservation}
+                index={index}
+              />
+            ))}
+          </div>
 
-                  <div className="text-xs uppercase text-slate-400">
-                    {formatType(reservation.workspace?.workspace_type)}
-                  </div>
-                </td>
+          <div className="hidden overflow-x-auto lg:block">
+            <table className="w-full min-w-262.5 table-fixed text-sm">
+              <colgroup>
+                <col className="w-[19%]" />
+                <col className="w-[22%]" />
+                <col className="w-[13%]" />
+                <col className="w-[16%]" />
+                <col className="w-[11%]" />
+                <col className="w-[10%]" />
+                <col className="w-[9%]" />
+              </colgroup>
 
-                <td className="px-6 py-4 text-slate-600">
-                  {formatDate(reservation.start_time)}
-                </td>
+              <thead className="bg-white text-slate-500 transition-colors dark:bg-slate-900 dark:text-slate-400">
+                <tr>
+                  <th className="px-6 py-4 text-left font-bold">User</th>
+                  <th className="px-6 py-4 text-left font-bold">Workspace</th>
+                  <th className="px-6 py-4 text-center font-bold">Date</th>
+                  <th className="px-6 py-4 text-center font-bold">Time</th>
+                  <th className="px-6 py-4 text-center font-bold">Duration</th>
+                  <th className="px-6 py-4 text-center font-bold">Status</th>
+                  <th className="px-6 py-4 text-center font-bold">Actions</th>
+                </tr>
+              </thead>
 
-                <td className="px-6 py-4 text-slate-600">
-                  {formatTime(reservation.start_time)} -{" "}
-                  {formatTime(reservation.end_time)}
-                </td>
+              <tbody>
+                {filteredReservations.map((reservation, index) => (
+                  <ReservationTableRow
+                    key={reservation.id}
+                    reservation={reservation}
+                    index={index}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </motion.div>
+  );
+}
 
-                <td className="px-6 py-4 text-slate-600">
-                  {duration(reservation.start_time, reservation.end_time)}
-                </td>
+function ReservationMobileCard({
+  reservation,
+  index,
+}: {
+  reservation: Reservation;
+  index: number;
+}) {
+  const canModify = canModifyReservation(reservation);
 
-                <td className="px-6 py-4">
-                  <ReservationStatusBadge status={reservation.status} />
-                </td>
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.035 }}
+      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-950/40"
+    >
+      <div className="border-b border-slate-100 p-4 transition-colors dark:border-slate-800">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-cyan-500 dark:text-cyan-300">
+              Reservation
+            </p>
 
-                <td className="px-6 py-4">
-                  <div className="flex justify-end gap-3">
-                    <Link
-                      href={`/reservations/${reservation.id}`}
-                      className="text-slate-500 hover:text-cyan-500"
-                    >
-                      View
-                    </Link>
+            <h3 className="mt-1 truncate text-lg font-extrabold text-slate-950 dark:text-slate-100">
+              {reservation.workspace?.name || "Workspace removed"}
+            </h3>
+          </div>
 
-                    {!isCancelled && (
-                      <>
-                        <Link
-                          href={`/reservations/${reservation.id}/edit`}
-                          className="text-slate-500 hover:text-cyan-500"
-                        >
-                          Edit
-                        </Link>
+          <ReservationStatusBadge status={reservation.status} />
+        </div>
 
-                        <Link
-                          href={`/reservations/${reservation.id}/cancel`}
-                          className="text-red-500 hover:text-red-600"
-                        >
-                          Cancel
-                        </Link>
-                      </>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+        <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3 transition-colors dark:bg-slate-800/60">
+          {reservation.user?.avatar_url ? (
+            <img
+              src={reservation.user.avatar_url}
+              alt={reservation.user.name || "User"}
+              className="h-11 w-11 shrink-0 rounded-2xl object-cover ring-4 ring-white dark:ring-slate-900"
+            />
+          ) : (
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 ring-4 ring-white transition-colors dark:bg-cyan-500/10 dark:text-cyan-300 dark:ring-slate-900">
+              <UserRound size={18} strokeWidth={2.4} />
+            </div>
+          )}
+
+          <div className="min-w-0">
+            <p className="truncate text-sm font-extrabold text-slate-950 dark:text-slate-100">
+              {reservation.user?.name || "Unknown user"}
+            </p>
+
+            <p className="mt-1 truncate text-xs font-semibold text-slate-400 dark:text-slate-500">
+              {reservation.user?.email || "-"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4">
+        <div className="mb-4 flex min-w-0 items-center gap-3">
+          <WorkspacePhoto
+            name={reservation.workspace?.name || "Workspace"}
+            photoUrl={reservation.workspace?.photo_url}
+            fit="contain"
+            position="object-center"
+            className="h-14 w-20 shrink-0 rounded-xl border border-slate-100 bg-slate-100 dark:border-slate-700 dark:bg-slate-800"
+          />
+
+          <div className="min-w-0">
+            <p className="truncate text-sm font-extrabold text-slate-950 dark:text-slate-100">
+              {reservation.workspace?.name || "Workspace removed"}
+            </p>
+
+            <p className="mt-1 truncate text-xs font-bold uppercase text-slate-400 dark:text-slate-500">
+              {formatText(reservation.workspace?.workspace_type)}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 rounded-2xl bg-slate-50 p-3 transition-colors dark:bg-slate-800/60">
+          <InfoItem label="Date" value={formatDate(reservation.start_time)} />
+
+          <InfoItem
+            label="Time"
+            value={`${formatTime(reservation.start_time)} - ${formatTime(
+              reservation.end_time,
+            )}`}
+          />
+
+          <InfoItem
+            label="Duration"
+            value={duration(reservation.start_time, reservation.end_time)}
+          />
+
+          <InfoItem label="Status" value={formatText(reservation.status)} />
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <ActionButton
+            href={`/reservations/${reservation.id}`}
+            icon={<Eye size={16} />}
+            label="View"
+            primary
+          />
+
+          {canModify && (
+            <>
+              <ActionButton
+                href={`/reservations/${reservation.id}/edit`}
+                icon={<Pencil size={16} />}
+                label="Edit"
+              />
+
+              <ActionButton
+                href={`/reservations/${reservation.id}/cancel`}
+                icon={<Ban size={16} />}
+                label="Cancel"
+                danger
+              />
+            </>
+          )}
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
+function ReservationTableRow({
+  reservation,
+  index,
+}: {
+  reservation: Reservation;
+  index: number;
+}) {
+  const canModify = canModifyReservation(reservation);
+
+  return (
+    <motion.tr
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.035 }}
+      className="border-t border-slate-100 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50"
+    >
+      <td className="px-6 py-5 align-middle">
+        <div className="flex items-center gap-3">
+          {reservation.user?.avatar_url ? (
+            <img
+              src={reservation.user.avatar_url}
+              alt={reservation.user.name || "User"}
+              className="h-10 w-10 shrink-0 rounded-2xl object-cover ring-4 ring-cyan-50 dark:ring-cyan-500/10"
+            />
+          ) : (
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-500 transition-colors dark:bg-cyan-500/10 dark:text-cyan-300">
+              <UserRound size={18} strokeWidth={2.4} />
+            </div>
+          )}
+
+          <div className="min-w-0">
+            <div className="truncate font-bold text-slate-950 dark:text-slate-100">
+              {reservation.user?.name || "Unknown user"}
+            </div>
+
+            <div className="truncate text-xs text-slate-400 dark:text-slate-500">
+              {reservation.user?.email || "-"}
+            </div>
+          </div>
+        </div>
+      </td>
+
+      <td className="px-6 py-5 align-middle">
+        <div className="flex items-center gap-3">
+          <WorkspacePhoto
+            name={reservation.workspace?.name || "Workspace"}
+            photoUrl={reservation.workspace?.photo_url}
+            fit="contain"
+            position="object-center"
+            className="h-10 w-14 shrink-0 rounded-xl border border-slate-100 dark:border-slate-700"
+          />
+
+          <div className="min-w-0">
+            <div className="truncate font-bold text-slate-950 dark:text-slate-100">
+              {reservation.workspace?.name || "Workspace removed"}
+            </div>
+
+            <div className="truncate text-xs uppercase text-slate-400 dark:text-slate-500">
+              {formatText(reservation.workspace?.workspace_type)}
+            </div>
+          </div>
+        </div>
+      </td>
+
+      <td className="px-6 py-5 text-center align-middle text-slate-600 dark:text-slate-400">
+        {formatDate(reservation.start_time)}
+      </td>
+
+      <td className="px-6 py-5 text-center align-middle text-slate-600 dark:text-slate-400">
+        <div className="inline-flex items-center gap-2">
+          <Clock3 size={15} className="text-slate-400 dark:text-slate-500" />
+          {formatTime(reservation.start_time)} -{" "}
+          {formatTime(reservation.end_time)}
+        </div>
+      </td>
+
+      <td className="px-6 py-5 text-center align-middle text-slate-600 dark:text-slate-400">
+        {duration(reservation.start_time, reservation.end_time)}
+      </td>
+
+      <td className="px-6 py-5 text-center align-middle">
+        <ReservationStatusBadge status={reservation.status} />
+      </td>
+
+      <td className="px-6 py-5 text-center align-middle">
+        <div className="flex items-center justify-center gap-2">
+          <ActionIcon
+            href={`/reservations/${reservation.id}`}
+            title="View"
+            icon={<Eye size={16} />}
+          />
+
+          {canModify && (
+            <>
+              <ActionIcon
+                href={`/reservations/${reservation.id}/edit`}
+                title="Edit"
+                icon={<Pencil size={16} />}
+              />
+
+              <ActionIcon
+                href={`/reservations/${reservation.id}/cancel`}
+                title="Cancel"
+                danger
+                icon={<Ban size={16} />}
+              />
+            </>
+          )}
+        </div>
+      </td>
+    </motion.tr>
+  );
+}
+
+type FilterOption = {
+  value: string;
+  label: string;
+};
+
+type FilterSelectProps = {
+  label: string;
+  value: string;
+  options: FilterOption[];
+  onChange: (value: string) => void;
+};
+
+function FilterSelect({ label, value, options, onChange }: FilterSelectProps) {
+  return (
+    <label className="block min-w-0">
+      <span className="sr-only">{label}</span>
+
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none transition hover:border-cyan-200 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-cyan-500/40 dark:focus:border-cyan-400 dark:focus:ring-cyan-500/20"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function InfoItem({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="min-w-0">
+      <p className="truncate text-[10px] font-extrabold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+        {label}
+      </p>
+
+      <p className="mt-1 truncate text-sm font-extrabold text-slate-950 dark:text-slate-100">
+        {value}
+      </p>
     </div>
   );
 }
 
-function formatType(type?: string | null): string {
-  if (!type) return "-";
+type ActionIconProps = {
+  href: string;
+  title: string;
+  icon: ReactNode;
+  danger?: boolean;
+};
 
-  return type
+function ActionIcon({ href, title, icon, danger = false }: ActionIconProps) {
+  return (
+    <Link
+      href={href}
+      title={title}
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border bg-white transition hover:-translate-y-0.5 hover:shadow-sm dark:bg-slate-900 ${
+        danger
+          ? "border-red-100 text-red-500 hover:bg-red-50 dark:border-red-500/20 dark:text-red-300 dark:hover:bg-red-500/10"
+          : "border-slate-200 text-slate-500 hover:border-cyan-100 hover:bg-cyan-50 hover:text-cyan-500 dark:border-slate-700 dark:text-slate-400 dark:hover:border-cyan-500/40 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
+      }`}
+    >
+      {icon}
+    </Link>
+  );
+}
+
+function ActionButton({
+  href,
+  icon,
+  label,
+  primary = false,
+  danger = false,
+}: {
+  href: string;
+  icon: ReactNode;
+  label: string;
+  primary?: boolean;
+  danger?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-extrabold transition hover:-translate-y-0.5 hover:shadow-sm ${
+        primary
+          ? "bg-cyan-400 text-white shadow-sm shadow-cyan-100 hover:bg-cyan-500 dark:shadow-none dark:hover:bg-cyan-300 dark:hover:text-slate-950"
+          : danger
+            ? "border border-red-100 bg-white text-red-500 hover:bg-red-50 dark:border-red-500/20 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-500/10"
+            : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+      }`}
+    >
+      {icon}
+      <span className="truncate">{label}</span>
+    </Link>
+  );
+}
+
+function canModifyReservation(reservation: Reservation): boolean {
+  if (typeof reservation.can_modify === "boolean") {
+    return reservation.can_modify;
+  }
+
+  return (
+    reservation.status === "confirmed" &&
+    new Date(reservation.end_time).getTime() >= Date.now()
+  );
+}
+
+function formatText(value?: string | null): string {
+  if (!value) return "-";
+
+  return value
     .replace(/_/g, " ")
     .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }

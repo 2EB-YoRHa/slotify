@@ -1,73 +1,145 @@
-import { Link, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
+import { AnimatePresence, motion } from "motion/react";
+import { X } from "lucide-react";
+import type { SharedCurrentUser, SharedPageProps } from "../../types/layout";
+import PlanRequiredNotice from "./sidebar/PlanRequiredNotice";
+import SidebarBrand from "./sidebar/SidebarBrand";
+import SidebarFooter from "./sidebar/SidebarFooter";
+import SidebarNav from "./sidebar/SidebarNav";
+import SignOutOverlay from "./sidebar/SignOutOverlay";
+import {
+  billingRequiredFor,
+  logoHrefFor,
+  navItemsFor,
+} from "./sidebar/sidebarNavigation";
+import useSidebarSignOut from "./sidebar/useSidebarSignOut";
 
-type NavItem = {
-  label: string;
-  href: string;
-  icon: string;
-  exact?: boolean;
+type SidebarProps = {
+  mobileOpen?: boolean;
+  onCloseMobile?: () => void;
 };
 
-const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/", icon: "▦", exact: true },
-  { label: "Reservations", href: "/reservations", icon: "▣" },
-  { label: "Workspaces", href: "/workspaces", icon: "▤" },
-  { label: "Amenities", href: "/amenities", icon: "✦" },
-  { label: "My Bookings", href: "/my_reservations", icon: "◎" },
-  { label: "Organization", href: "/organization", icon: "♙" },
-  { label: "Subscription", href: "/subscription", icon: "$" },
-  { label: "Settings", href: "/booking_rule", icon: "⚙" },
-];
+export default function Sidebar({
+  mobileOpen = false,
+  onCloseMobile,
+}: SidebarProps) {
+  const { url, props } = usePage<SharedPageProps>();
+  const currentUser = props.current_user;
+  const billingRequired = billingRequiredFor(currentUser);
+  const logoHref = logoHrefFor(currentUser);
+  const { signingOut, signOut } = useSidebarSignOut();
 
-export default function Sidebar() {
-  const { url } = usePage();
-
-  function isActive(item: NavItem): boolean {
-    if (item.exact) return url === item.href;
-
-    return url.startsWith(item.href);
+  function handleMobileSignOut() {
+    onCloseMobile?.();
+    signOut();
   }
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 border-r border-slate-200 bg-white">
-      <div className="flex h-16 items-center gap-3 border-b border-slate-200 px-6">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-400 text-white">
-          ◇
-        </div>
+    <>
+      <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white transition-colors dark:border-slate-800 dark:bg-slate-950 lg:flex">
+        <SidebarContent
+          currentUser={currentUser}
+          currentUrl={url}
+          billingRequired={billingRequired}
+          logoHref={logoHref}
+          signingOut={signingOut}
+          onSignOut={signOut}
+        />
+      </aside>
 
-        <span className="text-xl font-bold text-cyan-500">Slotify</span>
-      </div>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-90 lg:hidden"
+          >
+            <button
+              type="button"
+              aria-label="Close navigation menu"
+              onClick={onCloseMobile}
+              className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm"
+            />
 
-      <nav className="mt-6 px-3">
-        {navItems.map((item) => {
-          const active = isActive(item);
-
-          return (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={`mb-1 flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium ${
-                active
-                  ? "bg-slate-100 text-slate-900"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
+            <motion.aside
+              initial={{ x: -320 }}
+              animate={{ x: 0 }}
+              exit={{ x: -320 }}
+              transition={{ type: "spring", damping: 30, stiffness: 260 }}
+              className="relative flex h-full w-[min(20rem,calc(100vw-2rem))] flex-col border-r border-slate-200 bg-white shadow-2xl transition-colors dark:border-slate-800 dark:bg-slate-950"
             >
-              <span>{item.icon}</span>
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
+              <button
+                type="button"
+                aria-label="Close navigation menu"
+                onClick={onCloseMobile}
+                className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                <X size={17} strokeWidth={2.4} />
+              </button>
 
-      <div className="absolute bottom-0 w-full border-t border-slate-200 p-4">
-        <Link
-          href="/users/sign_out"
-          method="delete"
-          as="button"
-          className="text-sm font-medium text-red-500"
-        >
-          Sign Out
-        </Link>
-      </div>
-    </aside>
+              <SidebarContent
+                currentUser={currentUser}
+                currentUrl={url}
+                billingRequired={billingRequired}
+                logoHref={logoHref}
+                signingOut={signingOut}
+                onNavigate={onCloseMobile}
+                onSignOut={handleMobileSignOut}
+              />
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <SignOutOverlay show={signingOut} />
+    </>
+  );
+}
+
+type SidebarContentProps = {
+  currentUser?: SharedCurrentUser | null;
+  currentUrl: string;
+  billingRequired: boolean;
+  logoHref: string;
+  signingOut: boolean;
+  onNavigate?: () => void;
+  onSignOut: () => void;
+};
+
+function SidebarContent({
+  currentUser,
+  currentUrl,
+  billingRequired,
+  logoHref,
+  signingOut,
+  onNavigate,
+  onSignOut,
+}: SidebarContentProps) {
+  const navItems = navItemsFor(currentUser);
+
+  return (
+    <>
+      <SidebarBrand
+        href={logoHref}
+        billingRequired={billingRequired}
+        onClick={onNavigate}
+      />
+
+      {billingRequired && <PlanRequiredNotice />}
+
+      <SidebarNav
+        items={navItems}
+        currentUrl={currentUrl}
+        billingRequired={billingRequired}
+        onNavigate={onNavigate}
+      />
+
+      <SidebarFooter
+        currentUser={currentUser}
+        signingOut={signingOut}
+        onSignOut={onSignOut}
+      />
+    </>
   );
 }

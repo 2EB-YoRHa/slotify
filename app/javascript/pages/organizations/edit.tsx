@@ -1,14 +1,13 @@
 import { Link } from "@inertiajs/react";
+import { motion } from "motion/react";
+import { ArrowLeft } from "lucide-react";
 import AppLayout from "../../components/AppLayout";
 import OrganizationForm from "../../components/organizations/OrganizationForm";
-import type {
-  Organization,
-  OrganizationErrors,
-} from "../../types/organization";
+import type { Organization } from "../../types/organization";
 
 type OrganizationEditProps = {
   organization: Organization;
-  errors?: OrganizationErrors;
+  errors?: Partial<Record<string, string | string[]>>;
 };
 
 export default function OrganizationEdit({
@@ -17,35 +16,41 @@ export default function OrganizationEdit({
 }: OrganizationEditProps) {
   return (
     <AppLayout>
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-8 flex items-start justify-between">
-          <div>
-            <div className="mb-2 text-sm text-slate-400">
-              <Link href="/organization" className="hover:text-cyan-500">
-                Organization
-              </Link>{" "}
-              / Edit
-            </div>
-
-            <h1 className="text-3xl font-bold text-slate-900">
-              Edit Organization
-            </h1>
-
-            <p className="mt-1 text-slate-500">
-              Update your coworking organization information.
-            </p>
-          </div>
-
+      <div className="mb-6 sm:mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
           <Link
             href="/organization"
-            className="rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center gap-2 text-sm font-bold text-cyan-500 transition hover:text-cyan-600 dark:text-cyan-300 dark:hover:text-cyan-200"
           >
-            Back to Organization
+            <ArrowLeft size={16} />
+            <span className="truncate">Back to Organization</span>
           </Link>
-        </div>
+        </motion.div>
 
-        <OrganizationForm organization={organization} errors={errors} />
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 }}
+          className="mt-5 wrap-break-word text-2xl font-black leading-tight text-slate-950 dark:text-slate-100 sm:mt-6 sm:text-3xl"
+        >
+          Edit Organization
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base"
+        >
+          Update organization contact information, address, and public workspace
+          profile details.
+        </motion.p>
       </div>
+
+      <OrganizationForm organization={organization} errors={errors} />
     </AppLayout>
   );
 }
